@@ -1,0 +1,267 @@
+﻿<html>
+<head>
+	<!-- meta -->
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">    
+    
+	<!-- css -->
+	    <link href="css/style.css" rel="stylesheet">
+	    <link href="css/bootstrap.min.css" rel="stylesheet">	   
+</head>
+<body>
+	<div class="header">
+    	<div class="header-wrap">
+            <h3 class="assign-tittle">Payment Management</h3>
+            <div class="topRight">
+            <button class="btn-close"></button>
+            </div>
+            <div class="clear-both"></div>
+        </div><!-- end of header-wrap -->
+	</div><!-- end of header -->
+	
+    <div class="assign-content">
+        <div class="main-container">
+        <div class="left-part">
+            <div class="left-title">
+                <h4><img src="img/lines.png" alt="lines"></h4>
+            </div>
+            
+            <div class="left-data">
+                <label>Organization</label>
+                <select>
+                    <option>IdeacInc</option>
+                </select>
+                <div class="value-list">
+                    <ul>
+                        <li><img src="img/cross.png" alt=""><span>IdeasInc</span></li>
+                    </ul>
+                </div> <!-- end of value-list -->
+            </div> <!-- end of left-data -->
+
+            <div class="left-data">
+                <label>Business Partners</label>
+                <input type="text">
+                <div class="value-list">
+                    <ul>
+                        <li><img src="img/cross.png" alt=""><span>IdeasInc Admin</span></li>
+                    </ul>
+                </div> <!-- end of value-list -->
+            </div> <!-- end of left-data -->
+
+            <div class="left-data">
+                <label>Payment Method</label>
+                <select>
+                    <option>Cash(40)</option>
+                </select>
+                <div class="value-list">
+                    <ul>
+                        <li><img src="img/cross.png" alt=""><span>Cash(40)</span></li>
+                        <li><img src="img/cross.png" alt=""><span>Credit(15)</span></li>
+                    </ul>
+                </div> <!-- end of value-list -->
+            </div> <!-- end of left-data -->
+
+            <div class="left-data">
+                <label>Status</label>
+                <select>
+                    <option>Awaited(10)</option>
+                </select>
+                <div class="value-list">
+                    <ul>
+                        <li><img src="img/cross.png" alt=""><span>Awaited(10)</span></li>
+                    </ul>
+                </div> <!-- end of value-list -->
+            </div> <!-- end of left-data -->
+
+            <div class="left-data">
+                <h5>Dua Date</h5>
+                <div class="value-list">
+                    <ul>
+                        <li><span>Current</span></li>
+                        <li><span>7 Days</span></li>
+                        <li><span>14 Days</span></li>
+                        <li><span>30 Days</span></li>
+                        <li><span>60 Days</span></li>
+                        <li><span>90 Days</span></li>
+                    </ul>
+                </div> <!-- end of value-list -->
+            </div> <!-- end of left-data -->
+        </div><!-- end of left-part -->
+
+        <div class="content-area">
+            <div class="middle-wrap">
+                <div class="mid-top-wrap">
+                    <div class="tabs-wrap">
+                        <ul class="tabs">
+                            <li class="active-tab">Current Receivables</li>
+                            <li>Current Payables</li>
+                            <li>Upcoming Receivables</li>
+                            <li>Upcoming Payables</li>
+                        </ul>
+                    </div><!-- end of tabs-wrap -->
+                    <div class="icons-wrap">
+                        <span><img src="img/cheque.png" alt="cheque"></span>
+                        <span><img src="img/cash.png" alt="cash"></span>
+                        <span><img src="img/batch.png" alt="batch"></span>
+                        <span><img src="img/dunning.png" alt="dunning"></span>
+                        <span><img src="img/split.png" alt="split"></span>
+                    </div><!-- end of icons-wrap -->
+                </div> <!-- end of mid-top-wrap -->
+
+                <div class="mid-search">
+                    <div class="search-wrap">
+                        <input value="" placeholder="Search..." type="text">
+                        <a class="search-icon"><span class="glyphicon glyphicon-search"></span></a>
+                    </div> <!-- end of search-wrap -->
+                    <div class="selected-text">
+                        <p>Selected: USD 40,000.00 &nbsp;&nbsp; EUR 55,000.00</p>
+                    </div> <!-- end of selected-text -->
+                </div> <!-- end of mid-search -->
+
+                <div class="payment-list">
+                    <div class="payment-wrap">
+                        <div class="row">
+                        <div class="col-md-4 col-sm-4 width-sm-40">
+                            <input type="checkbox">
+                            <div class="pay-left">
+                                <div class="pay-img-wrap">
+                                    <span class="pay-img"><img src="img/cash-white.png" alt=""></span>
+                                    <span class="pay-status">In Progress</span>
+                                </div>
+                                <div class="pay-text">
+                                    <span class="info-icon"></span>
+                                    <p>CA Associates</p>
+                                    <span>Standard Customer</span>
+                                    <span>1000003</span>
+                                    <span>Cash</span>
+                                </div>
+                            </div><!-- end of pay-left -->
+                        </div><!-- end of col -->
+                        <div class="col-md-5 col-sm-5 width-sm-35 sm-padd">
+                            <div class="left-data pay-mid-sec">
+                                <span>12/06/15</span>
+                                <span class="glyphicon glyphicon-play play-icon"></span>
+                                <span>12/06/15</span>
+                            </div>
+                            <div class="left-data pay-mid-sec">
+                                <span class="glyphicon glyphicon-ok play-icon"></span>
+                                <span class="color-gray">USD 10,000.00</span>
+                            </div>
+                            <div class="left-data pay-mid-sec">
+                                <span class="glyphicon glyphicon-plus play-icon"></span>
+                                <span>IdeasIncAdmin [12/08/15]</span>
+                            </div>
+                            <div class="left-data pay-mid-sec">
+                                <span class="color-gray">Customer said, they will transfer the amount on 18th</span>
+                            </div>
+                        </div><!-- end of col -->
+                        <div class="col-md-3 col-sm-3">
+                            <div class="right-part">
+                                <span class="glyphicon glyphicon-edit"></span>
+                                <div class="pay-amount">
+                                    <span>USD 40,000.00</span>
+                                    <span class="color-gray">EUR 34,000.00</span>
+                                </div>
+                            </div>
+                        </div><!-- end of col -->
+                        </div><!-- end of row -->
+                    </div><!-- end of payment-wrap -->
+                </div><!-- end of payment-list -->
+            </div> <!-- end of middle-wrap -->
+
+            <div class="right-wrap">
+                <div class="tabs-wrap">
+                    <ul class="right-tabs">
+                        <li class="active-tab">Funds</li>
+                        <li>Cashflow</li>
+                    </ul>
+                </div><!-- end of end of tabs-wrap -->
+                <div class="right-content">
+                    <div class="right-data-main">
+                        <h5>ICICI</h5>
+                        <div class="right-data">
+                            <p class="data-top">
+                                <span class="pull-left">USD 90023344</span>
+                                <span class="pull-right color-green">+45,000.00</span>
+                            </p>
+                            <p class="data-bot">
+                                <span class="pull-left">Unreconciled</span>
+                                <span class="pull-right color-red">-122,500.00</span>
+                            </p>
+                        </div><!-- end of right-data -->
+                        <div class="right-data bottom-10">
+                            <p class="data-top">
+                                <span class="pull-left">EUR 62252335</span>
+                                <span class="pull-right color-green">+122,005.00</span>
+                            </p>
+                            <p class="data-bot">
+                                <span class="pull-left">Unreconciled</span>
+                                <span class="pull-right color-red">-122,500.00</span>
+                            </p>
+                        </div><!-- end of right-data -->
+                    </div><!-- end of right-data-main -->
+
+                    <div class="right-data-main">
+                        <h5>HDFC</h5>
+                        <div class="right-data">
+                            <p class="data-top">
+                                <span class="pull-left">USD 54515552</span>
+                                <span class="pull-right color-green">+15,005.00</span>
+                            </p>
+                            <p class="data-bot">
+                                <span class="pull-left">Unreconciled</span>
+                                <span class="pull-right color-red">-122,500.00</span>
+                            </p>
+                        </div><!-- end of right-data -->                    
+                    </div><!-- end of right-data-main -->
+
+                    <div class="right-data-main">
+                        <h5>Cashbooks</h5>
+                        <div class="right-data">
+                            <p class="data-top">
+                                <span class="pull-left">USD Cashbook1</span>
+                                <span class="pull-right color-green">+450,00.00</span>
+                            </p>
+                            <p class="data-top bottom-10">
+                                <span class="pull-left">EUR Cashbook2</span>
+                                <span class="pull-right color-green">+450,00.00</span>
+                            </p>
+                        </div><!-- end of right-data -->                    
+                    </div><!-- end of right-data-main -->
+
+                    <div class="right-data-main">                    
+                        <div class="right-data">
+                            <p class="data-top">
+                                <span class="pull-left"><h5>Total</h5></span>
+                                <div class="pull-right total-right">
+                                    <p>
+                                        <span class="color-green">USD 66,5000.00</span>
+                                        <span>Unreconciled <a class="color-red">-12,500.00</a></span>
+                                    </p>
+                                    <p class="bottom-10">
+                                        <span class="color-green">EUR +15,000.00</span>
+                                        <span>Unreconciled <a class="color-red">-12,500.00</a></span>
+                                    </p>
+                                </div>
+                                <div class="pull-right total-right">
+                                    
+                                </div>
+                            </p>
+                            
+                        </div><!-- end of right-data -->                    
+                    </div><!-- end of right-data-main -->
+
+                </div><!-- end of right-content -->
+            </div><!-- end of right-wrap -->
+        </div><!-- end of content-area -->
+
+        </div><!-- end of main-container -->
+                
+    </div><!-- end of assign-content -->
+    
+    
+    
+    <script src="js/jquery-1.11.0.min.js"></script>	
+    <script src="js/bootstrap.min.js"></script>
+        
+</body>
+</html>

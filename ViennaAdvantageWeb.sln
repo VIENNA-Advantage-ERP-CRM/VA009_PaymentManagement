@@ -1,0 +1,47 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 2012
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViennaAdvantageWeb", "ViennaAdvantageWeb\ViennaAdvantageWeb.csproj", "{BE66152A-A548-4EFF-88A3-C6305B6FDC38}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViennaAdvantage", "ViennaAdvantage\ViennaAdvantage.csproj", "{B15D02CB-D93E-412B-8AEB-EE039264FA70}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ViennaAdvantageSvc", "ViennaAdvantageSvc\ViennaAdvantageSvc.csproj", "{7A3D3A2F-81B9-41C5-A297-DF96E78226B8}"
+EndProject
+Global
+	GlobalSection(TeamFoundationVersionControl) = preSolution
+		SccNumberOfProjects = 4
+		SccEnterpriseProvider = {4CA58AB2-18FA-4F8D-95D4-32DDF27D184C}
+		SccTeamFoundationServer = http://192.168.0.178:8080/tfs/html5%20module%20collection
+		SccLocalPath0 = .
+		SccProjectUniqueName1 = ViennaAdvantage\\ViennaAdvantage.csproj
+		SccProjectName1 = ViennaAdvantage
+		SccLocalPath1 = ViennaAdvantage
+		SccProjectUniqueName2 = ViennaAdvantageSvc\\ViennaAdvantageSvc.csproj
+		SccProjectName2 = ViennaAdvantageSvc
+		SccLocalPath2 = ViennaAdvantageSvc
+		SccProjectUniqueName3 = ViennaAdvantageWeb\\ViennaAdvantageWeb.csproj
+		SccProjectName3 = ViennaAdvantageWeb
+		SccLocalPath3 = ViennaAdvantageWeb
+	EndGlobalSection
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{BE66152A-A548-4EFF-88A3-C6305B6FDC38}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BE66152A-A548-4EFF-88A3-C6305B6FDC38}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BE66152A-A548-4EFF-88A3-C6305B6FDC38}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BE66152A-A548-4EFF-88A3-C6305B6FDC38}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B15D02CB-D93E-412B-8AEB-EE039264FA70}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B15D02CB-D93E-412B-8AEB-EE039264FA70}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B15D02CB-D93E-412B-8AEB-EE039264FA70}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B15D02CB-D93E-412B-8AEB-EE039264FA70}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7A3D3A2F-81B9-41C5-A297-DF96E78226B8}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7A3D3A2F-81B9-41C5-A297-DF96E78226B8}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7A3D3A2F-81B9-41C5-A297-DF96E78226B8}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7A3D3A2F-81B9-41C5-A297-DF96E78226B8}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
