@@ -45,96 +45,60 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Antlr3.Runtime, Version=3.4.1.9004, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Antlr.3.4.1.9004\lib\Antlr3.Runtime.dll</HintPath>
-    </Reference>
-    <Reference Include="CrystalDecisions.CrystalReports.Engine">
-      <HintPath>..\..\..\..\HTML5 Shared Files\Dlls\CrystalDecisions.CrystalReports.Engine.dll</HintPath>
-    </Reference>
-    <Reference Include="CrystalDecisions.Shared">
-      <HintPath>..\..\..\..\HTML5 Shared Files\Dlls\CrystalDecisions.Shared.dll</HintPath>
-    </Reference>
-    <Reference Include="DevExpress.Web.v14.2">
-      <HintPath>E:\Dll\Web\DevExpress.Web.v14.2.dll</HintPath>
-    </Reference>
-    <Reference Include="DotNetOpenAuth">
-      <HintPath>E:\Dll\Web\DotNetOpenAuth.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis">
-      <HintPath>E:\Dll\Web\Google.Apis.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Authentication.OAuth2">
-      <HintPath>E:\Dll\Web\Google.Apis.Authentication.OAuth2.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Calendar.v3">
-      <HintPath>E:\Dll\Web\Google.Apis.Calendar.v3.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.Apis.Tasks.v1">
-      <HintPath>E:\Dll\Web\Google.Apis.Tasks.v1.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.GData.Client">
-      <HintPath>E:\Dll\Web\Google.GData.Client.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.GData.Contacts">
-      <HintPath>E:\Dll\Web\Google.GData.Contacts.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.GData.Extensions">
-      <HintPath>E:\Dll\Web\Google.GData.Extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="Google.GData.YouTube">
-      <HintPath>E:\Dll\Web\Google.GData.YouTube.dll</HintPath>
+    <Reference Include="Antlr3.Runtime">
+      <HintPath>DLL\Antlr3.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="HtmlWebHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\..\HTML5 Shared Files\Module Files\Market\htmlbin\HtmlWebHelper.dll</HintPath>
     </Reference>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.84.0.0, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>E:\Dll\Web\ICSharpCode.SharpZipLib.dll</HintPath>
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>DLL\ICSharpCode.SharpZipLib.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.OpenJDK.ClassLibrary">
-      <HintPath>E:\Dll\Web\IKVM.OpenJDK.ClassLibrary.dll</HintPath>
+      <HintPath>DLL\IKVM.OpenJDK.ClassLibrary.dll</HintPath>
     </Reference>
     <Reference Include="IKVM.Runtime">
-      <HintPath>E:\Dll\Web\IKVM.Runtime.dll</HintPath>
+      <HintPath>DLL\IKVM.Runtime.dll</HintPath>
     </Reference>
     <Reference Include="Interop.Excel">
-      <HintPath>..\..\..\..\HTML5 Shared Files\Dlls\Interop.Excel.dll</HintPath>
+      <HintPath>DLL\Interop.Excel.dll</HintPath>
       <EmbedInteropTypes>True</EmbedInteropTypes>
     </Reference>
-    <Reference Include="Ionic.Zip, Version=1.9.1.5, Culture=neutral, PublicKeyToken=edbe51ad942a3f5c, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\HTML5 Shared Files\Module Files\Market\htmlbin\Ionic.Zip.dll</HintPath>
+    <Reference Include="Ionic.Zip">
+      <HintPath>DLL\Ionic.Zip.dll</HintPath>
     </Reference>
     <Reference Include="itextsharp">
-      <HintPath>E:\Dll\Web\itextsharp.dll</HintPath>
+      <HintPath>DLL\itextsharp.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="ModelLibrary">
-      <HintPath>..\..\..\VAdvantage\ViennaAdvantageWeb\ModelLibrary\bin\Debug\ModelLibrary.dll</HintPath>
+      <HintPath>DLL\ModelLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Mono.Security">
-      <HintPath>..\..\..\..\HTML5 Shared Files\Dlls\Mono.Security.dll</HintPath>
+      <HintPath>DLL\Mono.Security.dll</HintPath>
     </Reference>
     <Reference Include="MySql.Data">
-      <HintPath>E:\Dll\Web\MySql.Data.dll</HintPath>
+      <HintPath>DLL\MySql.Data.dll</HintPath>
     </Reference>
-    <Reference Include="Newtonsoft.Json, Version=4.5.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\Newtonsoft.Json.5.0.4\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>DLL\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Npgsql">
-      <HintPath>..\..\..\..\HTML5 Shared Files\Dlls\Npgsql.dll</HintPath>
+      <HintPath>DLL\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="NPOI">
-      <HintPath>E:\Dll\Web\NPOI.dll</HintPath>
+      <HintPath>DLL\NPOI.dll</HintPath>
     </Reference>
     <Reference Include="Oracle.ManagedDataAccess">
-      <HintPath>..\..\..\..\HTML5 Shared Files\Module Files\VIS\htmlbin\Oracle.ManagedDataAccess.dll</HintPath>
+      <HintPath>DLL\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="PdfSharp">
+      <HintPath>DLL\PdfSharp.dll</HintPath>
     </Reference>
     <Reference Include="SecureEngineUtility">
-      <HintPath>..\..\..\..\HTML5 Shared Files\Module Files\VIS\htmlbin\SecureEngineUtility.dll</HintPath>
+      <HintPath>DLL\SecureEngineUtility.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -187,88 +151,20 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="Telerik.ReportViewer.Mvc">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.ReportViewer.Mvc.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.Data">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.Data.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.FixedDocumentViewers">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.FixedDocumentViewers.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.FixedDocumentViewersUI">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.FixedDocumentViewersUI.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.ImageEditor">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.ImageEditor.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.Navigation">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.Navigation.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.RibbonView">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.RibbonView.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Controls.RichTextBoxUI">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Controls.RichTextBoxUI.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.Core">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.Core.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.Fixed">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.Fixed.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.FormatProviders.Html">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.FormatProviders.Html.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.FormatProviders.MsRichTextBoxXaml">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.FormatProviders.MsRichTextBoxXaml.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.FormatProviders.OpenXml">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.FormatProviders.OpenXml.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.FormatProviders.Pdf">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.FormatProviders.Pdf.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.FormatProviders.Rtf">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.FormatProviders.Rtf.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Documents.FormatProviders.Xaml">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Documents.FormatProviders.Xaml.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.RadUploadHandler">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.RadUploadHandler.dll</HintPath>
-    </Reference>
-    <Reference Include="Telerik.Windows.Zip">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\Telerik.Windows.Zip.dll</HintPath>
-    </Reference>
-    <Reference Include="VARCOMSvc">
-      <HintPath>..\..\..\GOM01_GOMELSetup\ViennaAdvantageWeb\ViennaAdvantageWeb\bin\VARCOMSvc.dll</HintPath>
-    </Reference>
-    <Reference Include="ViennaBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\HTML5 Shared Files\Module Files\ViennaBase\htmlbin\ViennaBase.dll</HintPath>
+    <Reference Include="ViennaBase">
+      <HintPath>DLL\ViennaBase.dll</HintPath>
     </Reference>
     <Reference Include="VIS">
-      <HintPath>C:\Users\manjot.singh\Desktop\Update Model Library 15 oct by lokesh\VIS.dll</HintPath>
+      <HintPath>DLL\VIS.dll</HintPath>
     </Reference>
-    <Reference Include="WebGrease, Version=1.5.2.14234, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\packages\WebGrease.1.5.2\lib\WebGrease.dll</HintPath>
+    <Reference Include="WebGrease">
+      <HintPath>DLL\WebGrease.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
-    </Reference>
-    <Reference Include="PdfSharp">
-      <HintPath>E:\Dll\Web\PdfSharp.dll</HintPath>
     </Reference>
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.Configuration" />

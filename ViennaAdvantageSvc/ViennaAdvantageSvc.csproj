@@ -35,8 +35,9 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="ModelLibrary">
-      <HintPath>..\..\..\..\VAdvantage\ViennaAdvantageWeb\ModelLibrary\bin\Debug\ModelLibrary.dll</HintPath>
+    <Reference Include="ModelLibrary, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ViennaAdvantageWeb\DLL\ModelLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
