@@ -1716,6 +1716,7 @@
     <Content Include="DLL\Area\VIS\Scripts\VIS2_0.min.js" />
     <Content Include="DLL\Area\VIS\WebPages\CreateUser.aspx" />
     <Content Include="DLL\Area\VIS\WebPages\CrystalReprotViewer.aspx" />
+    <Content Include="DLL\ICSharpCode.SharpZipLib.dll" />
     <Content Include="DLL\ModelLibrary.dll" />
     <Content Include="DLL\Mono.Security.dll" />
     <Content Include="DLL\Npgsql.dll" />
