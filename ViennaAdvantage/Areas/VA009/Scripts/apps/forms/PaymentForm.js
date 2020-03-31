@@ -10,7 +10,7 @@
 ; (function (VA009, $) {
 
     //Form Class Function FullNameSpace
-    VA009.PaymentForm = function () {
+    VA009.PaymentForm = function () { 
         // Varriables
         this.frame;
         this.windowNo;
@@ -66,6 +66,12 @@
         var $POP_DateTrx = null;
         var $POP_CurrencyType = null;
         var defaultCurrenyType = 0;
+        //added parameter for genearte payment file
+        //'M'--- Manual, 'B'---Batch
+        var File_Para = 'M';
+
+        var culture = new VIS.CultureSeparator();
+
         this.Initialize = function () {
             Initialize();
         };
@@ -172,8 +178,8 @@
 
             // Add Search
             MainRoot += '  <div class="VA009-mid-search" id="VA009-mid-search_' + $self.windowNo + '">';
-            MainRoot += ' <div class="VA009-selectall"><input type="checkbox" id="VA009_SelectAll_' + $self.windowNo + '"> <label>Select All</label></div>';
-            MainRoot += ' <div class="VA009-selectall" style=" margin-left: 15px; "><label style=" font-weight: bold; text-decoration: underline; ">Total Amount (In Base): </label><label id="VA009_TotalSelected_' + $self.windowNo + '"" style="font-weight: bold;"> 0 </label></div>';
+            MainRoot += ' <div class="VA009-selectall"><input type="checkbox" id="VA009_SelectAll_' + $self.windowNo + '"> <label>' + VIS.Msg.getMsg("VC1_HeaderSelectAll") + '</label></div>';
+            MainRoot += ' <div class="VA009-selectall" style=" margin-left: 15px; "><label style=" font-weight: bold; text-decoration: underline; ">' + VIS.Msg.getMsg("VA009_TotlAmtBase") + '</label><label id="VA009_TotalSelected_' + $self.windowNo + '"" data-ttlamt="0"  style="font-weight: bold;"> 0 </label></div>';
             MainRoot += '<div class="VA009-search-wrap" style="float: right !important;"> <input value="" placeholder="Search..." type="text" id=' + "VA009_SrchTxtbx_" + $self.windowNo + '> <a class="VA009-search-icon" id=' + "VA009_SrchBtn_" + $self.windowNo + '><span class="glyphicon glyphicon-search"></span></a> </div>';
 
             //Add Selected Payment
@@ -596,8 +602,9 @@
                 if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
                     _loadFunctions.Pay_ManualDialog();
                 }
-                else
-                    VIS.ADialog.info("VA009_PlzSelct1Pay");
+                else { //worked for manual payment when user click without selecting any schedule.
+                    _loadFunctions.Pay_ManualDialogBP();
+                }
             });
 
             //Bank TO Bank
@@ -713,6 +720,7 @@
             $selectall.on("click", function (e) {
                 var target = $(e.target);
                 $totalAmt.text(0);
+                $totalAmt.data('ttlamt', parseFloat(0));
                 if (e.target.type == 'checkbox') {
                     if (target.prop("checked") == true) {
                         //SlctdPaymentIds = SelectallInvIds;
@@ -739,6 +747,7 @@
                         $divPayment.find(':checkbox').prop('checked', false);
                         $selectall.find(':checkbox').prop('checked', false);
                         $totalAmt.text(0);
+                        $totalAmt.data('ttlamt', parseFloat(0));
                     }
                 }
 
@@ -788,6 +797,7 @@
             SlctdPaymentIds = [];
             SlctdOrderPaymentIds = [];
             $totalAmt.text(0);
+            $totalAmt.data('ttlamt', parseFloat(0));
         };
         //******************
         //EventHandling
@@ -844,12 +854,16 @@
                     }
                     record_ID = target.data("uid");
                     var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(2);
+                    amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
+                    //var baseAmt = getFormattednumber(parseFloat(target.data("baseamt")), 3);
                     var baseAmt = VIS.Utility.Util.getValueOfDecimal(target.data("baseamt")).toFixed(2);
                     if (target.data("docbasetype") == "ARC" || target.data("docbasetype") == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
                     var actualAmt = VIS.Utility.Util.getValueOfDecimal(amt) + VIS.Utility.Util.getValueOfDecimal(baseAmt);
-                    $totalAmt.text(VIS.Utility.Util.getValueOfDecimal(actualAmt).toFixed(2));
+                    //$totalAmt.text(VIS.Utility.Util.getValueOfDecimal(actualAmt).toFixed(2));
+                    $totalAmt.data('ttlamt', parseFloat(actualAmt, 2));
+                    $totalAmt.text(getFormattednumber(actualAmt, 2));
                 }
                 else {
                     var DeslctPaymt_ID = target.data("uid");
@@ -867,12 +881,15 @@
                     });
                     record_ID = 0;
                     var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(2);
+                    amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
                     var baseAmt = VIS.Utility.Util.getValueOfDecimal(target.data("baseamt")).toFixed(2);
                     if (target.data("docbasetype") == "ARC" || target.data("docbasetype") == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
                     var actualAmt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
-                    $totalAmt.text(VIS.Utility.Util.getValueOfDecimal(actualAmt).toFixed(2));
+                    //$totalAmt.text(VIS.Utility.Util.getValueOfDecimal(actualAmt).toFixed(2));
+                    $totalAmt.data('ttlamt', parseFloat(actualAmt, 2));
+                    $totalAmt.text(getFormattednumber(actualAmt, 2));
                     //end
                 }
             }
@@ -920,7 +937,18 @@
             batchObjInv = [];
             batchObjOrd = [];
             $totalAmt.text(0);
+            $totalAmt.data('ttlamt', parseFloat(0));
         };
+
+
+
+        function getFormattednumber(value, precision) {
+            if (value && typeof value == 'number') {
+                value = parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: precision });
+            }
+            return value;
+        };
+
         //******************
         //Load Data And Grids on Form Load
         //******************
@@ -938,29 +966,35 @@
                     $Org.prop('selectedIndex', 0);
                 }
             },
+
             loadPaymentMethods: function () {
                 VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
 
                 function callbackloadpaymthds(dr) {
-                    $payMthd.append(" <option value = 0></option>");
-                    if (dr.length > 0) {
-                        for (var i in dr) {
-                            $payMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
+                    if (dr != null) {
+                        $payMthd.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $payMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
+                            }
                         }
+                        $payMthd.prop('selectedIndex', 0);
                     }
-                    $payMthd.prop('selectedIndex', 0);
                 }
             },
+
             loadStatus: function () {
                 VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadStatus", null, callbackloadstatus);
                 function callbackloadstatus(dr) {
-                    $status.append(" <option value = 0></option>");
-                    if (dr.length > 0) {
-                        for (var i in dr) {
-                            $status.append("<option value=" + dr[i].Value + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    if (dr != null) {
+                        $status.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $status.append("<option value=" + dr[i].Value + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
                         }
+                        $status.prop('selectedIndex', 0);
                     }
-                    $status.prop('selectedIndex', 0);
                 }
             },
 
@@ -970,72 +1004,78 @@
                 $bsyDiv[0].style.visibility = "visible";
                 $chequePayble = $("<div class='VA009-popform-content' style='min-height:450px !important'>");
                 var _ChequePayble = "";
-                _ChequePayble += "<div class='VA009-popfrm-wrap'> <div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                            + "</select></div> "
+                _ChequePayble += "<div class='VA009-popfrm-wrap'>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
-                            + "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_Chqnolbl") + "</label>"
-                            + "<input type='text' style='background-color: #ededed;' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/> </div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
+                    + "<input type='number' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_PaymentSelection") + "</label>"
-                            + "<select id='VA009_POP_cmbPaySelectn_" + $self.windowNo + "'>"
-                            + ' <option value="M">' + VIS.Msg.getMsg("VA009_PayManully") + '</option>'
-                            + ' <option value="P">' + VIS.Msg.getMsg("VA009_PayPrint") + '</option>'
-                            + "</select></div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Chqnolbl") + "</label>"
+                    + "<input type='text' style='background-color: #ededed;' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/> </div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                            + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PaymentSelection") + "</label>"
+                    + "<select id='VA009_POP_cmbPaySelectn_" + $self.windowNo + "'>"
+                    + ' <option value="M">' + VIS.Msg.getMsg("VA009_PayManully") + '</option>'
+                    + ' <option value="P">' + VIS.Msg.getMsg("VA009_PayPrint") + '</option>'
+                    + "</select></div>"
 
-                            //+ "<div class='VA009-popCheck-data' style=' padding-left: 0 !important;'>"
-                            //+ '<label>&nbsp;</label><div style=" padding-left: 0; "><input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo + '"> <label>Consolidate Payment</label></div>'
-                            //+ "</div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popCheck-data' id='VA009_POP_textCheckNoDiv'>"
-                            + "<label><div style=' padding-left: 0 !important;'>"
-                            + '<div style="padding-left: 0; "><input type="checkbox" style="float: left;" id="VA009_chkConsolidate_' + $self.windowNo
-                            + '"> <label style="margin-bottom: 0;font-weight: normal;">' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label></div>'
-                            + "</div></label>"
-                            + "<input type='text' style='background-color: #ededed;' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
-                            + "</div> "
+                    //+ "<div class='VA009-popCheck-data' style=' padding-left: 0 !important;'>"
+                    //+ '<label>&nbsp;</label><div style=" padding-left: 0; "><input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo + '"> <label>Consolidate Payment</label></div>'
+                    //+ "</div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                            + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    + "<div class='VA009-popCheck-data' id='VA009_POP_textCheckNoDiv'>"
+                    + "<label><div style=' padding-left: 0 !important;'>"
+                    + '<div style="padding-left: 0; "><input type="checkbox" style="float: left;" id="VA009_chkConsolidate_' + $self.windowNo
+                    + '"> <label style="margin-bottom: 0;font-weight: normal;">' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label></div>'
+                    + "</div></label>"
+                    + "<input type='text' style='background-color: #ededed;' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
+                    + "</div> "
 
-                            //Transaction Date
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
 
-                            + "<div style='display: none !important' class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                            + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    //Transaction Date
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
 
-                            //+ "<div style='width: 100%; float: left;'>"                            
+                    + "<div style='display: none !important' class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            //+ "<div class='VA009-popform-data' id='VA009_POP_textCheckNoDiv' style='margin-left: 20px !important;width: 48%;'>"
-                            //+ "<label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label>"
-                            //+ "<input type='text' style='background-color: #ededed;' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
-                            //+ "</div> "
-                            // + </div>"
-                            + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupGrid'></div></div>"
+                    //+ "<div style='width: 100%; float: left;'>"                            
 
-                            + "</div>";
+                    //+ "<div class='VA009-popform-data' id='VA009_POP_textCheckNoDiv' style='margin-left: 20px !important;width: 48%;'>"
+                    //+ "<label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label>"
+                    //+ "<input type='text' style='background-color: #ededed;' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
+                    //+ "</div> "
+                    // + </div>"
+                    + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupGrid'></div></div>"
+
+                    + "</div>";
 
                 $chequePayble.append(_ChequePayble);
                 CHQPAY_getControls();
@@ -1044,7 +1084,6 @@
                 $POP_DateAcct.val(_today);
                 $POP_DateTrx.val(_today);
                 ChequePayDialog = new VIS.ChildDialog();
-
                 ChequePayDialog.setContent($chequePayble);
                 ChequePayDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePayment"));
                 ChequePayDialog.setWidth("80%");
@@ -1071,6 +1110,7 @@
                         loadgrdPay(callbackchqPay);
                         loadCurrencyType();
                         loadPayMthd();
+                        loadOrg();
                     }
                 };
 
@@ -1083,22 +1123,43 @@
                         _CHQPay_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '7%' });
                         _CHQPay_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
                         _CHQPay_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
-                        _CHQPay_Columns.push({ field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: 'float:2' });
-                        _CHQPay_Columns.push({ field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', render: 'float:2' });
                         _CHQPay_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '12%', render: 'float:2', editable: { type: 'float' }
-                            //editable: function (record, index, col_index) {
-                            //    if (record.TransactionType == 'Order') {
-                            //        return {};
-                            //    }
-                            //    else {
-                            //        return { type: 'float' };
-                            //    }
-                            //}
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["DueAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
                         });
-                        _CHQPay_Columns.push({ field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: 'float:2' });
-                        _CHQPay_Columns.push({ field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: 'float:2', editable: { type: 'float' } });
-                        _CHQPay_Columns.push({ field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: 'float:2', editable: { type: 'float' } });
+                        _CHQPay_Columns.push({
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["ConvertedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _CHQPay_Columns.push({
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["VA009_RecivedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
+                        _CHQPay_Columns.push({
+                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                                var val = record["OverUnder"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _CHQPay_Columns.push({
+                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                                var val = record["Writeoff"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
+                        _CHQPay_Columns.push({
+                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                                var val = record["Discount"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
+
                         _CHQPay_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', editable: { type: 'text' } });
                         _CHQPay_Columns.push({ field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
                         _CHQPay_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
@@ -1109,7 +1170,7 @@
                     }
                     chqpaygrd = null;
                     chqpaygrd = CheuePaybleGrid.w2grid({
-                        name: 'CheuePaybleGrid_' + VIS.Env.getWindowNo(),
+                        name: 'CheuePaybleGrid_' + $self.windowNo,
                         recordHeight: 25,
                         columns: _CHQPay_Columns,
                         multiSelect: true,
@@ -1124,17 +1185,60 @@
                             else if ($POp_cmbPaySelectn.val() == "P") {
                                 event.isCancelled = true;
                             }
+                            event.onComplete = function (event) {
+                                id = event.recid;
+                                if (event.column == 6 || event.column == 8 || event.column == 9) {
+                                    $('#grid_CheuePaybleGrid_' + $self.windowNo + '_edit_' + id + '_' + event.column).keydown(function (event) {
+                                        var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+
+                                        if (!isDotSeparator && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
+                                            return false;
+                                        }
+                                        else if (isDotSeparator && event.keyCode == 188) { // . separator
+                                            return false;
+                                        }
+                                        if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                            this.value = this.value.replace('.', '');
+                                        }
+                                        if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                            this.value = this.value.replace(',', '');
+                                        }
+                                        if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
+                                            (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
+                                            && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
+                                            && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
+                                            return false;
+                                        }
+                                    });
+                                }
+                            };
                         },
 
                         onChange: function (event) {
                             window.setTimeout(function () {
                                 if (chqpaygrd.getChanges(event.recid) != undefined) {
                                     var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $POP_cmbBankAccount.val(), "CurrencyFrom": "B" }, null);
+                                    if (stdPrecision == null || stdPrecision == 0) {
+                                        stdPrecision = 2;
+                                    }
+
+                                    chqpaygrd.records[event.index]['ConvertedAmt'] = parseFloat(chqpaygrd.records[event.index]['ConvertedAmt']);
+                                    chqpaygrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(chqpaygrd.records[event.index]['VA009_RecivedAmt']);
+                                    chqpaygrd.records[event.index]['OverUnder'] = parseFloat(chqpaygrd.records[event.index]['OverUnder']);
+                                    chqpaygrd.records[event.index]['Writeoff'] = parseFloat(chqpaygrd.records[event.index]['Writeoff']);
+                                    chqpaygrd.records[event.index]['Discount'] = parseFloat(chqpaygrd.records[event.index]['Discount']);
                                     //Received Amount
                                     if (event.column == 6) {
                                         if (event.value_new == "") {
                                             event.value_new = 0;
                                         }
+                                        else {
+                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqpaygrd.records[event.index]['ConvertedAmt'])));
+                                        }
+
+                                        //else if (event.value_new.toString().contains(',')) {
+                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                        //}
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
@@ -1144,12 +1248,13 @@
                                             return;
                                         }
                                         chqpaygrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                        chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
-                                        if (chqpaygrd.get(chqpaygrd.getSelection())['PaymwentBaseType'] == "ARR" || chqpaygrd.get(chqpaygrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new < chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) {
-                                                if (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] < 0) {
+                                        if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                            if (event.value_new < chqpaygrd.records[event.index]['ConvertedAmt']) {
+                                                if (chqpaygrd.records[event.index]['ConvertedAmt'] < 0) {
                                                     if (chqpaygrd.get(event.recid).TransactionType == 'Order') {
-                                                        chqpaygrd.get(event.recid).changes.Discount = ((chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) - event.value_new);
+                                                        chqpaygrd.get(event.recid).changes.Discount = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new);
                                                         chqpaygrd.get(event.recid).Discount = (chqpaygrd.get(event.recid).changes.Discount).toFixed(stdPrecision);
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).Writeoff = 0;
@@ -1157,7 +1262,7 @@
                                                         chqpaygrd.get(event.recid).OverUnder = 0;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) - event.value_new);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new);
                                                         chqpaygrd.get(event.recid).OverUnder = (chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision);
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).changes.Discount = 0;
@@ -1165,8 +1270,9 @@
                                                 }
                                                 else {
                                                     if (chqpaygrd.get(event.recid).TransactionType == 'Order') {
-                                                        chqpaygrd.get(event.recid).changes.Discount = ((chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).Discount = chqpaygrd.get(event.recid).changes.Discount;
+                                                        chqpaygrd.get(event.recid).changes.Discount = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['Discount'] = chqpaygrd.get(event.recid).changes.Discount;
+                                                        // chqpaygrd.get(event.recid).Discount = chqpaygrd.get(event.recid).changes.Discount;
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).Writeoff = 0;
                                                         chqpaygrd.get(event.recid).changes.OverUnder = 0;
@@ -1174,8 +1280,9 @@
                                                     }
                                                     else {
                                                         // changed by Bharat
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).OverUnder = VIS.Utility.Util.getValueOfDecimal((chqpaygrd.get(event.recid).changes.OverUnder));
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
+                                                        //chqpaygrd.get(event.recid).OverUnder = VIS.Utility.Util.getValueOfDecimal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).Writeoff = 0;
                                                         chqpaygrd.get(event.recid).changes.Discount = 0;
@@ -1185,7 +1292,7 @@
                                                 chqpaygrd.refreshCell(event.recid, "Discount");
                                                 chqpaygrd.refreshCell(event.recid, "Writeoff");
                                             }
-                                            else if (event.value_new == chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) {
+                                            else if (event.value_new == chqpaygrd.records[event.index]['ConvertedAmt']) {
                                                 chqpaygrd.get(event.recid).changes.OverUnder = 0;
                                                 chqpaygrd.get(event.recid).OverUnder = 0;
                                                 chqpaygrd.get(event.recid).changes.Discount = 0;
@@ -1199,16 +1306,17 @@
                                                 chqpaygrd.refreshCell(event.recid, "Writeoff");
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             }
-                                            else if (event.value_new > chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) {
-                                                if (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] < 0) {
+                                            else if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
+                                                if (chqpaygrd.records[event.index]['ConvertedAmt'] < 0) {
                                                     chqpaygrd.get(event.recid).changes.OverUnder = 0;
                                                     chqpaygrd.get(event.recid).OverUnder = 0;
-                                                    chqpaygrd.get(event.recid).changes.Writeoff = ((chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                    chqpaygrd.get(event.recid).changes.Writeoff = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                                     chqpaygrd.get(event.recid).Writeoff = VIS.Utility.Util.getValueOfDecimal((chqpaygrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
-                                                    chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) - event.value_new);
-                                                    chqpaygrd.get(event.recid).OverUnder = (chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision);
+                                                    chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new);
+                                                    chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
+                                                    //chqpaygrd.get(event.recid).OverUnder = (chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision);
                                                     chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                     chqpaygrd.get(event.recid).Writeoff = 0;
                                                 }
@@ -1225,111 +1333,178 @@
                                         if (event.value_new == "") {
                                             event.value_new = 0;
                                         }
+                                        else {
+                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqpaygrd.records[event.index]['Writeoff'])));
+                                        }
+                                        //else if (event.value_new.toString().contains(',')) {
+                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                        //}
+
                                         chqpaygrd.records[event.index]['Writeoff'] = event.value_new;
 
-                                        if (chqpaygrd.get(chqpaygrd.getSelection())['PaymwentBaseType'] == "ARR" || chqpaygrd.get(chqpaygrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) {
-                                                if (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] < 0) {
-                                                    if (chqpaygrd.get(event.recid).changes.Discount == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqpaygrd.get(event.recid).changes.Discount == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
+                                        if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                            if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                    chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    }
-                                                    else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (event.value_new - chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
-                                                    }
+                                                    chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                    chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqpaygrd.refreshCell(event.recid, "OverUnder");
                                             }
-                                            else if (event.value_new <= chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) {
+                                            else if (event.value_new <= chqpaygrd.records[event.index]['ConvertedAmt']) {
 
-                                                //chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Discount'])) * -1;
                                                 if (chqpaygrd.get(event.recid).changes.Discount == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqpaygrd.get(event.recid).changes.Discount == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(event.recid).changes.Discount)).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqpaygrd.refreshCell(event.recid, "OverUnder");
                                             }
+
+
+                                            if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
+                                                //if (chqpaygrd.records[event.index]['ConvertedAmt'] < 0) {
+                                                //    if (chqpaygrd.get(event.recid).changes.Discount == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //    else if (chqpaygrd.get(event.recid).changes.Discount == undefined) {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //    else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //    else {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //}
+                                                //else {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                                //chqpaygrd.refreshCell(event.recid, "OverUnder");
+                                            }
+                                            else if (event.value_new <= chqpaygrd.records[event.index]['ConvertedAmt']) {
+
+                                                ////chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Discount'])) * -1;
+                                                //if (chqpaygrd.get(event.recid).changes.Discount == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqpaygrd.get(event.recid).changes.Discount == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.get(event.recid).changes.Discount)).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                                //chqpaygrd.refreshCell(event.recid, "OverUnder");
+                                            }
+
                                         }
                                     }
                                     //discount
@@ -1337,113 +1512,186 @@
                                         if (event.value_new == "") {
                                             event.value_new = 0;
                                         }
+                                        else {
+                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqpaygrd.records[event.index]['Discount'])));
+                                        }
+                                        //else if (event.value_new.toString().contains(',')) {
+                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                        //}
+
                                         chqpaygrd.records[event.index]['Discount'] = event.value_new;
 
-                                        if (chqpaygrd.get(chqpaygrd.getSelection())['PaymwentBaseType'] == "ARR" || chqpaygrd.get(chqpaygrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) {
-                                                if (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] < 0) {
-                                                    if (chqpaygrd.get(event.recid).changes.Writeoff == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqpaygrd.get(event.recid).changes.Writeoff == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
+                                        if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
+
+                                            if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                    chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                    chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                    }
-                                                    else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (event.value_new - chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
-                                                    }
+                                                    chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                    chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqpaygrd.refreshCell(event.recid, "OverUnder");
                                             }
-                                            else if (event.value_new <= chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt']) {
-
+                                            else if (event.value_new <= chqpaygrd.records[event.index]['ConvertedAmt']) {
                                                 //chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff'])) * -1;
                                                 if (chqpaygrd.get(event.recid).changes.Writeoff == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqpaygrd.get(event.recid).changes.Writeoff == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = chqpaygrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqpaygrd.refreshCell(event.recid, "OverUnder");
                                             }
+
+
+                                            if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
+                                                //if (chqpaygrd.records[event.index]['ConvertedAmt'] < 0) {
+                                                //    if (chqpaygrd.get(event.recid).changes.Writeoff == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //    else if (chqpaygrd.get(event.recid).changes.Writeoff == undefined) {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //    else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //    else {
+                                                //        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        }
+                                                //        else {
+                                                //            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //            chqpaygrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqpaygrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //        }
+                                                //    }
+                                                //}
+                                                //else {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                                //chqpaygrd.refreshCell(event.recid, "OverUnder");
+                                            }
+                                            else if (event.value_new <= chqpaygrd.records[event.index]['ConvertedAmt']) {
+
+                                                ////chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(chqpaygrd.getSelection())['ConvertedAmt'] - (event.value_new + chqpaygrd.get(chqpaygrd.getSelection())['OverUnder'] + chqpaygrd.get(chqpaygrd.getSelection())['Writeoff'])) * -1;
+                                                //if (chqpaygrd.get(event.recid).changes.Writeoff == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqpaygrd.get(event.recid).changes.Writeoff == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //        chqpaygrd.get(event.recid).VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                                //chqpaygrd.refreshCell(event.recid, "OverUnder");
+                                            }
                                         }
                                     }
+
+                                    chqpaygrd.refreshCell(event.recid, "ConvertedAmt");
+                                    chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                    chqpaygrd.refreshCell(event.recid, "OverUnder");
+                                    chqpaygrd.refreshCell(event.recid, "Writeoff");
+                                    chqpaygrd.refreshCell(event.recid, "Discount");
                                 }
                                 if (event.column == 10)
                                     chqpaygrd.records[event.index]['CheckNumber'] = event.value_new;
@@ -1474,6 +1722,8 @@
                     $POP_Consolidate = $chequePayble.find("#VA009_chkConsolidate_" + $self.windowNo);
                     //Transaction Date
                     $POP_DateTrx = $chequePayble.find("#VA009_TransactionDate" + $self.windowNo);
+                    $POP_cmbOrg = $chequePayble.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+                    $POP_cmbOrg.css('background-color', SetMandatory(true));
                 };
 
                 function loadPayMthd() {
@@ -1490,6 +1740,20 @@
                         }
                         $POP_PayMthd.prop('selectedIndex', 0);
                     }
+                };
+
+                //to load all organization 
+                function loadOrg() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    function callbackloadorg(dr) {
+                        $POP_cmbOrg.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_cmbOrg.prop('selectedIndex', 0);
+                    };
                 };
 
                 function loadgrdPay(callback) {
@@ -1611,6 +1875,15 @@
                 };
                 //end
 
+                $POP_cmbOrg.on("change", function () {
+                    if ($POP_cmbOrg.val() == "0") {
+                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                    }
+                });
+
                 $POP_cmbBank.on("change", function () {
                     $POP_cmbBankAccount.empty();
                     //change by Amit
@@ -1666,7 +1939,8 @@
                         //end
 
                         if (dr != null) {
-                            $POP_txtAccttNo.val(Globalize.format(dr["CurrentBalance"], "N"));
+                            // $POP_txtAccttNo.val(Globalize.format(dr["CurrentBalance"], "N"));
+                            $POP_txtAccttNo.val(dr["CurrentBalance"]);
                             $POP_txtChqNo.val(dr["CurrentNext"]);
                         }
                         //}
@@ -1838,126 +2112,133 @@
                     chqpaygrd.selectAll();
                     var total = 0;
                     if (chqpaygrd.getSelection().length > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                    if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                        for (var i = 0; i < chqpaygrd.getSelection().length; i++) {
-                                            var _data = {}; var updated = 0;
-                                            _data["C_BPartner_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'];
-                                            _data["Description"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Description'];
-                                            _data["C_Invoice_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Invoice_ID'];
-                                            _data["AD_Org_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Org_ID'];
-                                            _data["AD_Client_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Client_ID'];
-                                            _data["C_InvoicePaySchedule_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                            _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val());
-                                            _data["C_Currency_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Currency_ID'];
-                                            _data["DueAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['DueAmt'];
-                                            _data["ConvertedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['ConvertedAmt'];
-                                            _data["PaymwentBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['PaymwentBaseType'];
-                                            _data["TransactionType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'];
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                            for (var i = 0; i < chqpaygrd.getSelection().length; i++) {
+                                                var _data = {}; var updated = 0;
+                                                _data["C_BPartner_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'];
+                                                _data["Description"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Description'];
+                                                _data["C_Invoice_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Invoice_ID'];
+                                                //commented because ashish and surya said that payment will be created in selected organization
+                                                //_data["AD_Org_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Org_ID'];
+                                                _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                                _data["AD_Client_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Client_ID'];
+                                                _data["C_InvoicePaySchedule_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                                _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val());
+                                                _data["C_Currency_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Currency_ID'];
+                                                _data["DueAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['DueAmt'];
+                                                _data["ConvertedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['ConvertedAmt'];
+                                                _data["PaymwentBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['PaymwentBaseType'];
+                                                _data["TransactionType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'];
 
-                                            if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
-                                                _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
-                                            else {
-                                                VIS.ADialog.info(("VA009_PLPayAmt"));
-                                                chqpaygrd.selectNone();
-                                                return false;
-                                            }
-
-                                            _data["OverUnder"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['OverUnder'];
-                                            _data["Writeoff"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Writeoff'];
-                                            _data["Discount"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Discount'];
-                                            //Transaction Date
-                                            _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
-                                            _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
-                                            _data["From"] = "Pay";
-
-                                            if ($POp_cmbPaySelectn.val() == "M") {
-                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != null) {
-                                                    var dt = new Date(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
-                                                    dt = new Date(dt.setHours(0, 0, 0, 0));
-                                                    var acctdate = new Date($POP_DateAcct.val());
-                                                    acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
-                                                    if (dt > acctdate) {
-                                                        VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
-                                                        chqpaygrd.selectNone();
-                                                        return false;
-                                                    }
-                                                    _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
-                                                }
+                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                    _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
                                                 else {
-                                                    VIS.ADialog.info(("VA009_PLCheckDate"));
+                                                    VIS.ADialog.info(("VA009_PLPayAmt"));
                                                     chqpaygrd.selectNone();
                                                     return false;
                                                 }
 
-                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != null)
-                                                    _data["CheckNumber"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'];
-                                                else {
-                                                    VIS.ADialog.info(("VA009_PLCheckNumber"));
-                                                    chqpaygrd.selectNone();
-                                                    return false;
-                                                }
-                                            }
+                                                _data["OverUnder"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['OverUnder'];
+                                                _data["Writeoff"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Writeoff'];
+                                                _data["Discount"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Discount'];
+                                                //Transaction Date
+                                                _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
+                                                _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
+                                                _data["From"] = "Pay";
 
-                                            if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] == 0) {
-                                                VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                                chqpaygrd.selectNone();
-                                                return false;
-                                            }
-                                            _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                            _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                                if ($POp_cmbPaySelectn.val() == "M") {
+                                                    if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != null) {
+                                                        var dt = new Date(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
+                                                        dt = new Date(dt.setHours(0, 0, 0, 0));
+                                                        var acctdate = new Date($POP_DateAcct.val());
+                                                        acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
+                                                        if (dt > acctdate) {
+                                                            VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
+                                                            chqpaygrd.selectNone();
+                                                            return false;
+                                                        }
+                                                        _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
+                                                    }
+                                                    else {
+                                                        VIS.ADialog.info(("VA009_PLCheckDate"));
+                                                        chqpaygrd.selectNone();
+                                                        return false;
+                                                    }
 
-                                            var obj;
-                                            if (i > 0) {
-                                                obj = $.grep(_CollaborateData, function (e) {
-                                                    return chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'] == e.C_BPartner_ID
-                                                    && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] == e.CheckNumber
-                                                    && chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'] != e.TransactionType;
-                                                });
-                                                if (obj) {
-                                                    if (obj.length > 0) {
-                                                        VIS.ADialog.info("VA009_SameCheckNo");
+                                                    if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != null)
+                                                        _data["CheckNumber"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'];
+                                                    else {
+                                                        VIS.ADialog.info(("VA009_PLCheckNumber"));
                                                         chqpaygrd.selectNone();
                                                         return false;
                                                     }
                                                 }
+
+                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] == 0) {
+                                                    VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                                    chqpaygrd.selectNone();
+                                                    return false;
+                                                }
+                                                _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                                _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                                var obj;
+                                                if (i > 0) {
+                                                    obj = $.grep(_CollaborateData, function (e) {
+                                                        return chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'] == e.C_BPartner_ID
+                                                            && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] == e.CheckNumber
+                                                            && chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'] != e.TransactionType;
+                                                    });
+                                                    if (obj) {
+                                                        if (obj.length > 0) {
+                                                            VIS.ADialog.info("VA009_SameCheckNo");
+                                                            chqpaygrd.selectNone();
+                                                            return false;
+                                                        }
+                                                    }
+                                                }
+                                                //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['DocBaseType'] == "APC") {
+                                                //    total -= VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
+                                                //}
+                                                //else {
+                                                //    total += VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
+                                                //}
+                                                _CollaborateData.push(_data);
                                             }
-                                            //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['DocBaseType'] == "APC") {
-                                            //    total -= VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
-                                            //}
-                                            //else {
-                                            //    total += VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
-                                            //}
-                                            _CollaborateData.push(_data);
+                                        }
+                                        else {
+                                            VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                            chqpaygrd.selectNone();
+                                            return false;
                                         }
                                     }
                                     else {
-                                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                        VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
                                         chqpaygrd.selectNone();
                                         return false;
                                     }
                                 }
                                 else {
-                                    VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
+                                    VIS.ADialog.info(("VA009_PLSelectBankAccount"));
                                     chqpaygrd.selectNone();
                                     return false;
                                 }
                             }
                             else {
-                                VIS.ADialog.info(("VA009_PLSelectBankAccount"));
+                                VIS.ADialog.info(("VA009_PLSelectBank"));
                                 chqpaygrd.selectNone();
                                 return false;
                             }
                         }
                         else {
-                            VIS.ADialog.info(("VA009_PLSelectBank"));
+                            VIS.ADialog.info(("VA009_PlsSelectOrg"));
                             chqpaygrd.selectNone();
                             return false;
                         }
                     }
-
                     if ($POp_cmbPaySelectn.val() == "M") {
                         $bsyDiv[0].style.visibility = "visible";
                         $.ajax({
@@ -2023,8 +2304,8 @@
                                 VIS.ADialog.error("VA009_ErrorLoadingPayments");
                             }
                         });
-                        //}
                     }
+                    //}
                 };
 
                 function callbackPaymnt(result) {
@@ -2094,36 +2375,43 @@
                 $bsyDiv[0].style.visibility = "visible";
                 $chequeRecivable = $("<div class='VA009-popform-content' style='min-height:385px !important'>");
                 var _ChequeRecevble = "";
-                _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'> <div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                            + "</select></div> "
+                _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                            + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                    + "</select></div> "
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                            + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                            + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
-                            //Transaction Date
-                            + "<div class='VA009-popCheck-data'>"
-                            + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            //+ "<div class='VA009-popfrm-wrap'>"
-                            + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    //Transaction Date
+                    + "<div class='VA009-popCheck-data'>"
+                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+
+                    //+ "<div class='VA009-popfrm-wrap'>"
+                    + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
                 //+ "</div>";
 
                 $chequeRecivable.append(_ChequeRecevble);
@@ -2159,6 +2447,7 @@
                         loadgrd(callbackchqRec);
                         loadCurrencyType();
                         loadPayMthd();
+                        loadOrg();
                     }
                 };
 
@@ -2170,6 +2459,8 @@
                     $pop_cmbCurrencyType = $chequeRecivable.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_DateAcct = $chequeRecivable.find("#VA009_AccountDate_" + $self.windowNo);
                     $POP_DateTrx = $chequeRecivable.find("#VA009_TransactionDate" + $self.windowNo);
+                    $POP_cmbOrg = $chequeRecivable.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+                    $POP_cmbOrg.css('background-color', SetMandatory(true));
                 };
 
                 function loadCurrencyType() {
@@ -2207,6 +2498,20 @@
                     }
                 };
 
+                //to load all organization 
+                function loadOrg() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    function callbackloadorg(dr) {
+                        $POP_cmbOrg.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_cmbOrg.prop('selectedIndex', 0);
+                    };
+                };
+
                 //BY Amit
                 //Set Mandatory and Non-Mandatory
                 function SetMandatory(value) {
@@ -2216,6 +2521,15 @@
                         return 'White';
                 };
                 //end
+
+                $POP_cmbOrg.on("change", function () {
+                    if ($POP_cmbOrg.val() == "0") {
+                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                    }
+                });
 
                 $RPOP_cmbBank.on("change", function () {
                     $RPOP_cmbBankAccount.empty();
@@ -2337,12 +2651,42 @@
                         _CHQRec_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '8%' });
                         _CHQRec_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
                         _CHQRec_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
-                        _CHQRec_Columns.push({ field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: 'float:2' });
-                        _CHQRec_Columns.push({ field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', render: 'float:2' });
-                        _CHQRec_Columns.push({ field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: 'float:2', editable: { type: 'float' } });
-                        _CHQRec_Columns.push({ field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: 'float:2' });
-                        _CHQRec_Columns.push({ field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: 'float:2', editable: { type: 'float' } });
-                        _CHQRec_Columns.push({ field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: 'float:2', editable: { type: 'float' } });
+                        _CHQRec_Columns.push({
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["DueAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _CHQRec_Columns.push({
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["ConvertedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _CHQRec_Columns.push({
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["VA009_RecivedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
+                        _CHQRec_Columns.push({
+                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                                var val = record["OverUnder"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _CHQRec_Columns.push({
+                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                                var val = record["Writeoff"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
+                        _CHQRec_Columns.push({
+                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                                var val = record["Discount"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
                         _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'text' } });
                         _CHQRec_Columns.push({ field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
                         //_CHQRec_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
@@ -2353,7 +2697,7 @@
                     }
                     chqrecgrd = null;
                     chqrecgrd = CheueRecevableGrid.w2grid({
-                        name: 'CheueRecevableGrid_' + VIS.Env.getWindowNo(),
+                        name: 'CheueRecevableGrid_' + $self.windowNo,
                         recordHeight: 25,
                         columns: _CHQRec_Columns,
                         method: 'GET',
@@ -2368,6 +2712,33 @@
                                     event.isCancelled = true;
                                 }
                             }
+                            event.onComplete = function (event) {
+                                id = event.recid;
+                                if (event.column == 8 || event.column == 9 || event.column == 6) {
+                                    $('#grid_CheueRecevableGrid_' + $self.windowNo + '_edit_' + id + '_' + event.column).keydown(function (event) {
+                                        var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+
+                                        if (!isDotSeparator && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
+                                            return false;
+                                        }
+                                        else if (isDotSeparator && event.keyCode == 188) { // . separator
+                                            return false;
+                                        }
+                                        if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                            this.value = this.value.replace('.', '');
+                                        }
+                                        if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                            this.value = this.value.replace(',', '');
+                                        }
+                                        if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
+                                            (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
+                                            && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
+                                            && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
+                                            return false;
+                                        }
+                                    });
+                                }
+                            };
                         },
 
                         onChange: function (event) {   // Added by Bharat on 02/May/2017
@@ -2375,31 +2746,47 @@
                             window.setTimeout(function () {
                                 if (chqrecgrd.getChanges(event.recid) != undefined) {
                                     var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $RPOP_cmbBankAccount.val(), "CurrencyFrom": "B" }, null);
+                                    if (stdPrecision == null || stdPrecision == 0) {
+                                        stdPrecision = 2;
+                                    }
+
+                                    chqrecgrd.records[event.index]['ConvertedAmt'] = parseFloat(chqrecgrd.records[event.index]['ConvertedAmt']);
+                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']);
+                                    chqrecgrd.records[event.index]['OverUnder'] = parseFloat(chqrecgrd.records[event.index]['OverUnder']);
+                                    chqrecgrd.records[event.index]['Writeoff'] = parseFloat(chqrecgrd.records[event.index]['Writeoff']);
+                                    chqrecgrd.records[event.index]['Discount'] = parseFloat(chqrecgrd.records[event.index]['Discount']);
                                     //Received Amount
                                     if (event.column == 6) {
                                         if (event.value_new == "") {
                                             event.value_new = 0;
                                         }
+                                        else {
+                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['ConvertedAmt'])));
+                                        }
+                                        //else if (event.value_new.toString().contains(',')) {
+                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                        //}
                                         if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
-                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = event.value_new;
+                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             return;
                                         }
                                         chqrecgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                        chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
-                                        if (chqrecgrd.get(chqrecgrd.getSelection())['PaymwentBaseType'] == "ARR" || chqrecgrd.get(chqrecgrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                if (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] > 0) {
-                                                    chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                    chqrecgrd.get(event.recid).OverUnder = chqrecgrd.get(event.recid).changes.OverUnder;
+                                        if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                 }
                                                 else {
-                                                    chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                    chqrecgrd.get(event.recid).OverUnder = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                     chqrecgrd.get(event.recid).Writeoff = 0;
                                                 }
@@ -2408,7 +2795,7 @@
                                                 chqrecgrd.refreshCell(event.recid, "Discount");
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
                                             }
-                                            else if (event.value_new == chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
+                                            else if (event.value_new == chqrecgrd.records[event.index]['ConvertedAmt']) {
                                                 chqrecgrd.get(event.recid).changes.OverUnder = 0;
                                                 chqrecgrd.get(event.recid).OverUnder = 0;
                                                 chqrecgrd.get(event.recid).changes.Discount = 0;
@@ -2416,25 +2803,25 @@
                                                 chqrecgrd.get(event.recid).Discount = 0;
                                                 chqrecgrd.get(event.recid).Writeoff = 0;
                                                 chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
-                                                chqrecgrd.get(event.recid).VA009_RecivedAmt = event.value_new;
+                                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                 chqrecgrd.refreshCell(event.recid, "Discount");
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             }
-                                            else if (event.value_new < chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                if (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] > 0) {
+                                            else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
                                                     if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
-                                                        chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).Discount = chqrecgrd.get(event.recid).changes.Discount;
+                                                        chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['Discount'] = chqrecgrd.get(event.recid).changes.Discount;
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                         chqrecgrd.get(event.recid).Writeoff = 0;
                                                         chqrecgrd.get(event.recid).changes.OverUnder = 0;
                                                         chqrecgrd.get(event.recid).OverUnder = 0;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).OverUnder = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                         chqrecgrd.get(event.recid).Writeoff = 0;
                                                         chqrecgrd.get(event.recid).changes.Discount = 0;
@@ -2443,16 +2830,16 @@
                                                 }
                                                 else {
                                                     if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
-                                                        chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).Discount = chqrecgrd.get(event.recid).changes.Discount;
+                                                        chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['Discount'] = chqrecgrd.get(event.recid).changes.Discount;
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                         chqrecgrd.get(event.recid).Writeoff = 0;
                                                         chqrecgrd.get(event.recid).changes.OverUnder = 0;
                                                         chqrecgrd.get(event.recid).OverUnder = 0;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).OverUnder = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                         chqrecgrd.get(event.recid).Writeoff = 0;
                                                         chqrecgrd.get(event.recid).changes.Discount = 0;
@@ -2473,156 +2860,162 @@
                                         if (event.value_new == "") {
                                             event.value_new = 0;
                                         }
+                                        else {
+                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['Writeoff'])));
+                                        }
+                                        //else if (event.value_new.toString().contains(',')) {
+                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                        //}
                                         chqrecgrd.records[event.index]['Writeoff'] = event.value_new;
 
-                                        if (chqrecgrd.get(chqrecgrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) * -1).toFixed(stdPrecision);
-                                                chqrecgrd.get(event.recid).VA009_RecivedAmt = ((event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) * -1).toFixed(stdPrecision);
+                                        if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
+                                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             }
-                                            else if (event.value_new < chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
+                                            else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
                                                 if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
                                         }
-                                        else if (chqrecgrd.get(chqrecgrd.getSelection())['PaymwentBaseType'] == "ARR") {
-                                            if (event.value_new > chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                if (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] < 0) {
-                                                    if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
+                                        else if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR") {
+                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] < 0) {
+                                                    //if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
+                                                    //else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
+                                                    //else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
+                                                    //else {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
-                                            else if (event.value_new <= chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])) * -1;
+                                            else if (event.value_new <= chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])) * -1;
                                                 if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
@@ -2635,156 +3028,163 @@
                                         if (event.value_new == "") {
                                             event.value_new = 0;
                                         }
+                                        else {
+                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['Discount'])));
+                                        }
+                                        //else if (event.value_new.toString().contains(',')) {
+                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                        //}
+
                                         chqrecgrd.records[event.index]['Discount'] = event.value_new;
 
-                                        if (chqrecgrd.get(chqrecgrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) * -1).toFixed(stdPrecision);
-                                                chqrecgrd.get(event.recid).VA009_RecivedAmt = ((event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) * -1).toFixed(stdPrecision);
+                                        if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
+                                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             }
-                                            else if (event.value_new < chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
+                                            else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
                                                 if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
                                         }
-                                        else if (chqrecgrd.get(chqrecgrd.getSelection())['PaymwentBaseType'] == "ARR") {
-                                            if (event.value_new > chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                if (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] < 0) {
-                                                    if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
-                                                    else {
-                                                        if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        }
-                                                        else {
-                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                            chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                        }
-                                                    }
+                                        else if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR") {
+                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] < 0) {
+                                                    //if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
+                                                    //else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
+                                                    //else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
+                                                    //else {
+                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //    else {
+                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                    //    }
+                                                    //}
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (event.value_new - chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
-                                            else if (event.value_new <= chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt']) {
-                                                //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])) * -1;
+                                            else if (event.value_new <= chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                                //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])) * -1;
                                                 if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.get(chqrecgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + chqrecgrd.get(chqrecgrd.getSelection())['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     }
                                                     else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.get(event.recid).VA009_RecivedAmt = (chqrecgrd.get(chqrecgrd.getSelection())['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                     }
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
@@ -2792,6 +3192,13 @@
                                             }
                                         }
                                     }
+
+                                    chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                    chqrecgrd.refreshCell(event.recid, "Discount");
+                                    chqrecgrd.refreshCell(event.recid, "Writeoff");
+                                    chqrecgrd.refreshCell(event.recid, "ConvertedAmt");
+                                    chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+
                                 }
                                 if (event.column == 10)
                                     chqrecgrd.records[event.index]['CheckNumber'] = event.value_new;
@@ -2867,90 +3274,99 @@
                     chqrecgrd.selectAll();
 
                     if (chqrecgrd.getSelection().length > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) > 0) {
-                            if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                    if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                        for (var i = 0; i < chqrecgrd.getSelection().length; i++) {
-                                            var _data = {}; var updated = 0;
-                                            _data["C_BPartner_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_BPartner_ID'];
-                                            _data["Description"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Description'];
-                                            _data["C_Invoice_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Invoice_ID'];
-                                            _data["AD_Org_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Org_ID'];
-                                            _data["AD_Client_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Client_ID'];
-                                            _data["C_Currency_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Currency_ID'];
-                                            _data["C_InvoicePaySchedule_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                            _data["TransactionType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['TransactionType'];
-                                            if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'] != "") {
-                                                var dt = new Date(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
-                                                dt = new Date(dt.setHours(0, 0, 0, 0));
-                                                var acctdate = new Date($POP_DateAcct.val());
-                                                acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
-                                                if (dt > acctdate) {
-                                                    VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) > 0) {
+                                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                            for (var i = 0; i < chqrecgrd.getSelection().length; i++) {
+                                                var _data = {}; var updated = 0;
+                                                _data["C_BPartner_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_BPartner_ID'];
+                                                _data["Description"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Description'];
+                                                _data["C_Invoice_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Invoice_ID'];
+                                                //commented because ashish and surya said that payment will be created in selected organization
+                                                //_data["AD_Org_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Org_ID'];
+                                                _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                                _data["AD_Client_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Client_ID'];
+                                                _data["C_Currency_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Currency_ID'];
+                                                _data["C_InvoicePaySchedule_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                                _data["TransactionType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['TransactionType'];
+                                                if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'] != "") {
+                                                    var dt = new Date(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
+                                                    dt = new Date(dt.setHours(0, 0, 0, 0));
+                                                    var acctdate = new Date($POP_DateAcct.val());
+                                                    acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
+                                                    if (dt > acctdate) {
+                                                        VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
+                                                        chqrecgrd.selectNone();
+                                                        return false;
+                                                    }
+                                                    _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
+                                                }
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLCheckDate"));
                                                     chqrecgrd.selectNone();
                                                     return false;
                                                 }
-                                                _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
-                                            }
-                                            else {
-                                                VIS.ADialog.info(("VA009_PLCheckDate"));
-                                                chqrecgrd.selectNone();
-                                                return false;
-                                            }
-                                            //Transaction Date
-                                            _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
-                                            _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val())
+                                                //Transaction Date
+                                                _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
+                                                _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val())
 
-                                            _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val());
-                                            _data["C_Bank_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val());
-                                            _data["DueAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['DueAmt'];
-                                            _data["ConvertedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['ConvertedAmt'];
-                                            _data["PaymwentBaseType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['PaymwentBaseType'];
-                                            _data["OverUnder"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['OverUnder'];
-                                            _data["Discount"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Discount'];
-                                            _data["Writeoff"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Writeoff'];
+                                                _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val());
+                                                _data["C_Bank_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val());
+                                                _data["DueAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['DueAmt'];
+                                                _data["ConvertedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['ConvertedAmt'];
+                                                _data["PaymwentBaseType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['PaymwentBaseType'];
+                                                _data["OverUnder"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['OverUnder'];
+                                                _data["Discount"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Discount'];
+                                                _data["Writeoff"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Writeoff'];
 
-                                            _data["From"] = "Rec";
-                                            if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != "")
-                                                _data["CheckNumber"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'];
-                                            else {
-                                                VIS.ADialog.info(("VA009_PLCheckNumber"));
-                                                chqrecgrd.selectNone();
-                                                return false;
+                                                _data["From"] = "Rec";
+                                                if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != "")
+                                                    _data["CheckNumber"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'];
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLCheckNumber"));
+                                                    chqrecgrd.selectNone();
+                                                    return false;
+                                                }
+                                                if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                    _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                                    chqrecgrd.selectNone();
+                                                    return false;
+                                                }
+                                                _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                                _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                                _CollaborateData.push(_data);
                                             }
-                                            if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
-                                                _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
-                                            else {
-                                                VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                                chqrecgrd.selectNone();
-                                                return false;
-                                            }
-                                            _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                            _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
-                                            _CollaborateData.push(_data);
+                                        }
+                                        else {
+                                            VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                            chqrecgrd.selectNone();
+                                            return false;
                                         }
                                     }
                                     else {
-                                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                        VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
                                         chqrecgrd.selectNone();
                                         return false;
                                     }
                                 }
                                 else {
-                                    VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
+                                    VIS.ADialog.info(("VA009_PLSelectBankAccount"));
                                     chqrecgrd.selectNone();
                                     return false;
                                 }
                             }
                             else {
-                                VIS.ADialog.info(("VA009_PLSelectBankAccount"));
+                                VIS.ADialog.info(("VA009_PLSelectBank"));
                                 chqrecgrd.selectNone();
                                 return false;
                             }
                         }
                         else {
-                            VIS.ADialog.info(("VA009_PLSelectBank"));
+                            VIS.ADialog.info(("VA009_PlsSelectOrg"));
                             chqrecgrd.selectNone();
                             return false;
                         }
@@ -3016,29 +3432,36 @@
                 $bsyDiv[0].style.visibility = "visible";
                 $cash = $("<div class='VA009-popform-content' style='min-height:385px !important'>");
                 var _Cash = "";
-                _Cash += "<div class='VA009-popfrm-wrap'> <div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_lblcashbook") + "</label>"
-                            + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select></div> "
+                _Cash += "<div class='VA009-popfrm-wrap'>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
-                            + "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                             + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                            + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_lblcashbook") + "</label>"
+                    + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select></div> "
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                            + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
-                            //Transaction Date
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
+                    + "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
 
-                            + "<div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div>"
-                            + "</div>";
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    //Transaction Date
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+
+                    + "<div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div>"
+                    + "</div>";
 
                 $cash.append(_Cash);
                 Cash_getControls();
@@ -3064,6 +3487,7 @@
                         loadgrdCash(callbackCASHPay);
                         loadcashbook();
                         loadCurrencyType();
+                        loadOrg();
                     }
                     else {
                         $bsyDiv[0].style.visibility = "hidden";
@@ -3100,6 +3524,20 @@
                     }
                 };
 
+                //to load all organization 
+                function loadOrg() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    function callbackloadorg(dr) {
+                        $POP_cmbOrg.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_cmbOrg.prop('selectedIndex', 0);
+                    };
+                };
+
                 //Set Mandatory and Non-Mandatory
                 function SetMandatory(value) {
                     if (value)
@@ -3115,13 +3553,43 @@
                         _Cash_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '15%' });
                         _Cash_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
                         _Cash_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
-                        _Cash_Columns.push({ field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: 'float:2' });
-                        _Cash_Columns.push({ field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', render: 'float:2' });
-                        _Cash_Columns.push({ field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: 'float:2', editable: { type: 'float' } });
+                        _Cash_Columns.push({
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["DueAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _Cash_Columns.push({
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', render: function (record, index, col_index) {
+                                var val = record["ConvertedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _Cash_Columns.push({
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                var val = record["VA009_RecivedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
                         //changeby amit
-                        _Cash_Columns.push({ field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', render: 'float:2' });
-                        _Cash_Columns.push({ field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', render: 'float:2', editable: { type: 'float' } });
-                        _Cash_Columns.push({ field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', render: 'float:2', editable: { type: 'float' } });
+                        _Cash_Columns.push({
+                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', render: function (record, index, col_index) {
+                                var val = record["OverUnder"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _Cash_Columns.push({
+                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', render: function (record, index, col_index) {
+                                var val = record["Writeoff"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
+                        _Cash_Columns.push({
+                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', render: function (record, index, col_index) {
+                                var val = record["Discount"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
                         _Cash_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
                         //end
 
@@ -3140,9 +3608,36 @@
                                     event.isCancelled = true;
                                 }
                             }
+                            event.onComplete = function (event) {
+                                id = event.recid;
+                                if (event.column == 8 || event.column == 7 || event.column == 5) {
+                                    $('#grid_CashGrid_edit_' + id + '_' + event.column).keydown(function (event) {
+                                        var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+
+                                        if (!isDotSeparator && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
+                                            return false;
+                                        }
+                                        else if (isDotSeparator && event.keyCode == 188) { // . separator
+                                            return false;
+                                        }
+                                        if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                            this.value = this.value.replace('.', '');
+                                        }
+                                        if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                            this.value = this.value.replace(',', '');
+                                        }
+                                        if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
+                                            (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
+                                            && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
+                                            && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
+                                            return false;
+                                        }
+                                    });
+                                }
+                            };
                         }
                     }),
-                     Cashgrd.hideColumn('recid');
+                        Cashgrd.hideColumn('recid');
                 };
 
                 function loadcashbook() {
@@ -3214,6 +3709,15 @@
                     });
                 });
 
+                $POP_cmbOrg.on("change", function () {
+                    if ($POP_cmbOrg.val() == "0") {
+                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                    }
+                });
+
                 function Cash_getControls() {
                     $Cash_cmbcashbk = $cash.find("#VA009_POP_Txtcashbk_" + $self.windowNo);
                     $Cash_OpngBal = $cash.find("#VA009_POP_Txtopngbal_" + $self.windowNo);
@@ -3223,6 +3727,8 @@
                     $POP_DateAcct.css('background-color', SetMandatory(true));
                     //Transaction Date
                     $POP_DateTrx = $cash.find("#VA009_TransactionDate" + $self.windowNo);
+                    $POP_cmbOrg = $cash.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+                    $POP_cmbOrg.css('background-color', SetMandatory(true));
                 };
 
                 function loadgrdCash(callback) {
@@ -3290,35 +3796,51 @@
                             //var stdPrecision = VIS.DB.executeScalar(sql, null, null);
 
                             var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $Cash_cmbcashbk.val(), "CurrencyFrom": "C" }, null);
+                            if (stdPrecision == null || stdPrecision == 0) {
+                                stdPrecision = 2;
+                            }
                             // Description
                             if (event.column == 1)
                                 Cashgrd.records[event.index]['Description'] = event.value_new;
 
+                            Cashgrd.records[event.index]['ConvertedAmt'] = parseFloat(Cashgrd.records[event.index]['ConvertedAmt']);
+                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(Cashgrd.records[event.index]['VA009_RecivedAmt']);
+                            Cashgrd.records[event.index]['OverUnder'] = parseFloat(Cashgrd.records[event.index]['OverUnder']);
+                            Cashgrd.records[event.index]['Writeoff'] = parseFloat(Cashgrd.records[event.index]['Writeoff']);
+                            Cashgrd.records[event.index]['Discount'] = parseFloat(Cashgrd.records[event.index]['Discount']);
                             //Received Amount
                             if (event.column == 5) {
                                 if (event.value_new == "") {
                                     event.value_new = 0;
                                 }
+                                else {
+                                    event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(Cashgrd.records[event.index]['ConvertedAmt'])));
+                                }
+                                //else if (event.value_new.toString().contains(',')) {
+                                //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                //}
                                 if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
                                     VIS.ADialog.error("MoreScheduleAmount");
                                     event.value_new = event.value_original;
                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
-                                    Cashgrd.get(event.recid).VA009_RecivedAmt = event.value_new;
+                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                     Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                     return;
                                 }
                                 Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
-                                if (Cashgrd.get(Cashgrd.getSelection())['PaymwentBaseType'] == "ARR" || Cashgrd.get(Cashgrd.getSelection())['PaymwentBaseType'] == "APP") {
+                                Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
-                                    if (event.value_new > Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) {
-                                        if (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] > 0) {
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.get(event.recid).OverUnder = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+
+                                    if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
+                                        if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                         }
                                         else {
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.get(event.recid).OverUnder = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                             Cashgrd.get(event.recid).Writeoff = 0;
                                         }
@@ -3328,7 +3850,7 @@
                                         Cashgrd.refreshCell(event.recid, "Writeoff");
                                     }
 
-                                    else if (event.value_new == Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) {
+                                    else if (event.value_new == Cashgrd.records[event.index]['ConvertedAmt']) {
                                         Cashgrd.get(event.recid).changes.OverUnder = 0;
                                         Cashgrd.get(event.recid).OverUnder = 0;
                                         Cashgrd.get(event.recid).changes.Discount = 0;
@@ -3336,24 +3858,24 @@
                                         Cashgrd.get(event.recid).Discount = 0;
                                         Cashgrd.get(event.recid).Writeoff = 0;
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
-                                        Cashgrd.get(event.recid).VA009_RecivedAmt = event.value_new;
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
                                         Cashgrd.refreshCell(event.recid, "OverUnder");
                                         Cashgrd.refreshCell(event.recid, "Discount");
                                         Cashgrd.refreshCell(event.recid, "Writeoff");
                                         Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                     }
-                                    else if (event.value_new < Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) {
-                                        if (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] > 0) {
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.get(event.recid).OverUnder = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                    else if (event.value_new < Cashgrd.records[event.index]['ConvertedAmt']) {
+                                        if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                             Cashgrd.get(event.recid).Writeoff = 0;
                                         }
                                         else {
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                             Cashgrd.get(event.recid).Writeoff = 0;
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.get(event.recid).OverUnder = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
                                         }
                                         Cashgrd.get(event.recid).changes.Discount = 0;
                                         Cashgrd.get(event.recid).Discount = 0;
@@ -3369,78 +3891,85 @@
                                 if (event.value_new == "") {
                                     event.value_new = 0;
                                 }
+                                else {
+                                    event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(Cashgrd.records[event.index]['Writeoff'])));
+                                }
+                                //else if (event.value_new.toString().contains(',')) {
+                                //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                //}
+
                                 Cashgrd.records[event.index]['Writeoff'] = event.value_new;
 
-                                if (Cashgrd.get(Cashgrd.getSelection())['PaymwentBaseType'] == "ARR" || Cashgrd.get(Cashgrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                    if (event.value_new > Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) {
-                                        if (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] < 0) {
+                                if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                    if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
+                                        if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
                                             if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Discount']))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                             else if (Cashgrd.get(event.recid).changes.Discount == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Discount']))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Discount']))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                             else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount)))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                             else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                Cashgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount)))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else {
-                                            Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
-                                            Cashgrd.get(event.recid).VA009_RecivedAmt = (event.value_new - Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']).toFixed(stdPrecision);
+                                            Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - Cashgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                         }
                                         Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                     }
-                                    else if (event.value_new <= Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) {
+                                    else if (event.value_new <= Cashgrd.records[event.index]['ConvertedAmt']) {
                                         if (!Cashgrd.get(event.recid).changes.Writeoff) {
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                         }
 
                                         if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else if (Cashgrd.get(event.recid).changes.Discount == undefined) {
 
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Discount'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                Cashgrd.get(event.recid).VA009_RecivedAmt = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
@@ -3453,78 +3982,85 @@
                                 if (event.value_new == "") {
                                     event.value_new = 0;
                                 }
+                                else {
+                                    event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(Cashgrd.records[event.index]['Discount'])));
+                                }
+                                //else if (event.value_new.toString().contains(',')) {
+                                //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                //}
+
                                 Cashgrd.records[event.index]['Discount'] = event.value_new;
 
-                                if (Cashgrd.get(Cashgrd.getSelection())['PaymwentBaseType'] == "ARR" || Cashgrd.get(Cashgrd.getSelection())['PaymwentBaseType'] == "APP") {
-                                    if (event.value_new > Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) {
-                                        if (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] < 0) {
+                                if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                    if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
+                                        if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
                                             if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                             else if (Cashgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Writeoff']))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                             else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff)))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                             else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                Cashgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff)))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else {
                                             Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)).toFixed(stdPrecision);
-                                            Cashgrd.get(event.recid).VA009_RecivedAmt = (event.value_new - VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)).toFixed(stdPrecision);
+                                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                         }
                                         Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                     }
-                                    else if (event.value_new <= Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt']) {
+                                    else if (event.value_new <= Cashgrd.records[event.index]['ConvertedAmt']) {
 
                                         if (!Cashgrd.get(event.recid).changes.Writeoff) {
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                         }
 
                                         if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else if (Cashgrd.get(event.recid).changes.Writeoff == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         else {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.get(Cashgrd.getSelection())['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
-                                                w2ui.CashGrid.get(event.recid).OverUnder = (Cashgrd.get(Cashgrd.getSelection())['ConvertedAmt'] - (event.value_new + Cashgrd.get(Cashgrd.getSelection())['VA009_RecivedAmt'] + Cashgrd.get(Cashgrd.getSelection())['Writeoff'])).toFixed(stdPrecision);
+                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
                                             }
                                             else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                Cashgrd.get(event.recid).VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
                                             }
                                         }
                                         Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
@@ -3532,6 +4068,12 @@
                                     }
                                 }
                             }
+
+                            Cashgrd.refreshCell(event.recid, "ConvertedAmt");
+                            Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                            Cashgrd.refreshCell(event.recid, "OverUnder");
+                            Cashgrd.refreshCell(event.recid, "Writeoff");
+                            Cashgrd.refreshCell(event.recid, "Discount");
                         }
                     }, 100);
                     //end
@@ -3541,92 +4083,101 @@
 
                     var _CollaborateData = [];
                     Cashgrd.selectAll();
-                    if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) > 0) {
-                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                            if (Cashgrd.getSelection().length > 0) {
-                                for (var i = 0; i < Cashgrd.getSelection().length; i++) {
-                                    var _data = {};
-                                    _data["C_BPartner_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_BPartner_ID'];
-                                    _data["Description"] = Cashgrd.get(Cashgrd.getSelection()[i])['Description'];
-                                    _data["C_Invoice_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Invoice_ID'];
-                                    _data["AD_Org_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Org_ID'];
-                                    _data["AD_Client_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Client_ID'];
-                                    _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Currency_ID'];
-                                    //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
-                                    _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_Currency_ID"];
-                                    _data["C_InvoicePaySchedule_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_InvoicePaySchedule_ID"];
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                        if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) > 0) {
+                            if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                if (Cashgrd.getSelection().length > 0) {
+                                    for (var i = 0; i < Cashgrd.getSelection().length; i++) {
+                                        var _data = {};
+                                        _data["C_BPartner_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_BPartner_ID'];
+                                        _data["Description"] = Cashgrd.get(Cashgrd.getSelection()[i])['Description'];
+                                        _data["C_Invoice_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Invoice_ID'];
+                                        //commented because ashish and surya said that payment will be created in selected organization
+                                        // _data["AD_Org_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Org_ID'];
+                                        _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                        _data["AD_Client_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Client_ID'];
+                                        _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Currency_ID'];
+                                        //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                        _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_Currency_ID"];
+                                        _data["C_InvoicePaySchedule_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_InvoicePaySchedule_ID"];
 
-                                    //change amit
-                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt != undefined) {
-                                    //    _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
-                                    //}
-                                    //else
-                                    if (Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] != null && Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] > 0) {
-                                        //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
-                                        _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
-                                    }
-                                    else {
-                                        VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                        Cashgrd.selectNone();
-                                        return false;
-                                    }
-                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder != undefined) {
-                                    //    _data["OverUnder"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder;
-                                    //}
-                                    //else {
-                                    _data["OverUnder"] = Cashgrd.get(Cashgrd.getSelection()[i])['OverUnder'];
-                                    //}
-                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff != undefined) {
-                                    //    _data["Writeoff"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff;
-                                    //}
-                                    //else {
-                                    _data["Writeoff"] = Cashgrd.get(Cashgrd.getSelection()[i])['Writeoff'];
-                                    //}
-                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount != undefined) {
-                                    //    _data["Discount"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount;
-                                    //}
-                                    //else {
-                                    _data["Discount"] = Cashgrd.get(Cashgrd.getSelection()[i])['Discount'];
-                                    //}
-                                    //amit
-                                    // Added by Bharat
-                                    _data["ConvertedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['ConvertedAmt'];
-                                    _data["PaymwentBaseType"] = Cashgrd.get(Cashgrd.getSelection()[i])['PaymwentBaseType'];
-                                    _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                        //change amit
+                                        //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt != undefined) {
+                                        //    _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
+                                        //}
+                                        //else
+                                        if (Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] != null && Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] > 0) {
+                                            //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
+                                            _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                        }
+                                        else {
+                                            VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                            Cashgrd.selectNone();
+                                            return false;
+                                        }
+                                        //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder != undefined) {
+                                        //    _data["OverUnder"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder;
+                                        //}
+                                        //else {
+                                        _data["OverUnder"] = Cashgrd.get(Cashgrd.getSelection()[i])['OverUnder'];
+                                        //}
+                                        //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff != undefined) {
+                                        //    _data["Writeoff"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff;
+                                        //}
+                                        //else {
+                                        _data["Writeoff"] = Cashgrd.get(Cashgrd.getSelection()[i])['Writeoff'];
+                                        //}
+                                        //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount != undefined) {
+                                        //    _data["Discount"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount;
+                                        //}
+                                        //else {
+                                        _data["Discount"] = Cashgrd.get(Cashgrd.getSelection()[i])['Discount'];
+                                        //}
+                                        //amit
+                                        // Added by Bharat
+                                        _data["ConvertedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['ConvertedAmt'];
+                                        _data["PaymwentBaseType"] = Cashgrd.get(Cashgrd.getSelection()[i])['PaymwentBaseType'];
+                                        _data["CurrencyType"] = $pop_cmbCurrencyType.val();
 
-                                    _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val())
-                                    //Transaction Date
-                                    _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
-                                    _CollaborateData.push(_data);
+                                        _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val())
+                                        //Transaction Date
+                                        _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
+                                        _CollaborateData.push(_data);
+                                    }
                                 }
+                                $bsyDiv[0].style.visibility = "visible";
+                                $.ajax({
+                                    url: VIS.Application.contextUrl + "VA009/Payment/GenPaymentsCash",
+                                    type: "POST",
+                                    datatype: "json",
+                                    // contentType: "application/json; charset=utf-8",
+                                    async: true,
+                                    data: ({ PaymentData: JSON.stringify(_CollaborateData), C_CashBook_ID: parseInt($Cash_cmbcashbk.val()), BeginningBalance: parseFloat($Cash_OpngBal.val()) }),
+                                    success: function (result) {
+                                        callbackCashPaymnt(result);
+                                    },
+                                    error: function (ex) {
+                                        console.log(ex);
+                                        $bsyDiv[0].style.visibility = "hidden";
+                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                    }
+                                });
                             }
-                            $bsyDiv[0].style.visibility = "visible";
-                            $.ajax({
-                                url: VIS.Application.contextUrl + "VA009/Payment/GenPaymentsCash",
-                                type: "POST",
-                                datatype: "json",
-                                // contentType: "application/json; charset=utf-8",
-                                async: true,
-                                data: ({ PaymentData: JSON.stringify(_CollaborateData), C_CashBook_ID: parseInt($Cash_cmbcashbk.val()), BeginningBalance: parseFloat($Cash_OpngBal.val()) }),
-                                success: function (result) {
-                                    callbackCashPaymnt(result);
-                                },
-                                error: function (ex) {
-                                    console.log(ex);
-                                    $bsyDiv[0].style.visibility = "hidden";
-                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                }
-                            });
+                            else {
+                                VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                Cashgrd.selectNone();
+                                return false;
+                            }
+
                         }
                         else {
-                            VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                            VIS.ADialog.info(("VA009_PLSelectCashbook"));
                             Cashgrd.selectNone();
                             return false;
                         }
-
                     }
                     else {
-                        VIS.ADialog.info(("VA009_PLSelectCashbook"));
+                        VIS.ADialog.info(("VA009_PlsSelectOrg"));
                         Cashgrd.selectNone();
                         return false;
                     }
@@ -3673,8 +4224,8 @@
                 $opnbatch = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
                 var _openbatch = "";
                 _openbatch += "<div> <div>"
-                            + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>&nbsp;&nbsp;" + VIS.Msg.getMsg("VA009_BasedOnSelection") + '<br><br>'
-                            + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'>&nbsp;&nbsp;" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</div>';
+                    + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>&nbsp;&nbsp;" + VIS.Msg.getMsg("VA009_BasedOnSelection") + '<br><br>'
+                    + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'>&nbsp;&nbsp;" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</div>';
 
                 $opnbatch.append(_openbatch);
                 //Batch_getControls();
@@ -3703,7 +4254,7 @@
                     }
                     else if (Selected == "R") {
                         var _Qry = "SELECT pm.va009_paymentbasetype FROM c_invoicepayschedule cs INNER JOIN va009_paymentmethod pm " +
-                                   " ON pm.va009_paymentmethod_id      =cs.va009_paymentmethod_id WHERE cs.c_invoicepayschedule_id IN (";
+                            " ON pm.va009_paymentmethod_id      =cs.va009_paymentmethod_id WHERE cs.c_invoicepayschedule_id IN (";
                         if (SlctdPaymentIds.length == 0) {
                             _Qry += 0;
                         }
@@ -3749,36 +4300,43 @@
                 var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
                 $batch = $("<div class='VA009-popform-content' style='min-height:395px !important'>");
                 var _batch = "";
-                _batch += "<div class='VA009-popfrm-wrap'> <div class='VA009-popform-data'>"
-                             + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                            + "</select></div> "
+                _batch += "<div class='VA009-popfrm-wrap'>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                             + "<div class='VA009-popform-data' style='display:none !important'>"
-                            + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                            + "<select style='display:none !important' id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                    + "</select></div> "
 
-                             + "<div class='VA009-popform-data' style='display:none !important'>"
-                             + "<br>"
-                             + "<input type='checkbox' style='display:none !important' id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</div>'
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                               + "<div class='VA009-popform-data' style='display:none !important'>"
-                            + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                            + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popform-data' style='display:none !important'>"
+                    + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "<select style='display:none !important' id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                             + "<div class='VA009-popform-data' style='display:none !important'>"
-                              + "<br>"
-                             + "<input style='display:none !important' type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</div>'
+                    + "<div class='VA009-popform-data' style='display:none !important'>"
+                    + "<br>"
+                    + "<input type='checkbox' style='display:none !important' id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</div>'
 
-                            + "<div class='VA009-table-container' style='margin-top:20px !important; height:300px;' id='VA009_btnPopupGrid'> </div>"
-                            + "</div>";
+                    + "<div class='VA009-popform-data' style='display:none !important'>"
+                    + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popform-data' style='display:none !important'>"
+                    + "<br>"
+                    + "<input style='display:none !important' type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</div>'
+
+                    + "<div class='VA009-table-container' style='margin-top:20px !important; height:300px;' id='VA009_btnPopupGrid'> </div>"
+                    + "</div>";
 
                 $batch.append(_batch);
                 Batch_getControls();
@@ -3793,6 +4351,7 @@
                 BatchDialog.show();
                 BatchGrid_Layout();
                 loadgrdBatch(callbackBatch);
+                loadOrg();
                 //loadbank();
                 loadbanks($POP_cmbBank, orgids);
                 $POP_cmbBank.css('background-color', SetMandatory(true));
@@ -3809,9 +4368,19 @@
                         //_batch_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
                         _batch_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%' });
                         _batch_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
-                        _batch_Columns.push({ field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: 'float:2' });
+                        _batch_Columns.push({
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: function (record, index, col_index) {
+                                var val = record["DueAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
                         // _batch_Columns.push({ field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '10%', render: 'float:2',style: 'text-align: left', editable: { type: 'float' } });
-                        _batch_Columns.push({ field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', render: 'float:2' });
+                        _batch_Columns.push({
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', render: function (record, index, col_index) {
+                                var val = record["ConvertedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
                         _batch_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%', editable: { type: 'text' } });
                         _batch_Columns.push({ field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
                         //_batch_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
@@ -3831,7 +4400,7 @@
                         //    selectColumn: true
                         //}
                     }),
-                    BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate', 'TransactionType');
+                        BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate', 'TransactionType');
 
                 };
 
@@ -3843,6 +4412,8 @@
                     $consolidate = $batch.find("#VA009_Consolidate_" + $self.windowNo);
                     $overwritepay = $batch.find("#VA009_OverwritePayMthd_" + $self.windowNo);
                     $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
+                    $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+                    $POP_cmbOrg.css('background-color', SetMandatory(true));
                 };
 
                 function loadgrdBatch(callback) {
@@ -3910,6 +4481,20 @@
                     }
                 };
 
+                //to load all organization 
+                function loadOrg() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    function callbackloadorg(dr) {
+                        $POP_cmbOrg.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_cmbOrg.prop('selectedIndex', 0);
+                    };
+                };
+
                 //Set Mandatory and Non-Mandatory
                 function SetMandatory(value) {
                     if (value)
@@ -3918,6 +4503,15 @@
                         return 'White';
                 };
                 //end
+
+                $POP_cmbOrg.on("change", function () {
+                    if ($POP_cmbOrg.val() == "0") {
+                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                    }
+                });
 
                 $POP_cmbBank.on('change', function () {
                     $POP_cmbBankAccount.empty();
@@ -4045,90 +4639,99 @@
 
                     var _CollaborateData = [];
                     BatchGrd.selectAll();
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                            if (BatchGrd.getSelection().length > 0) {
-                                for (var i = 0; i < BatchGrd.getSelection().length; i++) {
-                                    var _data = {};
-                                    _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
-                                    _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
-                                    _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                    _data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
-                                    _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
-                                    _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
-                                    _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
-                                    //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
-                                    _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
-                                    _data["C_Bank_ID"] = $POP_cmbBank.val();
-                                    _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                                if (BatchGrd.getSelection().length > 0) {
+                                    for (var i = 0; i < BatchGrd.getSelection().length; i++) {
+                                        var _data = {};
+                                        _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
+                                        _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
+                                        _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                        //commented because ashish and surya said that payment will be created in selected organization
+                                        //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
+                                        _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                        _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
+                                        _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
+                                        _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
+                                        //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
+                                        _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
+                                        _data["C_Bank_ID"] = $POP_cmbBank.val();
+                                        _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
 
-                                    if (BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
-                                        return false;
-                                    }
-                                    else
-                                        _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
-
-                                    if ($overwritepay.prop('checked') == true) {
-                                        _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
-                                        _data["isOverwrite"] = "Y";
-                                    }
-                                    else {
-                                        _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
-                                        _data["isOverwrite"] = "N";
-                                    }
-                                    if ($consolidate.prop('checked') == true) {
-                                        _data["isconsolidate"] = "Y";
-                                    }
-                                    else {
-                                        _data["isconsolidate"] = "N";
-                                    }
-                                    if (Payrule == "S") {
-                                        var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-                                        _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-
-                                        if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
-                                            _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
-                                        else {
-                                            VIS.ADialog.info("VA009_PLCheckNumber");
-                                            BatchGrd.selectNone();
+                                        if (BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
                                             return false;
                                         }
+                                        else
+                                            _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
+
+                                        if ($overwritepay.prop('checked') == true) {
+                                            _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                            _data["isOverwrite"] = "Y";
+                                        }
+                                        else {
+                                            _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
+                                            _data["isOverwrite"] = "N";
+                                        }
+                                        if ($consolidate.prop('checked') == true) {
+                                            _data["isconsolidate"] = "Y";
+                                        }
+                                        else {
+                                            _data["isconsolidate"] = "N";
+                                        }
+                                        if (Payrule == "S") {
+                                            var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
+                                            _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
+
+                                            if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
+                                                _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
+                                            else {
+                                                VIS.ADialog.info("VA009_PLCheckNumber");
+                                                BatchGrd.selectNone();
+                                                return false;
+                                            }
+                                        }
+                                        else {
+                                            _data["CheckNumber"] = null;
+                                            _data["CheckDate"] = null;
+                                            _data["ValidMonths"] = null;
+                                        }
+                                        _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                        _CollaborateData.push(_data);
                                     }
-                                    else {
-                                        _data["CheckNumber"] = null;
-                                        _data["CheckDate"] = null;
-                                        _data["ValidMonths"] = null;
-                                    }
-                                    _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                    _CollaborateData.push(_data);
                                 }
+                                $bsyDiv[0].style.visibility = "visible";
+                                $.ajax({
+                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
+                                    type: "POST",
+                                    datatype: "json",
+                                    // contentType: "application/json; charset=utf-8",
+                                    async: true,
+                                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                                    success: function (result) {
+                                        callbackBatchPay(result);
+                                    },
+                                    error: function (ex) {
+                                        console.log(ex);
+                                        $bsyDiv[0].style.visibility = "hidden";
+                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                    }
+                                });
                             }
-                            $bsyDiv[0].style.visibility = "visible";
-                            $.ajax({
-                                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
-                                type: "POST",
-                                datatype: "json",
-                                // contentType: "application/json; charset=utf-8",
-                                async: true,
-                                data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                                success: function (result) {
-                                    callbackBatchPay(result);
-                                },
-                                error: function (ex) {
-                                    console.log(ex);
-                                    $bsyDiv[0].style.visibility = "hidden";
-                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                }
-                            });
+                            else {
+                                VIS.ADialog.info("VA009_PLSelectBankAccount");
+                                BatchGrd.selectNone();
+                                return false;
+                            }
                         }
                         else {
-                            VIS.ADialog.info("VA009_PLSelectBankAccount");
+                            VIS.ADialog.info("VA009_PLSelectBank");
                             BatchGrd.selectNone();
                             return false;
                         }
                     }
                     else {
-                        VIS.ADialog.info("VA009_PLSelectBank");
+                        VIS.ADialog.info(("VA009_PlsSelectOrg"));
                         BatchGrd.selectNone();
                         return false;
                     }
@@ -4136,6 +4739,10 @@
 
                 function callbackBatchPay(result) {
                     result = JSON.parse(result);
+                    DocNumber = "";
+                    var SpilitedData = result.split(".", result.length);
+                    DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
+                    console.log(DocNumber);
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
@@ -4143,7 +4750,22 @@
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
-                    VIS.ADialog.info("", null, result, "");
+
+                    if (DocNumber != "") {
+                        w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
+                            .yes(function () {
+                                $selectall.prop('checked', false);
+                                $divPayment.find(':checkbox').prop('checked', false);
+                                prepareDataForPaymentFile(DocNumber, true);
+                            })
+                            .no(function () {
+                                $bsyDiv[0].style.visibility = "hidden";
+                                VIS.ADialog.info("", null, result, "");
+                            });
+                    }
+                    else {
+                        VIS.ADialog.info("", null, result, "");
+                    }
                 };
 
                 BatchDialog.onCancelCLick = function () {
@@ -4176,12 +4798,12 @@
                 $split = $("<div class='VA009-popform-content' style='min-height:333px !important'>");
                 var _split = "";
                 _split += "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label>"
-                            + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "' style='width: 60% !important'/>"
-                            + "  <a class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important'>Split Schedule</a> </div>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label>"
+                    + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "' style='width: 60% !important'/>"
+                    + "  <a class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important'>Split Schedule</a> </div>"
 
-                            + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
-                            + "</div>";
+                    + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
+                    + "</div>";
 
                 $split.append(_split);
                 Split_getControls();
@@ -4205,7 +4827,12 @@
                         _Split_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
                         _Split_Columns.push({ field: "DocumentNo", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
                         _Split_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
-                        _Split_Columns.push({ field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: 'float:2' });
+                        _Split_Columns.push({
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: function (record, index, col_index) {
+                                var val = record["DueAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }, editable: { type: 'number' }
+                        });
                         _Split_Columns.push({ field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
                         //by Amit - 1-12-2016
                         _Split_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
@@ -4222,7 +4849,7 @@
                         //    selectColumn: true
                         //}
                     }),
-                    Splitgrd.hideColumn('recid');
+                        Splitgrd.hideColumn('recid');
                     Splitgrd.hideColumn('TransactionType');
 
                 };
@@ -4499,20 +5126,21 @@
 
             XML_Dialog: function () {
                 if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+                    File_Para = 'B';
                     w2confirm('Do you want to clear the selection and proceed for SEPA XML Generation Process?')
-                         .yes(function () {
-                             SlctdPaymentIds = [];
-                             SlctdOrderPaymentIds = [];
-                             $selectall.prop('checked', false);
-                             $divPayment.find(':checkbox').prop('checked', false);
-                             generateXMLDialog();
-                         })
-                         .no(function () {
-                             console.log("user clicked NO")
-                         });
+                        .yes(function () {
+                            SlctdPaymentIds = [];
+                            SlctdOrderPaymentIds = [];
+                            $selectall.prop('checked', false);
+                            $divPayment.find(':checkbox').prop('checked', false);
+                            generateXMLDialog(File_Para);
+                        })
+                        .no(function () {
+                            console.log("user clicked NO")
+                        });
                 }
                 else {
-                    generateXMLDialog();
+                    generateXMLDialog(File_Para);
                 }
             },
 
@@ -4565,69 +5193,69 @@
                 var _b2b = "";
 
                 _b2b += "<div class='VA009-popfrm-wrap'> <div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                            + "</select></div> "
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select></div> "
 
-                             + "<div class='VA009-popform-data'>"
-                            + "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                            + "<div><input type='checkbox' id=VA009_Payment_" + $self.windowNo + "> <label style=width:auto !important>Payment</label><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + " style=margin-left:60px !important> <label style=width:auto !important>Receipt</label></div>"
-                            + "</div> "
+                    + "<div class='VA009-popform-data'>"
+                    + "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+                    + "<div><input type='checkbox' id=VA009_Payment_" + $self.windowNo + "> <label style=width:auto !important>Payment</label><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + " style=margin-left:60px !important> <label style=width:auto !important>Receipt</label></div>"
+                    + "</div> "
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                            + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
-                            + "</select></div> "
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+                    + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
+                    + "</select></div> "
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
-                            + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
+                    + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
-                            + "<input type='number' id='VA009_Amount" + $self.windowNo + "' value=0> </div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
+                    + "<input type='number' id='VA009_Amount" + $self.windowNo + "' value=0> </div>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
-                            + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                             + "<div class='VA009-popform-data VA009-b2b-popup'>"
-                             + "<label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
-                             + "<input type='text' style='background-color: #ededed;' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/> </div>"
+                    + "<div class='VA009-popform-data VA009-b2b-popup'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
+                    + "<input type='text' style='background-color: #ededed;' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/> </div>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
-                            + "<input type='date' id='VA009_CheckDate_" + $self.windowNo + "' style='height: 30px;background-color: #ededed;' disabled> </div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+                    + "<input type='date' id='VA009_CheckDate_" + $self.windowNo + "' style='height: 30px;background-color: #ededed;' disabled> </div>"
 
-                             + "<div class='VA009-popform-data'>"
-                             + "<label>" + VIS.Msg.getMsg("Currency") + "</label>"
-                             + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
-                             + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("Currency") + "</label>"
+                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                            + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                            + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
 
-                            + "<div class='VA009-popform-data'>"
-                            + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                            + "<input type='date' id='VA009_AccountDate" + $self.windowNo + "' > </div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' id='VA009_AccountDate" + $self.windowNo + "' > </div>"
 
-                            //btn get Cheque number
-                            // + "<div class='VA009-popform-data'>"
-                            //+ "<button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' id='VA009_getCheckNo_" + $self.windowNo + "'><span class='ui-button-text'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</span></button>"
-                            //+ "</div>"
+                    //btn get Cheque number
+                    // + "<div class='VA009-popform-data'>"
+                    //+ "<button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' id='VA009_getCheckNo_" + $self.windowNo + "'><span class='ui-button-text'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</span></button>"
+                    //+ "</div>"
 
-                            + "<div style='float:left;'>"
-                            + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
-                            + "</div>"
-                ;
+                    + "<div style='float:left;'>"
+                    + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
+                    + "</div>"
+                    ;
 
 
                 $b2b.append(_b2b);
@@ -5010,35 +5638,40 @@
                 var _payManual = "";
                 _payManual += "<div class='VA009-popfrm-wrap' style='height:150px !important'>"
 
-                                  + "<div class='VA009-popform-data'>"
-                                  + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                                  + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                                  + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                                  + "<div class='VA009-popform-data'>"
-                                  + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                                  + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                                  + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                                  + "<div class='VA009-popform-data'>"
-                                  + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
-                                  + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                                  + "</select></div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                                  + "<div class='VA009-popform-data'>"
-                                  + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                                  + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
-                                  //currency type list
-                                  + "<div class='VA009-popform-data'>"
-                                  + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                                  + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                                  + "</select></div>"
-                                  //trx date
-                                  + "<div class='VA009-popform-data'>"
-                                  + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                                  + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+                    + "</select></div>"
 
-                        + "</div>";
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    //currency type list
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select></div>"
+                    //trx date
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+
+                    + "</div>";
                 $payManual.append(_payManual);
                 payManualGetControls();
 
@@ -5053,6 +5686,7 @@
                 manualDialog.setEnableResize(true);
                 manualDialog.setModal(true);
                 manualDialog.show();
+                loadOrg();
                 loadbanks($POP_cmbBank, orgids);
                 loadPayMthd();
                 loadCurrencyType();
@@ -5065,7 +5699,18 @@
                     $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
                     $POP_DateAcct.css('background-color', SetMandatory(true));
                     $POP_DateTrx = $payManual.find("#VA009_TransactionDate" + $self.windowNo);
+                    $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+                    $POP_cmbOrg.css('background-color', SetMandatory(true));
                 };
+
+                $POP_cmbOrg.on("change", function () {
+                    if ($POP_cmbOrg.val() == "0") {
+                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                    }
+                });
 
                 $POP_cmbBank.on("change", function () {
                     $POP_cmbBankAccount.empty();
@@ -5089,6 +5734,20 @@
                         }
                     }
                 });
+
+                //to load all organization 
+                function loadOrg() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    function callbackloadorg(dr) {
+                        $POP_cmbOrg.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_cmbOrg.prop('selectedIndex', 0);
+                    };
+                };
 
                 function loadBankAccount() {
 
@@ -5149,65 +5808,71 @@
 
                 manualDialog.onOkClick = function () {
                     if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                    if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                        //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
-                                        var isValid = true;
-                                        if (isValid) {
-                                            $bsyDiv[0].style.visibility = "visible";
-                                            $.ajax({
-                                                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
-                                                type: "POST",
-                                                datatype: "json",
-                                                // contentType: "application/json; charset=utf-8",
-                                                async: true,
-                                                data: ({
-                                                    InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
-                                                    BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
-                                                    DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx:  $POP_DateTrx.val()
-                                                }),
-                                                success: function (result) {
-                                                    result = JSON.parse(result);
-                                                    $divPayment.find('.VA009-payment-wrap').remove();
-                                                    $divBank.find('.VA009-right-data-main').remove();
-                                                    $divBank.find('.VA009-accordion').remove();
-                                                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                                                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                                                    loadPaymetsAll();
-                                                    $bsyDiv[0].style.visibility = "hidden";
-                                                    VIS.ADialog.info("", null, result, "");
-                                                },
-                                                error: function (ex) {
-                                                    console.log(ex);
-                                                    $bsyDiv[0].style.visibility = "hidden";
-                                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                                }
-                                            });
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                            //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
+                                            var isValid = true;
+                                            if (isValid) {
+                                                $bsyDiv[0].style.visibility = "visible";
+                                                $.ajax({
+                                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
+                                                    type: "POST",
+                                                    datatype: "json",
+                                                    // contentType: "application/json; charset=utf-8",
+                                                    async: true,
+                                                    data: ({
+                                                        InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
+                                                        BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
+                                                        DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
+                                                    }),
+                                                    success: function (result) {
+                                                        result = JSON.parse(result);
+                                                        $divPayment.find('.VA009-payment-wrap').remove();
+                                                        $divBank.find('.VA009-right-data-main').remove();
+                                                        $divBank.find('.VA009-accordion').remove();
+                                                        pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                                                        //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+                                                        loadPaymetsAll();
+                                                        $bsyDiv[0].style.visibility = "hidden";
+                                                        VIS.ADialog.info("", null, result, "");
+                                                    },
+                                                    error: function (ex) {
+                                                        console.log(ex);
+                                                        $bsyDiv[0].style.visibility = "hidden";
+                                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                                    }
+                                                });
+                                            }
+                                            else {
+                                                VIS.ADialog.info("VA009_PlzSelctapprPM");
+                                                return false;
+                                            }
                                         }
                                         else {
-                                            VIS.ADialog.info("VA009_PlzSelctapprPM");
+                                            VIS.ADialog.info(("VA009_PLSelectAcctDate"));
                                             return false;
                                         }
                                     }
                                     else {
-                                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                        VIS.ADialog.info("VA009_PLSelectPaymentMethod");
                                         return false;
                                     }
                                 }
                                 else {
-                                    VIS.ADialog.info("VA009_PLSelectPaymentMethod");
+                                    VIS.ADialog.info("VA009_PLSelectBankAccount");
                                     return false;
                                 }
                             }
                             else {
-                                VIS.ADialog.info("VA009_PLSelectBankAccount");
+                                VIS.ADialog.info("VA009_PLSelectBank");
                                 return false;
                             }
                         }
                         else {
-                            VIS.ADialog.info("VA009_PLSelectBank");
+                            VIS.ADialog.info(("VA009_PlsSelectOrg"));
                             return false;
                         }
                     }
@@ -5230,6 +5895,586 @@
                 };
 
             },
+
+            Pay_ManualDialogBP: function () {
+                $payManual = $("<div class='VA009-popform-content' style='min-height:220px !important'>");
+                var _payManual = "";
+                _payManual += "<div class='VA009-popfrm-wrap' style='height:200px !important'>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("DocType") + "</label>"
+                    + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    //trx date
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' id='VA009_TransactionDate_" + $self.windowNo + "' > </div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>"
+                    + "<div id='VA009_POP_cmbBP_" + $self.windowNo + "'>"
+                    + "</div></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("BPLocation") + "</label>"
+                    + "<select id='VA009_POP_cmbLocation_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
+                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    //currency type list
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    //+ "<div class='VA009-popform-data'>"
+                    //+ "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
+                    //+ "<select id='VA009_cmbCharge_" + $self.windowNo + "'>"
+                    //+ "</select></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
+                    + "<div id='VA009_Charge_" + $self.windowNo + "'>"
+                    + "</div></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+                    + "</select></div>"
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
+                    + "<input type='number' id='VA009_cmbAmt_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+
+                    + "<div class='VA009-popform-data' id= VA009_DivCheck_" + $self.windowNo + ">"
+                    + "<label>" + VIS.Msg.getMsg("CheckNo") + "</label>"
+                    + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+
+                    + "<div class='VA009-popform-data' id= VA009_DivCheckDate_" + $self.windowNo + ">"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+                    + "<input type='Date' id='VA009_chkDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    + "</div>"
+
+                    + "</div>";
+                $payManual.append(_payManual);
+                payManualGetControls();
+                var manualDialog = new VIS.ChildDialog();
+                manualDialog.setContent($payManual);
+                manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
+                manualDialog.setHeight(window.innerHeight - 200);
+                manualDialog.setWidth("75%");
+                manualDialog.setEnableResize(true);
+                manualDialog.setModal(true);
+                manualDialog.show();
+                InitializeEvents()
+                loadAllData();
+
+                function SetMandatory(value) {
+                    if (value)
+                        return '#FFB6C1';
+                    else
+                        return 'White';
+                };
+                function payManualGetControls() {
+                    $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+                    $POP_cmbDocType = $payManual.find("#VA009_POP_cmbDocType_" + $self.windowNo);
+                    $POP_DateTrx = $payManual.find("#VA009_TransactionDate_" + $self.windowNo);
+                    $POP_DateAcct = $payManual.find("#VA009_AccountDate_" + $self.windowNo);
+                    $POP_cmbBank = $payManual.find("#VA009_POP_cmbBank_" + $self.windowNo);
+                    $POP_cmbBankAccount = $payManual.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
+                    $POP_cmbBP = $payManual.find("#VA009_POP_cmbBP_" + $self.windowNo);
+                    $POP_lookCharge = $payManual.find("#VA009_Charge_" + $self.windowNo);
+                    //BPartner look Up
+                    _BusinessPartnerLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3499, VIS.DisplayType.Search);
+                    $BpartnerControl = new VIS.Controls.VTextBoxButton("C_BPartner_ID", true, false, true, VIS.DisplayType.Search, _BusinessPartnerLookUp);
+                    $POP_cmbBP.append($BpartnerControl.getControl().css('width', '93%')).append($BpartnerControl.getBtn(0).css('width', '30px').css('height', '30px').css('padding', '0px').css('border-color', '#BBBBBB'));
+                    $BpartnerControl.getControl().css('background-color', SetMandatory(true));
+                    //end
+                    //Charge look Up
+                    //VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.TableDir, "C_Charge_ID", 0, false, null);
+                    //_charge = new VIS.Controls.VComboBox("C_Charge_ID", true, false, true, lookup, 50);
+
+                    _ChargeLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.Search);
+                    $ChargeControl = new VIS.Controls.VTextBoxButton("C_Charge_ID", true, false, true, VIS.DisplayType.Search, _ChargeLookUp);
+                    $POP_lookCharge.append($ChargeControl.getControl().css('width', '93%')).append($ChargeControl.getBtn(0).css('width', '30px').css('height', '30px').css('padding', '0px').css('border-color', '#BBBBBB'));
+                    //end
+
+                    $POP_cmbLocation = $payManual.find("#VA009_POP_cmbLocation_" + $self.windowNo);
+                    $POP_Currency = $payManual.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
+                    $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
+                    //$POP_Charge = $payManual.find("#VA009_cmbCharge_" + $self.windowNo);
+                    $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
+                    $POP_Amt = $payManual.find("#VA009_cmbAmt_" + $self.windowNo);
+                    $POP_ChkNo = $payManual.find("#VA009_txtCheck_" + $self.windowNo);
+                    $POP_ChkDate = $payManual.find("#VA009_chkDate_" + $self.windowNo);
+                    $DivChkNo = $payManual.find("#VA009_DivCheck_" + $self.windowNo);
+                    $DivChkDate = $payManual.find("#VA009_DivCheckDate_" + $self.windowNo);
+                    $POP_DateAcct.css('background-color', SetMandatory(true));
+                    $POP_DateTrx.css('background-color', SetMandatory(true));
+                    $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    $POP_cmbDocType.css('background-color', SetMandatory(true));
+                    $POP_cmbBank.css('background-color', SetMandatory(true));
+                    $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                    $POP_Currency.css('background-color', SetMandatory(true));
+                    $POP_PayMthd.css('background-color', SetMandatory(true));
+                    $POP_Amt.css('background-color', SetMandatory(true));
+                    $POP_CurrencyType.css('background-color', SetMandatory(true));
+                    $POP_cmbLocation.css('background-color', SetMandatory(true));
+                };
+                function InitializeEvents() {
+
+                    $POP_cmbBank.on("change", function () {
+                        $POP_cmbBankAccount.empty();
+                        //change by Amit
+                        if ($POP_cmbBank.val() == "0") {
+                            $POP_cmbBank.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_cmbBank.css('background-color', SetMandatory(false));
+                        }
+                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
+
+                        function callbackloadbankAcct(dr) {
+                            $POP_cmbBankAccount.empty();
+                            $POP_cmbBankAccount.append("<option value='0'></option>");
+                            if (dr != null) {
+                                if (dr.length > 0) {
+                                    for (var i in dr) {
+                                        $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                                    }
+                                }
+                            }
+                        }
+                    });
+                    $POP_cmbBankAccount.on("change", function () {
+                        if ($POP_cmbBankAccount.val() == "0") {
+                            $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_cmbBankAccount.css('background-color', SetMandatory(false));
+                        }
+                    });
+                    $POP_cmbDocType.on("change", function () {
+                        if ($POP_cmbDocType.val() == "0") {
+                            $POP_cmbDocType.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_cmbDocType.css('background-color', SetMandatory(false));
+                        }
+                    });
+                    $POP_DateTrx.on("change", function () {
+                        if ($POP_DateTrx.val() == "") {
+                            $POP_DateTrx.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_DateTrx.css('background-color', SetMandatory(false));
+                        }
+                    });
+                    $POP_DateAcct.on("change", function () {
+                        if ($POP_DateAcct.val() == "") {
+                            $POP_DateAcct.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_DateAcct.css('background-color', SetMandatory(false));
+                        }
+                    });
+                    $POP_cmbOrg.on("change", function () {
+                        $POP_cmbBank.empty();
+                        $POP_cmbDocType.empty();
+                        $POP_cmbBankAccount.empty();
+                        $POP_cmbLocation.empty();
+                        // $POP_Charge.empty();
+                        $POP_PayMthd.empty();
+                        //change by Amit
+                        if ($POP_cmbOrg.val() == "0") {
+                            $POP_cmbOrg.css('background-color', SetMandatory(true));
+                            //$POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_cmbOrg.css('background-color', SetMandatory(false));
+                        }
+                        loadDocType();
+                        loadbanks($POP_cmbBank);
+                        //loadBP();
+                        //loadCharge();
+                        loadCurrencyType();
+                        loadCurrencies();
+                        loadPaymentMthd();
+                    });
+                    $BpartnerControl.fireValueChanged = function () {
+                        if ($BpartnerControl.value != null) {
+                            $BpartnerControl.getControl().css('background-color', SetMandatory(false));
+                        }
+                        loadLocation();
+                    };
+                    $POP_cmbLocation.on("change", function () {
+                        if ($POP_cmbLocation.val() == "0") {
+                            $POP_cmbLocation.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_cmbLocation.css('background-color', SetMandatory(false));
+                        }
+                    });
+                    $POP_Currency.on("change", function () {
+                        if ($POP_Currency.val() == "0") {
+                            $POP_Currency.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_Currency.css('background-color', SetMandatory(false));
+                        }
+                    });
+                    $POP_CurrencyType.on("change", function () {
+                        if ($POP_CurrencyType.val() == "0") {
+                            $POP_CurrencyType.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_CurrencyType.css('background-color', SetMandatory(false));
+                        }
+                    });
+                    $POP_PayMthd.on("change", function () {
+                        if ($POP_PayMthd.val() == "0") {
+                            $POP_PayMthd.css('background-color', SetMandatory(true));
+                        }
+                        else {
+                            $POP_PayMthd.css('background-color', SetMandatory(false));
+                        }
+                        if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
+                            $DivChkDate.show();
+                            $DivChkNo.show();
+                        }
+                        else {
+                            $DivChkDate.hide();
+                            $DivChkNo.hide();
+                        }
+                    });
+                    $POP_Amt.on('change', function () {
+                        if (parseFloat($POP_Amt.val()) > 0) {
+                            $POP_Amt.css('background-color', SetMandatory(false));
+                        }
+                        else
+                            $POP_Amt.css('background-color', SetMandatory(true));
+                    });
+                };
+                function loadAllData() {
+                    loadOrg();
+                };
+                function loadOrg() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    function callbackloadorg(dr) {
+                        $POP_cmbOrg.empty();
+                        $POP_cmbOrg.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_cmbOrg.prop('selectedIndex', 0);
+                    };
+                };
+                //function loadBP() {
+                //    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBPartnerName", { "orgs": $POP_cmbOrg.val() }, callbackloadBP);
+                //    function callbackloadBP(dr) {
+                //        $POP_cmbBP.append(" <option value = 0></option>");
+                //        if (dr.length > 0) {
+                //            for (var i in dr) {
+                //                $POP_cmbBP.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_BPartner_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
+                //            }
+                //        }
+                //        $POP_cmbBP.prop('selectedIndex', 0);
+                //    }
+                //};
+                function loadLocation() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetLocation", { "BP": $BpartnerControl.value }, callbackloadLocation);
+                    function callbackloadLocation(dr) {
+                        $POP_cmbLocation.empty();
+                        $POP_cmbLocation.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbLocation.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Location_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_cmbLocation.prop('selectedIndex', 0);
+                    }
+                };
+                function loadPaymentMthd() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
+                    function callbackloadpaymthds(dr) {
+                        $POP_PayMthd.empty();
+                        $POP_PayMthd.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                if (("LCPB").contains(dr[i].VA009_PaymentBaseType)) {
+                                }
+                                else {
+                                    $POP_PayMthd.append("<option paybase = " + dr[i].VA009_PaymentBaseType + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">"
+                                        + VIS.Utility.encodeText(dr[i].VA009_Name) + " </option>");
+                                }
+                            }
+                        }
+                        $POP_PayMthd.prop('selectedIndex', 0);
+                    }
+                };
+                function loadDocType() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetDocumentType", { "orgs": $POP_cmbOrg.val() }, callbackloadDocType);
+                    function callbackloadDocType(dr) {
+                        $POP_cmbDocType.empty();
+                        $POP_cmbDocType.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbDocType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i]["C_Charge_ID"]) + ">" + VIS.Utility.Util.getValueOfString(dr[i]["Name"]) + "</option>");
+                            }
+                        }
+                        $POP_cmbDocType.prop('selectedIndex', 0);
+                    }
+                };
+                //   function loadCharge() {
+                //    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCharge", { "orgs": $POP_cmbOrg.val() }, callbackloadCharge);
+                //    function callbackloadCharge(dr) {
+                //        $POP_Charge.empty();
+                //        $POP_Charge.append(" <option value = 0></option>");
+                //        if (dr.length > 0) {
+                //            for (var i in dr) {
+                //                $POP_Charge.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Charge_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
+                //            }
+                //        }
+                //        $POP_Charge.prop('selectedIndex', 0);
+                //    }
+                //};
+                function loadbanks(bankcmbdiv) {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBank", { "Orgs": $POP_cmbOrg.val() }, callbackloadbank);
+                    function callbackloadbank(dr) {
+                        if (dr.length > 0) {
+                            bankcmbdiv.find('option').remove();
+                            bankcmbdiv.append("<option value='0'></option>");
+                            for (var i in dr) {
+                                bankcmbdiv.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Bank_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                            bankcmbdiv.prop('selectedIndex', 0);
+                        }
+                    }
+                };
+                function loadCurrencies() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCurrencies", null, callbackloadCurrencies);
+                    function callbackloadCurrencies(dr) {
+                        $POP_Currency.empty();
+                        $POP_Currency.append(" <option value = 0></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_Currency.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Currency_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].ISO_Code) + "</option>");
+                            }
+                        }
+                        $POP_Currency.prop('selectedIndex', 0);
+                    }
+                };
+                function loadCurrencyType() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
+                    function callbackCurrencyType(dr) {
+                        $POP_CurrencyType.empty();
+                        $POP_CurrencyType.append("<option value='0'></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_CurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                                if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
+                                    defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
+                                }
+                            }
+                        }
+                    }
+                };
+
+                manualDialog.onOkClick = function () {
+                    if (!isValidPayment()) {
+                        return false;
+                    }
+                    else {
+                        createPayment();
+                    }
+                };
+
+                manualDialog.onCancelCLick = function () {
+                    payManualDispose();
+                };
+
+                manualDialog.onClose = function () {
+                    payManualDispose();
+
+                };
+                function payManualDispose() {
+                    $payManual = null;
+                    _payManual = null;
+                };
+
+                function isValidPayment() {
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                                    if ($POP_DateTrx.val() != "" && $POP_DateTrx.val() != null) {
+                                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                            if (VIS.Utility.Util.getValueOfInt($BpartnerControl.value) > 0) {
+                                                if (VIS.Utility.Util.getValueOfInt($POP_cmbLocation.val()) > 0) {
+                                                    if (VIS.Utility.Util.getValueOfInt($POP_Currency.val()) > 0) {
+                                                        if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) > 0) {
+                                                            if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                                                if (VIS.Utility.Util.getValueOfDecimal($POP_Amt.val()) > 0) {
+                                                                    if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
+                                                                        if ($POP_ChkNo.val() != "" && $POP_ChkDate.val() != "") {
+                                                                            return true;
+                                                                        }
+                                                                        else {
+                                                                            VIS.ADialog.info("VA009_PLCheckNumber&Date");
+                                                                            return false;
+                                                                        }
+                                                                    }
+                                                                    return true;
+                                                                }
+                                                                else {
+                                                                    VIS.ADialog.info("VA009_PlsEnterAmount");
+                                                                    return false;
+                                                                }
+                                                            }
+                                                            else {
+                                                                VIS.ADialog.info("VA009_PlsSelectPayMethod");
+                                                                return false;
+                                                            }
+                                                        }
+                                                        else {
+                                                            VIS.ADialog.info("VA009_PlsSelectCurrencyType");
+                                                            return false;
+                                                        }
+                                                    }
+                                                    else {
+                                                        VIS.ADialog.info("VA009_PlsSelectCurrency");
+                                                        return false;
+                                                    }
+                                                }
+                                                else {
+                                                    VIS.ADialog.info("SelectBPLocation");
+                                                    return false;
+                                                }
+                                            }
+                                            else {
+                                                VIS.ADialog.info("SelectBusinessPartnerFirst");
+                                                return false;
+                                            }
+                                        }
+                                        else {
+                                            VIS.ADialog.info("VA009_PllsSelTAcctdate");
+                                            return false;
+                                        }
+                                    }
+                                    else {
+                                        VIS.ADialog.info("PllsSelTdate");
+                                        return false;
+                                    }
+                                }
+                                else {
+                                    VIS.ADialog.info("VA009_PLSelectBankAccount");
+                                    return false;
+                                }
+                            }
+                            else {
+                                VIS.ADialog.info("VA009_PLSelectBank");
+                                return false;
+                            }
+                        }
+                        else {
+                            VIS.ADialog.info("VA009_PLSelectDocumentType");
+                            return false;
+                        }
+                    }
+                    else {
+                        VIS.ADialog.info("VA009_PlsSelectOrg");
+                        return false;
+                    }
+                };
+
+                function createPayment() {
+                    var PaymentData = [];
+                    var DocNumber = "";
+                    PaymentData.push({
+                        Org: $POP_cmbOrg.val(), DocType: $POP_cmbDocType.val(), BankID: $POP_cmbBank.val(),
+                        BankAccountID: $POP_cmbBankAccount.val(), DateTrx: $POP_DateTrx.val(), DateAcct: $POP_DateAcct.val(),
+                        BPID: $BpartnerControl.value, BPLocation: $POP_cmbLocation.val(), CurrencyID: $POP_Currency.val(),
+                        CurrencyType: $POP_CurrencyType.val(), PaymentMethod: $POP_PayMthd.val(), PaymentAmount: $POP_Amt.val(),
+                        CheckNo: $POP_ChkNo.val(), CheckDate: $POP_ChkDate.val(), charge: VIS.Utility.Util.getValueOfInt($ChargeControl.value)
+                    });
+                    $bsyDiv[0].style.visibility = "visible";
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayMannual",
+                        type: "POST",
+                        datatype: "json",
+                        // contentType: "application/json; charset=utf-8",
+                        async: true,
+                        data: ({
+                            PaymentData: JSON.stringify(PaymentData)
+                        }),
+                        success: function (result) {
+                            result = JSON.parse(result);
+                            DocNumber = "";
+                            var SpilitedData = result.split(".", result.length);
+                            DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
+                            console.log(DocNumber);
+                            $divPayment.find('.VA009-payment-wrap').remove();
+                            $divBank.find('.VA009-right-data-main').remove();
+                            $divBank.find('.VA009-accordion').remove();
+                            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                            loadPaymetsAll();
+                            $bsyDiv[0].style.visibility = "hidden";
+                            //VIS.ADialog.info("", null, result, "");
+                            File_Para = 'M';
+                            if (DocNumber != "") {
+                                w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
+                                    .yes(function () {
+                                        SlctdPaymentIds = [];
+                                        SlctdOrderPaymentIds = [];
+                                        $selectall.prop('checked', false);
+                                        $divPayment.find(':checkbox').prop('checked', false);
+                                        prepareDataForPaymentFile(DocNumber, false);
+                                    })
+                                    .no(function () {
+                                        $bsyDiv[0].style.visibility = "hidden";
+                                        VIS.ADialog.info("", null, result, "");
+                                        console.log("user clicked NO")
+                                    });
+                            }
+                            else {
+                                VIS.ADialog.info("", null, result, "");
+                            }
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            $bsyDiv[0].style.visibility = "hidden";
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+                };
+            }
         };
 
         //*******************************************
@@ -5297,16 +6542,48 @@
             });
         };
 
+        //to generate data for file creation
+        function prepareDataForPaymentFile(DocNumber, isBatch) {
+            $bsyDiv[0].style.visibility = "visible";
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/prepareDataForPaymentFile",
+                type: "GET",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+                async: true,
+                data: ({ "DocNumber": DocNumber, "isBatch": isBatch }),//these parameteres are not used in controller now
+                success: function (result) {
+                    result = JSON.parse(result);
+                    for (var i in result) {
+                        if (result[i]._error != null) {
+                            var error = result[i]._error;
+                            if (isBatch)
+                                VIS.ADialog.info(error + "," + VIS.Msg.getMsg("BatchIsCompleted") + DocNumber)
+                            else
+                                VIS.ADialog.info(error + "," + VIS.Msg.getMsg("VA009_PaymentCompletedWith") + DocNumber)
+                        }
+                        else {
+                            downloadURL("\\PaymentFiles\\" + result[i]._filename, i);
+                        }
+                    }
+                    $bsyDiv[0].style.visibility = "hidden";
+                },
+                error: function () {
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    $bsyDiv[0].style.visibility = "hidden";
+                }
+            });
+        };
 
-        function generateXMLDialog() {
+        function generateXMLDialog(sourceBtn) {
             $xml = $("<div class='VA009-popform-content' style='min-height:333px !important'>");
             var _xml = "";
             _xml += "<div class='VA009-popform-data'>"
-                        + "<label>" + VIS.Msg.getMsg("VA009_GenXML_Tab") + "</label>"
-                        + "</div>"
+                + "<label>" + VIS.Msg.getMsg("VA009_GenXML_Tab") + "</label>"
+                + "</div>"
 
-                        + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
-                        + "</div>";
+                + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
+                + "</div>";
 
             $xml.append(_xml);
             var XmlDialog = new VIS.ChildDialog();
@@ -5318,7 +6595,12 @@
             XmlDialog.setModal(true);
             XmlDialog.show();
             $xmlpopGrid = $xml.find("#VA009_btnPopupGrid");
-            getScheduleBatchDetails();
+            if (sourceBtn == "B") { // for Batch
+                getScheduleBatchDetails();
+            }
+            else if (sourceBtn == "M") { // for Manual Payment
+
+            }
             XmlDialog.onOkClick = function () {
                 VIS.ADialog.info("VA009_GenXML_Tab");
 
@@ -5491,11 +6773,11 @@
                         + '" data-DocBaseType="' + data.paymentdata[i].DocBaseType + '" data-CurrencyCode="' + data.paymentdata[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select")
                         + '" ' + (data.paymentdata[i].IsHoldPayment == "Y" ? "disabled" : "") + '>' +
                         '<div class="VA009-pay-left">' +
-                            '<div class="VA009-pay-img-wrap">' +
-                            "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.paymentdata[i].VA009_ExecutionStatus + "</span> </div>" +
-                            ' <div class="VA009-pay-text"><p>' + data.paymentdata[i].C_Bpartner + '</p><span>' + data.paymentdata[i].C_BP_Group + '</span> <span>' + data.paymentdata[i].DocumentNo + '</span> <span>' + data.paymentdata[i].VA009_PaymentMethod + '</span> </div>' +
-                            '</div></div>'
-                            + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd" style="padding-right:0;">';
+                        '<div class="VA009-pay-img-wrap">' +
+                        "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.paymentdata[i].VA009_ExecutionStatus + "</span> </div>" +
+                        ' <div class="VA009-pay-text"><p>' + data.paymentdata[i].C_Bpartner + '</p><span>' + data.paymentdata[i].C_BP_Group + '</span> <span>' + data.paymentdata[i].DocumentNo + '</span> <span>' + data.paymentdata[i].VA009_PaymentMethod + '</span> </div>' +
+                        '</div></div>'
+                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd" style="padding-right:0;">';
 
                     if (VA009_FollowupDate != "" && VA009_plannedduedate != "")
                         dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + VA009_plannedduedate + '</span> <span class="glyphicon glyphicon-play play-icon"></span> <span title="Planned Due Date">' + VA009_FollowupDate + '</span> </div> ';
@@ -5505,18 +6787,18 @@
                         dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Planned Due Date">' + VA009_FollowupDate + '</span></div> ';
 
                     if (Globalize.format(data.paymentdata[i].VA009_RecivedAmt > 0)) {
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].TotalInvAmt, "N")
+                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString()
                             + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="' + (_DocType == "ARI" ? VIS.Msg.getMsg("VA009_TotRecAmt") : VIS.Msg.getMsg("VA009_TotPaidAmt")) + '">'
-                            + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].VA009_RecivedAmt, "N") + ' </span></div> ';
+                            + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].VA009_RecivedAmt).toLocaleString() + ' </span></div> ';
                     }
                     else {
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].TotalInvAmt, "N") + ' </span> </div> ';
+                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString() + ' </span> </div> ';
                     }
 
                     dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
-                            ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
-                            ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
-                                       + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
+                        ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
+                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
+                        + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
                     if (data.paymentdata[i].DocBaseType == "APC" || data.paymentdata[i].DocBaseType == "ARC") {
                         dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
                     }
@@ -5525,12 +6807,12 @@
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="glyphicon glyphicon-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
                         + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].DueAmt, "N") + '</span><br> </div> </div> ' +
-                            '</div></div></div>';
+                        '</div></div></div>';
 
                     $divPayment.append(dsgn);
                     $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
                     if (_SameCurrency == 'N')
-                        $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + Globalize.format(data.paymentdata[i].convertedAmt, "N") + '</span> ');
+                        $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString() + '</span> ');
                 }
 
             }
@@ -5557,29 +6839,29 @@
                         $divbnknew = $divBank.find("#VA009_bankdtl_" + data.bankdetails[j].CurrencyCode1);
                         //bnkdiv = '<p class="VA009-data-top"><span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <span class="pull-left"> ' + VIS.Msg.getMsg("VA009_Reconciled") + ' </span> <span class= "' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
                         //+ '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p>';
-                        bnkdiv = '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</a></p>';
+                        bnkdiv = '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>';
                         $divbnknew.append(bnkdiv);
                         TotalAll = TotalAll + data.bankdetails[j].CurrentBalance;
                         TotalUnreAll = TotalUnreAll + data.bankdetails[j].UnreconsiledAmt;
                     }
                     else {
                         $divpanel = '<div class="panel-group" id="accordion_' + data.bankdetails[j].C_Bank_ID + '" role="tablist" aria-multiselectable="true">'
-                                        + '<div class="panel panel-default">'
-                                            + '<div class="panel-heading" role="tab" id="headingOne_' + data.bankdetails[j].C_Bank_ID + '">'
-                                                + '<h4 class="panel-title">'
-                                                    + '<a role="button" data-toggle="collapse" data-parent="#accordion_' + data.bankdetails[j].C_Bank_ID + '" href="#collapseOne_' + data.bankdetails[j].C_Bank_ID + '" aria-expanded="true" aria-controls="collapseOne" class="VA009-Accordion-head" id=VA009_TotalAmtCurr_' + data.bankdetails[j].CurrencyCode1 + '>'
-                                                    + '</a>'
-                                                + '</h4>'
-                                            + '</div>'
-                                        + '<div id="collapseOne_' + data.bankdetails[j].C_Bank_ID + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
-                                        + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
-                                        + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
-                                        + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</a></p>'
-                                        //+ '<p class="VA009-data-top">  <span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span><span class="pull-left">' + VIS.Msg.getMsg("VA009_Reconciled") + '  </span> <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
-                       // + '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p> </div>';
-                        + ' </div></div>'
-                  + '</div> '
-                 + '</div>';
+                            + '<div class="panel panel-default">'
+                            + '<div class="panel-heading" role="tab" id="headingOne_' + data.bankdetails[j].C_Bank_ID + '">'
+                            + '<h4 class="panel-title">'
+                            + '<a role="button" data-toggle="collapse" data-parent="#accordion_' + data.bankdetails[j].C_Bank_ID + '" href="#collapseOne_' + data.bankdetails[j].C_Bank_ID + '" aria-expanded="true" aria-controls="collapseOne" class="VA009-Accordion-head" id=VA009_TotalAmtCurr_' + data.bankdetails[j].CurrencyCode1 + '>'
+                            + '</a>'
+                            + '</h4>'
+                            + '</div>'
+                            + '<div id="collapseOne_' + data.bankdetails[j].C_Bank_ID + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
+                            + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
+                            + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
+                            + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</a></p>'
+                            //+ '<p class="VA009-data-top">  <span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span><span class="pull-left">' + VIS.Msg.getMsg("VA009_Reconciled") + '  </span> <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
+                            // + '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p> </div>';
+                            + ' </div></div>'
+                            + '</div> '
+                            + '</div>';
 
                         //$divBank.append(bnkdiv);
                         $divaccordion.append($divpanel);
@@ -5617,7 +6899,7 @@
                     else
                         Ulcolor = 'VA009-color-green';
 
-                    $divttlAmtCurr.append('<div class="VA009-panel-head-total"> <div><span class="VA009-head-currency-name">' + BankCurrCode[k] + '</span><span><i class="glyphicon glyphicon-chevron-down pull-right"></i></span></div><p>' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + BankCurrCode[k] + ' ' + Globalize.format(TotalAmtBank[k], "N") + ' </span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="VA009-color-green">' + BankCurrCode[k] + ' ' + Globalize.format(UnReconsiledAmtTotal[k], "N") + '</a></p></div>');
+                    $divttlAmtCurr.append('<div class="VA009-panel-head-total"> <div><span class="VA009-head-currency-name">' + BankCurrCode[k] + '</span><span><i class="glyphicon glyphicon-chevron-down pull-right"></i></span></div><p>' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + BankCurrCode[k] + ' ' + parseFloat(TotalAmtBank[k]).toLocaleString() + ' </span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="VA009-color-green">' + BankCurrCode[k] + ' ' + parseFloat(UnReconsiledAmtTotal[k]).toLocaleString() + '</a></p></div>');
                 }
                 $divBank.append('</div></div>');
 
@@ -5634,12 +6916,13 @@
                 for (var K in data.Cbk) {
                     if (data.Cbk[K].Csb_Amt < 0)
                         colorclass = 'pull-right VA009-color-red';
-                    $divcashbk.append('<div class="VA009-right-data">  <p class="VA009-data-top">  <span class="pull-left"> ' + data.Cbk[K].CashBookName + '</span> <span class="' + colorclass + '">' + data.Cbk[K].CBCurrencyCode + ' ' + Globalize.format(data.Cbk[K].Csb_Amt, "N") + '</span>  </p>  </div>');
+                    $divcashbk.append('<div class="VA009-right-data">  <p class="VA009-data-top">  <span class="pull-left"> ' + data.Cbk[K].CashBookName + '</span> <span class="' + colorclass + '">' + data.Cbk[K].CBCurrencyCode + ' ' + parseFloat(data.Cbk[K].Csb_Amt).toLocaleString() + '</span>  </p>  </div>');
                     colorclass = 'pull-right VA009-color-green';
                 }
             }
             $BP.val("");
             $totalAmt.text(0);
+            $totalAmt.data('ttlamt', parseFloat(0));
             $bsyDiv[0].style.visibility = "hidden";
         };
         //End 
@@ -5824,7 +7107,7 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ "FileName": "Hell", "RecordID": 1221 }),
+                data: ({ "FileName": "Hell", "RecordID": 1221 }),//these parameteres are not used in controller now
                 success: function (result) {
                     result = JSON.parse(result);
                     batchcallback(result);
@@ -5844,13 +7127,13 @@
                 var dsgn, imgname = '';
                 for (var i = 0; i < data.result.length; i++) {
                     dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.result[i].DocumentNo + '"> <div class="row" data-UID="' + data.result[i].DocumentNo + '">' +
-                          '<div class="col-md-4 col-sm-4 width-sm-35" style="padding-right:0px;"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.result[i].DocumentNo + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '"  data-NAME="' + data.result[i].DocumentNo + '" data-PaymentRule="' + data.result[i].PaymentRule + '" data-PaymentType="' + data.result[i].PaymentType + '" data-PaymentTriggerBy="' + data.result[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.result[i].PaymwentBaseType + '" data-DocBaseType="' + data.result[i].DocBaseType + '" data-CurrencyCode="' + data.result[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select") + '">' +
-                          '<div class="VA009-pay-left">' +
-                              '<div class="VA009-pay-img-wrap">' +
-                              "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.result[i].VA009_ExecutionStatus + "</span> </div>" +
-                              ' <div class="VA009-pay-text"><p>' + data.result[i].C_Bpartner + '</p><span>' + data.result[i].C_BP_Group + '</span> <span>' + data.result[i].DocumentNo + '</span> <span>' + data.result[i].PaymentMethod + '</span> </div>' +
-                              '</div></div>'
-                              + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd" style="padding-right:0;">';
+                        '<div class="col-md-4 col-sm-4 width-sm-35" style="padding-right:0px;"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.result[i].DocumentNo + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '"  data-NAME="' + data.result[i].DocumentNo + '" data-PaymentRule="' + data.result[i].PaymentRule + '" data-PaymentType="' + data.result[i].PaymentType + '" data-PaymentTriggerBy="' + data.result[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.result[i].PaymwentBaseType + '" data-DocBaseType="' + data.result[i].DocBaseType + '" data-CurrencyCode="' + data.result[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select") + '">' +
+                        '<div class="VA009-pay-left">' +
+                        '<div class="VA009-pay-img-wrap">' +
+                        "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.result[i].VA009_ExecutionStatus + "</span> </div>" +
+                        ' <div class="VA009-pay-text"><p>' + data.result[i].C_Bpartner + '</p><span>' + data.result[i].C_BP_Group + '</span> <span>' + data.result[i].DocumentNo + '</span> <span>' + data.result[i].PaymentMethod + '</span> </div>' +
+                        '</div></div>'
+                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd" style="padding-right:0;">';
 
                     if (data.result[i].VA009_DocumentDate != "")
                         dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + data.result[i].VA009_DocumentDate + '</span> </div> ';
@@ -5863,9 +7146,9 @@
                     }
 
                     dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.result[i].DocumentNo + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.result[i].DocumentNo + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
-                            ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.result[i].DocumentNo + '>' + data.result[i].LastChat + '</span> </div> ' +
-                            ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
-                                       + '<div class="VA009-transactionType"> <span>' + data.result[i].TransactionType + '</span> '
+                        ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.result[i].DocumentNo + '>' + data.result[i].LastChat + '</span> </div> ' +
+                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
+                        + '<div class="VA009-transactionType"> <span>' + data.result[i].TransactionType + '</span> '
                     if (data.result[i].DocBaseType == "APC" || data.result[i].DocBaseType == "ARC") {
                         dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
                     }
@@ -5873,7 +7156,7 @@
                         dsgn += ' </div></div>';
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="glyphicon glyphicon-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
-                            '</div></div></div>';
+                        '</div></div></div>';
 
                     $xmlpopGrid.append(dsgn);
                 }
@@ -5934,6 +7217,61 @@
             loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
         };
         //end
+        function checkcommaordot(event, val, amt) {
+            var foundComma = false;
+            event.value_new = VIS.Utility.Util.getValueOfString(val);
+            if (event.value_new.contains(".")) {
+                foundComma = true;
+                var indices = [];
+                for (var i = 0; i < event.value_new.length; i++) {
+                    if (event.value_new[i] === ".")
+                        indices.push(i);
+                }
+                if (indices.length > 1) {
+                    event.value_new = removeAllButLast(event.value_new, '.');
+                }
+            }
+            if (event.value_new.contains(",")) {
+                if (foundComma) {
+                    event.value_new = removeAllButLast(event.value_new, ',');
+                }
+                else {
+                    var indices = [];
+                    for (var i = 0; i < event.value_new.length; i++) {
+                        if (event.value_new[i] === ",")
+                            indices.push(i);
+                    }
+                    if (indices.length > 1) {
+                        event.value_new = removeAllButLast(event.value_new, ',');
+                    }
+                    else {
+                        event.value_new = event.value_new.replace(",", ".");
+                    }
+                }
+            }
+            if (event.value_new == "") {
+                event.value_new = "0";
+            }
+            return event.value_new;
+        };
+
+        function removeAllButLast(amt, seprator) {
+            var parts = amt.split(seprator);
+            amt = parts.slice(0, -1).join('') + '.' + parts.slice(-1);
+            if (amt.indexOf('.') == (amt.length - 1)) {
+                amt = amt.replace(".", "");
+            }
+            return amt;
+        };
+
+        var downloadURL = function (url, no) {
+            //if ($idown) {
+            //    $idown.attr('src', url);
+            //} else {
+            var $idown;  // Keep it outside of the function, so it's initialized once.
+            $idown = $('<iframe>', { id: 'idown_' + no, src: url }).hide().appendTo('body');
+            //}
+        };
         //*******************
         //Get Root
         //*******************
