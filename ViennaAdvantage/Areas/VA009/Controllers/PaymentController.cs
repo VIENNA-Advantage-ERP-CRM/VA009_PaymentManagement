@@ -256,7 +256,7 @@ namespace VA009.Controllers
         //Added by Bharat on 05/June/2017
         public ActionResult GetChatID(int RecordID)
         {
-            Ctx ct = Session["ctx"] as Ctx;            
+            Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
             return Json(JsonConvert.SerializeObject(_payMdl.GetChatID(RecordID, ct)), JsonRequestBehavior.AllowGet);
         }
@@ -279,9 +279,9 @@ namespace VA009.Controllers
         //Added by Manjot on 08/Aug/2017
         public ActionResult GetXMLPath(string FileName, int RecordID)
         {
-            Ctx ct = Session["ctx"] as Ctx; 
+            Ctx ct = Session["ctx"] as Ctx;
             DBXml _obj = new DBXml();
-            return Json(JsonConvert.SerializeObject(_obj.CreateJDBCDataSourceXml(ct,FileName, RecordID)), JsonRequestBehavior.AllowGet);
+            return Json(JsonConvert.SerializeObject(_obj.CreateJDBCDataSourceXml(ct, FileName, RecordID)), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult GetPaymentScheduleBatch(string FileName, int RecordID)
@@ -308,11 +308,11 @@ namespace VA009.Controllers
         ///  <param name="DateTrx">Transaction Date</param>
         /// <returns>Message in JSON Format</returns>
         [HttpPost]
-        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx)
-        {            
+        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID)
+        {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, PaymentMethodID, DateAcct, CurrencyType, DateTrx);
+            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, PaymentMethodID, DateAcct, CurrencyType, DateTrx, AD_Org_ID);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -344,5 +344,94 @@ namespace VA009.Controllers
             PaymentModel _payMdl = new PaymentModel();
             return Json(JsonConvert.SerializeObject(_payMdl.getCheckNo(C_BankAccount_ID, VA009_PaymentMethod_ID)), JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// To get Document Type
+        /// </summary>
+        /// <param name="Organization"></param>
+        /// <returns>Document Type ID's</returns>
+        public ActionResult GetDocumentType(string orgs)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            return Json(JsonConvert.SerializeObject(_payMdl.GetDocumentType(orgs, ct)), JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Get Location against selected Business partner
+        /// </summary>
+        /// <param name="BP"></param>
+        /// <returns></returns>
+        public ActionResult GetLocation(string BP)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            List<LocationDetails> _LocationData = _payMdl.GetLocation(BP, ct);
+            return Json(JsonConvert.SerializeObject(_LocationData), JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// Get Location against selected Business partner
+        /// </summary>
+        /// <param name="BP"></param>
+        /// <returns></returns>
+        public ActionResult GetCharge(string orgs)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            List<ChargeDetails> _ChargeData = _payMdl.GetCharge(orgs, ct);
+            return Json(JsonConvert.SerializeObject(_ChargeData), JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name=""></param>
+        /// <returns></returns>
+        public ActionResult GetBPartnerName(string orgs)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            List<BPDetails> _BPrtdata = _payMdl.GetBPartnerName(orgs, ct);
+            return Json(JsonConvert.SerializeObject(_BPrtdata), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Create Payment Manually
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="InvoiceSchdIDS">List of Selected invoice schedules</param>
+        /// <param name="OrderSchdIDS">List of Selected order schedules</param>
+        /// <param name="BankID">Bank ID</param>
+        /// <param name="BankAccountID">Bank Account ID</param>
+        /// <param name="PaymentMethodID">Payment Method ID</param>
+        /// <param name="DateAcct">Account Date</param>
+        /// <param name="CurrencyType">Currency Type</param>
+        ///  <param name="DateTrx">Transaction Date</param>
+        /// <returns>Message in JSON Format</returns>
+        [HttpPost]
+        public ActionResult GeneratePayMannual(string PaymentData)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            List<Dictionary<string, string>> pData = null;
+            PaymentModel _payMdl = new PaymentModel();
+            if (PaymentData != null)
+            {
+                pData = JsonConvert.DeserializeObject<List<Dictionary<string, string>>>(PaymentData);
+            }
+            string _Paydata = _payMdl.GeneratePayMannual(ct, pData);
+            return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// to prepare data for Payment File
+        /// </summary>
+        /// <param name="Payment_ID"> Payment ID</param>
+        /// <returns>Data For Payment</returns>
+        public ActionResult prepareDataForPaymentFile(String DocNumber, bool isBatch)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            List<PaymentResponse> obj = new List<PaymentResponse>();
+            obj = _payMdl.prepareDataForPaymentFile(ct, DocNumber, isBatch);
+            return Json(JsonConvert.SerializeObject(obj), JsonRequestBehavior.AllowGet);
+        }
+
     }
 }
