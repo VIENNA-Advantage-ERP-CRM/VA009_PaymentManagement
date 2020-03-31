@@ -10,7 +10,7 @@
 ; (function (VA009, $) {
 
     //Form Class Function FullNameSpace
-    VA009.PaymentForm = function () {
+    VA009.PaymentForm = function () { 
         // Varriables
         this.frame;
         this.windowNo;

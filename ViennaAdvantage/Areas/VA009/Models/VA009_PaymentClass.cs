@@ -10,7 +10,7 @@ using VAdvantage.DataBase;
 using VAdvantage.Logging;
 using VAdvantage.Utility;
 
-namespace VA009.Models
+namespace VA009.Models 
 {
     public class VA009_PaymentClass
     {

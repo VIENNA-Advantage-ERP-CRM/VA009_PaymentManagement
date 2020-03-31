@@ -40,7 +40,7 @@ namespace ViennaAdvantage //  Please replace namespace with prefix of your modul
             script.Include("~/Areas/VA009/Scripts/apps/forms/PaymentForm.js",
                 "~/Areas/VA009/Scripts/model/callouts.js",
             "~/Areas/VA009/Scripts/apps/forms/DownloadXML.js",
-            "~/Areas/VA009/Scripts/apps/forms/DownloadDATFile.js");
+            "~/Areas/VA009/Scripts/apps/forms/DownloadDATFile.js"); 
 
             //script.Include("~/Areas/VA009/Scripts/VA009.all.min.js");
             //style.Include("~/Areas/VA009/Contents/VA009.all.min.css");

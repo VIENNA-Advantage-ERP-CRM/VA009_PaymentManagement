@@ -9,7 +9,7 @@
 //java script function closer
 ; (function (VA009, $) {
 
-    //Form Class Function FullNameSpace
+    //Form Class Function FullNameSpace 
     VA009.DownloadDATFile = function () {
         // Varriables
         this.frame;
