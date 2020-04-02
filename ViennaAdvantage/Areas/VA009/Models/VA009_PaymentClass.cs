@@ -123,7 +123,7 @@ namespace VA009.Models
                     else
                     {
                         _log.SaveError("Error: ", "File not created- " + _filePath + "- " + fileName);
-                        _obj._error = Msg.GetMsg(ctx, "VA009_Error");
+                        _obj._error = Msg.GetMsg(ctx, "VA009_FileExist");
                     }
                     batchResponse.Add(_obj);
                 }
@@ -150,7 +150,7 @@ namespace VA009.Models
                     else
                     {
                         _log.SaveError("Error: ", "File not created- " + _filePath + "- " + fileName);
-                        _obj._error = Msg.GetMsg(ctx, "VA009_Error");
+                        _obj._error = Msg.GetMsg(ctx, "VA009_FileExist");
                     }
                     batchResponse.Add(_obj);
                 }
@@ -408,7 +408,7 @@ namespace VA009.Models
             DataSet ds = DB.ExecuteDataset(sql.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
-                header.Append(String.Format("{0,2}{1,8}{2,6}{3,40}{4,14}{5,8},{6,10}{7,15}{8,15}{9,20}{10,35}{11,35}",
+                header.Append(String.Format("\n{0,2}{1,8}{2,6}{3,40}{4,14}{5,8},{6,10}{7,15}{8,15}{9,20}{10,35}{11,35}\n",
                                 "00", "EPAYMENT", Util.GetValueOfString(ds.Tables[0].Rows[0]["C_BankAccount_ID"]),
                                 Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]),
                                 Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"]),
@@ -504,7 +504,7 @@ namespace VA009.Models
             {
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
-                    RowsData.Append(String.Format("{0,2}{1,20}{2,15}{3,17}{4,5}{5,1},{6,40}{7,20}{8,15}{9,40}{10,40}{11,40}{12,15}{13,2150}{14,2}{15,50}",
+                    RowsData.Append(String.Format("{0,2}{1,20}{2,15}{3,17}{4,5}{5,1},{6,40}{7,20}{8,15}{9,40}{10,40}{11,40}{12,15}{13,2150}{14,2}{15,50}\n",
                                     "10", Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"]),
                                     decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2),
                                      Util.GetValueOfString(ds.Tables[0].Rows[i]["RoutingNo"]),

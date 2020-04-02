@@ -2153,8 +2153,9 @@ namespace VA009.Models
                             {
                                 if (_payMthd.IsVA009_InitiatePay())
                                 {
+
                                     VA009_CreatePayments payment = new VA009_CreatePayments();
-                                    payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
+                                   return payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
                                 }
                             }
                             else if (_payMthd.GetVA009_PaymentRule() == "E")
@@ -2162,7 +2163,7 @@ namespace VA009.Models
                                 if (_payMthd.IsVA009_InitiatePay())
                                 {
                                     VA009_CreatePayments payment = new VA009_CreatePayments();
-                                    payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
+                                    return payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
                                 }
                             }
                         }
@@ -4886,9 +4887,9 @@ namespace VA009.Models
                 _pay.SetAD_Org_ID(Util.GetValueOfInt(ct.GetAD_Org_ID()));
                 _pay.SetC_BankAccount_ID(Util.GetValueOfInt(paymentData[0]["BankAccountID"]));
                 //_pay.SetC_DocType_ID(Util.GetValueOfInt(paymentData[0]["DocType"]));
-                _pay.SetDateAcct(Util.GetValueOfDateTime(paymentData[0]["DateAcct"]));
+                _pay.SetDateAcct(Convert.ToDateTime(paymentData[0]["DateAcct"]));
                 //to set trx date
-                _pay.SetDateTrx(Util.GetValueOfDateTime(paymentData[0]["DateTrx"]));
+                _pay.SetDateTrx(Convert.ToDateTime(paymentData[0]["DateTrx"]));
                 _pay.SetC_Currency_ID(Util.GetValueOfInt(paymentData[0]["CurrencyID"]));
                 _pay.SetC_DocType_ID(Util.GetValueOfInt(paymentData[0]["DocType"]));
                 _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(paymentData[0]["PaymentMethod"]));
