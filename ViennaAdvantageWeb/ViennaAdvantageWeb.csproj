@@ -48,9 +48,12 @@
     <Reference Include="Antlr3.Runtime">
       <HintPath>DLL\Antlr3.Runtime.dll</HintPath>
     </Reference>
+    <Reference Include="DevExpress.Web.v14.2">
+      <HintPath>DLL\DevExpress.Web.v14.2.dll</HintPath>
+    </Reference>
     <Reference Include="HtmlWebHelper, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\HTML5 Shared Files\Module Files\Market\htmlbin\HtmlWebHelper.dll</HintPath>
+      <HintPath>DLL\HtmlWebHelper.dll</HintPath>
     </Reference>
     <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>DLL\ICSharpCode.SharpZipLib.dll</HintPath>

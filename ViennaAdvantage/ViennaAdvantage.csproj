@@ -198,6 +198,7 @@
     <Content Include="Areas\VA009\Images\user.png" />
     <Content Include="Areas\VA009\Images\zoom.png" />
     <Content Include="Areas\VA009\Images\Zoom16.png" />
+    <Content Include="Areas\VA009\Scripts\apps\forms\DownloadDATFile.js" />
     <Content Include="Areas\VA009\Scripts\apps\forms\DownloadXML.js" />
     <Content Include="Areas\VA009\Scripts\apps\forms\form.js" />
     <Content Include="Areas\VA009\Scripts\apps\forms\PaymentForm.js" />
@@ -227,11 +228,13 @@
     <Content Include="Web.config" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Areas\VA009\Controllers\DownloadPaymentFIleController.cs" />
     <Compile Include="Areas\VA009\Controllers\PayController.cs" />
     <Compile Include="Areas\VA009\Controllers\PaymentController.cs" />
     <Compile Include="Areas\VA009\Models\DBXml.cs" />
     <Compile Include="Areas\VA009\Models\PaymentModel.cs" />
     <Compile Include="Areas\VA009\Models\PayModel.cs" />
+    <Compile Include="Areas\VA009\Models\VA009_PaymentClass.cs" />
     <Compile Include="Areas\VA009\VA009AreaRegistration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
