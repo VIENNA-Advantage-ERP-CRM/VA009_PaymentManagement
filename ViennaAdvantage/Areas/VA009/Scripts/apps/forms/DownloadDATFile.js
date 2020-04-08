@@ -94,7 +94,7 @@
                 async: true,
                 data: ({ "RecordID": RecordID, "isBatch": batchWindow }),
                 success: function (result) {
-                    result = JSON.parse(result);
+                    //result = JSON.parse(result);
                     docNo = result;
                     prepareDataForPaymentFile(docNo, batchWindow);
                 },
