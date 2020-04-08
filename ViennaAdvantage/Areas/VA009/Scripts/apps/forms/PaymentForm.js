@@ -4740,9 +4740,9 @@
                 function callbackBatchPay(result) {
                     result = JSON.parse(result);
                     DocNumber = "";
-                    var SpilitedData = result.split(".", result.length);
-                    DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
-                    console.log(DocNumber);
+                    //var SpilitedData = result.split(".", result.length);
+                    //DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
+                    //console.log(DocNumber);
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
@@ -6437,9 +6437,9 @@
                         success: function (result) {
                             result = JSON.parse(result);
                             DocNumber = "";
-                            var SpilitedData = result.split(".", result.length);
-                            DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
-                            console.log(DocNumber);
+                            //var SpilitedData = result.split(".", result.length);
+                            //DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
+                            //console.log(DocNumber);
                             $divPayment.find('.VA009-payment-wrap').remove();
                             $divBank.find('.VA009-right-data-main').remove();
                             $divBank.find('.VA009-accordion').remove();
