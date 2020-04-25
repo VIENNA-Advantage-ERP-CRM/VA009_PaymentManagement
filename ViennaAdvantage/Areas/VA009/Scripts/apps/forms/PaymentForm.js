@@ -4317,6 +4317,10 @@
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
                     + "</select></div>"
 
+                    + "<div class='VA009-popform-data'>"
+                    + "<label style='visibility:hidden;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
+                    + "<input type='checkbox' style='width:10%;' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</div>'
+
                     + "<div class='VA009-popform-data' style='display:none !important'>"
                     + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
                     + "<select style='display:none !important' id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
@@ -4330,10 +4334,6 @@
                     + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
                     + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
                     + "</select></div>"
-
-                    + "<div class='VA009-popform-data' style='display:none !important'>"
-                    + "<br>"
-                    + "<input style='display:none !important' type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</div>'
 
                     + "<div class='VA009-table-container' style='margin-top:20px !important; height:300px;' id='VA009_btnPopupGrid'> </div>"
                     + "</div>";
