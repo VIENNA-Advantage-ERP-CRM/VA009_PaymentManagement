@@ -10,7 +10,7 @@ using VAdvantage.Model;
 //using VAdvantage.DataBase;
 using VAdvantage.SqlExec;
 using VAdvantage.Utility;
-using System.Data; 
+using System.Data;
 using System.Data.SqlClient;
 using VAdvantage.Logging;
 using VAdvantage.ProcessEngine;
@@ -661,7 +661,7 @@ namespace VA009.Models
                                 }
                                 else
                                 {
-                                    CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower() , DocActionVariables.ACTION_COMPLETE, trx);
+                                    CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
                                     //if (_pay.CompleteIt() == "CO")
                                     //{
                                     //    _pay.SetProcessed(true);
@@ -1635,7 +1635,7 @@ namespace VA009.Models
                                     #region BatchLine
 
                                     int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"select VA009_BatchLines_ID from VA009_BatchLines where 
-                        VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, null));
+                                    VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, trx));
 
                                     if (Batchline_ID == 0)
                                     {
@@ -1651,91 +1651,20 @@ namespace VA009.Models
                                             }
                                             _log.Info(ex.ToString());
                                         }
-                                        else
+                                    }
+                                    else
+                                    {
+                                        if (GenerateBatchLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _invpaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
                                         {
-                                            if (GenerateBatchLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _invpaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
+                                            trx.Rollback();
+                                            ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                            ValueNamePair pp = VLogger.RetrieveError();
+                                            if (pp != null)
                                             {
-                                                trx.Rollback();
-                                                ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
-                                                ValueNamePair pp = VLogger.RetrieveError();
-                                                if (pp != null)
-                                                {
-                                                    ex.Append(", " + pp.GetName());
-                                                }
-                                                _log.Info(ex.ToString());
+                                                ex.Append(", " + pp.GetName());
                                             }
+                                            _log.Info(ex.ToString());
                                         }
-
-                                        #region Commented code
-                                        //MVA009BatchLines _BtLines = new MVA009BatchLines(ct, 0, trx);
-                                        //_BtLines.SetVA009_Batch_ID(_Bt.GetVA009_Batch_ID());
-                                        //_BtLines.SetC_BPartner_ID(PaymentData[i].C_BPartner_ID);
-                                        //_BtLines.SetAD_Client_ID(PaymentData[i].AD_Client_ID);
-                                        //_BtLines.SetAD_Org_ID(PaymentData[i].AD_Org_ID);
-                                        //_BtLines.SetProcessed(true);
-                                        //if (!_BtLines.Save())
-                                        //{
-                                        //    //trx.Rollback();
-                                        //    ValueNamePair pp = VLogger.RetrieveError();
-                                        //    _log.Info(pp.GetName());
-                                        //}
-                                        //else
-                                        //{
-                                        //    Batchline_ID = _BtLines.GetVA009_BatchLines_ID();
-
-                                        //    #region BatchLineDetail
-                                        //    MVA009BatchLineDetails _btDetal = new MVA009BatchLineDetails(ct, 0, trx);
-                                        //    _btDetal.SetAD_Client_ID(PaymentData[i].AD_Client_ID);
-                                        //    _btDetal.SetAD_Org_ID(PaymentData[i].AD_Org_ID);
-                                        //    _btDetal.SetC_InvoicePaySchedule_ID(PaymentData[i].C_InvoicePaySchedule_ID);
-                                        //    _btDetal.SetC_Invoice_ID(PaymentData[i].C_Invoice_ID);
-                                        //    _btDetal.SetC_Currency_ID(_BankAcct.GetC_Currency_ID());
-                                        //    _btDetal.SetVA009_BatchLines_ID(Batchline_ID);
-                                        //    _btDetal.SetDueAmt(PaymentData[i].DueAmt);
-                                        //    _btDetal.SetC_ConversionType_ID(PaymentData[i].CurrencyType);
-                                        //    _btDetal.SetDueDate(_invpaySchdule.GetDueDate());
-                                        //    if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
-                                        //    {
-                                        //        if (convertedAmount > 0)
-                                        //            convertedAmount = -1 * convertedAmount;
-                                        //    }
-                                        //    else
-                                        //    {
-                                        //        if (_doctype.GetDocBaseType() == "API")
-                                        //        {
-                                        //            if (convertedAmount < 0)
-                                        //                convertedAmount = -1 * convertedAmount;
-                                        //        }
-
-                                        //    }
-                                        //    _btDetal.SetVA009_ConvertedAmt(convertedAmount);
-                                        //    if (paymentmethdoID > 0)
-                                        //        _btDetal.SetVA009_PaymentMethod_ID(paymentmethdoID);
-
-                                        //    _btDetal.SetProcessed(true);
-                                        //    if (!_btDetal.Save())
-                                        //    {
-                                        //        //trx.Rollback();
-                                        //        ValueNamePair pp = VLogger.RetrieveError();
-                                        //        _log.Info(pp.GetName());
-                                        //    }
-                                        //    else
-                                        //    {
-                                        //        _invpaySchdule = new MInvoicePaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
-                                        //        _invpaySchdule.SetVA009_ExecutionStatus("Y");
-                                        //        if (isOverwrite == "Y")
-                                        //            _invpaySchdule.SetVA009_PaymentMethod_ID(PaymentData[i].VA009_PaymentMethod_ID);
-
-                                        //        if (!_invpaySchdule.Save())
-                                        //        {
-                                        //            // trx.Rollback();
-                                        //            ValueNamePair pp = VLogger.RetrieveError();
-                                        //            _log.Info(pp.GetName());
-                                        //        }
-                                        //    }
-                                        //    #endregion
-                                        //}
-                                        #endregion
                                     }
                                     #endregion
                                 }
@@ -1904,7 +1833,7 @@ namespace VA009.Models
                                 {
                                     #region BatchLine
                                     int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"select VA009_BatchLines_ID from VA009_BatchLines where 
-                        VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, null));
+                                     VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, trx));
                                     if (Batchline_ID == 0)
                                     {
                                         Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
@@ -1914,15 +1843,7 @@ namespace VA009.Models
                                             if (pp != null)
                                                 _log.Info(pp.GetName());
                                         }
-                                        else
-                                        {
-                                            if (GenerateBatchOrdLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _OrdPaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
-                                            {
-                                                ValueNamePair pp = VLogger.RetrieveError();
-                                                if (pp != null)
-                                                    _log.Info(pp.GetName());
-                                            }
-                                        }
+
                                         #region Commented Code
                                         //MVA009BatchLines _BtLines = new MVA009BatchLines(ct, 0, trx);
                                         //_BtLines.SetVA009_Batch_ID(_Bt.GetVA009_Batch_ID());
@@ -1996,6 +1917,15 @@ namespace VA009.Models
                                         //    #endregion
                                         //}
                                         #endregion
+                                    }
+                                    else
+                                    {
+                                        if (GenerateBatchOrdLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _OrdPaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
+                                        {
+                                            ValueNamePair pp = VLogger.RetrieveError();
+                                            if (pp != null)
+                                                _log.Info(pp.GetName());
+                                        }
                                     }
                                     #endregion
                                 }
@@ -2155,7 +2085,7 @@ namespace VA009.Models
                                 {
 
                                     VA009_CreatePayments payment = new VA009_CreatePayments();
-                                   return payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
+                                    return payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
                                 }
                             }
                             else if (_payMthd.GetVA009_PaymentRule() == "E")
@@ -4987,7 +4917,7 @@ namespace VA009.Models
                 if (!ispaymentGenerated)
                 {
                     obj = new PaymentResponse();
-                    obj._error = Msg.GetMsg(ct,"VA009_PleaseGenerateBatchPaymentFirst");
+                    obj._error = Msg.GetMsg(ct, "VA009_PleaseGenerateBatchPaymentFirst");
                     batchResponse.Add(obj);
                     return batchResponse;
                 }
@@ -5081,10 +5011,10 @@ namespace VA009.Models
         /// <param name="DocAction">Document Action</param>
         /// <param name="trx">Transaction Object</param>
         /// <returns>Msg From Workflow</returns>
-        private string[] CompleteOrReverse(Ctx ctx, int Record_ID, int Table_ID ,string TableName, string DocAction, Trx trx)
+        private string[] CompleteOrReverse(Ctx ctx, int Record_ID, int Table_ID, string TableName, string DocAction, Trx trx)
         {
             int AD_Process_ID = 0;
-            AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("select ad_process_ID from ad_column where ad_table_id = "+ Table_ID +" and lower(columnname)= 'docaction'", null, null));
+            AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("select ad_process_ID from ad_column where ad_table_id = " + Table_ID + " and lower(columnname)= 'docaction'", null, null));
             string[] result = new string[2];
             MRole role = MRole.Get(ctx, ctx.GetAD_Role_ID());
             if (Util.GetValueOfBool(role.GetProcessAccess(AD_Process_ID)))
@@ -5188,6 +5118,309 @@ namespace VA009.Models
                 return result;
             }
             return result;
+        }
+
+        /// <summary>
+        /// To create batch and Batch lines
+        /// </summary>
+        /// <param name="ct">Context Object</param>
+        /// <param name="PaymentData">Payment Data (Object no of Records)</param>
+        /// <returns>Batch Document Number</returns>
+        public string CrateBatchPayments(Ctx ct, GeneratePaymt[] PaymentData)
+        {
+            Trx trx = Trx.GetTrx("Batch_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            List<int> BpList = new List<int>();
+            List<int> BtachId = new List<int>();
+            StringBuilder docno = new StringBuilder();
+            StringBuilder ex = new StringBuilder();
+            string msg = "";
+            MBankAccount _BankAcct = new MBankAccount(ct, PaymentData[0].C_BankAccount_ID, trx);
+            List<int> PaymentMethodIDS = new List<int>();
+            string isconsolidate = PaymentData[0].isconsolidate;
+            string isOverwrite = PaymentData[0].isOverwrite;
+            int batchid = 0; MVA009Batch _Bt = null;
+            decimal convertedAmount = 0;
+            String _TransactionType = String.Empty; //Arpit
+            try
+            {
+                if (PaymentData.Length > 0)
+                {
+                    int paymentmethdoID = 0;
+                    Dictionary<string, object> paymethodDetails = null;
+                    for (int i = 0; i < PaymentData.Length; i++)
+                    {
+                        paymentmethdoID = PaymentData[i].VA009_PaymentMethod_ID; convertedAmount = PaymentData[i].convertedAmt;
+                        paymethodDetails = GetPaymentMethodDetails(ct, paymentmethdoID,trx);
+                       // MVA009PaymentMethod _paymthd = new MVA009PaymentMethod(ct, paymentmethdoID, trx);
+                        _TransactionType = String.Empty;
+                        _TransactionType = PaymentData[i].TransactionType;
+                       
+                        #region Create Batch
+                        if (i == 0)
+                        {
+                            _Bt = new MVA009Batch(ct, 0, trx);
+                            _Bt.SetC_Bank_ID(PaymentData[0].C_Bank_ID);
+                            _Bt.SetC_BankAccount_ID(PaymentData[0].C_BankAccount_ID);
+                            _Bt.SetAD_Client_ID(PaymentData[0].AD_Client_ID);
+                            _Bt.SetAD_Org_ID(PaymentData[0].AD_Org_ID);
+                            _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
+                            _Bt.SetVA009_PaymentRule(paymethodDetails["VA009_PaymentRule"].ToString());
+                            _Bt.SetVA009_PaymentTrigger(paymethodDetails["VA009_PaymentTrigger"].ToString());
+                            _Bt.SetProcessed(true);
+                            _Bt.SetVA009_DocumentDate(DateTime.Now);
+                            if (isconsolidate == "Y")
+                                _Bt.SetVA009_Consolidate(true);
+
+                            if (!_Bt.Save())
+                            {
+                                trx.Rollback();
+                                ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                ValueNamePair pp = VLogger.RetrieveError();
+                                if (pp != null)
+                                {
+                                    ex.Append(", " + pp.GetName());
+                                }
+                                _log.Info(ex.ToString());
+                            }
+                            else
+                            {
+                                batchid = _Bt.GetVA009_Batch_ID();
+                                BtachId.Add(batchid);
+                                PaymentMethodIDS.Add(paymentmethdoID);
+                            }
+
+                        }
+                        #endregion
+
+                        #region Create Batch Lines and Details
+                        if (batchid > 0)
+                        {
+                            if (_TransactionType.Equals("Invoice"))
+                            {
+                                MInvoicePaySchedule _invpaySchdule = new MInvoicePaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
+                                MDocType _doctype = new MDocType(ct, _invpaySchdule.GetC_DocType_ID(), trx);
+                                if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)) && (paymethodDetails["VA009_PaymentType"].ToString() != "S"))
+                                {
+
+                                    #region BatchLine and Batch Line Details
+                                    int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"select VA009_BatchLines_ID from VA009_BatchLines where 
+                                    VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, trx));
+
+                                    if (Batchline_ID == 0)
+                                    {
+                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                        if (Batchline_ID == 0)
+                                        {
+                                            trx.Rollback();
+                                            ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                            ValueNamePair pp = VLogger.RetrieveError();
+                                            if (pp != null)
+                                            {
+                                                ex.Append(", " + pp.GetName());
+                                            }
+                                            _log.Info(ex.ToString());
+                                        }
+                                    }
+
+                                    if (GenerateBatchLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _invpaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
+                                    {
+                                        trx.Rollback();
+                                        ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                        ValueNamePair pp = VLogger.RetrieveError();
+                                        if (pp != null)
+                                        {
+                                            ex.Append(", " + pp.GetName());
+                                        }
+                                        _log.Info(ex.ToString());
+                                    }
+                                    #endregion
+                                    continue;
+                                }
+                                else
+                                {
+                                    BpList.Add(PaymentData[i].C_BPartner_ID);
+                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                    if (Batchline_ID == 0)
+                                    {
+                                        trx.Rollback();
+                                        ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                        ValueNamePair pp = VLogger.RetrieveError();
+                                        if (pp != null)
+                                        {
+                                            ex.Append(", " + pp.GetName());
+                                        }
+                                        _log.Info(ex.ToString());
+                                    }
+                                    else
+                                    {
+                                        if (GenerateBatchLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _invpaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
+                                        {
+                                            trx.Rollback();
+                                            ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                            ValueNamePair pp = VLogger.RetrieveError();
+                                            if (pp != null)
+                                            {
+                                                ex.Append(", " + pp.GetName());
+                                            }
+                                            _log.Info(ex.ToString());
+                                        }
+                                    }
+                                }
+                            }
+                            if (_TransactionType.Equals("Order"))
+                            {
+                                MVA009OrderPaySchedule _OrdPaySchdule = new MVA009OrderPaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
+                                MDocType _doctype = new MDocType(ct, _OrdPaySchdule.GetC_DocType_ID(), trx);
+                                if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)) && (paymethodDetails["VA009_PaymentType"].ToString() != "S"))
+                                {
+
+                                    #region BatchLine and Batch Line Details
+                                    int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"select VA009_BatchLines_ID from VA009_BatchLines where 
+                                     VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, trx));
+
+                                    if (Batchline_ID == 0)
+                                    {
+                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                        if (Batchline_ID == 0)
+                                        {
+                                            trx.Rollback();
+                                            ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                            ValueNamePair pp = VLogger.RetrieveError();
+                                            if (pp != null)
+                                            {
+                                                ex.Append(", " + pp.GetName());
+                                            }
+                                            _log.Info(ex.ToString());
+                                        }
+                                    }
+
+                                    if (GenerateBatchOrdLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _OrdPaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
+                                    {
+                                        trx.Rollback();
+                                        ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                        ValueNamePair pp = VLogger.RetrieveError();
+                                        if (pp != null)
+                                        {
+                                            ex.Append(", " + pp.GetName());
+                                        }
+                                        _log.Info(ex.ToString());
+                                    }
+                                    #endregion
+                                    continue;
+                                }
+                                else
+                                {
+                                    #region BatchLine AND Batch Line Details
+                                    BpList.Add(PaymentData[i].C_BPartner_ID);
+                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                    if (Batchline_ID == 0)
+                                    {
+                                        trx.Rollback();
+                                        ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                        ValueNamePair pp = VLogger.RetrieveError();
+                                        if (pp != null)
+                                        {
+                                            ex.Append(", " + pp.GetName());
+                                        }
+                                        _log.Info(ex.ToString());
+                                    }
+
+                                    if (GenerateBatchOrdLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _OrdPaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
+                                    {
+                                        trx.Rollback();
+                                        ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                        ValueNamePair pp = VLogger.RetrieveError();
+                                        if (pp != null)
+                                        {
+                                            ex.Append(", " + pp.GetName());
+                                        }
+                                        _log.Info(ex.ToString());
+                                    }
+                                    #endregion
+                                }
+                            }
+
+                        }
+                        #endregion
+                    }
+                    if (BtachId.Count > 0)
+                    {
+                        for (int j = 0; j < BtachId.Count; j++)
+                        {
+                            MVA009Batch _batchComp = new MVA009Batch(ct, BtachId[j], trx);
+                           // MVA009PaymentMethod _payMthd = new MVA009PaymentMethod(ct, _batchComp.GetVA009_PaymentMethod_ID(), trx);
+                            paymethodDetails = GetPaymentMethodDetails(ct, _batchComp.GetVA009_PaymentMethod_ID(), trx);
+                            if (docno.Length > 0)
+                                docno.Append(".");
+
+                            docno.Append(_batchComp.GetDocumentNo());
+                            if (paymethodDetails["VA009_PaymentRule"].ToString().Equals("M"))
+                            {
+                                if (Util.GetValueOfBool( paymethodDetails["VA009_InitiatePay"].ToString()))
+                                {
+
+                                    VA009_CreatePayments payment = new VA009_CreatePayments();
+                                    return payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
+                                }
+                            }
+                            else if (paymethodDetails["VA009_PaymentRule"].ToString().Equals("E"))
+                            {
+                                if (Util.GetValueOfBool(paymethodDetails["VA009_InitiatePay"].ToString()))
+                                {
+                                    VA009_CreatePayments payment = new VA009_CreatePayments();
+                                    return payment.DoIt(BtachId[j], ct, trx, PaymentData[0].CurrencyType);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                trx.Rollback();
+                ex.Append(e.Message);
+                _log.Info(e.Message);
+            }
+            finally
+            {
+                trx.Commit();
+                trx.Close();
+            }
+
+            if (docno.Length > 0)
+            {
+                msg = Msg.GetMsg(ct, "VA009_PaymentCompletedWith");
+                msg += docno.ToString();
+                ex.Append(msg);
+            }
+
+            return ex.ToString();
+        }
+
+        /// <summary>
+        /// To get Details of payment method
+        /// </summary>
+        /// <param name="ct">Context object</param>
+        /// <param name="VA009_PaymentMethod_ID">Payment method id</param>
+        /// <returns>details of payment method</returns>
+        public Dictionary<string, object> GetPaymentMethodDetails(Ctx ct, int VA009_PaymentMethod_ID, Trx trx)
+        {
+            StringBuilder sql = new StringBuilder(@"SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID,
+            VA009_PaymentMethod.VA009_PaymentType,VA009_PaymentMethod.VA009_PaymentRule, 
+            VA009_PaymentMethod.VA009_PaymentTrigger, VA009_PaymentMethod.VA009_InitiatePay 
+            FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' 
+            AND VA009_PaymentMethod.VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID + " ");
+            DataSet ds = DB.ExecuteDataset(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO),null, trx);
+            Dictionary<string, object> obj = new Dictionary<string, object>();
+            if (ds != null && ds.Tables[0].Rows.Count > 0)
+            {
+                obj["VA009_PaymentMethod_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PaymentMethod_ID"]);
+                obj["VA009_PaymentType"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["VA009_PaymentType"]);
+                obj["VA009_PaymentRule"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["VA009_PaymentRule"]);
+                obj["VA009_PaymentTrigger"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["VA009_PaymentTrigger"]);
+                obj["VA009_InitiatePay"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["VA009_InitiatePay"]).Equals("Y") ? true : false;
+            }
+            return obj;
         }
 
     }
