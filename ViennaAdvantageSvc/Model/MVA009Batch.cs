@@ -12,7 +12,7 @@ using System.IO;
 
 namespace ViennaAdvantage.Model
 {
-    public class MVA009Batch: X_VA009_Batch, DocAction
+    public class MVA009Batch : X_VA009_Batch, DocAction
     {
         /**	Process Message 			*/
         private String _processMsg = null;
@@ -59,7 +59,7 @@ namespace ViennaAdvantage.Model
 
         public string GetDocBaseType()
         {
-           return null ;
+            return null;
         }
 
         public DateTime? GetDocumentDate()
@@ -84,7 +84,7 @@ namespace ViennaAdvantage.Model
 
         public string GetProcessMsg()
         {
-            return _processMsg ;
+            return _processMsg;
         }
 
         public string GetSummary()
@@ -137,6 +137,22 @@ namespace ViennaAdvantage.Model
         public bool VoidIt()
         {
             return true;
+        }
+
+        /// <summary>
+        /// to implement delete functionality 
+        /// </summary>
+        /// <returns>flag whether deletion possible or not</returns>
+        protected override bool BeforeDelete()
+        {
+            int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(*)
+                        FROM va009_batchlines WHERE va009_batch_id = " + GetVA009_Batch_ID() + " AND processed = 'Y' "));
+            if(count > 0)
+            {
+                return false;
+            }
+            return true;
+
         }
     }
 }

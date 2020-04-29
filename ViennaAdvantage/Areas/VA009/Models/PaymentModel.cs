@@ -3485,10 +3485,19 @@ namespace VA009.Models
         }
 
         //Added by Bharat on 01/June/2017
+        /// <summary>
+        /// To get Payment Menthods
+        /// </summary>
+        /// <param name="ct">Context Object</param>
+        /// <returns>List Of Payment Methods</returns>
         public List<Dictionary<string, object>> LoadBatchPaymentMethod(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT VA009_PaymentMethod_ID,VA009_Name FROM VA009_PaymentMethod WHERE IsActive='Y' AND VA009_PaymentBaseType NOT IN  ('B','S') AND AD_Client_ID= " + ct.GetAD_Client_ID();
+            //string sql = "SELECT VA009_PaymentMethod_ID,VA009_Name FROM VA009_PaymentMethod WHERE IsActive='Y' AND VA009_PaymentBaseType NOT IN  ('B','S') AND AD_Client_ID= " + ct.GetAD_Client_ID();
+            string sql = @" SELECT VA009_PaymentMethod_ID,VA009_Name FROM VA009_PaymentMethod WHERE IsActive='Y' AND 
+            VA009_PAYMENTMETHOD_ID  IN (SELECT VA009_PAYMENTMETHOD_ID FROM VA009_PAYMENTMETHOD WHERE 
+            VA009_PAYMENTBASETYPE !='B' AND COALESCE(VA009_PaymentType , ' ' ) != 'S') AND 
+            AD_Client_ID= " + ct.GetAD_Client_ID();
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY VA009_PaymentMethod_ID";
             DataSet ds = DB.ExecuteDataset(sql);
@@ -5150,11 +5159,11 @@ namespace VA009.Models
                     for (int i = 0; i < PaymentData.Length; i++)
                     {
                         paymentmethdoID = PaymentData[i].VA009_PaymentMethod_ID; convertedAmount = PaymentData[i].convertedAmt;
-                        paymethodDetails = GetPaymentMethodDetails(ct, paymentmethdoID,trx);
-                       // MVA009PaymentMethod _paymthd = new MVA009PaymentMethod(ct, paymentmethdoID, trx);
+                        paymethodDetails = GetPaymentMethodDetails(ct, paymentmethdoID, trx);
+                        // MVA009PaymentMethod _paymthd = new MVA009PaymentMethod(ct, paymentmethdoID, trx);
                         _TransactionType = String.Empty;
                         _TransactionType = PaymentData[i].TransactionType;
-                       
+
                         #region Create Batch
                         if (i == 0)
                         {
@@ -5170,6 +5179,15 @@ namespace VA009.Models
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
                             if (isconsolidate == "Y")
                                 _Bt.SetVA009_Consolidate(true);
+                            // if overwrite payment method is true then set payment method on Batch
+                            if (isOverwrite == "Y")
+                            {
+                                Dictionary<string, object> paymethod = new Dictionary<string, object>();
+                                paymethod = GetPaymentMethodDetails(ct, PaymentData[0].VA009_PaymentMethod_ID, trx);
+                                _Bt.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(paymethod["VA009_PaymentMethod_ID"].ToString()));
+                                _Bt.SetVA009_PaymentRule(paymethod["VA009_PaymentRule"].ToString());
+                                _Bt.SetVA009_PaymentTrigger(paymethod["VA009_PaymentTrigger"].ToString());
+                            }
 
                             if (!_Bt.Save())
                             {
@@ -5199,7 +5217,9 @@ namespace VA009.Models
                             {
                                 MInvoicePaySchedule _invpaySchdule = new MInvoicePaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
                                 MDocType _doctype = new MDocType(ct, _invpaySchdule.GetC_DocType_ID(), trx);
-                                if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)) && (paymethodDetails["VA009_PaymentType"].ToString() != "S"))
+                                //removed condition of Cheque Payment method Suggested by Ashish and Rajni
+                                // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
+                                if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)))
                                 {
 
                                     #region BatchLine and Batch Line Details
@@ -5271,7 +5291,9 @@ namespace VA009.Models
                             {
                                 MVA009OrderPaySchedule _OrdPaySchdule = new MVA009OrderPaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
                                 MDocType _doctype = new MDocType(ct, _OrdPaySchdule.GetC_DocType_ID(), trx);
-                                if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)) && (paymethodDetails["VA009_PaymentType"].ToString() != "S"))
+                                //removed condition of Cheque Payment method Suggested by Ashish and Rajni
+                                // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
+                                if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)))
                                 {
 
                                     #region BatchLine and Batch Line Details
@@ -5348,7 +5370,7 @@ namespace VA009.Models
                         for (int j = 0; j < BtachId.Count; j++)
                         {
                             MVA009Batch _batchComp = new MVA009Batch(ct, BtachId[j], trx);
-                           // MVA009PaymentMethod _payMthd = new MVA009PaymentMethod(ct, _batchComp.GetVA009_PaymentMethod_ID(), trx);
+                            // MVA009PaymentMethod _payMthd = new MVA009PaymentMethod(ct, _batchComp.GetVA009_PaymentMethod_ID(), trx);
                             paymethodDetails = GetPaymentMethodDetails(ct, _batchComp.GetVA009_PaymentMethod_ID(), trx);
                             if (docno.Length > 0)
                                 docno.Append(".");
@@ -5356,7 +5378,7 @@ namespace VA009.Models
                             docno.Append(_batchComp.GetDocumentNo());
                             if (paymethodDetails["VA009_PaymentRule"].ToString().Equals("M"))
                             {
-                                if (Util.GetValueOfBool( paymethodDetails["VA009_InitiatePay"].ToString()))
+                                if (Util.GetValueOfBool(paymethodDetails["VA009_InitiatePay"].ToString()))
                                 {
 
                                     VA009_CreatePayments payment = new VA009_CreatePayments();
@@ -5410,7 +5432,7 @@ namespace VA009.Models
             VA009_PaymentMethod.VA009_PaymentTrigger, VA009_PaymentMethod.VA009_InitiatePay 
             FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' 
             AND VA009_PaymentMethod.VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID + " ");
-            DataSet ds = DB.ExecuteDataset(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO),null, trx);
+            DataSet ds = DB.ExecuteDataset(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO), null, trx);
             Dictionary<string, object> obj = new Dictionary<string, object>();
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
