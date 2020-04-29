@@ -10,7 +10,7 @@
 ; (function (VA009, $) {
 
     //Form Class Function FullNameSpace
-    VA009.PaymentForm = function () { 
+    VA009.PaymentForm = function () {
         // Varriables
         this.frame;
         this.windowNo;
@@ -4268,12 +4268,12 @@
                         var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
 
                         //if (paystatus != null && paystatus.tables[0].rows.length > 0) {
-                        if (paystatus != null && paystatus.length > 0) {
-                            VIS.ADialog.info(("VA009_CantSelectCashandChque"));
-                        }
-                        else {
-                            generateLines();
-                        }
+                        //if (paystatus != null && paystatus.length > 0) {
+                        //    VIS.ADialog.info(("VA009_CantSelectCashandChque"));
+                        //}
+                        //else {
+                        generateLines();
+                        //}
 
                     }
                     $bsyDiv[0].style.visibility = "hidden";
@@ -4317,8 +4317,8 @@
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
                     + "</select></div>"
 
-                     // Payment method and overwrite payment method Suggested by Ashish and Rajni
-                    
+                    // Payment method and overwrite payment method Suggested by Ashish and Rajni
+
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
                     + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
