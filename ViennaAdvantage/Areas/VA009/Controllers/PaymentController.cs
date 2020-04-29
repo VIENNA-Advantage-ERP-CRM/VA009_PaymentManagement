@@ -72,7 +72,7 @@ namespace VA009.Controllers
             GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            string _Paydata = _payMdl.CrateBatchPayment(ct, arr);
+            string _Paydata = _payMdl.CrateBatchPayments(ct, arr);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 

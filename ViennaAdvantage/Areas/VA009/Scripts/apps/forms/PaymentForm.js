@@ -10,7 +10,7 @@
 ; (function (VA009, $) {
 
     //Form Class Function FullNameSpace
-    VA009.PaymentForm = function () { 
+    VA009.PaymentForm = function () {
         // Varriables
         this.frame;
         this.windowNo;
@@ -4268,12 +4268,12 @@
                         var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
 
                         //if (paystatus != null && paystatus.tables[0].rows.length > 0) {
-                        if (paystatus != null && paystatus.length > 0) {
-                            VIS.ADialog.info(("VA009_CantSelectCashandChque"));
-                        }
-                        else {
-                            generateLines();
-                        }
+                        //if (paystatus != null && paystatus.length > 0) {
+                        //    VIS.ADialog.info(("VA009_CantSelectCashandChque"));
+                        //}
+                        //else {
+                        generateLines();
+                        //}
 
                     }
                     $bsyDiv[0].style.visibility = "hidden";
@@ -4317,23 +4317,25 @@
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
                     + "</select></div>"
 
-                    + "<div class='VA009-popform-data' style='display:none !important'>"
-                    + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                    + "<select style='display:none !important' id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+                    // Payment method and overwrite payment method Suggested by Ashish and Rajni
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
                     + "</select></div>"
 
-                    + "<div class='VA009-popform-data' style='display:none !important'>"
-                    + "<br>"
-                    + "<input type='checkbox' style='display:none !important' id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</div>'
+                    + "<div class='VA009-popform-data'>"
+                    + "<label style='visibility:hidden;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
+                    + "<input type='checkbox' style='width:10%;'  disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</div>'
+
+                    + "<div class='VA009-popform-data'>"
+                    + "<label style='visibility:hidden;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
+                    + "<input type='checkbox' style='width:10%;' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</div>'
 
                     + "<div class='VA009-popform-data' style='display:none !important'>"
                     + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
                     + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
                     + "</select></div>"
-
-                    + "<div class='VA009-popform-data' style='display:none !important'>"
-                    + "<br>"
-                    + "<input style='display:none !important' type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</div>'
 
                     + "<div class='VA009-table-container' style='margin-top:20px !important; height:300px;' id='VA009_btnPopupGrid'> </div>"
                     + "</div>";
@@ -4414,6 +4416,9 @@
                     $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
                     $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    // Payment method and overwrite payment method Suggested by Ashish and Rajni
+                    $consolidate.prop('checked', true);
+                    $overwritepay.prop('checked', true);
                 };
 
                 function loadgrdBatch(callback) {

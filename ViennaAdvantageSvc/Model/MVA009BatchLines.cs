@@ -21,5 +21,20 @@ namespace ViennaAdvantage.Model
         {
 
         }
+        /// <summary>
+        /// to implement delete functionality 
+        /// </summary>
+        /// <returns>flag whether deletion possible or not</returns>
+        protected override bool BeforeDelete()
+        {
+            int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(*)
+                        FROM va009_batchlines WHERE va009_batch_id = " + GetVA009_Batch_ID() + " AND processed = 'Y' "));
+            if (count > 0)
+            {
+                return false;
+            }
+            return true;
+
+        }
     }
 }
