@@ -4587,7 +4587,7 @@ namespace VA009.Models
             _BtLines.SetC_BPartner_ID(PaymentData.C_BPartner_ID);
             _BtLines.SetAD_Client_ID(PaymentData.AD_Client_ID);
             _BtLines.SetAD_Org_ID(PaymentData.AD_Org_ID);
-            _BtLines.SetProcessed(true);
+            //_BtLines.SetProcessed(true);
             if (!_BtLines.Save())
             {
                 return 0;
@@ -4627,7 +4627,7 @@ namespace VA009.Models
             if (paymentmethdoID > 0)
                 _btDetal.SetVA009_PaymentMethod_ID(paymentmethdoID);
 
-            _btDetal.SetProcessed(true);
+            //_btDetal.SetProcessed(true);
             if (!_btDetal.Save())
             {
                 return 0;
@@ -4681,7 +4681,7 @@ namespace VA009.Models
             {
                 _btDetal.SetVA009_PaymentMethod_ID(paymentmethdoID);
             }
-            _btDetal.SetProcessed(true);
+            //_btDetal.SetProcessed(true);
             if (!_btDetal.Save())
             {
                 return 0;
@@ -5175,7 +5175,7 @@ namespace VA009.Models
                             _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
                             _Bt.SetVA009_PaymentRule(paymethodDetails["VA009_PaymentRule"].ToString());
                             _Bt.SetVA009_PaymentTrigger(paymethodDetails["VA009_PaymentTrigger"].ToString());
-                            _Bt.SetProcessed(true);
+                            // _Bt.SetProcessed(true);
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
                             if (isconsolidate == "Y")
                                 _Bt.SetVA009_Consolidate(true);
