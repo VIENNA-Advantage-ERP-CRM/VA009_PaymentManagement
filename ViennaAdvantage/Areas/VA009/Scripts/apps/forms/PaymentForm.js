@@ -5064,34 +5064,34 @@
 
                 SplitDialog.onOkClick = function () {
                     datasplit = [];
-                    if (_CollaborateData.length > 0) {
-                        Splitgrd.selectAll();
-                        datasplit = Splitgrd.records;
-                        for (var i = 0; i < datasplit.length; i++) {
-                            if (Splitgrd.get(Splitgrd.getSelection()[i])['DueDate'] == null) {
-                                VIS.ADialog.info("VA009_PlzSelctDueDate");
-                                return false;
+                    if (Splitgrd.getSelection().length > 0) {
+                            Splitgrd.selectAll();
+                            datasplit = Splitgrd.records;
+                            for (var i = 0; i < datasplit.length; i++) {
+                                if (Splitgrd.get(Splitgrd.getSelection()[i])['DueDate'] == null) {
+                                    VIS.ADialog.info("VA009_PlzSelctDueDate");
+                                    return false;
+                                }
                             }
-                        }
-                        //}
-                        $bsyDiv[0].style.visibility = "visible";
-                        $.ajax({
-                            url: VIS.Application.contextUrl + "VA009/Payment/CreateSplitPayments",
-                            type: "POST",
-                            datatype: "json",
-                            // contentType: "application/json; charset=utf-8",
-                            async: true,
-                            data: ({ PaymentData: JSON.stringify(datasplit), SplitAmmount: $TxtSplitAmt.val() }),
-                            success: function (result) {
-                                callbackSplit(result);
-                            },
-                            error: function (ex) {
+                            //}
+                            $bsyDiv[0].style.visibility = "visible";
+                            $.ajax({
+                                url: VIS.Application.contextUrl + "VA009/Payment/CreateSplitPayments",
+                                type: "POST",
+                                datatype: "json",
+                                // contentType: "application/json; charset=utf-8",
+                                async: true,
+                                data: ({ PaymentData: JSON.stringify(datasplit), SplitAmmount: $TxtSplitAmt.val() }),
+                                success: function (result) {
+                                    callbackSplit(result);
+                                },
+                                error: function (ex) {
 
-                                console.log(ex);
-                                $bsyDiv[0].style.visibility = "hidden";
-                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                            }
-                        });
+                                    console.log(ex);
+                                    $bsyDiv[0].style.visibility = "hidden";
+                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                }
+                            });
                     }
                     else {
                         VIS.ADialog.info("VA009_PlzSplitRecord");

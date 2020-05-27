@@ -37,6 +37,8 @@ namespace ViennaAdvantage.Process
         int _VA009_BatchLine_ID = 0;
         int batchid = 0, _C_BankAccount_ID=0;
         bool VA009_IsSameCurrency = false;
+        //variable to get value of cosnolidate parameter
+        bool isConsolidate = false; 
         int C_ConversionType_ID = 0;
         //int _VA009_BatchDetail_ID = 0;
 
@@ -91,6 +93,10 @@ namespace ViennaAdvantage.Process
                 else if (name.Equals("C_ConversionType_ID"))
                 {
                     C_ConversionType_ID = para[i].GetParameterAsInt();
+                }
+                else if (name.Equals("VA009_Consolidate"))
+                {
+                    isConsolidate = "Y".Equals(para[i].GetParameter());
                 }
                 else
                 {
@@ -365,9 +371,11 @@ namespace ViennaAdvantage.Process
             batch.SetVA009_PaymentRule(paym.GetVA009_PaymentRule());
             batch.SetVA009_PaymentTrigger(paym.GetVA009_PaymentTrigger());
             batch.SetVA009_DocumentDate(DateTime.Now);
+            //set value of cosnolidate parameter on batch header
+            batch.SetVA009_Consolidate(isConsolidate);
             if (!batch.Save())
             {
-                batchid = 0;
+               return batchid = 0;
             }
             return batch.GetVA009_Batch_ID();
         }

@@ -9,6 +9,7 @@ using VAdvantage.DataBase;
 using ViennaAdvantage.Model;
 using VAdvantage.Process;
 using System.IO;
+using System.Text;
 
 namespace ViennaAdvantage.Model
 {
@@ -34,6 +35,36 @@ namespace ViennaAdvantage.Model
 
         public bool CloseIt()
         {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@"SELECT COUNT(va009_batchlines_id) FROM va009_batchlinedetails WHERE va009_batchlines_id IN
+                    (SELECT va009_batchlines_id  FROM va009_batchlines  WHERE va009_batch_id= " + GetVA009_Batch_ID()
+                    + "  ) AND c_payment_id IS NOT NULL ");
+            if (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null)) > 0)
+            {
+                return false;
+            }
+            else
+            {
+                //to update processed to flase when we perform Close.
+                int updateProcessedBD = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlinedetails set processed='N'
+                    WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() +
+                    ")"));
+
+                int updateProcessedBL = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlines set processed='N' 
+                                WHERE va009_batch_id=" + GetVA009_Batch_ID()));
+                if (updateProcessedBL > 0 && updateProcessedBD > 0)
+                {
+                    //to update execution status to awaited when we perform delete.
+                    int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE c_invoicepayschedule SET VA009_ExecutionStatus = 'A' WHERE c_invoicepayschedule_id IN
+                (SELECT c_invoicepayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
+                    int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE va009_orderpayschedule SET VA009_ExecutionStatus = 'A'
+                WHERE va009_orderpayschedule_id IN (SELECT va009_orderpayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
+                    if (schdeuleCount > 0 || OrdschdeuleCount > 0)
+                    {
+                        return true;
+                    }
+                }
+            }
             return true;
         }
 
@@ -147,7 +178,7 @@ namespace ViennaAdvantage.Model
         {
             int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(*)
                         FROM va009_batchlines WHERE va009_batch_id = " + GetVA009_Batch_ID() + " AND processed = 'Y' "));
-            if(count > 0)
+            if (count > 0)
             {
                 return false;
             }

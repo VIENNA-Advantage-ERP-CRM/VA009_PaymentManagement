@@ -11,7 +11,7 @@ using VAdvantage.DataBase;
 using VAdvantage.Logging;
 using VAdvantage.Utility;
 
-namespace VA009.Models 
+namespace VA009.Models
 {
     public class VA009_PaymentClass
     {
@@ -20,12 +20,12 @@ namespace VA009.Models
         static VLogger _log = VLogger.GetVLogger("PaymentFormFile");
 
         /// <summary>
-            /// To generate Payment file and it will return the File Path
-            /// </summary>
-            /// <param name="ctx">Context</param>
-            /// <param name="Payment_ID">Payment Or Batch ID</param>
-            /// <param name="isBatch"> Is Batch Check</param>
-            /// <returns></returns>
+        /// To generate Payment file and it will return the File Path
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="Payment_ID">Payment Or Batch ID</param>
+        /// <param name="isBatch"> Is Batch Check</param>
+        /// <returns></returns>
         public List<PaymentResponse> ExportPaymentFile(Ctx ctx, int Payment_ID, bool isBatch)
         {
             string _filePath = HostingEnvironment.ApplicationPhysicalPath + @"\\PaymentFiles";
@@ -94,7 +94,75 @@ namespace VA009.Models
             }
             return batchResponse;
         }
-       
+
+        /// <summary>
+        /// To generate Payment file CSV Format and it will return the File Path
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="Payment_ID">Payment Or Batch ID</param>
+        /// <param name="isBatch"> Is Batch Check</param>
+        /// <returns></returns>
+        public List<PaymentResponse> ExportPaymentFileCSV(Ctx ctx, int Payment_ID, bool isBatch)
+        {
+            string _filePath = HostingEnvironment.ApplicationPhysicalPath + @"\\PaymentFiles";
+            string fileName = string.Empty;
+            string documentno = string.Empty;
+            List<PaymentResponse> batchResponse = new List<PaymentResponse>();
+            PaymentResponse _obj = null;
+            bool created = false;
+            DataSet ds = null;
+            if (isBatch)
+            {
+                ds = DB.ExecuteDataset(@" SELECT documentno, VA009_Batch_ID
+                    FROM VA009_Batch WHERE VA009_Batch_ID = " + Payment_ID);
+                if (ds != null && ds.Tables[0].Rows.Count > 0)
+                {
+                    documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"]));
+                    _obj = new PaymentResponse();
+                    fileName = String.Format("{0,7}_{1,20}{2,4}",
+                             "BULKPAY", documentno, ".CSV");
+                    created = CreateCSVFile(_filePath, true, false, ctx, Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_Batch_ID"]), fileName, isBatch);
+                    if (created)
+                    {
+                        _obj._filename = fileName;
+                        _obj._path = _filePath;
+                    }
+                    else
+                    {
+                        _log.SaveError("Error: ", "File not created- " + _filePath + "- " + fileName);
+                        _obj._error = Msg.GetMsg(ctx, "VA009_FileExist");
+                    }
+                    batchResponse.Add(_obj);
+                }
+
+            }
+            else
+            {
+                _obj = new PaymentResponse();
+                ds = DB.ExecuteDataset(@"SELECT documentno FROM c_payment WHERE c_payment_id = " + Payment_ID);
+                if (ds != null && ds.Tables[0].Rows.Count > 0)
+                {
+                    documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"]));
+                    fileName = String.Format("{0,7}_{1,20}{2,4}",
+                                  "BULKPAY", documentno, ".CSV");
+                    created = CreateCSVFile(_filePath, true, false, ctx, Payment_ID, fileName, isBatch);
+                    if (created)
+                    {
+                        _obj._filename = fileName;
+                        _obj._path = _filePath;
+                    }
+                    else
+                    {
+                        _log.SaveError("Error: ", "File not created- " + _filePath + "- " + fileName);
+                        _obj._error = Msg.GetMsg(ctx, "VA009_FileExist");
+                    }
+                    batchResponse.Add(_obj);
+                }
+            }
+            return batchResponse;
+        }
+
+        #region Create DAT File Format For CMS Specific
         /// <summary>
         /// It will Create a Dat File
         /// </summary>
@@ -181,19 +249,6 @@ namespace VA009.Models
                 return false;
             }
             return true;
-        }
-
-        /// <summary>
-        /// Get The Name of the location
-        /// </summary>
-        /// <param name="c_location_id">Location ID</param>
-        /// <returns>Name of the location</returns>
-        public string getLocationName(int c_location_id)
-        {
-            return Util.GetValueOfString(DB.ExecuteScalar(@"SELECT (NVL(cn.Name,'')|| ' ' || NVL(C_Location.ADDRESS1, '')|| ' '|| NVL(C_Location.ADDRESS2, '')
-                              || ' '|| NVL(C_Location.ADDRESS3, '')|| ' '|| NVL(C_Location.ADDRESS4, '')|| ' '|| NVL(C_Location.CITY, '')
-                              || ' '|| NVL(C_Location.REGIONNAME, '')|| ' '|| NVL(C_Location.POSTAL, '')|| ' '|| NVL(C_Location.POSTAL_ADD, '')) AS address
-                              FROM C_Location C_Location LEFT JOIN C_Country cn ON cn.C_COUNTRY_ID = C_Location.C_COUNTRY_ID WHERE C_Location.C_location_ID =" + c_location_id));
         }
 
         /// <summary>
@@ -350,6 +405,345 @@ namespace VA009.Models
 
             }
             return footer.ToString();
+        }
+        #endregion
+
+        #region Create CSV File Format For CMS Specific
+
+        /// <summary>
+        /// It will Create a CSV File
+        /// </summary>
+        /// <param name="baseDirName"> Directory Name </param>
+        /// <param name="createLogDir">Create Log Directory</param>
+        /// <param name="isClient">Check FOr Client Side</param>
+        /// <param name="ct">Context</param>
+        /// <param name="paymentID">Payment or Batch ID</param>
+        /// <param name="filenameFinal">File Name With Extention</param>
+        /// <param name="isBatch">Is Batch Check</param>
+        /// <returns></returns>
+        private bool CreateCSVFile(String baseDirName, bool createLogDir, bool isClient, Ctx ct, int paymentID, string filenameFinal, bool isBatch)
+        {
+            String fileName = baseDirName;
+            int index = fileName.LastIndexOf('\\');
+            String Sufix = fileName.Substring(index + 1, fileName.Length - (index + 1));
+            fileName = fileName.Substring(0, index);
+            try
+            {
+                if (string.IsNullOrEmpty(fileName))
+                {
+                    DirectoryInfo dir = new DirectoryInfo(fileName);
+                    if (!dir.Exists)
+                    {
+                        fileName = "";
+                    }
+                    _log.SaveError("Error: ", "File Name Empty " + "- " + fileName);
+                }
+                if (!string.IsNullOrEmpty(fileName) && createLogDir)
+                {
+                    fileName += Path.DirectorySeparatorChar + "PaymentFiles";
+                    DirectoryInfo dir = new DirectoryInfo(fileName);
+
+                    if (!dir.Exists)
+                        dir.Create();
+                    _log.SaveError("Error: ", "Create Directory- " + "- " + fileName);
+                    if (!string.IsNullOrEmpty(fileName))
+                    {
+                        fileName += Path.DirectorySeparatorChar;
+                        if (isClient)
+                            fileName += Sufix;
+
+
+                        //_fileNameDate = GetFileNameDate();
+                        //fileName += _fileNameDate + "_";
+                        fileName += filenameFinal;
+                        //for (int i = 0; i < 100; i++)
+                        //{
+                        _log.SaveError("Error: ", "File Name Not NUll- " + "- " + fileName);
+                        String finalName = fileName;
+                        if (!File.Exists(finalName))
+                        {
+                            _log.SaveError("Error: ", "File not Exist- " + "- " + fileName);
+                            FileStream file = new FileStream(finalName, FileMode.OpenOrCreate, FileAccess.Write);
+                            _file = file;
+                            _file.Close();
+                            file.Close();
+                            using (StreamWriter outputFile = new StreamWriter(finalName, true))
+                            {
+                                outputFile.WriteLine(createCSVHeaderFormat(ct, paymentID, filenameFinal, isBatch));
+                                outputFile.WriteLine(createTransactionDataCSV(ct, paymentID, isBatch));
+                                outputFile.WriteLine(createCSVFooterFormat(ct, paymentID, isBatch));
+                            }
+                            //break;
+                        }
+                        else
+                        {
+                            _log.SaveError("Error: ", "File Already Exist- " + "- " + fileName);
+                        }
+                        //}
+                        if (_file == null)		//	Fallback create temp file
+                        {
+                            _log.SaveError("Error: ", "File Null- " + "- " + fileName);
+                            _file = new FileStream(HostingEnvironment.ApplicationPhysicalPath + "\\" + Environment.GetEnvironmentVariable("TEMP") + "\\" + "PaymentFile.dat", FileMode.OpenOrCreate, FileAccess.Write);
+                        }
+                    }
+                }
+            }
+            catch (Exception e)
+            {
+                _log.SaveError("Error: ", e.Message + "---File Null- " + "- " + fileName);
+                Console.WriteLine(e.Message);
+                _file = null;
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
+        /// Create Header Format For CSV File
+        /// </summary>
+        /// <param name="ct">Context Object</param>
+        /// <param name="paymentID">Payment Or Batch ID</param>
+        /// <param name="filenameFinal">File Name</param>
+        /// <param name="isBatch">Is Batch Check</param>
+        /// <returns>Header Data</returns>
+        public string createCSVHeaderFormat(Ctx ct, int paymentID, string filenameFinal, bool isBatch)
+        {
+            StringBuilder header = new StringBuilder();
+            //header.Append(filenameFinal);
+            StringBuilder sql = new StringBuilder();
+            if (isBatch)
+            {
+                sql.Clear();
+                //--oi.CMS01_BRegNo,--oi.CMS01_BPAddress
+                sql.Append(@"SELECT ba.CMS01_CorporateID, ba.C_BankAccount_ID,  p.VA009_DocumentDate AS Dateacct,  p.documentno,
+                ba.Name,  ba.AccountNo,  (SELECT SUM(VA009_ConvertedAmt)  FROM VA009_BatchLineDetails bld
+                INNER JOIN VA009_BatchLines bl  ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
+                INNER JOIN VA009_Batch b   ON bl.VA009_Batch_ID = b.VA009_Batch_ID   INNER JOIN C_Payment p
+                ON p.C_Payment_ID      = bld.C_Payment_ID WHERE b.VA009_Batch_ID =" + paymentID + @"  ) AS payamt,
+                oi.CMS01_BRegNo,  oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress FROM VA009_Batch p
+                INNER JOIN C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN AD_OrgInfo oi
+                ON oi.AD_Org_ID        =p.AD_Org_ID WHERE p.VA009_Batch_ID =" + paymentID);
+            }
+            else
+            {
+                sql.Clear();
+                sql.Append(@"SELECT ba.C_BankAccount_ID,  p.DateAcct,  p.documentno,  ba.Name,  ba.AccountNo,  p.payamt,
+                                ba.CMS01_CorporateID,
+                                 oi.CMS01_BRegNo, oi.Phone,   oi.C_Location_ID,  
+                                oi.CMS01_BPAddress
+                                FROM c_payment p INNER JOIN 
+                               C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN AD_OrgInfo oi ON oi.AD_Org_ID
+                               =p.AD_Org_ID WHERE p.c_payment_id= " + paymentID);
+            }
+            DataSet ds = DB.ExecuteDataset(sql.ToString());
+            if (ds != null && ds.Tables[0].Rows.Count > 0)
+            {
+                header.Append(String.Format("{0,2},{1,8},{2,6},{3,40},{4,14},{5,8},{6,20},{7,15},{8,1},{9,1},{10,1},{11,1},{12,1},{13,100},{14,100},{15,100},{16,100},{17,100}",
+                                "00", "BULKPAYMENT", Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]),
+                                Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]),
+                                RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"])),
+                                Convert.ToDateTime(ds.Tables[0].Rows[0]["DateAcct"]).ToString("ddMMyyyy"),
+                                RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])),
+                                Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_BRegNo"]), "A", "N", "N", "N", "I",
+                                "", "", "", "", ""));
+
+            }
+            return header.ToString();
+        }
+
+        /// <summary>
+        /// To create Transaction Data for CSV File
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="paymentID">Payment Or Batch ID</param>
+        /// <param name="isBatch">Batch Check</param>
+        /// <returns>Data For CSV File</returns>
+        public string createTransactionDataCSV(Ctx ct, int paymentID, bool isBatch)
+        {
+            StringBuilder RowsData = new StringBuilder();
+            StringBuilder sql = new StringBuilder();
+            if (isBatch)
+            {
+                sql.Append(@"SELECT ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
+                           ba.Name,  ba.AccountNo,  p.payamt, oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.ReferenceNo,
+                           oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress,  bp.A_Name,cp.CMS01_BeneficiaryIDIndicator,
+                           bp.AccountNo AS BPAcctNo,  u.email FROM c_payment p INNER JOIN C_BankAccount ba
+                           ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN C_Bank b ON b.C_Bank_ID= ba.C_bank_ID
+                            INNER JOIN C_BPartner cp ON cp.C_BPartner_ID= p.C_BPartner_ID
+                           INNER JOIN AD_OrgInfo oi ON oi.AD_Org_ID =p.AD_Org_ID LEFT JOIN C_BP_BankAccount bp
+                           ON bp.C_BPartner_ID=p.C_BPartner_ID LEFT JOIN AD_USer u ON u.C_BPartner_ID  = p.C_BPartner_ID
+                           WHERE p.c_payment_id IN ( SELECT p.C_Payment_ID FROM VA009_BatchLineDetails bld
+                           INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
+                           INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID INNER JOIN C_Payment p
+                           ON p.C_Payment_ID      = bld.C_Payment_ID WHERE b.VA009_Batch_ID = " + paymentID + ")");
+
+            }
+            else
+            {
+                //cp.CMS01_BeneficiaryIDIndicator,
+                sql.Append(@"SELECT ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
+                           ba.Name,  ba.AccountNo,  p.payamt,  oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.ReferenceNo,
+                           oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress,  bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
+                           bp.AccountNo AS BPAcctNo,  u.email FROM c_payment p INNER JOIN C_BankAccount ba
+                           ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN C_Bank b ON b.C_Bank_ID= ba.C_bank_ID
+                           INNER JOIN C_BPartner cp ON cp.C_BPartner_ID= p.C_BPartner_ID
+                           INNER JOIN AD_OrgInfo oi ON oi.AD_Org_ID =p.AD_Org_ID LEFT JOIN C_BP_BankAccount bp
+                           ON bp.C_BPartner_ID=p.C_BPartner_ID LEFT JOIN AD_USer u ON u.C_BPartner_ID  = p.C_BPartner_ID
+                           WHERE p.c_payment_id=" + paymentID);
+            }
+            DataSet ds = DB.ExecuteDataset(sql.ToString());
+            int length = 0;
+            //--oi.CMS01_BRegNo,--oi.CMS01_BPAddress
+            if (ds != null && ds.Tables[0].Rows.Count > 0)
+            {
+                string isresident = "2", idIndicator = string.Empty;
+                string formatStringNewLine = string.Empty;
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        formatStringNewLine = string.Empty;
+                    }
+                    else
+                    {
+                        formatStringNewLine = "\n";
+                    }
+
+                    if (Util.GetValueOfString(ds.Tables[0].Rows[i]["CMS01_IsResident"]).Equals("Y"))
+                    {
+                        isresident = "1";
+                    }
+                    else
+                    {
+                        isresident = "2";
+                    }
+
+                    if (Util.GetValueOfString(ds.Tables[0].Rows[i]["CMS01_BeneficiaryIDIndicator"]).Equals("NI"))
+                    {
+                        idIndicator = "01";
+                    }
+                    else if (Util.GetValueOfString(ds.Tables[0].Rows[i]["CMS01_BeneficiaryIDIndicator"]).Equals("OI"))
+                    {
+                        idIndicator = "02";
+                    }
+                    else if (Util.GetValueOfString(ds.Tables[0].Rows[i]["CMS01_BeneficiaryIDIndicator"]).Equals("PN"))
+                    {
+                        idIndicator = "03";
+                    }
+                    else if (Util.GetValueOfString(ds.Tables[0].Rows[i]["CMS01_BeneficiaryIDIndicator"]).Equals("AP"))
+                    {
+                        idIndicator = "04";
+                    }
+                    else
+                    {
+                        idIndicator = "05";
+                    }
+                    RowsData.Append(String.Format("" + formatStringNewLine + "{0,2},{1,10},{2,20},{3,18},{4,17},{5,1},{6,96},{7,20},{8,2},{9,15},{10,40},{11,40},{12,40},{13,20},{14,300},{15,100},{16,100},{17,100},{18,100},{19,100}",
+                                    "10", "10", RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])),
+                                    decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2),
+                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["RoutingNo"]),
+                                     isresident,
+                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["A_Name"]),
+                                    RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["BPAcctNo"])),
+                                    idIndicator,
+                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["ReferenceNo"]),
+                                    getLocationName(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Location_ID"])),
+                                    getLocationName(Util.GetValueOfInt(ds.Tables[0].Rows[i]["CMS01_BPAddress"])),
+                                    getLocationName(Util.GetValueOfInt(ds.Tables[0].Rows[i]["CMS01_BPAddress"])),
+                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["description"]),
+                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["email"]),
+                                    string.Empty, string.Empty, string.Empty, string.Empty, string.Empty
+                                    ));
+                    length = Util.GetValueOfString("AUTOCREDIT" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])) + " RM " + decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2).ToString()).Length;
+                    RowsData.Append(String.Format("\n{0,2},{1," + length + "}",
+                               "20", "AUTOCREDIT" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])) + " RM " + decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2).ToString()
+                               ));
+                }
+            }
+
+            return RowsData.ToString();
+        }
+
+        /// <summary>
+        /// To Create Footer Data FOr CSV
+        /// </summary>
+        /// <param name="ct">COntext</param>
+        /// <param name="paymentID">Payment Or Batch ID</param>
+        /// <param name="isBatch">Batch Check</param>
+        /// <returns>Data For Footer</returns>
+        public string createCSVFooterFormat(Ctx ct, int paymentID, bool isBatch)
+        {
+            StringBuilder footer = new StringBuilder();
+            StringBuilder sql = new StringBuilder();
+            DataSet dss = new DataSet();
+            int paymentCount = 1;
+            decimal totalAmt = 0, hashTotal = 0;
+            if (isBatch)
+            {
+                sql.Append(@"SELECT ba.CMS01_CorporateID, ba.CMS01_HashTotal, ba.C_BankAccount_ID,  p.documentno, ba.AccountNo FROM VA009_Batch p 
+                        INNER JOIN C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID WHERE p.VA009_Batch_ID= " + paymentID);
+                dss = DB.ExecuteDataset(@" SELECT SUM(dueamt) as TotalAmt,Count(C_Payment_ID) as noofrecords
+                    FROM va009_batchlinedetails WHERE va009_batchlines_id IN  (SELECT va009_batchlines_id
+                    FROM va009_batchlines  WHERE VA009_Batch_ID = " + paymentID + ") ");
+                if (dss != null && dss.Tables[0].Rows.Count > 0)
+                {
+                    paymentCount = Util.GetValueOfInt(dss.Tables[0].Rows[0]["noofrecords"]);
+                    totalAmt = Util.GetValueOfDecimal(dss.Tables[0].Rows[0]["TotalAmt"]);
+                }
+            }
+            else
+            {
+                sql.Append(@"SELECT ba.CMS01_CorporateID, ba.CMS01_HashTotal, ba.C_BankAccount_ID,  p.documentno, p.payamt,bp.AccountNo  FROM c_payment p INNER JOIN 
+                               C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID LEFT JOIN C_BP_BankAccount bp
+                           ON bp.C_BPartner_ID=p.C_BPartner_ID WHERE p.c_payment_id= " + paymentID);
+            }
+            DataSet ds = DB.ExecuteDataset(sql.ToString());
+            if (ds != null && ds.Tables[0].Rows.Count > 0)
+            {
+                if (!isBatch)
+                {
+                    totalAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[0]["payamt"]);
+                }
+                hashTotal = claculateHashTotal(RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"])), Decimal.Truncate(totalAmt));
+                footer.Append(String.Format("{0,2},{1,20},{2,6},{3,17},{4,15},{5,100}",
+                            "99", RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])),
+                            paymentCount, decimal.Round(totalAmt, 2),
+                            hashTotal, string.Empty
+                            ));
+
+            }
+            return footer.ToString();
+        }
+        /// <summary>
+        /// TO GET HASH TOTAL FORMULA GIVEN BY CMS BANK PDF
+        /// </summary>
+        /// <param name="accountno">ACCOUNT NO</param>
+        /// <param name="amount">AMOUNT</param>
+        /// <returns>HASH TOTAL</returns>
+        public decimal claculateHashTotal(string accountno, decimal amount)
+        {
+            //FORMULA GIVEN BY CMS BANK 
+            decimal calculateHash = (Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amount);
+            decimal b = calculateHash * 24;
+            b = decimal.Truncate(b);
+            decimal c = b + 2994;
+            decimal hashTotal = c / 285;
+            return hashTotal;
+        }
+        #endregion
+
+
+        /// <summary>
+        /// Get The Name of the location
+        /// </summary>
+        /// <param name="c_location_id">Location ID</param>
+        /// <returns>Name of the location</returns>
+        public string getLocationName(int c_location_id)
+        {
+            return Util.GetValueOfString(DB.ExecuteScalar(@"SELECT (NVL(cn.Name,'')|| ' ' || NVL(C_Location.ADDRESS1, '')|| ' '|| NVL(C_Location.ADDRESS2, '')
+                              || ' '|| NVL(C_Location.ADDRESS3, '')|| ' '|| NVL(C_Location.ADDRESS4, '')|| ' '|| NVL(C_Location.CITY, '')
+                              || ' '|| NVL(C_Location.REGIONNAME, '')|| ' '|| NVL(C_Location.POSTAL, '')|| ' '|| NVL(C_Location.POSTAL_ADD, '')) AS address
+                              FROM C_Location C_Location LEFT JOIN C_Country cn ON cn.C_COUNTRY_ID = C_Location.C_COUNTRY_ID WHERE C_Location.C_location_ID =" + c_location_id));
         }
 
         /// <summary>
