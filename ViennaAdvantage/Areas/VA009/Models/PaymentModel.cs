@@ -1681,7 +1681,9 @@ namespace VA009.Models
                                 _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
                                 _Bt.SetVA009_PaymentRule(_paymthd.GetVA009_PaymentRule());
                                 _Bt.SetVA009_PaymentTrigger(_paymthd.GetVA009_PaymentTrigger());
-                                _Bt.SetProcessed(true);
+                                //to set bank currency on Payment Batch given by Rajni and Ashish
+                                _Bt.Set_Value("C_Currency_ID", _BankAcct.GetC_Currency_ID());
+                                //_Bt.SetProcessed(true);
                                 _Bt.SetVA009_DocumentDate(DateTime.Now);
                                 if (isconsolidate == "Y")
                                     _Bt.SetVA009_Consolidate(true);
@@ -1941,7 +1943,9 @@ namespace VA009.Models
                                 _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
                                 _Bt.SetVA009_PaymentRule(_paymthd.GetVA009_PaymentRule());
                                 _Bt.SetVA009_PaymentTrigger(_paymthd.GetVA009_PaymentTrigger());
-                                _Bt.SetProcessed(true);
+                                //to set bank currency on Payment Batch given by Rajni and Ashish
+                                _Bt.Set_Value("C_Currency_ID", _BankAcct.GetC_Currency_ID());
+                                //_Bt.SetProcessed(true);
                                 _Bt.SetVA009_DocumentDate(DateTime.Now);
                                 if (isconsolidate == "Y")
                                 {
@@ -3177,8 +3181,9 @@ namespace VA009.Models
         {
             List<Dictionary<string, object>> retDic = null;
             StringBuilder qry = new StringBuilder();
-            string sql = @"SELECT DISTINCT bk.C_Bank_ID, bk.Name || '_' || org.Name AS Bank FROM C_BankAccount bc INNER JOIN C_Bank bk 
-            ON bc.C_Bank_ID = bk.C_Bank_ID INNER JOIN AD_Org org ON bk.AD_Org_ID = org.AD_Org_ID WHERE bc.IsActive='Y' AND bk.IsActive='Y' AND bk.IsOwnBank ='Y' ";
+            //REMOVED ORGNIZATION NAME FROM BANK BECAUSE NOW WE ADDED ORG PARAMETER ON FORM
+            string sql = @"SELECT DISTINCT bk.C_Bank_ID, bk.Name AS Bank FROM C_BankAccount bc INNER JOIN C_Bank bk 
+            ON bc.C_Bank_ID = bk.C_Bank_ID WHERE bc.IsActive='Y' AND bk.IsActive='Y' AND bk.IsOwnBank ='Y' ";
 
             // Check Access of Organization on Bank Account not to Bank
             qry.Append(MRole.GetDefault(ct).AddAccessSQL(sql, "bc", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO));
@@ -4904,21 +4909,32 @@ namespace VA009.Models
             int payment_ID = 0;
             List<PaymentResponse> batchResponse = new List<PaymentResponse>();
             bool ispaymentGenerated = false;
+            //add sql access to generate batch file for those who have access
+            StringBuilder sql = new StringBuilder();
             if (isBatch)
             {
-                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT VA009_Batch_ID FROM VA009_Batch 
-                            WHERE UPPER(documentno)=UPPER('" + DocNumber + "') AND AD_Org_ID=" + ct.GetAD_Org_ID() + "AND AD_Client_ID =" + ct.GetAD_Client_ID()));
-                ispaymentGenerated = (Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT Count(bld.C_Payment_ID) FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
+                //add sql access to generate batch file for those who have access
+                sql.Clear();
+                sql.Append(@"SELECT VA009_Batch_ID FROM VA009_Batch
+                            WHERE UPPER(documentno) = UPPER('" + DocNumber + "')");
+                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_Batch", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
+                sql.Clear();
+                sql.Append(@"SELECT Count(bld.C_Payment_ID) FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
                     INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID LEFT JOIN C_Payment p ON p.C_Payment_ID      = bld.C_Payment_ID
-                    WHERE b.VA009_Batch_ID = " + payment_ID, null, null)) > 0 ? true : false);
+                    WHERE b.VA009_Batch_ID = " + payment_ID);
+                ispaymentGenerated = (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString())) > 0 ? true : false);
             }
             else
             {
-                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"(SELECT c_payment_id FROM c_payment 
-                            WHERE UPPER(documentno)=UPPER('" + DocNumber + "')) "));
+                //add sql access to generate batch file for those who have access
+                sql.Clear();
+                sql.Append(@"(SELECT c_payment_id FROM c_payment 
+                            WHERE UPPER(documentno)=UPPER('" + DocNumber + "')) ");
+                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
             }
             PaymentResponse obj = null;
-            StringBuilder sql = new StringBuilder(@"SELECT bpc.value FROM c_payment p INNER JOIN VA009_BankPaymentClass pc
+            sql.Clear();
+            sql.Append(@"SELECT bpc.value FROM c_payment p INNER JOIN VA009_BankPaymentClass pc
                                   ON (pc.C_bankAccount_ID= p.c_bankaccount_id AND pc.VA009_PaymentMethod_ID=p.VA009_PaymentMethod_ID)
                                   INNER JOIN VA009_PaymentClass  bpc ON pc.VA009_PaymentClass_ID=bpc.VA009_PaymentClass_ID ");
             if (isBatch)
@@ -5175,6 +5191,8 @@ namespace VA009.Models
                             _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
                             _Bt.SetVA009_PaymentRule(paymethodDetails["VA009_PaymentRule"].ToString());
                             _Bt.SetVA009_PaymentTrigger(paymethodDetails["VA009_PaymentTrigger"].ToString());
+                            //to set bank currency on Payment Batch given by Rajni and Ashish
+                            _Bt.Set_Value("C_Currency_ID", _BankAcct.GetC_Currency_ID());
                             // _Bt.SetProcessed(true);
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
                             if (isconsolidate == "Y")
@@ -5410,8 +5428,8 @@ namespace VA009.Models
             }
 
             if (docno.Length > 0)
-            {
-                msg = Msg.GetMsg(ct, "VA009_PaymentCompletedWith");
+            {//changed msg 
+                msg = Msg.GetMsg(ct, "VA009_BatchCompletedWith");
                 msg += docno.ToString();
                 ex.Append(msg);
             }
