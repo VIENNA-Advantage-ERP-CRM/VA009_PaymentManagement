@@ -1899,7 +1899,7 @@
                     $POP_txtAccttNo.val('');
                     $POP_txtChqNo.val('');
                     //to get bank account of selected organization assigned by Ashish on 28 May 2020
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbBank.val() }, callbackloadbankAcct);
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
 
