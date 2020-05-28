@@ -1876,7 +1876,8 @@
                 //end
 
                 $POP_cmbOrg.on("change", function () {
-                    if ($POP_cmbOrg.val() == "0") {
+                     //to set Org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -1886,19 +1887,19 @@
 
                 $POP_cmbBank.on("change", function () {
                     $POP_cmbBankAccount.empty();
-                    //change by Amit
-                    if ($POP_cmbBank.val() == "0") {
-                        $POP_cmbBank.css('background-color', SetMandatory(true));
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                    //to set bank mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                        $POP_cmbBank.css('background-color', SetMandatory(false));
                     }
                     else {
-                        $POP_cmbBank.css('background-color', SetMandatory(false));
+                        $POP_cmbBank.css('background-color', SetMandatory(true));
+                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
                     }
                     //end
                     $POP_txtAccttNo.val('');
                     $POP_txtChqNo.val('');
-
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": [] }, callbackloadbankAcct);
+                    //to get bank account of selected organization assigned by Ashish on 28 May 2020
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbBank.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
 
@@ -1914,12 +1915,12 @@
                 });
 
                 $POP_cmbBankAccount.on("change", function () {
-                    //change by amit
-                    if ($POP_cmbBankAccount.val() == "0") {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                    //to set bank mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                        $POP_cmbBankAccount.css('background-color', SetMandatory(false));
                     }
                     else {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(false));
+                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
                     }
                     //end
                     $POP_txtAccttNo.val('');
@@ -2066,6 +2067,16 @@
                     }
                     else {
                         $POP_Consolidate.removeAttr('disabled');
+                    }
+                });
+
+                $POP_DateAcct.on("change", function () {
+                    //to set Date acct mandatory given by ashish on 28 May 2020
+                    if ($POP_DateAcct.val() == "") {
+                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_DateAcct.css('background-color', SetMandatory(false));
                     }
                 });
 
@@ -2523,7 +2534,8 @@
                 //end
 
                 $POP_cmbOrg.on("change", function () {
-                    if ($POP_cmbOrg.val() == "0") {
+                    //to set Org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -2533,8 +2545,8 @@
 
                 $RPOP_cmbBank.on("change", function () {
                     $RPOP_cmbBankAccount.empty();
-                    //change by Amit
-                    if ($RPOP_cmbBank.val() == "0") {
+                    //to set Org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) == 0) {
                         $RPOP_cmbBank.css('background-color', SetMandatory(true));
                         $RPOP_cmbBankAccount.css('background-color', SetMandatory(true));
                     }
@@ -2542,8 +2554,8 @@
                         $RPOP_cmbBank.css('background-color', SetMandatory(false));
                     }
                     //end
-
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $RPOP_cmbBank.val(), "Orgs": [] }, callbackloadbankAcct);
+                    //to get bank account of selected organization assigned by Ashish on 28 May 2020
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $RPOP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
 
@@ -2559,8 +2571,8 @@
                 });
 
                 $RPOP_cmbBankAccount.on("change", function () {
-                    //change by amit
-                    if ($RPOP_cmbBankAccount.val() == "0") {
+                    //to set Org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) == 0) {
                         $RPOP_cmbBankAccount.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -2600,6 +2612,16 @@
                             VIS.ADialog.error("VA009_ErrorLoadingPayments");
                         }
                     });
+                });
+
+                $POP_DateAcct.on("change", function () {
+                    //to set Date acct mandatory given by ashish on 28 May 2020
+                    if ($POP_DateAcct.val() == "") {
+                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_DateAcct.css('background-color', SetMandatory(false));
+                    }
                 });
 
                 function callbackchqReload(result) {
@@ -3656,7 +3678,8 @@
 
                 $Cash_cmbcashbk.on("change", function () {
                     $Cash_OpngBal.val('');
-                    if ($Cash_cmbcashbk.val() == "0") {
+                    //to set cashbook mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) == 0) {
                         $Cash_cmbcashbk.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -3710,7 +3733,8 @@
                 });
 
                 $POP_cmbOrg.on("change", function () {
-                    if ($POP_cmbOrg.val() == "0") {
+                    //to set org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -4358,6 +4382,8 @@
                 loadbanks($POP_cmbBank, orgids);
                 $POP_cmbBank.css('background-color', SetMandatory(true));
                 $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                //set payment method mandatory assigned by ashish 28 May 2020
+                $POP_PayMthd.css('background-color', SetMandatory(true));
                 loadPayMthd();
                 loadCurrencyType();
 
@@ -4510,7 +4536,8 @@
                 //end
 
                 $POP_cmbOrg.on("change", function () {
-                    if ($POP_cmbOrg.val() == "0") {
+                    //to set org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -4519,8 +4546,16 @@
                 });
 
                 $POP_cmbBank.on('change', function () {
+                    //to set bank mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                        $POP_cmbBank.css('background-color', SetMandatory(false));
+                    }
+                    else {
+                        $POP_cmbBank.css('background-color', SetMandatory(true));
+                    }
                     $POP_cmbBankAccount.empty();
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": [] }, callbackloadbankAcct);
+                    //to get bank account of selected organization assigned by Ashish on 28 May 2020
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
                         $POP_cmbBankAccount.append("<option value='0'></option>");
@@ -4535,7 +4570,8 @@
                 });
 
                 $POP_cmbBankAccount.on("change", function () {
-                    if ($POP_cmbBankAccount.val() == "0") {
+                    //to set bank account mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
                         $POP_cmbBankAccount.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -4633,6 +4669,13 @@
                 });
 
                 $POP_PayMthd.on('change', function (event) {
+                    //to set payment method mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                        $POP_PayMthd.css('background-color', SetMandatory(false));
+                    }
+                    else {
+                        $POP_PayMthd.css('background-color', SetMandatory(true));
+                    }
                     Payrule = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentRule", { "PaymentMethod": $POP_PayMthd.val() }, null);
                     if (Payrule == "S")
                         BatchGrd.showColumn('CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate');
@@ -4647,81 +4690,88 @@
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
                         if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
                             if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                if (BatchGrd.getSelection().length > 0) {
-                                    for (var i = 0; i < BatchGrd.getSelection().length; i++) {
-                                        var _data = {};
-                                        _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
-                                        _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
-                                        _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                        //commented because ashish and surya said that payment will be created in selected organization
-                                        //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
-                                        _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
-                                        _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
-                                        _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
-                                        _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
-                                        //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
-                                        _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
-                                        _data["C_Bank_ID"] = $POP_cmbBank.val();
-                                        _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
+                                if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                    if (BatchGrd.getSelection().length > 0) {
+                                        for (var i = 0; i < BatchGrd.getSelection().length; i++) {
+                                            var _data = {};
+                                            _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
+                                            _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
+                                            _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                            //commented because ashish and surya said that payment will be created in selected organization
+                                            //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
+                                            _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                            _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
+                                            _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
+                                            _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
+                                            //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
+                                            _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
+                                            _data["C_Bank_ID"] = $POP_cmbBank.val();
+                                            _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
 
-                                        if (BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
-                                            return false;
-                                        }
-                                        else
-                                            _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
-
-                                        if ($overwritepay.prop('checked') == true) {
-                                            _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
-                                            _data["isOverwrite"] = "Y";
-                                        }
-                                        else {
-                                            _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
-                                            _data["isOverwrite"] = "N";
-                                        }
-                                        if ($consolidate.prop('checked') == true) {
-                                            _data["isconsolidate"] = "Y";
-                                        }
-                                        else {
-                                            _data["isconsolidate"] = "N";
-                                        }
-                                        if (Payrule == "S") {
-                                            var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-                                            _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-
-                                            if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
-                                                _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
-                                            else {
-                                                VIS.ADialog.info("VA009_PLCheckNumber");
-                                                BatchGrd.selectNone();
+                                            if (BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
                                                 return false;
                                             }
+                                            else
+                                                _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
+
+                                            if ($overwritepay.prop('checked') == true) {
+                                                _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                                _data["isOverwrite"] = "Y";
+                                            }
+                                            else {
+                                                _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
+                                                _data["isOverwrite"] = "N";
+                                            }
+                                            if ($consolidate.prop('checked') == true) {
+                                                _data["isconsolidate"] = "Y";
+                                            }
+                                            else {
+                                                _data["isconsolidate"] = "N";
+                                            }
+                                            if (Payrule == "S") {
+                                                var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
+                                                _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
+
+                                                if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
+                                                    _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
+                                                else {
+                                                    VIS.ADialog.info("VA009_PLCheckNumber");
+                                                    BatchGrd.selectNone();
+                                                    return false;
+                                                }
+                                            }
+                                            else {
+                                                _data["CheckNumber"] = null;
+                                                _data["CheckDate"] = null;
+                                                _data["ValidMonths"] = null;
+                                            }
+                                            _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                            _CollaborateData.push(_data);
                                         }
-                                        else {
-                                            _data["CheckNumber"] = null;
-                                            _data["CheckDate"] = null;
-                                            _data["ValidMonths"] = null;
-                                        }
-                                        _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                        _CollaborateData.push(_data);
                                     }
+                                    $bsyDiv[0].style.visibility = "visible";
+                                    $.ajax({
+                                        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
+                                        type: "POST",
+                                        datatype: "json",
+                                        // contentType: "application/json; charset=utf-8",
+                                        async: true,
+                                        data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                                        success: function (result) {
+                                            callbackBatchPay(result);
+                                        },
+                                        error: function (ex) {
+                                            console.log(ex);
+                                            $bsyDiv[0].style.visibility = "hidden";
+                                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                        }
+                                    });
                                 }
-                                $bsyDiv[0].style.visibility = "visible";
-                                $.ajax({
-                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
-                                    type: "POST",
-                                    datatype: "json",
-                                    // contentType: "application/json; charset=utf-8",
-                                    async: true,
-                                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                                    success: function (result) {
-                                        callbackBatchPay(result);
-                                    },
-                                    error: function (ex) {
-                                        console.log(ex);
-                                        $bsyDiv[0].style.visibility = "hidden";
-                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                    }
-                                });
+                                else {
+                                    VIS.ADialog.info("VA009_PlsSelectPayMethod");
+                                    BatchGrd.selectNone();
+                                    return false;
+                                }
                             }
                             else {
                                 VIS.ADialog.info("VA009_PLSelectBankAccount");
@@ -5065,33 +5115,33 @@
                 SplitDialog.onOkClick = function () {
                     datasplit = [];
                     if (Splitgrd.getSelection().length > 0) {
-                            Splitgrd.selectAll();
-                            datasplit = Splitgrd.records;
-                            for (var i = 0; i < datasplit.length; i++) {
-                                if (Splitgrd.get(Splitgrd.getSelection()[i])['DueDate'] == null) {
-                                    VIS.ADialog.info("VA009_PlzSelctDueDate");
-                                    return false;
-                                }
+                        Splitgrd.selectAll();
+                        datasplit = Splitgrd.records;
+                        for (var i = 0; i < datasplit.length; i++) {
+                            if (Splitgrd.get(Splitgrd.getSelection()[i])['DueDate'] == null) {
+                                VIS.ADialog.info("VA009_PlzSelctDueDate");
+                                return false;
                             }
-                            //}
-                            $bsyDiv[0].style.visibility = "visible";
-                            $.ajax({
-                                url: VIS.Application.contextUrl + "VA009/Payment/CreateSplitPayments",
-                                type: "POST",
-                                datatype: "json",
-                                // contentType: "application/json; charset=utf-8",
-                                async: true,
-                                data: ({ PaymentData: JSON.stringify(datasplit), SplitAmmount: $TxtSplitAmt.val() }),
-                                success: function (result) {
-                                    callbackSplit(result);
-                                },
-                                error: function (ex) {
+                        }
+                        //}
+                        $bsyDiv[0].style.visibility = "visible";
+                        $.ajax({
+                            url: VIS.Application.contextUrl + "VA009/Payment/CreateSplitPayments",
+                            type: "POST",
+                            datatype: "json",
+                            // contentType: "application/json; charset=utf-8",
+                            async: true,
+                            data: ({ PaymentData: JSON.stringify(datasplit), SplitAmmount: $TxtSplitAmt.val() }),
+                            success: function (result) {
+                                callbackSplit(result);
+                            },
+                            error: function (ex) {
 
-                                    console.log(ex);
-                                    $bsyDiv[0].style.visibility = "hidden";
-                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                }
-                            });
+                                console.log(ex);
+                                $bsyDiv[0].style.visibility = "hidden";
+                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                            }
+                        });
                     }
                     else {
                         VIS.ADialog.info("VA009_PlzSplitRecord");
@@ -5706,10 +5756,15 @@
                     $POP_DateTrx = $payManual.find("#VA009_TransactionDate" + $self.windowNo);
                     $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
                     $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    $POP_PayMthd.css('background-color', SetMandatory(true));
+                    $POP_CurrencyType.css('background-color', SetMandatory(true));
+                    $POP_cmbBank.css('background-color', SetMandatory(true));
+                    $POP_cmbBankAccount.css('background-color', SetMandatory(true));
                 };
 
                 $POP_cmbOrg.on("change", function () {
-                    if ($POP_cmbOrg.val() == "0") {
+                    //to set org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.css('background-color', SetMandatory(true));
                     }
                     else {
@@ -5719,14 +5774,16 @@
 
                 $POP_cmbBank.on("change", function () {
                     $POP_cmbBankAccount.empty();
-                    //change by Amit
-                    if ($POP_cmbBank.val() == "0") {
+                    $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                    //to set org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
                         $POP_cmbBank.css('background-color', SetMandatory(true));
                     }
                     else {
                         $POP_cmbBank.css('background-color', SetMandatory(false));
                     }
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": [] }, callbackloadbankAcct);
+                    //to get bank account of selected organization assigned by Ashish on 28 May 2020
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
                         $POP_cmbBankAccount.append("<option value='0'></option>");
@@ -5737,6 +5794,46 @@
                                 }
                             }
                         }
+                    }
+                });
+
+                $POP_CurrencyType.on("change", function () {
+                    //to set org mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) == 0) {
+                        $POP_CurrencyType.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_CurrencyType.css('background-color', SetMandatory(false));
+                    }
+                });
+
+                $POP_PayMthd.on("change", function () {
+                    //to set PAYMENT MENNDATORY mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) == 0) {
+                        $POP_PayMthd.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_PayMthd.css('background-color', SetMandatory(false));
+                    }
+                });
+
+                $POP_DateAcct.on("change", function () {
+                      //to set Date acct mandatory given by ashish on 28 May 2020
+                    if ($POP_DateAcct.val() == "") {
+                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_DateAcct.css('background-color', SetMandatory(false));
+                    }
+                });
+                
+                $POP_cmbBankAccount.on("change", function () {
+                    //to set bank account mandatory given by ashish on 28 May 2020
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
+                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                    }
+                    else {
+                        $POP_cmbBankAccount.css('background-color', SetMandatory(false));
                     }
                 });
 
@@ -5752,22 +5849,6 @@
                         }
                         $POP_cmbOrg.prop('selectedIndex', 0);
                     };
-                };
-
-                function loadBankAccount() {
-
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": [] }, callbackloadbankAcct);
-
-                    function callbackloadbankAcct(dr) {
-                        $POP_cmbBankAccount.append("<option value='0'></option>");
-                        if (dr != null) {
-                            if (dr.length > 0) {
-                                for (var i in dr) {
-                                    $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
-                                }
-                            }
-                        }
-                    }
                 };
 
                 function loadPayMthd() {
@@ -6055,13 +6136,14 @@
 
                     $POP_cmbBank.on("change", function () {
                         $POP_cmbBankAccount.empty();
-                        //change by Amit
-                        if ($POP_cmbBank.val() == "0") {
+                        //to set bank account mandatory given by ashish on 28 May 2020
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
                             $POP_cmbBank.css('background-color', SetMandatory(true));
                         }
                         else {
                             $POP_cmbBank.css('background-color', SetMandatory(false));
                         }
+                        //to get bank account of selected organization assigned by Ashish on 28 May 2020
                         VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                         function callbackloadbankAcct(dr) {
@@ -6077,7 +6159,8 @@
                         }
                     });
                     $POP_cmbBankAccount.on("change", function () {
-                        if ($POP_cmbBankAccount.val() == "0") {
+                        //to set bank account mandatory given by ashish on 28 May 2020
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
                             $POP_cmbBankAccount.css('background-color', SetMandatory(true));
                         }
                         else {
@@ -6085,7 +6168,7 @@
                         }
                     });
                     $POP_cmbDocType.on("change", function () {
-                        if ($POP_cmbDocType.val() == "0") {
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) == 0) {
                             $POP_cmbDocType.css('background-color', SetMandatory(true));
                         }
                         else {

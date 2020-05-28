@@ -3181,8 +3181,9 @@ namespace VA009.Models
         {
             List<Dictionary<string, object>> retDic = null;
             StringBuilder qry = new StringBuilder();
-            string sql = @"SELECT DISTINCT bk.C_Bank_ID, bk.Name || '_' || org.Name AS Bank FROM C_BankAccount bc INNER JOIN C_Bank bk 
-            ON bc.C_Bank_ID = bk.C_Bank_ID INNER JOIN AD_Org org ON bk.AD_Org_ID = org.AD_Org_ID WHERE bc.IsActive='Y' AND bk.IsActive='Y' AND bk.IsOwnBank ='Y' ";
+            //REMOVED ORGNIZATION NAME FROM BANK BECAUSE NOW WE ADDED ORG PARAMETER ON FORM
+            string sql = @"SELECT DISTINCT bk.C_Bank_ID, bk.Name AS Bank FROM C_BankAccount bc INNER JOIN C_Bank bk 
+            ON bc.C_Bank_ID = bk.C_Bank_ID WHERE bc.IsActive='Y' AND bk.IsActive='Y' AND bk.IsOwnBank ='Y' ";
 
             // Check Access of Organization on Bank Account not to Bank
             qry.Append(MRole.GetDefault(ct).AddAccessSQL(sql, "bc", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO));
@@ -5427,8 +5428,8 @@ namespace VA009.Models
             }
 
             if (docno.Length > 0)
-            {
-                msg = Msg.GetMsg(ct, "VA009_PaymentCompletedWith");
+            {//changed msg 
+                msg = Msg.GetMsg(ct, "VA009_BatchCompletedWith");
                 msg += docno.ToString();
                 ex.Append(msg);
             }
