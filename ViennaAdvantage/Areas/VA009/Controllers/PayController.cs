@@ -189,5 +189,22 @@ namespace VA009.Controllers
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// To get Bank account Name from business partner bank tab
+        /// </summary>
+        /// <param name="fields">Bank Account ID</param>
+        /// <returns>Name</returns>
+        public JsonResult getaccountName(string fields)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                VAdvantage.Utility.Ctx ctx = Session["ctx"] as Ctx;
+                PayModel payModel = new PayModel();
+                retJSON = JsonConvert.SerializeObject(payModel.getaccountdetails(ctx, fields));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
     }
 }

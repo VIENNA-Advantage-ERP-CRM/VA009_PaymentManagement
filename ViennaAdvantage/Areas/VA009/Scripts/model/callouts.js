@@ -1215,6 +1215,23 @@
         return "";
     };
 
+    //To Set Account Name From Partner Bank Account
+    VA009_CalloutPayment.prototype.SetAccountName = function (ctx, windowNo, mTab, mField, value, oldValue) {
+        if (this.isCalloutActive() || value == null) {
+            return "";
+        }
+        this.setCalloutActive(true);
+        var dr = VIS.dataContext.getJSONRecord("Pay/getaccountName", Util.getValueOfInt(value));
+        if (dr != null) {
+            mTab.setValue("a_name", dr["a_name"]);
+            if (mTab.getValue("IsReceipt") == "N") {
+                mTab.setValue("a_name", "");
+            }
+        }
+        this.setCalloutActive(false);
+        return "";
+    };
+
     VA009.Model = VA009.Model || {};
     VA009.Model.VA009_CalloutPayment = VA009_CalloutPayment; //assign object in Model NameSpace
 

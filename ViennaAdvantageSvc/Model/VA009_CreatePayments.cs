@@ -237,6 +237,20 @@ namespace ViennaAdvantage.Model
                             _pay.SetDateTrx(System.DateTime.Now);
                             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                             _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
+                            #region to set bank account of business partner and name on batch line
+                            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) > 0)
+                            {
+                                DataSet ds1 = new DataSet();
+                                ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) + " AND "
+                                       + " AD_Org_ID =" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                                {
+                                    _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                    _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                }
+                            }
+                            #endregion
                             _pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                             _pay.SetC_ConversionType_ID(CurrencyType_ID);
                             _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
@@ -377,6 +391,20 @@ namespace ViennaAdvantage.Model
                         _pay.SetC_ConversionType_ID(CurrencyType_ID);
                         _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
+                        #region to set bank account of business partner and name on batch line
+                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) > 0)
+                        {
+                            DataSet ds1 = new DataSet();
+                            ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) + " AND "
+                                   + " AD_Org_ID =" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                            if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                            {
+                                _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                            }
+                        }
+                        #endregion
                         //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
                         //{
                         //    _pay.SetDiscountAmt(-1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));

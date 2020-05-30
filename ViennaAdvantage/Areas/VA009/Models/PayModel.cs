@@ -479,5 +479,29 @@ namespace VA009.Models
             return result;
 
         }
+
+        /// Get Bank Details
+        /// </summary>
+        /// <param name="ctx">context </param>
+        /// <param name="fields">Account ID</param>
+        /// <returns>Dictionary</returns>
+        public Dictionary<String, object> getaccountdetails(Ctx ctx, string fields)
+        {
+            if (fields != null)
+            {
+                Dictionary<String, object> retDic = null;
+                string[] paramValue = fields.ToString().Split(',');
+                //Assign parameter value
+                int C_BP_BankAccount_ID = Util.GetValueOfInt(paramValue[0].ToString());
+                //End Assign parameter
+                    retDic = new Dictionary<string, object>();
+                    retDic["a_name"] = Util.GetValueOfInt(DB.ExecuteScalar(@" SELECT a_name FROM C_BP_BankAccount WHERE C_BP_BankAccount_ID = " + C_BP_BankAccount_ID));
+                return retDic;
+            }
+            else
+            {
+                return null;
+            }
+        }
     }
 }
