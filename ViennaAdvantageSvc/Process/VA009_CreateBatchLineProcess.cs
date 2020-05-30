@@ -37,8 +37,6 @@ namespace ViennaAdvantage.Process
         int C_ConversionType_ID = 0;
         //int _VA009_BatchDetail_ID = 0;
         String msg = String.Empty;
-
-
         protected override void Prepare()
         {
             ProcessInfoParameter[] para = GetParameter();
@@ -88,14 +86,12 @@ namespace ViennaAdvantage.Process
                 }
             }
         }
-
         protected override string DoIt()
         {
-
-
             StringBuilder _sql = new StringBuilder();
             MVA009Batch batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
-            MVA009PaymentMethod _paymthd = null;
+            //commented Payment Method because payment method is selected on Batch Header
+            //MVA009PaymentMethod _paymthd = null;
             MVA009BatchLineDetails lineDetail = null;
             MVA009BatchLines line = null;
             //if (batch.GetVA009_GenerateLines()=="Y")
@@ -139,12 +135,15 @@ namespace ViennaAdvantage.Process
             {
                 _sql.Append(" ANd doc.DocBaseType IN ('API' , 'ARI' , 'APC' , 'ARC') ");
             }
-            if (_paymentMethod > 0)
-            {
-                _sql.Append(" And CP.VA009_PaymentMethod_ID=" + _paymentMethod);
-                _paymthd = new MVA009PaymentMethod(GetCtx(), _paymentMethod, Get_TrxName());
-                _trigger = _paymthd.IsVA009_IsMandate();
-            }
+
+            #region commented Payment Method because payment method is selected on Batch Header
+            //if (_paymentMethod > 0)
+            //{
+            //    _sql.Append(" And CP.VA009_PaymentMethod_ID=" + _paymentMethod);
+            //    _paymthd = new MVA009PaymentMethod(GetCtx(), _paymentMethod, Get_TrxName());
+            //    _trigger = _paymthd.IsVA009_IsMandate();
+            //}
+            #endregion
 
             if (_DateDoc_From != null && _DateDoc_To != null)
             {
@@ -157,15 +156,16 @@ namespace ViennaAdvantage.Process
                 _sql.Append(" and cp.duedate >=" + GlobalVariable.TO_DATE(_DateDoc_From, true));
             }
             else if (_DateDoc_From == null && _DateDoc_To != null)
-            {
-                _sql.Append(" and cp.duedate <=" + GlobalVariable.TO_DATE(_DateDoc_To, true));
-            }
-            //else if (C_ConversionType_ID > 0) //commented the conversion type because while creatring invoice against Base currency, system will set currencyconversionType_ID=0
-            //{
-            //    _sql.Append("  AND C_ConversionType_ID=" + C_ConversionType_ID);
-            //}
-            if (VA009_IsSameCurrency == true)
-                _sql.Append(" AND CI.C_Currency_ID =" + _bankacc.GetC_Currency_ID());
+
+                #region commented the conversion type because while creatring invoice against Base currency, system will set currencyconversionType_ID=0
+                //else if (C_ConversionType_ID > 0) 
+                //{
+                //    _sql.Append("  AND C_ConversionType_ID=" + C_ConversionType_ID);
+                //}
+                #endregion
+
+                if (VA009_IsSameCurrency == true)
+                    _sql.Append(" AND CI.C_Currency_ID =" + _bankacc.GetC_Currency_ID());
 
             _sql.Append(" Order by CI.C_Bpartner_ID asc , doc.docbasetype ");
 
@@ -224,8 +224,23 @@ namespace ViennaAdvantage.Process
 
                         _BPartner = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
                         docBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]);
-
                         line.SetC_BPartner_ID(_BPartner);
+
+                        #region to set bank account of business partner and name on batch line
+                        if (_BPartner > 0)
+                        {
+                            DataSet ds1 = new DataSet();
+                            ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
+                                   + " AD_Org_ID =" + batch.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                            if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                            {
+                                line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                line.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                            }
+                        }
+                        #endregion
+
                         if (_trigger == true)
                         {
                             _sql.Clear();
@@ -297,11 +312,6 @@ namespace ViennaAdvantage.Process
                         dueamt = dueamt - DiscountAmt;
                         //  145-2.88
                     }
-
-
-
-
-
                     if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                     {
                         lineDetail.SetDueAmt(-1 * dueamt);
@@ -326,11 +336,8 @@ namespace ViennaAdvantage.Process
                     {
                         lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                     }
-
                     lineDetail.SetVA009_ConvertedAmt(comvertedamt);
                     lineDetail.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
-
-
                     if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) < Util.GetValueOfDateTime(batch.GetVA009_DocumentDate()))
                     {
                         lineDetail.SetDiscountDate(null);
@@ -361,18 +368,22 @@ namespace ViennaAdvantage.Process
                 batch.SetVA009_GenerateLines("Y");
                 //batch.SetProcessed(true); //Commeted by Arpit asked by Ashish Gandhi to set processed only if the Payment completion is done
                 batch.Save(Get_TrxName());
-                if (_paymentMethod != 0)
-                {
-                    //_paymthd = new MVA009PaymentMethod(GetCtx(), _paymentMethod, Get_TrxName());
-                    batch.SetVA009_PaymentMethod_ID(_paymentMethod);
-                    batch.SetVA009_PaymentRule(_paymthd.GetVA009_PaymentRule());
-                    batch.SetVA009_PaymentTrigger(_paymthd.GetVA009_PaymentTrigger());
-                    if (!batch.Save(Get_TrxName()))
-                    {
-                        Get_TrxName().Rollback();
-                        return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
-                    }
-                }
+
+                #region commented Payment Method because payment method is selected on Batch Header
+                //if (_paymentMethod != 0)
+                //{
+                //    //_paymthd = new MVA009PaymentMethod(GetCtx(), _paymentMethod, Get_TrxName());
+                //    batch.SetVA009_PaymentMethod_ID(_paymentMethod);
+                //    batch.SetVA009_PaymentRule(_paymthd.GetVA009_PaymentRule());
+                //    batch.SetVA009_PaymentTrigger(_paymthd.GetVA009_PaymentTrigger());
+                //    if (!batch.Save(Get_TrxName()))
+                //    {
+                //        Get_TrxName().Rollback();
+                //        return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
+                //    }
+                //}
+                #endregion
+
                 return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd"); ;
             }
             else
