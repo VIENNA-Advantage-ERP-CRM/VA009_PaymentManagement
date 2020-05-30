@@ -3359,9 +3359,9 @@ namespace VA009.Models
             if (orgs.Length > 0)
             {
                 if (c_Bank_ID == 0)
-                    qry.Append(" WHERE b.isActive='Y' AND ba.IsActive='Y' AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() + " AND ba.AD_Org_ID IN (" + orgs + ")");
+                    qry.Append(" WHERE b.isActive='Y' AND ba.IsActive='Y' AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() + " AND ba.AD_Org_ID IN (0," + orgs + ")");
                 else
-                    qry.Append(" WHERE acct.IsActive='Y' AND acct.AD_Client_ID =" + ct.GetAD_Client_ID() + "  AND acct.C_Bank_ID =" + c_Bank_ID + " AND acct.AD_Org_ID IN (" + orgs + ")");
+                    qry.Append(" WHERE acct.IsActive='Y' AND acct.AD_Client_ID =" + ct.GetAD_Client_ID() + "  AND acct.C_Bank_ID =" + c_Bank_ID + " AND acct.AD_Org_ID IN (0," + orgs + ")");
             }
             else if (c_Bank_ID == 0)
             {
@@ -3701,7 +3701,20 @@ namespace VA009.Models
                             _pay.SetC_ConversionType_ID(c_currencytype);
                         _pay.SetC_BPartner_ID(_payschedule.GetC_BPartner_ID());
                         _pay.SetC_BPartner_Location_ID(_invoice.GetC_BPartner_Location_ID());
-
+                        #region to set bank account of business partner and name on batch line
+                        if (_payschedule.GetC_BPartner_ID() > 0)
+                        {
+                            DataSet ds1 = new DataSet();
+                            ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
+                                   + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                            if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                            {
+                                _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                            }
+                        }
+                        #endregion
                         if (!_pay.Save())
                         {
                             ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
@@ -3863,6 +3876,20 @@ namespace VA009.Models
                                     _pay.SetC_ConversionType_ID(c_currencytype);
                                     _pay.SetC_BankAccount_ID(BankAccountID);
                                     _pay.SetC_BPartner_ID(_payschedule.GetC_BPartner_ID());
+                                    #region to set bank account of business partner and name on batch line
+                                    if (_payschedule.GetC_BPartner_ID() > 0)
+                                    {
+                                        DataSet ds1 = new DataSet();
+                                        ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
+                                               + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                        if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                                        {
+                                            _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                            _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                        }
+                                    }
+                                    #endregion
                                     _pay.SetC_BPartner_Location_ID(_invoice.GetC_BPartner_Location_ID());
                                     _pay.SetC_Currency_ID(GetPaymentCurrency(ct, BankAccountID));
                                     _pay.SetVA009_PaymentMethod_ID(PaymentMethodID);
@@ -3900,7 +3927,20 @@ namespace VA009.Models
                                     _pay.SetC_BankAccount_ID(BankAccountID);
                                     _pay.SetC_BPartner_ID(_payschedule.GetC_BPartner_ID());
                                     _pay.SetC_BPartner_Location_ID(_invoice.GetC_BPartner_Location_ID());
-
+                                    #region to set bank account of business partner and name on batch line
+                                    if (_payschedule.GetC_BPartner_ID() > 0)
+                                    {
+                                        DataSet ds1 = new DataSet();
+                                        ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
+                                               + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                        if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                                        {
+                                            _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                            _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                        }
+                                    }
+                                    #endregion
 
                                     if (_doctype.GetDocBaseType() == "APC" || _doctype.GetDocBaseType() == "API")
                                     {
@@ -4233,6 +4273,20 @@ namespace VA009.Models
                         if (c_currencytype != 0)
                             _pay.SetC_ConversionType_ID(c_currencytype);
                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(orderPaySchedule.GetC_BPartner_ID()));
+                        #region to set bank account of business partner and name on batch line
+                        if (orderPaySchedule.GetC_BPartner_ID() > 0)
+                        {
+                            DataSet ds1 = new DataSet();
+                            ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + orderPaySchedule.GetC_BPartner_ID() + " AND "
+                                   + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                            if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                            {
+                                _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                            }
+                        }
+                        #endregion
                         _pay.SetC_BPartner_Location_ID(_ord.GetC_BPartner_Location_ID());
 
                         if (!_pay.Save())
@@ -4590,6 +4644,20 @@ namespace VA009.Models
             MVA009BatchLines _BtLines = new MVA009BatchLines(ct, 0, trx);
             _BtLines.SetVA009_Batch_ID(_Bt.GetVA009_Batch_ID());
             _BtLines.SetC_BPartner_ID(PaymentData.C_BPartner_ID);
+            #region to set bank account of business partner and name on batch line
+            if (PaymentData.C_BPartner_ID > 0)
+            {
+                DataSet ds1 = new DataSet();
+                ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + PaymentData.C_BPartner_ID + " AND "
+                       + " AD_Org_ID =" + _Bt.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                {
+                    _BtLines.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                    _BtLines.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                }
+            }
+            #endregion
             _BtLines.SetAD_Client_ID(PaymentData.AD_Client_ID);
             _BtLines.SetAD_Org_ID(PaymentData.AD_Org_ID);
             //_BtLines.SetProcessed(true);
@@ -4839,6 +4907,20 @@ namespace VA009.Models
                 _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(paymentData[0]["PaymentMethod"]));
                 _pay.SetC_ConversionType_ID(Util.GetValueOfInt(paymentData[0]["CurrencyType"]));
                 _pay.SetC_BPartner_ID(Util.GetValueOfInt(paymentData[0]["BPID"]));
+                #region to set bank account of business partner and name on batch line
+                if (Util.GetValueOfInt(paymentData[0]["BPID"]) > 0)
+                {
+                    DataSet ds1 = new DataSet();
+                    ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(paymentData[0]["BPID"]) + " AND "
+                           + " AD_Org_ID =" + ct.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                    if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                    {
+                        _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                        _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                    }
+                }
+                #endregion
                 _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(paymentData[0]["BPLocation"]));
                 _pay.SetPayAmt(Util.GetValueOfDecimal(paymentData[0]["PaymentAmount"]));
                 if (Util.GetValueOfInt(paymentData[0]["charge"]) > 0)
