@@ -191,8 +191,30 @@ namespace VA009.Models
                 sql.Append(") t WHERE t.DueAmt !=0 ");
                 string whrduedte = DueDateSearch(WhrDueDate);
                 sql.Append(whrduedte);
+
                 if (SearchText != string.Empty)
-                    sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                {
+                    //JID_1793 -- when search text contain "=" then serach with documnet no only
+                    if (SearchText.Contains("="))
+                    {
+                        String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                        if (myStringArray.Length > 0)
+                        {
+                            sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                            for (int z = 0; z < myStringArray.Length; z++)
+                            {
+                                if (z != 0)
+                                { sql.Append(","); }
+                                sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                            }
+                            sql.Append(")");
+                        }
+                    }
+                    else
+                    {
+                        sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                    }
+                }
 
                 if (FromDate != string.Empty && ToDate != string.Empty)
                 {
@@ -246,7 +268,28 @@ namespace VA009.Models
                 string whrduedte = DueDateSearch(WhrDueDate);
                 sql.Append(whrduedte);
                 if (SearchText != string.Empty)
-                    sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                {
+                    // JID_1793 -- when search text contain "=" then serach with documnet no 
+                    if (SearchText.Contains("="))
+                    {
+                        String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                        if (myStringArray.Length > 0)
+                        {
+                            sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                            for (int z = 0; z < myStringArray.Length; z++)
+                            {
+                                if (z != 0)
+                                { sql.Append(","); }
+                                sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                            }
+                            sql.Append(")");
+                        }
+                    }
+                    else
+                    {
+                        sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                    }
+                }
 
                 if (FromDate != string.Empty && ToDate != string.Empty)
                 {
