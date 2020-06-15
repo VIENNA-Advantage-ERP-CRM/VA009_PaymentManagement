@@ -3259,7 +3259,8 @@ namespace VA009.Models
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
                 retBank = new Dictionary<string, object>();
-                retBank["CurrentBalance"] = Util.GetValueOfDecimal(ds.Tables[0].Rows[0][0]);
+                //decimal dd = Util.GetValueOfDecimal(ds.Tables[0].Rows[0][0]);
+                retBank["CurrentBalance"] = Util.GetValueOfDecimal(ds.Tables[0].Rows[0][0]); //dd.ToString("n", CultureInfo.CurrentCulture.NumberFormat);
                 retBank["CurrentNext"] = Util.GetValueOfString(ds.Tables[0].Rows[0][1]);
             }
             return retBank;
@@ -3517,7 +3518,7 @@ namespace VA009.Models
         public Dictionary<string, object> GetCashBookData(int C_CashBook_ID, Ctx ct)
         {
             Dictionary<string, object> retBank = null;
-            string sql = "SELECT (CompletedBalance || '.00') AS CompletedBalance, C_Currency_ID FROM C_CashBook WHERE ISACTIVE='Y' AND  C_CashBook_ID = "
+            string sql = "SELECT (CompletedBalance) AS CompletedBalance, C_Currency_ID FROM C_CashBook WHERE ISACTIVE='Y' AND  C_CashBook_ID = "
                 + C_CashBook_ID + " AND AD_Client_ID =" + ct.GetAD_Client_ID();
 
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_CashBook", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
