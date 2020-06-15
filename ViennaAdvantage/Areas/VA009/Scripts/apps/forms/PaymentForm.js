@@ -22,7 +22,7 @@
         var _RightPanel, $ConvertedAmt; Orgname = "";
         var _isinvoice = 'Y', _DocType = 'ARI';
         var $Org, $OrgSelected, $payMthd, $PayMSelected, $status, $statusSelected;
-        var $togglebtn, lbdata, $lbmain, $divPayment, $BP, $BPSelected, $divBank;
+        var $togglebtn, lbdata, $lbmain, $divPayment, $BP, $BPSelected, $divBank, $amount;
         var pgNo = 1, pgSize = 20, PAGESIZE = 20, $CR_Tab, $CP_Tab, $XML_Tab, Pay_ID = 0; //changed page size
         var isloaded = false, _WhereQuery = "", $divcashbk;
         var orgids = [], bpids = [], SlctdPaymentIds = [];
@@ -1022,7 +1022,7 @@
 
                     + "<div class='VA009-popCheck-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
-                    + "<input type='number' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
+                    + "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
 
                     + "<div class='VA009-popCheck-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_Chqnolbl") + "</label>"
@@ -1160,8 +1160,21 @@
                             }, editable: { type: 'number' }
                         });
 
-                        _CHQPay_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', editable: { type: 'text' } });
-                        _CHQPay_Columns.push({ field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
+                        _CHQPay_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', editable: { type: 'int', autoFormat: true, groupSymbol: ' ' } });
+                        _CHQPay_Columns.push({
+                            field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
+                            render: function (record, index, col_index) {
+                                var dateval = record.changes;
+                                if (dateval != undefined) {
+                                    var val = dateval["CheckDate"];
+                                    return new Date(val).toLocaleDateString();
+                                }
+                                else {
+                                    //var val = record["CheckDate"];
+                                    return new Date().toLocaleDateString();
+                                }
+                            }, editable: { type: 'date' }
+                        });
                         _CHQPay_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
                         //_CHQPay_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
                         //by Amit - 1-12-2016
@@ -1796,7 +1809,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('dd/MM/yyyy');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -1833,7 +1846,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -1876,7 +1889,7 @@
                 //end
 
                 $POP_cmbOrg.on("change", function () {
-                     //to set Org mandatory given by ashish on 28 May 2020
+                    //to set Org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.css('background-color', SetMandatory(true));
                     }
@@ -1941,7 +1954,7 @@
 
                         if (dr != null) {
                             // $POP_txtAccttNo.val(Globalize.format(dr["CurrentBalance"], "N"));
-                            $POP_txtAccttNo.val(dr["CurrentBalance"]);
+                            $POP_txtAccttNo.val(parseFloat(dr["CurrentBalance"]).toLocaleString());
                             $POP_txtChqNo.val(dr["CurrentNext"]);
                         }
                         //}
@@ -2102,7 +2115,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -2647,7 +2660,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -2709,8 +2722,22 @@
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
-                        _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'text' } });
-                        _CHQRec_Columns.push({ field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
+                        _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'int',autoFormat:true,groupSymbol: ' ' } });
+                        _CHQRec_Columns.push({
+                            field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
+                            render: function (record, index, col_index) {
+                                var dateval = record.changes;
+                                if (dateval != undefined) {
+                                    var val = dateval["CheckDate"];
+                                    return new Date(val).toLocaleDateString();
+                                }
+                                else {
+                                    //debugger;
+                                    //var val = record["CheckDate"];
+                                    return new Date().toLocaleDateString();
+                                }
+                            }, editable: { type: 'date' }
+                        });
                         //_CHQRec_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
                         //by Amit - 19-11-2016
                         _CHQRec_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
@@ -2729,6 +2756,7 @@
                         },
 
                         onEditField: function (event) {
+                            console.log(event);
                             if (event.column == 6 || event.column == 8 || event.column == 9) {
                                 if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
                                     event.isCancelled = true;
@@ -3276,7 +3304,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -3323,7 +3351,8 @@
                                                         chqrecgrd.selectNone();
                                                         return false;
                                                     }
-                                                    _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
+                                                    _data["CheckDate"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'];
+                                                    //_data["CheckDate"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
                                                 }
                                                 else {
                                                     VIS.ADialog.info(("VA009_PLCheckDate"));
@@ -3332,7 +3361,7 @@
                                                 }
                                                 //Transaction Date
                                                 _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
-                                                _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val())
+                                                _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
 
                                                 _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val());
                                                 _data["C_Bank_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val());
@@ -4134,11 +4163,11 @@
                                             //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
                                             _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
                                         }
-                                        else {
-                                            VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                            Cashgrd.selectNone();
-                                            return false;
-                                        }
+                                        //else {
+                                        //VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                        //Cashgrd.selectNone();
+                                        //return false;
+                                        //}
                                         //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder != undefined) {
                                         //    _data["OverUnder"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder;
                                         //}
@@ -4409,8 +4438,21 @@
                                 return parseFloat(val).toLocaleString();
                             }
                         });
-                        _batch_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%', editable: { type: 'text' } });
-                        _batch_Columns.push({ field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
+                        _batch_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%', editable: { type: 'int', autoFormat: true, groupSymbol: ' ' } });
+                        _batch_Columns.push({
+                            field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%',
+                            render: function (record, index, col_index) {
+                                var dateval = record.changes;
+                                if (dateval != undefined) {
+                                    var val = dateval["CheckDate"];
+                                    return new Date(val).toLocaleDateString();
+                                }
+                                else {
+                                    //var val = record["CheckDate"];
+                                    return new Date().toLocaleDateString();
+                                }
+                            }, style: 'text-align: left', editable: { type: 'date' }
+                        });
                         //_batch_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
                         _batch_Columns.push({ field: "Mandate", caption: VIS.Msg.getMsg("VA009_Mandate"), sortable: true, size: '10%', editable: { type: 'text' } });
                         //by Amit - 1-12-2016
@@ -4482,7 +4524,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
@@ -4632,7 +4674,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
@@ -5269,7 +5311,7 @@
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
-                    + "<input type='number' id='VA009_Amount" + $self.windowNo + "' value=0> </div>"
+                    + "<input type='text' id='VA009_Amount" + $self.windowNo + "' value=0> </div>"
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
@@ -5335,7 +5377,14 @@
                 loadToBankAccount($To_cmbBank, organizationids);
 
                 b2bDialog.onOkClick = function () {
-
+                    function reverseFormatNumber(val, locale) {
+                        var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+                        var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+                        var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
+                        reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
+                        return Number.isNaN(reversedVal) ? 0 : reversedVal;
+                    }
+                    var amount = reverseFormatNumber($txtAmt.val().toString(), window.navigator.language);
                     if (parseInt($OrgCmb.val()) == 0) {
                         $note.text(VIS.Msg.getMsg("VA009_PlsSelectOrg"));
                         return $note.css('visibility', 'visible');
@@ -5356,7 +5405,7 @@
                         return $note.css('visibility', 'visible');
                     }
 
-                    if (parseFloat($txtAmt.val()) == 0) {
+                    if (parseFloat(amount) == 0) {
                         $note.text(VIS.Msg.getMsg("VA009_PlsEnterAmount"));
                         return $note.css('visibility', 'visible');
                     }
@@ -5395,7 +5444,7 @@
                     var _data = {};
                     _data = {
                         OrgID: parseInt($OrgCmb.val()), isReceipt: $isReceipt.prop('checked'), isPayment: $isPayment.prop('checked'), fromBank: parseInt($From_cmbBank.val()),
-                        toBank: parseInt($To_cmbBank.val()), amount: parseFloat($txtAmt.val()), paymentMethod: parseInt($paymentMthd.val()), currencyID: parseInt($cmbCurrencies.val()),
+                        toBank: parseInt($To_cmbBank.val()), amount: amount, paymentMethod: parseInt($paymentMthd.val()), currencyID: parseInt($cmbCurrencies.val()),
                         currencyType: $cmbCurrencyType.val(), transDate: VIS.Utility.Util.getValueOfDate($trnsDate.val()), acctDate: VIS.Utility.Util.getValueOfDate($acctDate.val()),
                         clientID: VIS.Env.getCtx().getAD_Client_ID(), PayBase: $('option:selected', $paymentMthd).attr('paybase'), CheckNo: $txtCheckNo.val(), CheckDate: VIS.Utility.Util.getValueOfDate($checkDate.val())
                     };
@@ -5532,7 +5581,22 @@
                             }
                         }
                     });
-
+                    $txtAmt.on("change", function (event) {
+                        //debugger;
+                        //$txtAmt.numeric();
+                        function reverseFormatNumber(val, locale) {
+                            var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+                            var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+                            var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
+                            reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
+                            return Number.isNaN(reversedVal) ? 0 : reversedVal;
+                        }
+                        var dd = reverseFormatNumber($txtAmt.val().toString(), window.navigator.language);
+                        if ((dd) > 0) {
+                            //$txtAmt.val(parseFloat($txtAmt.val()).toLocaleString());
+                            $txtAmt.val(Intl.NumberFormat(window.navigator.language).format(dd));
+                        }
+                    });
                 };
 
                 //Set Mandatory and Non-Mandatory
@@ -5566,7 +5630,30 @@
                     $paymentMthd.css('background-color', SetMandatory(true));
 
                 };
-
+                $txtAmt.on('keydown keyup', function (e) {
+                    var value = String.fromCharCode(e.which) || e.key;
+                    var regExp = /[0-9\.\,]/;
+                    // Only numbers, dots and commas
+                    if (!regExp.test(value)
+                        && e.which != 188 // ,
+                        && e.which != 190 // .
+                        && e.which != 8   // backspace
+                        && e.which != 46  // delete
+                        && (e.which < 37 || e.which > 40)) {
+                        return false;
+                    }
+                });
+                $txtCheckNo.on('keydown keyup', function (e) {
+                    var value = String.fromCharCode(e.which) || e.key;
+                    var regExp = /[0-9\.\,]/;
+                    // Only numbers, dots and commas
+                    if (!regExp.test(value)
+                        && e.which != 8   // backspace
+                        && e.which != 46  // delete
+                        && (e.which < 37 || e.which > 40)) {
+                        return false;
+                    }
+                });
                 function loadOrg() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                     function callbackloadorg(dr) {
@@ -5689,9 +5776,9 @@
             },
 
             Pay_ManualDialog: function () {
-                $payManual = $("<div class='VA009-popform-content' style='min-height:180px !important'>");
+                $payManual = $("<div class='VA009-popform-content' style='min-height:385px !important'>");
                 var _payManual = "";
-                _payManual += "<div class='VA009-popfrm-wrap' style='height:150px !important'>"
+                _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
@@ -5737,7 +5824,7 @@
                 var manualDialog = new VIS.ChildDialog();
                 manualDialog.setContent($payManual);
                 manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
-                manualDialog.setWidth("60%");
+                manualDialog.setWidth("65%");
                 manualDialog.setEnableResize(true);
                 manualDialog.setModal(true);
                 manualDialog.show();
@@ -5818,7 +5905,7 @@
                 });
 
                 $POP_DateAcct.on("change", function () {
-                      //to set Date acct mandatory given by ashish on 28 May 2020
+                    //to set Date acct mandatory given by ashish on 28 May 2020
                     if ($POP_DateAcct.val() == "") {
                         $POP_DateAcct.css('background-color', SetMandatory(true));
                     }
@@ -5826,7 +5913,7 @@
                         $POP_DateAcct.css('background-color', SetMandatory(false));
                     }
                 });
-                
+
                 $POP_cmbBankAccount.on("change", function () {
                     //to set bank account mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
@@ -5983,9 +6070,9 @@
             },
 
             Pay_ManualDialogBP: function () {
-                $payManual = $("<div class='VA009-popform-content' style='min-height:220px !important'>");
+                $payManual = $("<div class='VA009-popform-content' style='min-height:435px'>");
                 var _payManual = "";
-                _payManual += "<div class='VA009-popfrm-wrap' style='height:200px !important'>"
+                _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
@@ -6055,7 +6142,7 @@
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
-                    + "<input type='number' id='VA009_cmbAmt_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    + "<input type='text' id='VA009_cmbAmt_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
 
                     + "<div class='VA009-popform-data' id= VA009_DivCheck_" + $self.windowNo + ">"
                     + "<label>" + VIS.Msg.getMsg("CheckNo") + "</label>"
@@ -6072,8 +6159,8 @@
                 var manualDialog = new VIS.ChildDialog();
                 manualDialog.setContent($payManual);
                 manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
-                manualDialog.setHeight(window.innerHeight - 200);
-                manualDialog.setWidth("75%");
+                manualDialog.setHeight(window.innerHeight - 120);
+                manualDialog.setWidth("70%");
                 manualDialog.setEnableResize(true);
                 manualDialog.setModal(true);
                 manualDialog.show();
@@ -6132,6 +6219,30 @@
                     $POP_CurrencyType.css('background-color', SetMandatory(true));
                     $POP_cmbLocation.css('background-color', SetMandatory(true));
                 };
+                $POP_Amt.on('keydown keyup', function (e) {
+                    var value = String.fromCharCode(e.which) || e.key;
+                    var regExp = /[0-9\.\,]/;
+                    // Only numbers, dots and commas
+                    if (!regExp.test(value)
+                        && e.which != 188 // ,
+                        && e.which != 190 // .
+                        && e.which != 8   // backspace
+                        && e.which != 46  // delete
+                        && (e.which < 37 || e.which > 40)) {
+                        return false;
+                    }
+                });
+                $POP_ChkNo.on('keydown keyup', function (e) {
+                    var value = String.fromCharCode(e.which) || e.key;
+                    var regExp = /[0-9\.\,]/;
+                    // Only numbers, dots and commas
+                    if (!regExp.test(value)
+                        && e.which != 8   // backspace
+                        && e.which != 46  // delete
+                        && (e.which < 37 || e.which > 40)) {
+                        return false;
+                    }
+                });
                 function InitializeEvents() {
 
                     $POP_cmbBank.on("change", function () {
@@ -6264,8 +6375,21 @@
                         if (parseFloat($POP_Amt.val()) > 0) {
                             $POP_Amt.css('background-color', SetMandatory(false));
                         }
-                        else
+                        else {
                             $POP_Amt.css('background-color', SetMandatory(true));
+                        }
+                        function reverseFormatNumber(val, locale) {
+                            var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+                            var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+                            var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
+                            reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
+                            return Number.isNaN(reversedVal) ? 0 : reversedVal;
+                        }
+                        var dd = reverseFormatNumber($POP_Amt.val().toString(), window.navigator.language);
+                        if ((dd) > 0) {
+                            //$txtAmt.val(parseFloat($txtAmt.val()).toLocaleString());
+                            $POP_Amt.val(Intl.NumberFormat(window.navigator.language).format(dd));
+                        }
                     });
                 };
                 function loadAllData() {
@@ -6396,6 +6520,15 @@
                 };
 
                 manualDialog.onOkClick = function () {
+                    function reverseFormatNumber(val, locale) {
+                        var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+                        var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+                        var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
+                        reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
+                        return Number.isNaN(reversedVal) ? 0 : reversedVal;
+                    }
+                    alert($POP_Amt.val());
+                    $amount = reverseFormatNumber($POP_Amt.val().toString(), window.navigator.language);
                     if (!isValidPayment()) {
                         return false;
                     }
@@ -6429,7 +6562,7 @@
                                                     if (VIS.Utility.Util.getValueOfInt($POP_Currency.val()) > 0) {
                                                         if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) > 0) {
                                                             if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                                                if (VIS.Utility.Util.getValueOfDecimal($POP_Amt.val()) > 0) {
+                                                                if (VIS.Utility.Util.getValueOfDecimal($amount) > 0) {
                                                                     if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
                                                                         if ($POP_ChkNo.val() != "" && $POP_ChkDate.val() != "") {
                                                                             return true;
@@ -6509,7 +6642,7 @@
                         Org: $POP_cmbOrg.val(), DocType: $POP_cmbDocType.val(), BankID: $POP_cmbBank.val(),
                         BankAccountID: $POP_cmbBankAccount.val(), DateTrx: $POP_DateTrx.val(), DateAcct: $POP_DateAcct.val(),
                         BPID: $BpartnerControl.value, BPLocation: $POP_cmbLocation.val(), CurrencyID: $POP_Currency.val(),
-                        CurrencyType: $POP_CurrencyType.val(), PaymentMethod: $POP_PayMthd.val(), PaymentAmount: $POP_Amt.val(),
+                        CurrencyType: $POP_CurrencyType.val(), PaymentMethod: $POP_PayMthd.val(), PaymentAmount: $amount,
                         CheckNo: $POP_ChkNo.val(), CheckDate: $POP_ChkDate.val(), charge: VIS.Utility.Util.getValueOfInt($ChargeControl.value)
                     });
                     $bsyDiv[0].style.visibility = "visible";
@@ -6894,7 +7027,7 @@
                         dsgn += ' </div></div>';
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="glyphicon glyphicon-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
-                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].DueAmt, "N") + '</span><br> </div> </div> ' +
+                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString() + '</span><br> </div> </div> ' +
                         '</div></div></div>';
 
                     $divPayment.append(dsgn);
@@ -7243,7 +7376,7 @@
                     else {
                         dsgn += ' </div></div>';
                     }
-                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="glyphicon glyphicon-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
+                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="glyphicon glyphicon-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + parseFloat(data.result[i].VA009_ConvertedAmt).toLocaleString() + '</span><br> </div> </div> ' +
                         '</div></div></div>';
 
                     $xmlpopGrid.append(dsgn);
