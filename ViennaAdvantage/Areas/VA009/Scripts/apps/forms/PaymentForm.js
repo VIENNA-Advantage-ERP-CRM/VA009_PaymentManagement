@@ -840,7 +840,6 @@
                 Pay_ID = 0;
             }
             else if (e.target.type == 'checkbox') {
-
                 if (target.prop("checked") == true) {
                     //Edit By Amit - 18-11-2016
                     if (target.data("name") == "Invoice") {
@@ -866,6 +865,7 @@
                     $totalAmt.text(getFormattednumber(actualAmt, 2));
                 }
                 else {
+                    $selectall.prop('checked', false);
                     var DeslctPaymt_ID = target.data("uid");
                     SlctdPaymentIds = jQuery.grep(SlctdPaymentIds, function (value) {
                         return value != DeslctPaymt_ID;
@@ -1160,19 +1160,18 @@
                             }, editable: { type: 'number' }
                         });
 
-                        _CHQPay_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', editable: { type: 'int', autoFormat: true, groupSymbol: ' ' } });
+                        _CHQPay_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
                         _CHQPay_Columns.push({
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
                             render: function (record, index, col_index) {
-                                var dateval = record.changes;
-                                if (dateval != undefined) {
-                                    var val = dateval["CheckDate"];
-                                    return new Date(val).toLocaleDateString();
+                                var val;
+                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                    val = record["CheckDate"];
                                 }
                                 else {
-                                    //var val = record["CheckDate"];
-                                    return new Date().toLocaleDateString();
+                                    val = record.changes.CheckDate;
                                 }
+                                return new Date(val).toLocaleDateString();
                             }, editable: { type: 'date' }
                         });
                         _CHQPay_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
@@ -1809,7 +1808,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('dd/MM/yyyy');
+                        line["CheckDate"] = new Date();//new Date().toString('dd/MM/yyyy');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -1846,7 +1845,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -2115,7 +2114,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -2660,7 +2659,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -2722,20 +2721,18 @@
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
-                        _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'int',autoFormat:true,groupSymbol: ' ' } });
+                        _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'alphanumeric',autoFormat:true,groupSymbol: ' ' } });
                         _CHQRec_Columns.push({
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
                             render: function (record, index, col_index) {
-                                var dateval = record.changes;
-                                if (dateval != undefined) {
-                                    var val = dateval["CheckDate"];
-                                    return new Date(val).toLocaleDateString();
+                                var val;
+                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                    val = record["CheckDate"];
                                 }
                                 else {
-                                    //debugger;
-                                    //var val = record["CheckDate"];
-                                    return new Date().toLocaleDateString();
+                                    val = record.changes.CheckDate;
                                 }
+                                return new Date(val).toLocaleDateString();
                             }, editable: { type: 'date' }
                         });
                         //_CHQRec_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
@@ -3304,7 +3301,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
@@ -4438,19 +4435,18 @@
                                 return parseFloat(val).toLocaleString();
                             }
                         });
-                        _batch_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%', editable: { type: 'int', autoFormat: true, groupSymbol: ' ' } });
+                        _batch_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
                         _batch_Columns.push({
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%',
                             render: function (record, index, col_index) {
-                                var dateval = record.changes;
-                                if (dateval != undefined) {
-                                    var val = dateval["CheckDate"];
-                                    return new Date(val).toLocaleDateString();
+                                var val;
+                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                    val = record["CheckDate"];
                                 }
                                 else {
-                                    //var val = record["CheckDate"];
-                                    return new Date().toLocaleDateString();
+                                    val = record.changes.CheckDate;
                                 }
+                                return new Date(val).toLocaleDateString();
                             }, style: 'text-align: left', editable: { type: 'date' }
                         });
                         //_batch_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
@@ -4524,7 +4520,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
@@ -4674,7 +4670,7 @@
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date().toLocaleDateString();//new Date().toString('MM/DD/YYYY');
+                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
                         line["CheckNumber"] = null;
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
@@ -5591,10 +5587,10 @@
                             reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
                             return Number.isNaN(reversedVal) ? 0 : reversedVal;
                         }
-                        var dd = reverseFormatNumber($txtAmt.val().toString(), window.navigator.language);
-                        if ((dd) > 0) {
+                        var amount = reverseFormatNumber($txtAmt.val().toString(), window.navigator.language);
+                        if ((amount) > 0) {
                             //$txtAmt.val(parseFloat($txtAmt.val()).toLocaleString());
-                            $txtAmt.val(Intl.NumberFormat(window.navigator.language).format(dd));
+                            $txtAmt.val(Intl.NumberFormat(window.navigator.language).format(amount));
                         }
                     });
                 };
@@ -5642,6 +5638,9 @@
                         && (e.which < 37 || e.which > 40)) {
                         return false;
                     }
+                    if (e.shiftKey) {
+                        e.preventDefault();
+                    }
                 });
                 $txtCheckNo.on('keydown keyup', function (e) {
                     var value = String.fromCharCode(e.which) || e.key;
@@ -5650,8 +5649,12 @@
                     if (!regExp.test(value)
                         && e.which != 8   // backspace
                         && e.which != 46  // delete
+                        && (e.which < 65 || e.which > 90)
                         && (e.which < 37 || e.which > 40)) {
                         return false;
+                    }
+                    if (e.shiftKey) {
+                        e.preventDefault();
                     }
                 });
                 function loadOrg() {
@@ -6231,6 +6234,9 @@
                         && (e.which < 37 || e.which > 40)) {
                         return false;
                     }
+                    if (e.shiftKey) {
+                        e.preventDefault();
+                    }
                 });
                 $POP_ChkNo.on('keydown keyup', function (e) {
                     var value = String.fromCharCode(e.which) || e.key;
@@ -6239,8 +6245,12 @@
                     if (!regExp.test(value)
                         && e.which != 8   // backspace
                         && e.which != 46  // delete
+                        && (e.which < 65 || e.which > 90)
                         && (e.which < 37 || e.which > 40)) {
                         return false;
+                    }
+                    if (e.shiftKey) {
+                        e.preventDefault();
                     }
                 });
                 function InitializeEvents() {
@@ -6385,10 +6395,10 @@
                             reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
                             return Number.isNaN(reversedVal) ? 0 : reversedVal;
                         }
-                        var dd = reverseFormatNumber($POP_Amt.val().toString(), window.navigator.language);
-                        if ((dd) > 0) {
+                        var amount = reverseFormatNumber($POP_Amt.val().toString(), window.navigator.language);
+                        if ((amount) > 0) {
                             //$txtAmt.val(parseFloat($txtAmt.val()).toLocaleString());
-                            $POP_Amt.val(Intl.NumberFormat(window.navigator.language).format(dd));
+                            $POP_Amt.val(Intl.NumberFormat(window.navigator.language).format(amount));
                         }
                     });
                 };
