@@ -5629,7 +5629,7 @@
                 $txtAmt.on('keydown keyup', function (e) {
                     var value = String.fromCharCode(e.which) || e.key;
                     var regExp = /[0-9\.\,]/;
-                    // Only numbers, dots and commas
+                    // Only numbers, alphabets
                     if (!regExp.test(value)
                         && e.which != 188 // ,
                         && e.which != 190 // .
@@ -5645,7 +5645,7 @@
                 $txtCheckNo.on('keydown keyup', function (e) {
                     var value = String.fromCharCode(e.which) || e.key;
                     var regExp = /[0-9\.\,]/;
-                    // Only numbers, dots and commas
+                    // Only numbers, alphabets
                     if (!regExp.test(value)
                         && e.which != 8   // backspace
                         && e.which != 46  // delete
@@ -6241,7 +6241,7 @@
                 $POP_ChkNo.on('keydown keyup', function (e) {
                     var value = String.fromCharCode(e.which) || e.key;
                     var regExp = /[0-9\.\,]/;
-                    // Only numbers, dots and commas
+                    // Only numbers, alphabets
                     if (!regExp.test(value)
                         && e.which != 8   // backspace
                         && e.which != 46  // delete
