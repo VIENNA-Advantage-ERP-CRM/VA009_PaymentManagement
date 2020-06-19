@@ -53,6 +53,7 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Common\DBFuncCollection.cs" />
     <Compile Include="Common\DocActionSpecification.cs" />
     <Compile Include="Model\MVA009Batch.cs" />
     <Compile Include="Model\MVA009BatchLineDetails.cs" />

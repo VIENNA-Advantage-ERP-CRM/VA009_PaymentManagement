@@ -106,7 +106,7 @@ namespace VA009.Models
                             + " AND i.C_Order_ID    = " + C_Order_ID
                             + "  AND ips.VA009_OrderPaySchedule_ID NOT IN"
                             + "(SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0) "
-                            + " ORDER BY ips.duedate ASC  ) WHERE rownum=1";
+                            + " ORDER BY ips.duedate ASC) t WHERE rownum=1";
                 DataSet ds = DB.ExecuteDataset(_sql);
 
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
