@@ -3517,8 +3517,10 @@ namespace VA009.Models
         public Dictionary<string, object> GetCashBookData(int C_CashBook_ID, Ctx ct)
         {
             Dictionary<string, object> retBank = null;
-            string sql = "SELECT (CompletedBalance || '.00') AS CompletedBalance, C_Currency_ID FROM C_CashBook WHERE ISACTIVE='Y' AND  C_CashBook_ID = "
-                + C_CashBook_ID + " AND AD_Client_ID =" + ct.GetAD_Client_ID();
+            //string sql = "SELECT (CompletedBalance || '.00') AS CompletedBalance, C_Currency_ID FROM C_CashBook WHERE ISACTIVE='Y' AND  C_CashBook_ID = "
+            //    + C_CashBook_ID + " AND AD_Client_ID =" + ct.GetAD_Client_ID();
+            string sql = "SELECT CompletedBalance AS CompletedBalance, C_Currency_ID FROM C_CashBook WHERE ISACTIVE='Y' AND  C_CashBook_ID = "
+                + C_CashBook_ID + " AND AD_Client_ID =" + ct.GetAD_Client_ID(); //removed '.00'
 
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_CashBook", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
 
