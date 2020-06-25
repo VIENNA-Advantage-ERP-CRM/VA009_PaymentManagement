@@ -69,31 +69,10 @@
         //added parameter for genearte payment file
         //'M'--- Manual, 'B'---Batch
         var File_Para = 'M';
-        var ch = new VIS.ChildDialog();//for Amount this.Show()
         var culture = new VIS.CultureSeparator();
 
         this.Initialize = function () {
             Initialize();
-        };
-
-        //reset for Amount Field...
-        this.vetoablechange = function (evt) {
-            console.log(evt.propertyName);
-            if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
-                txtAmount.setValue(evt.newValue);
-            }
-            else if (evt.propertyName == "VA009_cmbAmt_" + $self.windowNo + "") {
-                payAmount.setValue(evt.newValue);
-            }
-        };
-        this.show = function () {
-            debugger;
-            //displayDialog();
-            ch.getRoot();
-            busyDiv("visible");
-            txtAmount.addVetoableChangeListener(this);
-            payAmount.addVetoableChangeListener(this);
-            busyDiv("hidden");
         };
 
         function Initialize() {
@@ -1020,12 +999,20 @@
 
             Cheque_Pay_Dialog: function () {
                 CheuePaybleGrid, _Cheque_no = "";
-                var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
+                var _C_Bank_ID = 0, _C_BankAccount_ID = 0, cheqAmount;
                 $bsyDiv[0].style.visibility = "visible";
+                var divAmount, format = null;
+                lblAmount = $("<label>");
+                cheqAmount = new VIS.Controls.VAmountTextBox("VA009_AccountBalance" + $self.windowNo + "", false, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
+                lblAmount.append(VIS.Msg.getMsg("VA009_AccountBalance"));
+                cheqAmount.setValue(0);
+                format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
+                divAmount = $("<div class='VA009-popform-data'style='width:32.5%;margin-right:7.5px;'>");
+                divAmount.append(lblAmount).append(cheqAmount.getControl());
                 $chequePayble = $("<div class='VA009-popform-content' style='min-height:450px !important'>");
-                var _ChequePayble = "";
-                _ChequePayble += "<div class='VA009-popfrm-wrap'>"
-                    + "<div class='VA009-popCheck-data'>"
+                //var _ChequePayble = "";
+                _ChequePayble = $("<div class='VA009-popfrm-wrap'>");
+                _chequedata = $("<div class='VA009-popCheck-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
                     + "</select></div>"
@@ -1038,13 +1025,13 @@
                     + "<div class='VA009-popCheck-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select></div>");
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
-                    + "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
+                    //+ "<div class='VA009-popCheck-data'>"
+                    //+ "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
+                    //+ "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
 
-                    + "<div class='VA009-popCheck-data'>"
+                _chequedata1 =$("<div class='VA009-popCheck-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_Chqnolbl") + "</label>"
                     + "<input type='text' style='background-color: #ededed;' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/> </div>"
 
@@ -1074,7 +1061,7 @@
 
                     + "<div class='VA009-popCheck-data'>"
                     + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 33px;'> </div>"
 
                     //Transaction Date
                     + "<div class='VA009-popCheck-data'>"
@@ -1095,8 +1082,8 @@
                     // + </div>"
                     + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupGrid'></div></div>"
 
-                    + "</div>";
-
+                    + "</div>");
+                _ChequePayble.append(_chequedata).append(divAmount).append(_chequedata1);
                 $chequePayble.append(_ChequePayble);
                 CHQPAY_getControls();
                 var now = new Date();
@@ -1113,7 +1100,7 @@
                     // Added by Bharat on 01/May/2017
                     callbackCashPayments("");
                 }
-
+                cheqAmount.addVetoableChangeListener(this);
                 function callbackCashPayments(data) {
                     if (data != "") {
                         $bsyDiv[0].style.visibility = "hidden";
@@ -1928,7 +1915,7 @@
                         $POP_cmbBankAccount.css('background-color', SetMandatory(true));
                     }
                     //end
-                    $POP_txtAccttNo.val('');
+                    cheqAmount.setValue(0);
                     $POP_txtChqNo.val('');
                     //to get bank account of selected organization assigned by Ashish on 28 May 2020
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
@@ -1955,7 +1942,7 @@
                         $POP_cmbBankAccount.css('background-color', SetMandatory(true));
                     }
                     //end
-                    $POP_txtAccttNo.val('');
+                    cheqAmount.setValue(0);
                     $POP_txtChqNo.val('');
 
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountData", { "BankAccount": $POP_cmbBankAccount.val() }, callbackloadbankAcctBal);
@@ -1973,7 +1960,8 @@
 
                         if (dr != null) {
                             // $POP_txtAccttNo.val(Globalize.format(dr["CurrentBalance"], "N"));
-                            $POP_txtAccttNo.val(parseFloat(dr["CurrentBalance"]).toLocaleString());
+                            //$POP_txtAccttNo.val(parseFloat(dr["CurrentBalance"]).toLocaleString());
+                            cheqAmount.setValue(dr["CurrentBalance"]);
                             $POP_txtChqNo.val(dr["CurrentNext"]);
                         }
                         //}
@@ -1981,7 +1969,8 @@
 
                         // by amit if no record found, then Account Balance and cheque No as 0
                         if (dr == null) {
-                            $POP_txtAccttNo.val("0");
+                            //$POP_txtAccttNo.val("0");
+                            cheqAmount.setValue();
                             $POP_txtChqNo.val("0");
                         }
                     }
@@ -2398,7 +2387,12 @@
                     ChequePayDispose();
 
                 };
-
+                //reset for Amount Field...
+                this.vetoablechange = function (evt) {
+                    if (evt.propertyName == "VA009_AccountBalance" + $self.windowNo + "") {
+                        cheqAmount.setValue(evt.newValue);
+                    }
+                };
                 function ChequePayDispose() {
                     _Cheque = null;
                     $cheque = null;
@@ -3495,26 +3489,34 @@
 
             Cash_Dialog: function () {
                 var CashGrid, _Cheque_no = "";
-                var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
+                var _C_Bank_ID = 0, _C_BankAccount_ID = 0, cashAmount = 0;
                 $bsyDiv[0].style.visibility = "visible";
+                var divAmount, format = null;
+                lblAmount = $("<label>");
+                cashAmount = new VIS.Controls.VAmountTextBox("VA009_POP_Txtopngbal_" + $self.windowNo + "", false, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
+                lblAmount.append(VIS.Msg.getMsg("VA009_lblopngbal"));
+                cashAmount.setValue(0);
+                format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
+                divAmount = $("<div class='VA009-popform-data'style='width:49%;'>");
+                divAmount.append(lblAmount).append(cashAmount.getControl());
                 $cash = $("<div class='VA009-popform-content' style='min-height:385px !important'>");
-                var _Cash = "";
-                _Cash += "<div class='VA009-popfrm-wrap'>"
+                //var _Cash = "";
+                _Cash = $("<div class='VA009-popfrm-wrap'>");
 
-                    + "<div class='VA009-popform-data'>"
+                cashData = $("<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
                     + "</select></div>"
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_lblcashbook") + "</label>"
-                    + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select></div> "
+                    + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select></div> ");
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
-                    + "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
+                    //+ "<div class='VA009-popform-data'>"
+                    //+ "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
+                    //+ "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
 
-                    + "<div class='VA009-popform-data'>"
+                cashDataa = $("<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
                     + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
                     + "</select></div>"
@@ -3528,8 +3530,8 @@
                     + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
 
                     + "<div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div>"
-                    + "</div>";
-
+                    + "</div>");
+                _Cash.append(cashData).append(divAmount).append(cashDataa);
                 $cash.append(_Cash);
                 Cash_getControls();
 
@@ -3561,7 +3563,7 @@
                         VIS.ADialog.info(("VA009_PleaseSelctonlyCash"));
                     }
                 }
-
+                cashAmount.addVetoableChangeListener(this);
                 function loadCurrencyType() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
@@ -3722,7 +3724,7 @@
                 };
 
                 $Cash_cmbcashbk.on("change", function () {
-                    $Cash_OpngBal.val('');
+                    cashAmount.setValue(0);
                     //to set cashbook mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) == 0) {
                         $Cash_cmbcashbk.css('background-color', SetMandatory(true));
@@ -3734,7 +3736,7 @@
                     var currency = 0;
                     function callbackloadcashbk(dr) {
                         if (dr != null) {
-                            $Cash_OpngBal.val(dr["CompletedBalance"]);
+                            cashAmount.setValue(dr["CompletedBalance"]);
                             currency = dr["C_Currency_ID"];
                             CashCurrency = currency;
                         }
@@ -3789,7 +3791,7 @@
 
                 function Cash_getControls() {
                     $Cash_cmbcashbk = $cash.find("#VA009_POP_Txtcashbk_" + $self.windowNo);
-                    $Cash_OpngBal = $cash.find("#VA009_POP_Txtopngbal_" + $self.windowNo);
+                    //$Cash_OpngBal = $cash.find("#VA009_POP_Txtopngbal_" + $self.windowNo);
                     CashGrid = $cash.find("#VA009_btnPopupGrid");
                     $pop_cmbCurrencyType = $cash.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_DateAcct = $cash.find("#VA009_AccountDate_" + $self.windowNo);
@@ -4180,9 +4182,9 @@
                                             _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
                                         }
                                         else {
-                                        VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                        Cashgrd.selectNone();
-                                        return false;
+                                            VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                            Cashgrd.selectNone();
+                                            return false;
                                         }
                                         //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder != undefined) {
                                         //    _data["OverUnder"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder;
@@ -4221,7 +4223,7 @@
                                     datatype: "json",
                                     // contentType: "application/json; charset=utf-8",
                                     async: true,
-                                    data: ({ PaymentData: JSON.stringify(_CollaborateData), C_CashBook_ID: parseInt($Cash_cmbcashbk.val()), BeginningBalance: parseFloat($Cash_OpngBal.val()) }),
+                                    data: ({ PaymentData: JSON.stringify(_CollaborateData), C_CashBook_ID: parseInt($Cash_cmbcashbk.val()), BeginningBalance: cashAmount.getValue() }),
                                     success: function (result) {
                                         callbackCashPaymnt(result);
                                     },
@@ -4275,7 +4277,12 @@
                     CashDispose();
 
                 };
-
+                this.vetoablechange = function (evt) {
+                    console.log(evt.propertyName);
+                    if (evt.propertyName == "VA009_POP_Txtopngbal_" + $self.windowNo + "") {
+                        cashAmount.setValue(evt.newValue);
+                    }
+                };
                 function CashDispose() {
                     _Cash = null;
                     $cash = null;
@@ -5317,6 +5324,7 @@
                 lblAmount = $("<label>");
                 txtAmount = new VIS.Controls.VAmountTextBox("VA009_Amount" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
+                txtAmount.setValue(0);
                 format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
                 divAmount = $("<div class='VA009-popform-data'>");
                 divAmount.append(lblAmount).append(txtAmount.getControl());
@@ -5413,7 +5421,7 @@
                 loadPaymentMthd();
                 loadBankAccount($From_cmbBank, organizationids);
                 loadToBankAccount($To_cmbBank, organizationids);
-
+                txtAmount.addVetoableChangeListener(this);
                 b2bDialog.onOkClick = function () {
                     //function reverseFormatNumber(val, locale) {
                     //    var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
@@ -5500,7 +5508,12 @@
                     B2BDispose();
 
                 };
-
+                this.vetoablechange = function (evt) {
+                    console.log(evt.propertyName);
+                    if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
+                        txtAmount.setValue(evt.newValue);
+                    }
+                };
                 function InitializeEvents() {
 
                     $isPayment.on("click", function (e) {
@@ -5663,7 +5676,7 @@
                     $paymentMthd.css('background-color', SetMandatory(true));
 
                 };
-     
+
                 $txtCheckNo.on('keydown keyup', function (e) {
                     var value = String.fromCharCode(e.which) || e.key;
                     var regExp = /[0-9\.\,]/;
@@ -5789,7 +5802,12 @@
                         }
                     }
                 };
-
+                //reset for Amount Field...
+                this.vetoablechange = function (evt) {
+                    if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
+                        txtAmount.setValue(evt.newValue);
+                    }
+                };
                 function B2BDispose() {
                     $b2b = null;
                     _b2b = null;
@@ -6095,6 +6113,7 @@
                 lblAmount = $("<label>");
                 payAmount = new VIS.Controls.VAmountTextBox("VA009_cmbAmt_" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));//for amount textbox control
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
+                payAmount.setValue(0);
                 format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);//formating the value of amount into number
                 divAmount = $("<div class='VA009-popform-data'style='margin-left: 20px;width:48%;'>");
                 divAmount.append(lblAmount).append(payAmount.getControl());
@@ -6194,7 +6213,7 @@
                 manualDialog.show();
                 InitializeEvents()
                 loadAllData();
-
+                payAmount.addVetoableChangeListener(this);
                 function SetMandatory(value) {
                     if (value)
                         return '#FFB6C1';
@@ -6230,7 +6249,7 @@
                     $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
                     //$POP_Charge = $payManual.find("#VA009_cmbCharge_" + $self.windowNo);
                     $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
-                    $POP_Amt = $payManual.find("#VA009_cmbAmt_" + $self.windowNo);
+                    //$POP_Amt = $payManual.find("#VA009_cmbAmt_" + $self.windowNo);
                     $POP_ChkNo = $payManual.find("#VA009_txtCheck_" + $self.windowNo);
                     $POP_ChkDate = $payManual.find("#VA009_chkDate_" + $self.windowNo);
                     $DivChkNo = $payManual.find("#VA009_DivCheck_" + $self.windowNo);
@@ -6265,7 +6284,6 @@
                     }
                 });
                 function InitializeEvents() {
-
                     $POP_cmbBank.on("change", function () {
                         $POP_cmbBankAccount.empty();
                         //to set bank account mandatory given by ashish on 28 May 2020
@@ -6529,7 +6547,7 @@
                         }
                     }
                 };
-
+                payAmount.addVetoableChangeListener(this);
                 manualDialog.onOkClick = function () {
                     if (!isValidPayment()) {
                         return false;
@@ -6546,6 +6564,11 @@
                 manualDialog.onClose = function () {
                     payManualDispose();
 
+                };
+                this.vetoablechange = function (evt) {
+                    if (evt.propertyName == "VA009_cmbAmt_" + $self.windowNo + "") {
+                        payAmount.setValue(evt.newValue);
+                    }
                 };
                 function payManualDispose() {
                     $payManual = null;
