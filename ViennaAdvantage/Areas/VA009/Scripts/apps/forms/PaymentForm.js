@@ -6115,7 +6115,7 @@
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
                 payAmount.setValue(0);
                 format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);//formating the value of amount into number
-                divAmount = $("<div class='VA009-popform-data'style='margin-left: 20px;width:48%;'>");
+                divAmount = $("<div class='VA009-popform-data'style='margin-right: 1%;margin-left: 0%;width:49.2%;'>");
                 divAmount.append(lblAmount).append(payAmount.getControl());
                 $payManual = $("<div class='VA009-popform-content' style='min-height:435px'>");
                 //var _payManual = "";
@@ -6153,17 +6153,17 @@
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>"
-                    + "<div id='VA009_POP_cmbBP_" + $self.windowNo + "'>"
+                    + "<div id='VA009_POP_cmbBP_" + $self.windowNo + "'style='margin-left:0%;width:100%;'>"
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data'>"
                     + "<label>" + VIS.Msg.getMsg("BPLocation") + "</label>"
-                    + "<select id='VA009_POP_cmbLocation_" + $self.windowNo + "'>"
+                    + "<select id='VA009_POP_cmbLocation_" + $self.windowNo + "'style='margin-left:0%;width:100%;'>"
                     + "</select></div>"
 
                     + "<div class='VA009-popform-data'>"
-                    + "<label style='margin-left:10px;'>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
-                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "' style='margin-left:10px;margin-right:20px;width:98%;'>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
+                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "' style='margin-left:0%;width:100%;'>"
                     + "</select></div>"
 
                     //currency type list
@@ -6178,8 +6178,8 @@
                     //+ "</select></div>"
 
                     + "<div class='VA009-popform-data'>"
-                    + "<label style='margin-left:20px;'>" + VIS.Msg.getMsg("Charge") + "</label>"
-                    + "<div id='VA009_Charge_" + $self.windowNo + "'>"
+                    + "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
+                    + "<div id='VA009_Charge_" + $self.windowNo + "'style='margin-left:0%;width:100%;height:33px;'>"
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data'>"
@@ -6193,11 +6193,11 @@
 
                 _addAmt = ("<div class='VA009-popform-data' id= VA009_DivCheck_" + $self.windowNo + ">"
                     + "<label>" + VIS.Msg.getMsg("CheckNo") + "</label>"
-                    + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' style='height: 33px;'> </div>"
+                    + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' style='height: 33px;width:100%;'> </div>"
 
                     + "<div class='VA009-popform-data' id= VA009_DivCheckDate_" + $self.windowNo + ">"
-                    + "<label style='margin-left:20px;'>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
-                    + "<input type='Date' id='VA009_chkDate_" + $self.windowNo + "'style='height: 33px;width:98%;margin-left:20px;margin-right:20px;'> </div>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+                    + "<input type='Date' id='VA009_chkDate_" + $self.windowNo + "'style='height: 33px;width:100%;'> </div>"
                     + "</div>"
                     + "</div>");
                 _payManual.append(_addOrg).append(divAmount).append(_addAmt);//append the child tags to parent div
@@ -6232,7 +6232,7 @@
                     //BPartner look Up
                     _BusinessPartnerLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3499, VIS.DisplayType.Search);
                     $BpartnerControl = new VIS.Controls.VTextBoxButton("C_BPartner_ID", true, false, true, VIS.DisplayType.Search, _BusinessPartnerLookUp);
-                    $POP_cmbBP.append($BpartnerControl.getControl().css('width', '93%').css('height', '33px')).append($BpartnerControl.getBtn(0).css('width', '30px').css('height', '33px').css('padding', '0px').css('border-color', '#BBBBBB'));
+                    $POP_cmbBP.append($BpartnerControl.getControl().css('width', '93.5%')).append($BpartnerControl.getBtn(0).css('width', '6%').css('height', '33px').css('padding', '0px').css('border-color', '#BBBBBB'));
                     $BpartnerControl.getControl().css('background-color', SetMandatory(true));
                     //end
                     //Charge look Up
@@ -6241,7 +6241,7 @@
 
                     _ChargeLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.Search);
                     $ChargeControl = new VIS.Controls.VTextBoxButton("C_Charge_ID", true, false, true, VIS.DisplayType.Search, _ChargeLookUp);
-                    $POP_lookCharge.append($ChargeControl.getControl().css('width', '90%').css('margin-left', '20px').css('height', '33px')).append($ChargeControl.getBtn(0).css('width', '30px').css('height', '33px').css('padding', '0px').css('border-color', '#BBBBBB'));
+                    $POP_lookCharge.append($ChargeControl.getControl().css('width', '93%').css('height', '33px')).append($ChargeControl.getBtn(0).css('width', '6.5%').css('height', '33px').css('padding', '0px').css('border-color', '#BBBBBB'));
                     //end
 
                     $POP_cmbLocation = $payManual.find("#VA009_POP_cmbLocation_" + $self.windowNo);
