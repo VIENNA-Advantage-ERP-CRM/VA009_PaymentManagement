@@ -494,8 +494,16 @@ namespace VA009.Models
                 //Assign parameter value
                 int C_BP_BankAccount_ID = Util.GetValueOfInt(paramValue[0].ToString());
                 //End Assign parameter
-                    retDic = new Dictionary<string, object>();
-                    retDic["a_name"] = Util.GetValueOfInt(DB.ExecuteScalar(@" SELECT a_name FROM C_BP_BankAccount WHERE C_BP_BankAccount_ID = " + C_BP_BankAccount_ID));
+                retDic = new Dictionary<string, object>();
+                //changes done for adding routing number and account number for batch 
+                DataSet ds = DB.ExecuteDataset(@" SELECT a_name , RoutingNo , AccountNo 
+                             FROM C_BP_BankAccount WHERE C_BP_BankAccount_ID = " + C_BP_BankAccount_ID);
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    retDic["a_name"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["a_name"]);
+                    retDic["RoutingNo"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["RoutingNo"]);
+                    retDic["AccountNo"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"]);
+                }
                 return retDic;
             }
             else

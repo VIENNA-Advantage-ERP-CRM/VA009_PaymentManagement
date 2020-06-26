@@ -230,13 +230,16 @@ namespace ViennaAdvantage.Process
                         if (_BPartner > 0)
                         {
                             DataSet ds1 = new DataSet();
+                            //to set value of routing number and account number of batch lines 
                             ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
-                                   + " AD_Org_ID =" + batch.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                  a_name,RoutingNo,AccountNo  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
+                                   + " AD_Org_ID IN (0, " + batch.GetAD_Org_ID() + ") GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo  ");
                             if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                             {
-                                line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                                line.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                line.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                line.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                line.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                line.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                             }
                         }
                         #endregion

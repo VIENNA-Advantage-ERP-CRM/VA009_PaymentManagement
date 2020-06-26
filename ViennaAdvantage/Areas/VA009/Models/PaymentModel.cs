@@ -5044,8 +5044,9 @@ namespace VA009.Models
             {
                 //add sql access to generate batch file for those who have access
                 sql.Clear();
-                sql.Append(@"(SELECT c_payment_id FROM c_payment 
-                            WHERE UPPER(documentno)=UPPER('" + DocNumber + "')) ");
+                //removed brackets from this query because it was creating problem in case of document number was having special characters
+                sql.Append(@"SELECT c_payment_id FROM c_payment 
+                            WHERE UPPER(documentno)=UPPER('" + DocNumber + "') ");
                 payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
             }
             PaymentResponse obj = null;

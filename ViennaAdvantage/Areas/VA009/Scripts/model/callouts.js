@@ -505,7 +505,7 @@
                 }
             }
 
-                //	No Order - Set Discount, Witeoff, Under/Over to 0
+            //	No Order - Set Discount, Witeoff, Under/Over to 0
             else if (C_Order_ID == 0) {
                 if (VIS.Env.ZERO != discountAmt) {
                     mTab.setValue("DiscountAmt", VIS.Env.ZERO);
@@ -517,7 +517,7 @@
                     mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
                 }
             }
-                //  PayAmt - calculate write off
+            //  PayAmt - calculate write off
             else if (colName == "PayAmt") {
                 if (mTab.getValue("PayAmt") > OrderopenAmt) {
                     mTab.setValue("PayAmt", OrderopenAmt);
@@ -1223,9 +1223,14 @@
         this.setCalloutActive(true);
         var dr = VIS.dataContext.getJSONRecord("Pay/getaccountName", Util.getValueOfInt(value));
         if (dr != null) {
+            //new columns needs to set on payment schedule batch lines window
             mTab.setValue("a_name", dr["a_name"]);
+            mTab.setValue("RoutingNo", dr["RoutingNo"]);
+            mTab.setValue("AccountNo", dr["AccountNo"]);
             if (mTab.getValue("IsReceipt") == "N") {
                 mTab.setValue("a_name", "");
+                mTab.setValue("RoutingNo", "");
+                mTab.setValue("AccountNo", "");
             }
         }
         this.setCalloutActive(false);
