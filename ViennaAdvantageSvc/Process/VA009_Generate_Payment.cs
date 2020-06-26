@@ -186,7 +186,11 @@ namespace ViennaAdvantage.Process
                                T.DocBaseType ,
                                T.va009_paymentmethod_id ,
                                T.VA009_DueAmount,
-                               T.Currency_ID
+                               T.Currency_ID,
+                               T.C_BP_BankAccount_ID,
+                               T.swiftcode, 
+                               T.Acctnumber,
+                               T.AcctName
                                 FROM (");
                     sql.Append(@"SELECT bld.C_ConversionType_ID,
                                b.c_bankaccount_id, 
@@ -210,8 +214,10 @@ namespace ViennaAdvantage.Process
                                bld.ad_org_id, 
                                bld.ad_client_id , 
                                doc.DocBaseType ,
-                               bld.va009_paymentmethod_id ,
+                               b.va009_paymentmethod_id ,
                                bl.VA009_DueAmount,
+                               bl.C_BP_BankAccount_ID,
+                               bl.RoutingNo as swiftcode, bl.AccountNo as Acctnumber, bl.A_Name as AcctName,
                                IPS.C_Currency_ID AS Currency_ID
                                FROM va009_batchlinedetails bld 
                                INNER JOIN va009_batchlines bl ON bl.va009_batchlines_id=bld.va009_batchlines_id 
@@ -249,8 +255,11 @@ namespace ViennaAdvantage.Process
                                bld.ad_org_id, 
                                bld.ad_client_id , 
                                doc.DocBaseType ,
-                               bld.va009_paymentmethod_id ,
-                               bl.VA009_DueAmount, OPS.C_Currency_ID AS Currency_ID
+                               b.va009_paymentmethod_id ,
+                               bl.VA009_DueAmount,
+                               bl.C_BP_BankAccount_ID,
+                               bl.RoutingNo as swiftcode, bl.AccountNo as Acctnumber, bl.A_Name as AcctName,
+                                OPS.C_Currency_ID AS Currency_ID
                                FROM va009_batchlinedetails bld 
                                INNER JOIN va009_batchlines bl ON bl.va009_batchlines_id=bld.va009_batchlines_id 
                                INNER JOIN va009_batch b ON b.va009_batch_id =bl.va009_batch_id 
@@ -670,17 +679,27 @@ namespace ViennaAdvantage.Process
                                         _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
                                         #region to set bank account of business partner and name on batch line
-                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) > 0)
+                                        //to set value of routing number and account number of batch lines 
+                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) > 0)
                                         {
                                             DataSet ds1 = new DataSet();
-                                            ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                            a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) + " AND "
-                                                   + " AD_Org_ID =" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                            ds1 = DB.ExecuteDataset(@" SELECT a_name, RoutingNo, AccountNo FROM 
+                                                  C_BP_BankAccount WHERE C_BP_BankAccount_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
                                             if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                                             {
-                                                _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                                                _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                                _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                                                _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                                _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                                _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                                             }
+                                        }
+                                        else
+                                        {
+                                            //T.C_BP_BankAccount_ID,//T.swiftcode,//T.Acctnumber,//T.AcctName
+                                            _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                                            _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"]));
+                                            _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["swiftcode"]));
+                                            _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"]));
                                         }
                                         #endregion
                                         _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
