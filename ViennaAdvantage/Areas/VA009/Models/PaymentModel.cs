@@ -427,7 +427,7 @@ namespace VA009.Models
 
             sql.Append(" UNION ");
 
-            sql.Append(@"SELECT unique pm.VA009_PaymentMode,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
+            sql.Append(@"SELECT DISTINCT pm.VA009_PaymentMode,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
                          cs.VA009_OrderPaySchedule_ID As C_InvoicePaySchedule_ID,  inv.C_Currency_ID,  cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('SOO')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) 
                               WHEN (cd.DOCBASETYPE IN ('POO')) THEN ROUND(cs.DUEAMT, NVL(CY.StdPrecision,2)) * 1   END AS DueAmt, "); // -1 Because during payble dont show negative amount on UI
