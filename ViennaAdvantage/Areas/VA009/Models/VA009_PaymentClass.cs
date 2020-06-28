@@ -44,7 +44,7 @@ namespace VA009.Models
                 {
                     documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"]));
                     _obj = new PaymentResponse();
-                    fileName = String.Format("{0,-4}_{1,6}_{2,8}_{3,3}{4,4}",
+                    fileName = String.Format("{0,-4}_{1,-6}_{2,-8}_{3,-3}{4,-4}",
                              "EPAY", Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]),
                              DateTime.Now.ToString("ddMMyyyy"),
                              documentno.Substring(documentno.Length - 3, 3)
@@ -73,7 +73,7 @@ namespace VA009.Models
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
                     documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"]));
-                    fileName = String.Format("{0,-4}_{1,6}_{2,8}_{3,3}{4,4}",
+                    fileName = String.Format("{0,-4}_{1,-6}_{2,-8}_{3,-3}{4,-4}",
                                   "EPAY", Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]),
                                   DateTime.Now.ToString("ddMMyyyy"),
                                   documentno.Substring(documentno.Length - 3, 3)
@@ -113,17 +113,20 @@ namespace VA009.Models
             DataSet ds = null;
             if (isBatch)
             {
-                ds = DB.ExecuteDataset(@" SELECT documentno, VA009_Batch_ID
+                ds = DB.ExecuteDataset(@" SELECT documentno, VA009_Batch_ID,VA009_DocumentDate, NVL(VA009_PayFileCount,0) AS VA009_PayFileCount
                     FROM VA009_Batch WHERE VA009_Batch_ID = " + Payment_ID);
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
                     documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"]));
                     _obj = new PaymentResponse();
-                    fileName = String.Format("{0,7}_{1,20}{2,4}",
-                             "BULKPAY", documentno, ".CSV");
+
+                    //Name should Start with "PAYMENT" and set the length of document numer
+                    fileName = String.Format("{0,-7}_{1,-" + documentno.Length + "}_{2,-8}_{3,-3}{4,-4}",
+                             "PAYMENT", documentno, Convert.ToDateTime(ds.Tables[0].Rows[0]["VA009_DocumentDate"]).ToString("ddMMyyyy"), Util.GetValueOfInt(Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PayFileCount"]) + 1).ToString("D3"), ".CSV");
                     created = CreateCSVFile(_filePath, true, false, ctx, Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_Batch_ID"]), fileName, isBatch);
                     if (created)
                     {
+                        DB.ExecuteQuery("UPDATE VA009_Batch SET VA009_PayFileCount = " + Util.GetValueOfInt(Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PayFileCount"]) + 1).ToString("D3") + " WHERE VA009_Batch_ID=" + Payment_ID);
                         _obj._filename = fileName;
                         _obj._path = _filePath;
                     }
@@ -139,15 +142,17 @@ namespace VA009.Models
             else
             {
                 _obj = new PaymentResponse();
-                ds = DB.ExecuteDataset(@"SELECT documentno FROM c_payment WHERE c_payment_id = " + Payment_ID);
+                ds = DB.ExecuteDataset(@"SELECT documentno,DateAcct,NVL(VA009_PayFileCount,0) AS VA009_PayFileCount FROM c_payment WHERE c_payment_id = " + Payment_ID);
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
                     documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"]));
-                    fileName = String.Format("{0,7}_{1,20}{2,4}",
-                                  "BULKPAY", documentno, ".CSV");
+                    //Name should Start with "PAYMENT" and set the length of document numer
+                    fileName = String.Format("{0,-7}_{1,-" + documentno.Length + "}_{2,-8}_{3,-3}{4,-4}",
+                                  "PAYMENT", documentno, Convert.ToDateTime(ds.Tables[0].Rows[0]["DateAcct"]).ToString("ddMMyyyy"), Util.GetValueOfInt(Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PayFileCount"]) + 1).ToString("D3"), ".CSV");
                     created = CreateCSVFile(_filePath, true, false, ctx, Payment_ID, fileName, isBatch);
                     if (created)
                     {
+                        DB.ExecuteQuery("UPDATE C_Payment SET VA009_PayFileCount = " + Util.GetValueOfInt(Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PayFileCount"]) + 1).ToString("D3") + " WHERE C_Payment_ID=" + Payment_ID);
                         _obj._filename = fileName;
                         _obj._path = _filePath;
                     }
@@ -535,17 +540,27 @@ namespace VA009.Models
                                C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN AD_OrgInfo oi ON oi.AD_Org_ID
                                =p.AD_Org_ID WHERE p.c_payment_id= " + paymentID);
             }
+            string dateFr = string.Empty;
             DataSet ds = DB.ExecuteDataset(sql.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
-                header.Append(String.Format("{0,2},{1,8},{2,6},{3,40},{4,14},{5,8},{6,20},{7,15},{8,1},{9,1},{10,1},{11,1},{12,1},{13,100},{14,100},{15,100},{16,100},{17,100}",
-                                "00", "BULKPAYMENT", Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]),
-                                Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]),
+                dateFr = Convert.ToDateTime(ds.Tables[0].Rows[0]["DateAcct"]).ToString("ddMMyyyy").ToString();
+                // Need to replace BulkPayment with  01 and set allignment to left to right added blank column to match sequence
+                header.Append(String.Format("{0,-2},{1,-" + Util.GetValueOfString("01").Length + "}," +
+                    "{2,-" + Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]).Length + "}," +
+                    "{3,-" + string.Empty.Length + "},{4,-" + Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]).Length + "}," +
+                    "{5,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"])).Length + "}," +
+                    "{6,-8},{7,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])).Length + "}," +
+                    "{8,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_BRegNo"])).Length + "}," +
+                    "{9,1},{10,1},{11,1},{12,1},{13,1},{14,-" + string.Empty.Length + "},{15,-" + string.Empty.Length + "}," +
+                    "{16,-" + string.Empty.Length + "},{17,-" + string.Empty.Length + "},{18,-" + string.Empty.Length + "}",
+                                "00", "01", Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]), string.Empty,
+                                RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"])),
                                 RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"])),
-                                Convert.ToDateTime(ds.Tables[0].Rows[0]["DateAcct"]).ToString("ddMMyyyy"),
+                                dateFr,
                                 RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])),
-                                Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_BRegNo"]), "A", "N", "N", "N", "I",
-                                "", "", "", "", ""));
+                                RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_BRegNo"])), "A", "N", "N", "N", "I",
+                                string.Empty, string.Empty, string.Empty, string.Empty, string.Empty));
 
             }
             return header.ToString();
@@ -566,16 +581,19 @@ namespace VA009.Models
             {
                 sql.Append(@"SELECT ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
                            ba.Name,  ba.AccountNo,  p.payamt, oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.ReferenceNo,
-                           oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress,  bp.A_Name,cp.CMS01_BeneficiaryIDIndicator,
-                           bp.AccountNo AS BPAcctNo,  u.email FROM c_payment p INNER JOIN C_BankAccount ba
+                           oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID as BPAddress, bp.A_Name,cp.CMS01_BeneficiaryIDIndicator,
+                           bp.AccountNo AS BPAcctNo, p.RoutingNo as swiftcode,  p.AccountNo as Acctnumber,  p.A_Name as AcctName, 
+                           u.email FROM c_payment p INNER JOIN C_BankAccount ba
                            ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN C_Bank b ON b.C_Bank_ID= ba.C_bank_ID
                             INNER JOIN C_BPartner cp ON cp.C_BPartner_ID= p.C_BPartner_ID
+                           INNER JOIN C_BPartner_Location bpl ON bpl.C_BPartner_Location_ID=p.C_BPartner_Location_ID
                            INNER JOIN AD_OrgInfo oi ON oi.AD_Org_ID =p.AD_Org_ID LEFT JOIN C_BP_BankAccount bp
                            ON bp.C_BPartner_ID=p.C_BPartner_ID LEFT JOIN AD_USer u ON u.C_BPartner_ID  = p.C_BPartner_ID
                            WHERE p.c_payment_id IN ( SELECT p.C_Payment_ID FROM VA009_BatchLineDetails bld
                            INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
                            INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID INNER JOIN C_Payment p
-                           ON p.C_Payment_ID      = bld.C_Payment_ID WHERE b.VA009_Batch_ID = " + paymentID + ")");
+                           ON p.C_Payment_ID= bld.C_Payment_ID WHERE b.VA009_Batch_ID = " + paymentID + ") " +
+                           " AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID ");
 
             }
             else
@@ -583,13 +601,15 @@ namespace VA009.Models
                 //cp.CMS01_BeneficiaryIDIndicator,
                 sql.Append(@"SELECT ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
                            ba.Name,  ba.AccountNo,  p.payamt,  oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.ReferenceNo,
-                           oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress,  bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
-                           bp.AccountNo AS BPAcctNo,  u.email FROM c_payment p INNER JOIN C_BankAccount ba
+                           oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID as BPAddress,  bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
+                           bp.AccountNo AS BPAcctNo, p.RoutingNo as swiftcode,  p.AccountNo as Acctnumber,  p.A_Name as AcctName,
+                           u.email FROM c_payment p INNER JOIN C_BankAccount ba
                            ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN C_Bank b ON b.C_Bank_ID= ba.C_bank_ID
                            INNER JOIN C_BPartner cp ON cp.C_BPartner_ID= p.C_BPartner_ID
+                           INNER JOIN C_BPartner_Location bpl ON bpl.C_BPartner_Location_ID=p.C_BPartner_Location_ID
                            INNER JOIN AD_OrgInfo oi ON oi.AD_Org_ID =p.AD_Org_ID LEFT JOIN C_BP_BankAccount bp
                            ON bp.C_BPartner_ID=p.C_BPartner_ID LEFT JOIN AD_USer u ON u.C_BPartner_ID  = p.C_BPartner_ID
-                           WHERE p.c_payment_id=" + paymentID);
+                           WHERE p.c_payment_id=" + paymentID + " AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID ");
             }
             DataSet ds = DB.ExecuteDataset(sql.ToString());
             int length = 0;
@@ -598,6 +618,7 @@ namespace VA009.Models
             {
                 string isresident = "2", idIndicator = string.Empty;
                 string formatStringNewLine = string.Empty;
+                string bpAddress = string.Empty;
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     if (i == 0)
@@ -638,25 +659,68 @@ namespace VA009.Models
                     {
                         idIndicator = "05";
                     }
-                    RowsData.Append(String.Format("" + formatStringNewLine + "{0,2},{1,10},{2,20},{3,18},{4,17},{5,1},{6,96},{7,20},{8,2},{9,15},{10,40},{11,40},{12,40},{13,20},{14,300},{15,100},{16,100},{17,100},{18,100},{19,100}",
+                    // to get business partner address
+                    string bpAdd1 = string.Empty, bpAdd2 = string.Empty, bpAdd3 = string.Empty;
+                    bpAddress = RemoveSpecialCharacters(getLocationName(Util.GetValueOfInt(ds.Tables[0].Rows[i]["BPAddress"])));
+                    if (bpAddress.Length > 0)
+                    {
+                        if (bpAddress.Length <= 40)
+                        {
+                            bpAdd1 = bpAddress.Substring(0, bpAddress.Length);
+                        }
+                        if (bpAddress.Length > 40)
+                        {
+                            bpAdd1 = bpAddress.Substring(0, 40);
+                        }
+                        if (bpAddress.Length > 40 && bpAddress.Length <= 80)
+                        {
+                            bpAdd2 = bpAddress.Substring(40, bpAddress.Length - 40);
+                        }
+                        if (bpAddress.Length > 80 && bpAddress.Length <= 120)
+                        {
+                            bpAdd3 = bpAddress.Substring(80, bpAddress.Length - 80);
+                        }
+                        if (bpAddress.Length > 120)
+                        {
+                            bpAdd3 = bpAddress.Substring(80, 40);
+                        }
+                    }
+                    //to append blank column to match the sequence of the file and columns
+                    RowsData.Append(String.Format("" + formatStringNewLine + "{0,-2},{1,-" + Util.GetValueOfString("10").Length + "}," +
+                        "{2,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])).Length + "}," +
+                        "{3,-" + Util.GetValueOfDouble(decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2)).ToString().Length + "}," +
+                        "{4,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["swiftcode"])).Length + "}," +
+                        "{5,1},{6,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"])).Length + "}," +
+                        "{7,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"])).Length + "}," +
+                        "{8,-2},{9,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["ReferenceNo"])).Length + "}," +
+                        "{10,-" + bpAdd1.Length + "}," +
+                        "{11,-" + bpAdd2.Length + "}," +
+                        "{12,-" + bpAdd3.Length + "}," +
+                        "{13,-" + Util.GetValueOfString("Payment").Length + "},{14,-" + string.Empty.Length + "}," +
+                        "{15,-" + string.Empty.Length + "},{16,-" + string.Empty.Length + "},{17,-" + string.Empty.Length + "},{18,-" + string.Empty.Length + "}," +
+                        "{19,-" + string.Empty.Length + "},{20,-" + string.Empty.Length + "},{21,-" + string.Empty.Length + "},{22,-" + string.Empty.Length + "}," +
+                        "{23,-" + string.Empty.Length + "},{24,-" + string.Empty.Length + "},{25,-" + string.Empty.Length + "},{26,-" + string.Empty.Length + "}," +
+                        "{27,-" + Util.GetValueOfString(ds.Tables[0].Rows[i]["email"]).Length + "},{28,-" + string.Empty.Length + "}," +
+                        "{29,-" + string.Empty.Length + "},{30,-" + string.Empty.Length + "},{31,-" + string.Empty.Length + "},{32,-" + string.Empty.Length + "}",
                                     "10", "10", RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])),
                                     decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2),
-                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["RoutingNo"]),
+                                     RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["swiftcode"])),
                                      isresident,
-                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["A_Name"]),
-                                    RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["BPAcctNo"])),
+                                    RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"])),
+                                    RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"])),
                                     idIndicator,
-                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["ReferenceNo"]),
-                                    getLocationName(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Location_ID"])),
-                                    getLocationName(Util.GetValueOfInt(ds.Tables[0].Rows[i]["CMS01_BPAddress"])),
-                                    getLocationName(Util.GetValueOfInt(ds.Tables[0].Rows[i]["CMS01_BPAddress"])),
-                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["description"]),
+                                    RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["ReferenceNo"])),
+                                    bpAdd1, bpAdd2, bpAdd3,
+                                    Util.GetValueOfString("Payment"), string.Empty, string.Empty,
+                                    string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
+                                    string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["email"]),
                                     string.Empty, string.Empty, string.Empty, string.Empty, string.Empty
                                     ));
                     length = Util.GetValueOfString("AUTOCREDIT" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])) + " RM " + decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2).ToString()).Length;
-                    RowsData.Append(String.Format("\n{0,2},{1," + length + "}",
-                               "20", "AUTOCREDIT" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])) + " RM " + decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2).ToString()
+                    RowsData.Append(String.Format("\n{0,-2},{1,-" + length + "},{2,-" + string.Empty.Length + "},{3,-" + string.Empty.Length + "},{4,-" + string.Empty.Length + "},{5,-" + string.Empty.Length + "},{6,-" + string.Empty.Length + "}",
+                               "20", "AUTOCREDIT" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])) + " RM " + decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2).ToString(),
+                               string.Empty, string.Empty, string.Empty, string.Empty, string.Empty
                                ));
                 }
             }
@@ -680,11 +744,13 @@ namespace VA009.Models
             decimal totalAmt = 0, hashTotal = 0;
             if (isBatch)
             {
-                sql.Append(@"SELECT ba.CMS01_CorporateID, ba.CMS01_HashTotal, ba.C_BankAccount_ID,  p.documentno, ba.AccountNo FROM VA009_Batch p 
-                        INNER JOIN C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID WHERE p.VA009_Batch_ID= " + paymentID);
+                sql.Append(@"SELECT ba.CMS01_CorporateID, ba.CMS01_HashTotal, ba.C_BankAccount_ID,  p.documentno, ba.AccountNo, pa.AccountNo as Acctnumber FROM VA009_Batch p 
+                        INNER JOIN C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN va009_batchlines bl ON bl.VA009_Batch_ID=p.VA009_Batch_ID LEFT 
+                        JOIN C_Payment pa ON pa.C_Payment_ID=bl.c_payment_id WHERE p.VA009_Batch_ID= " + paymentID);
+
                 dss = DB.ExecuteDataset(@" SELECT SUM(dueamt) as TotalAmt,Count(C_Payment_ID) as noofrecords
                     FROM va009_batchlinedetails WHERE va009_batchlines_id IN  (SELECT va009_batchlines_id
-                    FROM va009_batchlines  WHERE VA009_Batch_ID = " + paymentID + ") ");
+                    FROM va009_batchlines  WHERE VA009_Batch_ID = " + paymentID + ") GROUP BY C_Payment_ID");
                 if (dss != null && dss.Tables[0].Rows.Count > 0)
                 {
                     paymentCount = Util.GetValueOfInt(dss.Tables[0].Rows[0]["noofrecords"]);
@@ -693,7 +759,7 @@ namespace VA009.Models
             }
             else
             {
-                sql.Append(@"SELECT ba.CMS01_CorporateID, ba.CMS01_HashTotal, ba.C_BankAccount_ID,  p.documentno, p.payamt,bp.AccountNo  FROM c_payment p INNER JOIN 
+                sql.Append(@"SELECT ba.CMS01_CorporateID, ba.CMS01_HashTotal, ba.C_BankAccount_ID,  p.documentno, p.payamt,bp.AccountNo,  p.AccountNo as Acctnumber   FROM c_payment p INNER JOIN 
                                C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID LEFT JOIN C_BP_BankAccount bp
                            ON bp.C_BPartner_ID=p.C_BPartner_ID WHERE p.c_payment_id= " + paymentID);
             }
@@ -704,11 +770,15 @@ namespace VA009.Models
                 {
                     totalAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[0]["payamt"]);
                 }
-                hashTotal = claculateHashTotal(RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"])), Decimal.Truncate(totalAmt));
-                footer.Append(String.Format("{0,2},{1,20},{2,6},{3,17},{4,15},{5,100}",
+                hashTotal = claculateHashTotal(RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["Acctnumber"])), Decimal.Truncate(totalAmt));
+                //set allignment from left to right
+                footer.Append(String.Format("{0,-2},{1,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])).Length + "}," +
+                    "{2,-" + paymentCount.ToString().Length + "},{3,-" + Util.GetValueOfDouble(decimal.Round(totalAmt, 2)).ToString().Length + "}," +
+                    "{4,-" + hashTotal.ToString().Length + "},{5,-" + string.Empty.Length + "},{6,-" + string.Empty.Length + "},{7,-" + string.Empty.Length + "}," +
+                    "{8,-" + string.Empty.Length + "},{9,-" + string.Empty.Length + "}",
                             "99", RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])),
                             paymentCount, decimal.Round(totalAmt, 2),
-                            hashTotal, string.Empty
+                            hashTotal, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty
                             ));
 
             }
@@ -725,10 +795,10 @@ namespace VA009.Models
             //FORMULA GIVEN BY CMS BANK 
             decimal calculateHash = (Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amount);
             decimal b = calculateHash * 24;
-            b = decimal.Truncate(b);
             decimal c = b + 2994;
             decimal hashTotal = c / 285;
-            return hashTotal;
+            //to return only the integral part of decimal.
+            return Decimal.Truncate(hashTotal);
         }
         #endregion
 
@@ -753,7 +823,7 @@ namespace VA009.Models
         /// <returns>stringwith no special characters</returns>
         public static string RemoveSpecialCharacters(string str)
         {
-            return Regex.Replace(str, "[^a-zA-Z0-9_.]+", "", RegexOptions.Compiled);
+            return Regex.Replace(str, "[^a-zA-Z0-9_.^\\w\\s]+", "", RegexOptions.Compiled);
         }
     }
 }
