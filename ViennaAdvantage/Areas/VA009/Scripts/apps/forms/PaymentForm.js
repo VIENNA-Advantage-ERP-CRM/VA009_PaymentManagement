@@ -5685,7 +5685,10 @@
                         && e.which != 8   // backspace
                         && e.which != 46  // delete
                         && (e.which < 65 || e.which > 90)
-                        && (e.which < 37 || e.which > 40)) {
+                        && (e.which < 37 || e.which > 40)
+                        && e.which != 39 && e.which != 37  //arrow left and right
+                        && (e.which < 96 || e.which > 105))// for NumPad
+                    {
                         return false;
                     }
                     if (e.shiftKey) {
@@ -6276,7 +6279,10 @@
                         && e.which != 8   // backspace
                         && e.which != 46  // delete
                         && (e.which < 65 || e.which > 90)
-                        && (e.which < 37 || e.which > 40)) {
+                        && (e.which < 37 || e.which > 40)
+                        && e.which != 39 && e.which != 37  //arrow left and right
+                        && (e.which < 96 || e.which > 105))// for NumPad
+                    {
                         return false;
                     }
                     if (e.shiftKey) {
