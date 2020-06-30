@@ -199,8 +199,9 @@ namespace ViennaAdvantage.Common
                          THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt,
                          cs.VA009_OpenAmnt, rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id ,
                          inv.C_Currency_ID,  cc.ISO_CODE, ac.c_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID
-                             + @",inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy')
-                        -to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy')) as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
+                             + @",inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, 
+                         DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy')-to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) 
+                         as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
                          C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID INNER JOIN C_Doctype 
                          cd ON cs.C_Doctype_ID=cd.C_Doctype_ID INNER JOIN ad_ref_list rsf ON rsf.value= cs.VA009_ExecutionStatus INNER JOIN ad_reference re ON 
                          rsf.ad_reference_id=re.ad_reference_id LEFT JOIN C_invoice inv ON inv.C_Invoice_ID=cs.C_invoice_ID LEFT JOIN C_BPartner cb ON 
@@ -275,7 +276,7 @@ namespace ViennaAdvantage.Common
                         THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1 END AS DueAmt,
                         cs.VA009_OpenAmnt, rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id, inv.C_Currency_ID, cc.ISO_CODE, ac.c_currency_id  AS basecurrency,
                         CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID + @",inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
-                        inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy')) AS Due_Date_Diff,
+                        inv.GrandTotal, DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) AS Due_Date_Diff,
                         cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
                         FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
                         INNER JOIN ad_ref_list rsf  ON rsf.value= cs.VA009_ExecutionStatus  INNER JOIN ad_reference re  ON (rsf.ad_reference_id=re.ad_reference_id
