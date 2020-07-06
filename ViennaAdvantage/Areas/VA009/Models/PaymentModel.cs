@@ -3740,12 +3740,16 @@ namespace VA009.Models
                         {
                             DataSet ds1 = new DataSet();
                             ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
-                                   + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                  a_name,RoutingNo,AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
+                                   + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo ");
                             if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                             {
-                                _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                                _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                //_pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                //_pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                             }
                         }
                         #endregion
@@ -3915,12 +3919,16 @@ namespace VA009.Models
                                     {
                                         DataSet ds1 = new DataSet();
                                         ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
-                                               + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                  a_name,RoutingNo,AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
+                                               + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo, AccountNo  ");
                                         if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                                         {
-                                            _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                                            _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                            //_pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                            //_pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                            _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                            _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                            _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                            _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                                         }
                                     }
                                     #endregion
@@ -3966,12 +3974,14 @@ namespace VA009.Models
                                     {
                                         DataSet ds1 = new DataSet();
                                         ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
-                                               + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                  a_name, RoutingNo, AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _payschedule.GetC_BPartner_ID() + " AND "
+                                               + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo ");
                                         if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                                         {
-                                            _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                                            _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                            _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                            _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                            _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                            _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                                         }
                                     }
                                     #endregion
@@ -4312,12 +4322,14 @@ namespace VA009.Models
                         {
                             DataSet ds1 = new DataSet();
                             ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + orderPaySchedule.GetC_BPartner_ID() + " AND "
-                                   + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                  a_name,RoutingNo, AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + orderPaySchedule.GetC_BPartner_ID() + " AND "
+                                   + " AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo ");
                             if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                             {
-                                _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                                _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                             }
                         }
                         #endregion
@@ -4683,12 +4695,16 @@ namespace VA009.Models
             {
                 DataSet ds1 = new DataSet();
                 ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + PaymentData.C_BPartner_ID + " AND "
-                       + " AD_Org_ID =" + _Bt.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                  a_name, RoutingNo, AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + PaymentData.C_BPartner_ID + " AND "
+                       + " AD_Org_ID =" + _Bt.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo ");
                 if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                 {
-                    _BtLines.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                    _BtLines.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                   // _BtLines.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                   // _BtLines.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                    _BtLines.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                    _BtLines.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                    _BtLines.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                    _BtLines.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                 }
             }
             #endregion
@@ -4946,12 +4962,14 @@ namespace VA009.Models
                 {
                     DataSet ds1 = new DataSet();
                     ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(paymentData[0]["BPID"]) + " AND "
-                           + " AD_Org_ID =" + ct.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name ");
+                                  a_name,RoutingNo,AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(paymentData[0]["BPID"]) + " AND "
+                           + " AD_Org_ID =" + ct.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo ");
                     if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                     {
-                        _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                        _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                        _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                        _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                        _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                        _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
                     }
                 }
                 #endregion

@@ -379,6 +379,7 @@ namespace ViennaAdvantage.Process
                         #region Consolidate  = true
                         if (_batch.IsVA009_Consolidate() == true)
                         {
+                            decimal totalPayAmt = 0;
                             //Issue ID In Google Sheet: SI_0673 --> While generating payment from Payment Schedule Batch, "Consolidate Payment" checkbox is true & there are multiple Payment method on payment batch lines, System creates single payment record for all schedules.
                             int c_currency_id = 0; int Bpartner_ID = 0; int C_Payment_ID = 0, batchline_id = 0, allocationHeader = 0, VA009_PaymentMethod_ID = 0;
 
@@ -854,6 +855,11 @@ namespace ViennaAdvantage.Process
                                 MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_Trx());
                                 if (completePayment.CompleteIt() == "CO")
                                 {
+                                    //to set total amount in case of consolidated payment
+                                    totalPayAmt = Util.GetValueOfDecimal(DB.ExecuteScalar("SELECT SUM(amount) FROM c_paymentallocate WHERE c_payment_id=" + payment[i],null, Get_Trx()));
+                                    if (totalPayAmt > 0)
+                                        completePayment.SetPayAmt(totalPayAmt);
+
                                     completePayment.SetDocStatus("CO");
                                     completePayment.SetDocAction("CL");
                                     completePayment.Save(Get_TrxName());
