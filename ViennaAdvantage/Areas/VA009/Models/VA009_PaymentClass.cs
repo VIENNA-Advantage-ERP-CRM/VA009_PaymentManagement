@@ -18,6 +18,7 @@ namespace VA009.Models
         /**	Output file				*/
         private FileStream _file = null;
         static VLogger _log = VLogger.GetVLogger("PaymentFormFile");
+        decimal totalHash = decimal.Zero;
 
         /// <summary>
         /// To generate Payment file and it will return the File Path
@@ -592,8 +593,12 @@ namespace VA009.Models
                            WHERE p.c_payment_id IN ( SELECT p.C_Payment_ID FROM VA009_BatchLineDetails bld
                            INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
                            INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID INNER JOIN C_Payment p
-                           ON p.C_Payment_ID= bld.C_Payment_ID WHERE b.VA009_Batch_ID = " + paymentID + ") " +
-                           " AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID ");
+                           ON p.C_Payment_ID= bld.C_Payment_ID WHERE b.VA009_Batch_ID = " + paymentID + " ) " +
+                           @"AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID  GROUP BY ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
+                           ba.Name, ba.AccountNo, p.payamt, oi.CMS01_BRegNo, cp.CMS01_IsResident, cp.ReferenceNo,
+                           oi.Phone, oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID, bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
+                           bp.AccountNo, p.RoutingNo, p.AccountNo, p.A_Name,
+                           u.email ");
 
             }
             else
@@ -609,7 +614,11 @@ namespace VA009.Models
                            INNER JOIN C_BPartner_Location bpl ON bpl.C_BPartner_Location_ID=p.C_BPartner_Location_ID
                            INNER JOIN AD_OrgInfo oi ON oi.AD_Org_ID =p.AD_Org_ID LEFT JOIN C_BP_BankAccount bp
                            ON bp.C_BPartner_ID=p.C_BPartner_ID LEFT JOIN AD_USer u ON u.C_BPartner_ID  = p.C_BPartner_ID
-                           WHERE p.c_payment_id=" + paymentID + " AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID ");
+                           WHERE p.c_payment_id=" + paymentID + " AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID  GROUP BY " +
+                           @" ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno, p.description,
+                           ba.Name, ba.AccountNo, p.payamt, oi.CMS01_BRegNo, cp.CMS01_IsResident, cp.ReferenceNo,
+                           oi.Phone, oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID ,  bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
+                           bp.AccountNo, p.RoutingNo, p.AccountNo,  p.A_Name,  u.email ");
             }
             DataSet ds = DB.ExecuteDataset(sql.ToString());
             int length = 0;
@@ -722,6 +731,7 @@ namespace VA009.Models
                                "20", "AUTOCREDIT" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["documentno"])) + " RM " + decimal.Round(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"]), 2).ToString(),
                                string.Empty, string.Empty, string.Empty, string.Empty, string.Empty
                                ));
+                    totalHash += claculateHashTotal(RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"])), Decimal.Truncate(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["payamt"])));
                 }
             }
 
@@ -748,14 +758,9 @@ namespace VA009.Models
                         INNER JOIN C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN va009_batchlines bl ON bl.VA009_Batch_ID=p.VA009_Batch_ID LEFT 
                         JOIN C_Payment pa ON pa.C_Payment_ID=bl.c_payment_id WHERE p.VA009_Batch_ID= " + paymentID);
 
-                dss = DB.ExecuteDataset(@" SELECT SUM(dueamt) as TotalAmt,Count(C_Payment_ID) as noofrecords
-                    FROM va009_batchlinedetails WHERE va009_batchlines_id IN  (SELECT va009_batchlines_id
-                    FROM va009_batchlines  WHERE VA009_Batch_ID = " + paymentID + ") GROUP BY C_Payment_ID");
-                if (dss != null && dss.Tables[0].Rows.Count > 0)
-                {
-                    paymentCount = Util.GetValueOfInt(dss.Tables[0].Rows[0]["noofrecords"]);
-                    totalAmt = Util.GetValueOfDecimal(dss.Tables[0].Rows[0]["TotalAmt"]);
-                }
+                    paymentCount = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT Count(C_Payment_ID) FROM va009_batchlines WHERE VA009_Batch_ID = " + paymentID));
+                    totalAmt = Util.GetValueOfDecimal(DB.ExecuteScalar(@" SELECT SUM(p.payamt) FROM c_payment p WHERE c_payment_id IN   (SELECT DISTINCT c_payment_id
+                            FROM va009_batchlinedetails   WHERE va009_batchlines_id IN    (SELECT va009_batchlines_id    FROM va009_batchlines     WHERE VA009_Batch_ID = " + paymentID + ") ) "));
             }
             else
             {
@@ -770,7 +775,13 @@ namespace VA009.Models
                 {
                     totalAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[0]["payamt"]);
                 }
-                hashTotal = claculateHashTotal(RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["Acctnumber"])), Decimal.Truncate(totalAmt));
+                //hashTotal = claculateHashTotal(RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["Acctnumber"])), Decimal.Truncate(totalAmt));
+                hashTotal = totalHash;
+                decimal b = hashTotal * 24;
+                decimal c = b + 2994;
+                 hashTotal = Decimal.Truncate(c / 285);
+                //to return only the integral part of decimal.
+
                 //set allignment from left to right
                 footer.Append(String.Format("{0,-2},{1,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])).Length + "}," +
                     "{2,-" + paymentCount.ToString().Length + "},{3,-" + Util.GetValueOfDouble(decimal.Round(totalAmt, 2)).ToString().Length + "}," +
@@ -792,13 +803,24 @@ namespace VA009.Models
         /// <returns>HASH TOTAL</returns>
         public decimal claculateHashTotal(string accountno, decimal amount)
         {
-            //FORMULA GIVEN BY CMS BANK 
-            decimal calculateHash = (Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amount);
-            decimal b = calculateHash * 24;
-            decimal c = b + 2994;
-            decimal hashTotal = c / 285;
-            //to return only the integral part of decimal.
-            return Decimal.Truncate(hashTotal);
+            decimal amt = decimal.Zero;
+            if(amount.ToString().Length > 6)
+            {
+                amt = Util.GetValueOfDecimal(amount.ToString().Substring(amount.ToString().Length - 6, 6));
+            }
+            else
+            {
+                amt = amount;
+            }
+            decimal hashamount = Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amt;
+            return hashamount;
+            ////FORMULA GIVEN BY CMS BANK 
+            //decimal calculateHash = (Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amount);
+            //decimal b = calculateHash * 24;
+            //decimal c = b + 2994;
+            //decimal hashTotal = c / 285;
+            ////to return only the integral part of decimal.
+            //return Decimal.Truncate(hashTotal);
         }
         #endregion
 
