@@ -388,6 +388,9 @@ namespace ViennaAdvantage.Process
             batch.SetAD_Client_ID(GetCtx().GetAD_Client_ID());
             batch.SetAD_Org_ID(GetCtx().GetAD_Org_ID());
             batch.SetC_Bank_ID(_C_Bank_ID);
+            //to set document type against batch payment
+            batch.Set_ValueNoCheck("C_DocType_ID", getDocumentTypeID(GetCtx(), GetCtx().GetAD_Org_ID(), Get_TrxName()));
+            //end
             batch.SetC_BankAccount_ID(_C_BankAccount_ID);
             //to set bank currency on Payment Batch given by Rajni and Ashish
             batch.Set_Value("C_Currency_ID", Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankAccount_ID=" + _C_BankAccount_ID)));
@@ -403,5 +406,23 @@ namespace ViennaAdvantage.Process
             }
             return batch.GetVA009_Batch_ID();
         }
+
+        /// <summary>
+        /// Get C_DocType_ID against Batch Payment
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="org_id">Org ID</param>
+        /// <param name="trx">Trx</param>
+        /// <returns>C_DocType_ID</returns>
+        public int getDocumentTypeID(Ctx ct, int org_id, Trx trx)
+        {
+            int ID = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = " + org_id, null, trx));
+            if (ID == 0)
+            {
+                ID = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = 0", null, trx));
+            }
+            return ID;
+        }
+
     }
 }
