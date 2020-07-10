@@ -1710,6 +1710,9 @@ namespace VA009.Models
                                 _Bt.SetC_BankAccount_ID(PaymentData[0].C_BankAccount_ID);
                                 _Bt.SetAD_Client_ID(PaymentData[0].AD_Client_ID);
                                 _Bt.SetAD_Org_ID(PaymentData[0].AD_Org_ID);
+                                //to set document type against batch payment
+                                _Bt.Set_ValueNoCheck("C_DocType_ID", getDocumentTypeID(ct, PaymentData[0].AD_Org_ID, trx));
+                                //end
                                 _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
                                 _Bt.SetVA009_PaymentRule(_paymthd.GetVA009_PaymentRule());
                                 _Bt.SetVA009_PaymentTrigger(_paymthd.GetVA009_PaymentTrigger());
@@ -5324,6 +5327,9 @@ namespace VA009.Models
                             _Bt.SetAD_Client_ID(PaymentData[0].AD_Client_ID);
                             _Bt.SetAD_Org_ID(PaymentData[0].AD_Org_ID);
                             _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
+                            //to set document type against batch payment
+                            _Bt.Set_ValueNoCheck("C_DocType_ID", getDocumentTypeID(ct, PaymentData[0].AD_Org_ID, trx));
+                            //end
                             _Bt.SetVA009_PaymentRule(paymethodDetails["VA009_PaymentRule"].ToString());
                             _Bt.SetVA009_PaymentTrigger(paymethodDetails["VA009_PaymentTrigger"].ToString());
                             //to set bank currency on Payment Batch given by Rajni and Ashish
@@ -5596,6 +5602,22 @@ namespace VA009.Models
                 obj["VA009_InitiatePay"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["VA009_InitiatePay"]).Equals("Y") ? true : false;
             }
             return obj;
+        }
+
+        /// <summary>
+        /// Get C_DocType_ID against Batch Payment
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="org_id">Org ID</param>
+        /// <param name="trx">Trx</param>
+        /// <returns>C_DocType_ID</returns>
+        public int getDocumentTypeID(Ctx ct, int org_id, Trx trx)
+        {
+            int ID= Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = " + org_id, null, trx));
+            if(ID == 0) {
+                ID = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = 0", null, trx));
+            }
+            return ID;
         }
 
     }
