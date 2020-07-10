@@ -34,7 +34,7 @@
         };
 
         function LoadDesign() {
-            _mainDiv = '<div style="padding: 10px; " class="VA009-tabs-wrap"> <ul class="VA009-right-tabs"> <li class="VA009-active-tab" id = ' + "VA009_DownlaodXML_" + $self.windowNo + '>Generate Payment File</li></ul> </div>';
+            _mainDiv = '<div style="padding: 10px; " class="VA009-tabs-wrap"> <ul class="VA009-right-tabs"> <li class="VA009-active-tab" id = ' + "VA009_DownlaodXML_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_GenPayFile") + '</li></ul> </div>';
             $root.append(_mainDiv);
         };
 
@@ -55,7 +55,7 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ "DocNumber": DocNumber, "isBatch": isBatch }),//these parameteres are not used in controller now
+                data: ({ "DocNumber": DocNumber, "isBatch": isBatch, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID") }),//these parameteres are not used in controller now
                 success: function (result) {
                     result = JSON.parse(result);
                     for (var i in result) {
@@ -92,7 +92,7 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ "RecordID": RecordID, "isBatch": batchWindow }),
+                data: ({ "RecordID": RecordID, "isBatch": batchWindow, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID")  }),
                 success: function (result) {
                     //result = JSON.parse(result);
                     docNo = result;
