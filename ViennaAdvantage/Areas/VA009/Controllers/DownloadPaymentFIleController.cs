@@ -12,15 +12,21 @@ namespace VA009.Controllers
 { 
     public class DownloadPaymentFIleController : Controller
     {
-
-        public JsonResult GetDocuentNumber(int RecordID, bool isBatch)
+        /// <summary>
+        ///  to get documen number against record id
+        /// </summary>
+        /// <param name="RecordID">record id</param>
+        /// <param name="isBatch">batch or not</param>
+        /// <param name="AD_Org_ID">org id</param>
+        /// <returns>document number</returns>
+        public JsonResult GetDocuentNumber(int RecordID, bool isBatch, int AD_Org_ID)
         {
             string docNo = "";
             if (Session["ctx"] != null)
             {
-                string sql = "SELECT DocumentNo from C_Payment WHERE C_Payment_ID=" + RecordID;
+                string sql = "SELECT DocumentNo from C_Payment WHERE AD_Org_ID = "+ AD_Org_ID + " AND C_Payment_ID =" + RecordID;
                 if (isBatch)
-                    sql = "SELECT DocumentNo from VA009_Batch WHERE VA009_Batch_ID=" + RecordID;
+                    sql = "SELECT DocumentNo from VA009_Batch WHERE AD_Org_ID = " + AD_Org_ID + " AND VA009_Batch_ID =" + RecordID;
                 docNo = Util.GetValueOfString(DB.ExecuteScalar(sql, null, null));
             }
             return Json(docNo, JsonRequestBehavior.AllowGet);
