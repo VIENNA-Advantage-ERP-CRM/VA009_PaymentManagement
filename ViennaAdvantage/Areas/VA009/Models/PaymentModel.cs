@@ -4699,8 +4699,8 @@ namespace VA009.Models
                        + " AD_Org_ID =" + _Bt.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo ");
                 if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                 {
-                   // _BtLines.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                   // _BtLines.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                    // _BtLines.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                    // _BtLines.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
                     _BtLines.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
                     _BtLines.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
                     _BtLines.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
@@ -5038,7 +5038,7 @@ namespace VA009.Models
         /// <param name="DocNumber">Document Number</param>
         /// <param name="isBatch">Is Batch Check</param>
         /// <returns>List Of Files Created</returns>
-        public List<PaymentResponse> prepareDataForPaymentFile(Ctx ct, string DocNumber, bool isBatch)
+        public List<PaymentResponse> prepareDataForPaymentFile(Ctx ct, string DocNumber, bool isBatch, string AD_Org_ID)
         {
             int payment_ID = 0;
             List<PaymentResponse> batchResponse = new List<PaymentResponse>();
@@ -5050,7 +5050,7 @@ namespace VA009.Models
                 //add sql access to generate batch file for those who have access
                 sql.Clear();
                 sql.Append(@"SELECT VA009_Batch_ID FROM VA009_Batch
-                            WHERE UPPER(documentno) = UPPER('" + DocNumber + "')");
+                            WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno) = UPPER('" + DocNumber + "')");
                 payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_Batch", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
                 sql.Clear();
                 sql.Append(@"SELECT Count(bld.C_Payment_ID) FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
@@ -5064,7 +5064,7 @@ namespace VA009.Models
                 sql.Clear();
                 //removed brackets from this query because it was creating problem in case of document number was having special characters
                 sql.Append(@"SELECT c_payment_id FROM c_payment 
-                            WHERE UPPER(documentno)=UPPER('" + DocNumber + "') ");
+                            WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno)=UPPER('" + DocNumber + "') ");
                 payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
             }
             PaymentResponse obj = null;
