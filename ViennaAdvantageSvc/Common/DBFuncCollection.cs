@@ -338,10 +338,11 @@ namespace ViennaAdvantage.Common
 
         public static string DueDateSearch(String WhrDueDate)
         {
-            if (WhrDueDate != string.Empty)
-                WhrDueDate = " AND T.Due_Date_Diff <= " + WhrDueDate;
-            else if (WhrDueDate == "99")
+            //we need to check if due date is 99 then we need to get all the schedules else we have to add due date condition.
+            if (Util.GetValueOfInt(WhrDueDate) == 99)
                 WhrDueDate = string.Empty;
+            else if (WhrDueDate != string.Empty)
+                WhrDueDate = " AND T.Due_Date_Diff <= " + WhrDueDate;
             else
                 WhrDueDate = string.Empty;
             return WhrDueDate;
