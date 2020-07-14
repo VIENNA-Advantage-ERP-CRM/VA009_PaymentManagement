@@ -154,6 +154,7 @@
             VA009_OrderPaySchedule_ID = dr["VA009_OrderPaySchedule_ID"];
             dueAmount = dr["DueAmt"];
             mTab.setValue("PayAmt", dueAmount);
+            mTab.setValue("PaymentAmount", dueAmount);
         }
 
         //  Payment Date
@@ -198,6 +199,7 @@
             //mTab.setValue("PayAmt", Decimal.Subtract(ORDEROPEN, discountAmt));                
             if (discountAmt != 0) {
                 mTab.setValue("PayAmt", (orderopen - discountAmt));
+                mTab.setValue("PaymentAmount", (orderopen - discountAmt));
             }
             //mTab.setValue("VA009_OrderPaySchedule_ID", VA009_OrderPaySchedule_ID);//Pratap
             mTab.setValue("DiscountAmt", discountAmt);
@@ -212,6 +214,7 @@
             if (payAmt > 0) {
                 payAmt = payAmt * -1;
                 mTab.setValue("PayAmt", payAmt);
+                mTab.setValue("PaymentAmount", payAmt);
             }
             if (enteredDiscountAmt > 0) {
                 enteredDiscountAmt = enteredDiscountAmt * -1;
@@ -232,6 +235,7 @@
             if (payAmt < 0) {
                 payAmt = payAmt * -1;
                 mTab.setValue("PayAmt", payAmt);
+                mTab.setValue("PaymentAmount", payAmt);
             }
             if (enteredDiscountAmt < 0) {
                 enteredDiscountAmt = enteredDiscountAmt * -1;
@@ -380,6 +384,9 @@
             this.log.fine(" Discount= " + discountAmt + ", C_Order_ID=" + C_Order_ID + ", C_Currency_ID=" + C_Currency_Order_ID);
 
             //	Get Info from Tab
+            if (colName == "PaymentAmount") {
+                mTab.setValue("PayAmt", mTab.getValue("PaymentAmount"))
+            }
             var payAmt = Util.getValueOfDecimal(mTab.getValue("PayAmt") == null ? VIS.Env.ZERO : mTab.getValue("PayAmt"));
             var writeOffAmt = Util.getValueOfDecimal(mTab.getValue("WriteOffAmt") == null ? VIS.Env.ZERO : mTab.getValue("WriteOffAmt"));
             var overUnderAmt = Util.getValueOfDecimal((mTab.getValue("OverUnderAmt") == null ? VIS.Env.ZERO : mTab.getValue("OverUnderAmt")));
@@ -389,6 +396,7 @@
                 if (payAmt > 0) {
                     payAmt = payAmt * -1;
                     mTab.setValue("PayAmt", payAmt);
+                    mTab.setValue("PaymentAmount", payAmt);
                 }
                 if (enteredDiscountAmt > 0) {
                     enteredDiscountAmt = enteredDiscountAmt * -1;
@@ -409,6 +417,7 @@
                 if (payAmt < 0) {
                     payAmt = payAmt * -1;
                     mTab.setValue("PayAmt", payAmt);
+                    mTab.setValue("PaymentAmount", payAmt);
                 }
                 if (enteredDiscountAmt < 0) {
                     enteredDiscountAmt = enteredDiscountAmt * -1;
@@ -498,6 +507,7 @@
 
                 payAmt = (((OrderopenAmt - discountAmt) - writeOffAmt) - overUnderAmt);
                 mTab.setValue("PayAmt", payAmt);
+                mTab.setValue("PaymentAmount", payAmt);
                 if (payAmt == (((OrderopenAmt - discountAmt) - writeOffAmt) - overUnderAmt)) {
                     mTab.setValue("DiscountAmt", VIS.Env.ZERO);
                     mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
@@ -518,9 +528,10 @@
                 }
             }
             //  PayAmt - calculate write off
-            else if (colName == "PayAmt") {
+            else if (colName == "PayAmt" || colName == "PaymentAmount") {
                 if (mTab.getValue("PayAmt") > OrderopenAmt) {
                     mTab.setValue("PayAmt", OrderopenAmt);
+                    mTab.setValue("PaymentAmount", OrderopenAmt);
                     mTab.setValue("DiscountAmt", VIS.Env.ZERO);
                     mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
                     mTab.setValue("WriteOffAmt", VIS.Env.ZERO);
@@ -553,6 +564,7 @@
                 discountAmt = enteredDiscountAmt;
                 payAmt = (((OrderopenAmt - discountAmt) - writeOffAmt) - overUnderAmt);
                 mTab.setValue("PayAmt", payAmt);
+                mTab.setValue("PaymentAmount", payAmt);
                 mTab.setValue("DiscountAmt", discountAmt);
             }
         }
