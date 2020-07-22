@@ -543,20 +543,27 @@ namespace VA009.Models
             }
             string dateFr = string.Empty;
             DataSet ds = DB.ExecuteDataset(sql.ToString());
+            string BankName = string.Empty;
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
+                //to calculate if bank name is more than 30 character then we need to trim it by 30 character.
+                BankName = Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]);
+                if(BankName.Length > 30)
+                {
+                    BankName = RemoveSpecialCharacters(BankName).Substring(0, 30);
+                }
                 dateFr = Convert.ToDateTime(ds.Tables[0].Rows[0]["DateAcct"]).ToString("ddMMyyyy").ToString();
                 // Need to replace BulkPayment with  01 and set allignment to left to right added blank column to match sequence
                 header.Append(String.Format("{0,-2},{1,-" + Util.GetValueOfString("01").Length + "}," +
                     "{2,-" + Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]).Length + "}," +
-                    "{3,-" + string.Empty.Length + "},{4,-" + Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]).Length + "}," +
+                    "{3,-" + string.Empty.Length + "},{4,-" + BankName.Length + "}," +
                     "{5,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"])).Length + "}," +
                     "{6,-8},{7,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])).Length + "}," +
                     "{8,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_BRegNo"])).Length + "}," +
                     "{9,1},{10,1},{11,1},{12,1},{13,1},{14,-" + string.Empty.Length + "},{15,-" + string.Empty.Length + "}," +
                     "{16,-" + string.Empty.Length + "},{17,-" + string.Empty.Length + "},{18,-" + string.Empty.Length + "}",
                                 "00", "01", Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]), string.Empty,
-                                RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"])),
+                                BankName,
                                 RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["AccountNo"])),
                                 dateFr,
                                 RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"])),

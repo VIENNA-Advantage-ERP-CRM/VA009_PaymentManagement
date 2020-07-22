@@ -103,12 +103,12 @@
 
                     if ($BPSelected.find("li").length > 0) // For Continues Selection
                     {
-                        $BPSelected.append('<ul><li id=' + "VA009_li_" + ui.item.ids + '><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_Delimg_" + ui.item.ids + '> <span>' + ui.item.value + '</span></li>');
+                        $BPSelected.append('<ul><li id=' + "VA009_li_" + ui.item.ids + '><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '"  class="VA009-cross-btn vis vis-mark" id=' + "VA009_Delimg_" + ui.item.ids + '></i> <span>' + ui.item.value + '</span></li>');
                         bpids.push(ui.item.ids); // Add Values in Array For Search
                         whereClause("cb.C_BPartner_ID", bpids);
                     }
                     else {
-                        $BPSelected.append('<ul><li id=' + "VA009_li_" + ui.item.ids + '><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_Delimg_" + ui.item.ids + '> <span>' + ui.item.value + '</span></li>');
+                        $BPSelected.append('<ul><li id=' + "VA009_li_" + ui.item.ids + '><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '"  class="VA009-cross-btn vis vis-mark" id=' + "VA009_Delimg_" + ui.item.ids + '></i> <span>' + ui.item.value + '</span></li>');
                         bpids.push(ui.item.ids);
                         whereClause("cb.C_BPartner_ID", bpids);
                     }
@@ -129,28 +129,28 @@
         function LoadDesign() {
 
             // Create Left Panel
-            _leftBar = '<div class="VA009-main-container" id="VA009-main-container_' + $self.windowNo + '"> <table id="VA009_table_' + $self.windowNo + '" style="width: 100%;"><tr><td id="VA009_tdLeft_' + $self.windowNo + '" style="width: 200px; position: relative;"> <div class="VA009-left-part" id=' + "VA009_leftpart_" + $self.windowNo + '>';
+            _leftBar = '<div class="VA009-main-container" id="VA009-main-container_' + $self.windowNo + '"> <table id="VA009_table_' + $self.windowNo + '" style="width: 100%;"><tr><td id="VA009_tdLeft_' + $self.windowNo + '" style="width: 200px; position: relative;"> <div class="VA009-left-part vis-leftsidebarouterwrap" id=' + "VA009_leftpart_" + $self.windowNo + '>';
 
             // Add Toggle button
-            _btnToggle = "<div class='VA009-left-title' ><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/lines.png' class='VA009-toggle-btn' alt='lines' id='" + 'VA009_toggleImg_' + $self.windowNo + "' ></div>";
+            _btnToggle = "<div class='VA009-left-title' ><i class='VA009-toggle-btn fa fa-bars' id='" + 'VA009_toggleImg_' + $self.windowNo + "' ></i></div>";
             _leftBar += _btnToggle;
 
             // Add Search parameters
             _leftBar += '<div class="VA009-left-part" style="overflow:auto;" id=' + "VA009_leftpartdata_" + $self.windowNo + '>';
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_Org") + '</label> <select id = ' + "VA009_Org_" + $self.windowNo + '> </select>  <div class="VA009-value-list" id= ' + "VA009_OrgdataDiv_" + $self.windowNo + '> </div> </div>';
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_BPartner") + '</label> <input type="text" id = ' + "VA009_BPartner_" + $self.windowNo + '> <div class="VA009-value-list" id= ' + "VA009_BPdataDiv_" + $self.windowNo + '>      </div> </div>';
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_PayMthd") + '</label> <select id = ' + "VA009_PayMthd_" + $self.windowNo + '>   </select>  <div class="VA009-value-list" id= ' + "VA009_PayMthddataDiv_" + $self.windowNo + '>      </div> </div>';
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_Status") + '</label> <select id = ' + "VA009_Status_" + $self.windowNo + '>  </select>  <div class="VA009-value-list" id= ' + "VA009_StatusdataDiv_" + $self.windowNo + '>      </div> </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap"> <select id = ' + "VA009_Org_" + $self.windowNo + '> </select> <label>' + VIS.Msg.getMsg("VA009_Org") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_OrgdataDiv_" + $self.windowNo + '> </div> </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="text" id = ' + "VA009_BPartner_" + $self.windowNo + '><label>' + VIS.Msg.getMsg("VA009_BPartner") + '</label> </div></div><div class="VA009-value-list" id= ' + "VA009_BPdataDiv_" + $self.windowNo + '>      </div> </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap"> <select id = ' + "VA009_PayMthd_" + $self.windowNo + '>   </select><label>' + VIS.Msg.getMsg("VA009_PayMthd") + '</label> </div></div>  <div class="VA009-value-list" id= ' + "VA009_PayMthddataDiv_" + $self.windowNo + '>      </div> </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_Status_" + $self.windowNo + '>  </select><label>' + VIS.Msg.getMsg("VA009_Status") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_StatusdataDiv_" + $self.windowNo + '>      </div> </div>';
             // _leftBar += '<div class="VA009-left-data">' + VIS.Msg.getMsg("VA009_Duedate") + ' <div class="VA009-value-list">  <ul id = ' + "VA009_DueDateul_" + $self.windowNo + '><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliCur_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Current") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSeven_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_7Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliFourteen_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_14Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliThirty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_30Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSixty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_60Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliNinty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_90Days") + '</span></li></ul> </div> </div> </div></div></td>';
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_Duedate") + '</label> <select id = ' + "VA009_DueDate_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Current") + '</option>  <option value=7>' + VIS.Msg.getMsg("VA009_7Days") + '</option>  <option value=14 >' + VIS.Msg.getMsg("VA009_14Days") + '</option> <option value=30 >' + VIS.Msg.getMsg("VA009_30Days") + '</option> <option value=60 >' + VIS.Msg.getMsg("VA009_60Days") + '</option> <option value=90>' + VIS.Msg.getMsg("VA009_90Days") + '</option>" </select>  <div class="VA009-value-list" id= ' + "VA009_DueDatedataDiv_" + $self.windowNo + '> </div>  </div> ';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_DueDate_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Current") + '</option>  <option value=7>' + VIS.Msg.getMsg("VA009_7Days") + '</option>  <option value=14 >' + VIS.Msg.getMsg("VA009_14Days") + '</option> <option value=30 >' + VIS.Msg.getMsg("VA009_30Days") + '</option> <option value=60 >' + VIS.Msg.getMsg("VA009_60Days") + '</option> <option value=90>' + VIS.Msg.getMsg("VA009_90Days") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_Duedate") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_DueDatedataDiv_" + $self.windowNo + '> </div>  </div> ';
             //<div class="VA009-value-list">  <ul id = ' + "VA009_DueDateul_" + $self.windowNo + '><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliCur_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Current") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSeven_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_7Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliFourteen_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_14Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliThirty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_30Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSixty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_60Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliNinty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_90Days") + '</span></li></ul> </div>
 
             //change by amit - 16-nov-2016
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_TransactionType") + '</label> <select id = ' + "VA009_TransactionType_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Order") + '</option>  <option value=1>' + VIS.Msg.getMsg("VA009_Invoice") + '</option>" </select>  <div class="VA009-value-list" id= ' + "VA009_TransactionTypeDiv_" + $self.windowNo + '> </div>  </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_TransactionType_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Order") + '</option>  <option value=1>' + VIS.Msg.getMsg("VA009_Invoice") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_TransactionType") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_TransactionTypeDiv_" + $self.windowNo + '> </div>  </div>';
             //end
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_FromDate") + '</label> <input type="date" id="VA009_FromDate_' + $self.windowNo + '"> </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="date" id="VA009_FromDate_' + $self.windowNo + '"><label>' + VIS.Msg.getMsg("VA009_FromDate") + '</label></div></div> </div>';
 
-            _leftBar += '<div class="VA009-left-data"> <label>' + VIS.Msg.getMsg("VA009_ToDate") + '</label> <input type="date" id="VA009_ToDate_' + $self.windowNo + '"> </div> </div></div></td>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="date" id="VA009_ToDate_' + $self.windowNo + '"> <label>' + VIS.Msg.getMsg("VA009_ToDate") + '</label></div></div></div> </div></div></td>';
 
             //End Left Panel
 
@@ -168,7 +168,7 @@
 
             //Add Icons
             _MiddlePanel += '<div class="VA009-icons-wrap">';
-            _MiddlePanel += "<span><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/cheque.png' alt='" + VIS.Msg.getMsg("VA009_Check") + "' title='" + VIS.Msg.getMsg("VA009_Check") + "' id='" + 'VA009_Chkimg_' + $self.windowNo + "' ></span> <span><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/cash.png' alt='" + VIS.Msg.getMsg("VA009_Cash") + "' title='" + VIS.Msg.getMsg("VA009_Cash") + "'  id='" + 'VA009_Cashimg_' + $self.windowNo + "' ></span><span><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/batch.png' alt='" + VIS.Msg.getMsg("VA009_Batch") + "' title='" + VIS.Msg.getMsg("VA009_Batch") + "' id='" + 'VA009_Batchimg_' + $self.windowNo + "' ></span><span><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/split.png' alt='" + VIS.Msg.getMsg("VA009_Split") + "' title='" + VIS.Msg.getMsg("VA009_Split") + "'  id='" + 'VA009_Splitimg_' + $self.windowNo + "'></span><span><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/generatepay.png' alt='" + VIS.Msg.getMsg("VA009_PayMannual") + "' title='" + VIS.Msg.getMsg("VA009_PayMannual") + "'  id='" + 'VA009_PayMannualimg_' + $self.windowNo + "'></span><span><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/b2b.png' alt='" + VIS.Msg.getMsg("VA009_BankToBankTransfer") + "' title='" + VIS.Msg.getMsg("VA009_BankToBankTransfer") + "'  id='" + 'VA009_BankToBankimg_' + $self.windowNo + "'></span></div>";
+            _MiddlePanel += "<span><i class='vis vis-cheque' title='" + VIS.Msg.getMsg("VA009_Check") + "' id='" + 'VA009_Chkimg_' + $self.windowNo + "' ></i></span> <span><i class='vis vis-cash-bag' title='" + VIS.Msg.getMsg("VA009_Cash") + "'  id='" + 'VA009_Cashimg_' + $self.windowNo + "' ></i></span><span><i class='vis vis-open-file' title='" + VIS.Msg.getMsg("VA009_Batch") + "' id='" + 'VA009_Batchimg_' + $self.windowNo + "' ></i></span><span><i class='vis vis-split' title='" + VIS.Msg.getMsg("VA009_Split") + "'  id='" + 'VA009_Splitimg_' + $self.windowNo + "'></i></span><span><i class='vis vis-mobile-card' title='" + VIS.Msg.getMsg("VA009_PayMannual") + "'  id='" + 'VA009_PayMannualimg_' + $self.windowNo + "'></i></span><span><i class='vis vis-bank-transfer' title='" + VIS.Msg.getMsg("VA009_BankToBankTransfer") + "'  id='" + 'VA009_BankToBankimg_' + $self.windowNo + "'></i></span></div>";
             //_MiddlePanel += '<span><img src="Areas/VA009/Images/cheque.png" alt="cheque" id=' + "VA009_Chkimg_" + $self.windowNo + '></span> <span><img src="Areas/VA009/Images/cash.png" alt="cash" id=' + "VA009_Cashimg_" + $self.windowNo + '></span> <span><img src="Areas/VA009/Images/batch.png" alt="batch" id=' + "VA009_Batchimg_" + $self.windowNo + '></span> <span><img src="Areas/VA009/Images/dunning.png" alt="dunning"></span> <span><img src="Areas/VA009/Images/split.png" alt="split" id=' + "VA009_Splitimg_" + $self.windowNo + '></span> </div>';
             //End Icon's Div
 
@@ -177,9 +177,9 @@
 
             // Add Search
             MainRoot += '  <div class="VA009-mid-search" id="VA009-mid-search_' + $self.windowNo + '">';
-            MainRoot += ' <div class="VA009-selectall"><input type="checkbox" id="VA009_SelectAll_' + $self.windowNo + '"> <label>' + VIS.Msg.getMsg("VC1_HeaderSelectAll") + '</label></div>';
-            MainRoot += ' <div class="VA009-selectall" style=" margin-left: 15px; "><label style=" font-weight: bold; text-decoration: underline; ">' + VIS.Msg.getMsg("VA009_TotlAmtBase") + '</label><label id="VA009_TotalSelected_' + $self.windowNo + '"" data-ttlamt="0"  style="font-weight: bold;"> 0 </label></div>';
-            MainRoot += '<div class="VA009-search-wrap" style="float: right !important;"> <input value="" placeholder="Search..." type="text" id=' + "VA009_SrchTxtbx_" + $self.windowNo + '> <a class="VA009-search-icon" id=' + "VA009_SrchBtn_" + $self.windowNo + '><span class="glyphicon glyphicon-search"></span></a> </div>';
+            MainRoot += ' <div class="VA009-midleftsecwrap"><div class="VA009-selectall"><input type="checkbox" id="VA009_SelectAll_' + $self.windowNo + '"> <label>Select All</label></div>';
+            MainRoot += ' <div class="VA009-selectall" style=" margin-left: 15px; "><label style=" font-weight: bold; text-decoration: underline; ">Total Amount (In Base): </label><label id="VA009_TotalSelected_' + $self.windowNo + '"" style="font-weight: bold;"> 0 </label></div></div>';
+            MainRoot += '<div class="VA009-search-wrap"> <input value="" placeholder="Search..." type="text" id=' + "VA009_SrchTxtbx_" + $self.windowNo + '> <a class="VA009-search-icon" id=' + "VA009_SrchBtn_" + $self.windowNo + '><span class="vis vis-search"></span></a> </div>';
 
             //Add Selected Payment
             //MainRoot += '<div class="VA009-selected-text" id=' + "VA009_Selectedtxt_" + $self.windowNo + '> <p>Selected: USD 40,000.00 &nbsp;&nbsp; EUR 55,000.00</p> </div>';
@@ -193,8 +193,8 @@
             MainRoot += ' <div class="VA009-right-wrap">';
             //Add Tabs
             // Added new cashbook Tab as sggested by Mukesh Sir
-            MainRoot += '<div class="VA009-tabs-wrap"> <ul class="VA009-right-tabs"> <li class="VA009-active-tab" id=' + "VA009_Funds_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Bank") + '</li><li id=' + "VA009_Cashbooks_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Cashbook") + '</li></ul> </div>';
-            MainRoot += '<div class="VA009-icons-wrap"> <ul class="VA009-right-tabs"> <li class="VA009-active-tab" id = ' + "VA009_Refresh_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Refresh") + '</li></ul> </div>';
+            MainRoot += '<div class="VA009-rightsectopwrap"><div class="VA009-tabs-wrap"> <ul class="VA009-right-tabs"> <li class="VA009-active-tab" id=' + "VA009_Funds_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Bank") + '</li><li id=' + "VA009_Cashbooks_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Cashbook") + '</li></ul> </div>';
+            MainRoot += '<div class="VA009-icons-wrap"> <ul class="VA009-right-tabs"> <li class="VA009-active-tab" id = ' + "VA009_Refresh_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Refresh") + '</li></ul> </div></div>';
 
             MainRoot += ' <div class="VA009-right-content" id = ' + "VA009_Banklst_" + $self.windowNo + '>';
 
@@ -248,7 +248,7 @@
             $FromDate = $root.find("#VA009_FromDate_" + $self.windowNo);
             $ToDate = $root.find("#VA009_ToDate_" + $self.windowNo);
             // Changes by Bharat on 29 April 2017
-            lbdata.height($lbmain.height() - 43);
+            lbdata.height($lbmain.height() - (43 + 20));
             //end
 
             //changes by manjot on 11 Nov 2017
@@ -271,7 +271,7 @@
                     if ($OrgSelected.find("li").length > 0) // For Continues Selection
                     {
                         if (orgids.indexOf($Org.val()) == -1) {
-                            $OrgSelected.find("ul").append('<li id=' + "VA009_li_" + $Org.val() + '><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_Delimg_" + $Org.val() + '> <span>' + VIS.Utility.encodeText($Org.children()[$Org[0].selectedIndex].text) + '</span></li>'); // Append li in UI
+                            $OrgSelected.find("ul").append('<li id=' + "VA009_li_" + $Org.val() + '><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_Delimg_" + $Org.val() + '></i><span>' + VIS.Utility.encodeText($Org.children()[$Org[0].selectedIndex].text) + '</span></li>'); // Append li in UI
                             orgids.push($Org.val()); // Add Values in Array For Search
                             whereClause("cs.AD_Org_ID", orgids);
                         }
@@ -279,7 +279,7 @@
                             VIS.ADialog.info("VA009_AlrdySlctd");
                     }
                     else {
-                        $OrgSelected.append('<ul><li id=' + "VA009_li_" + $Org.val() + '><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_Delimg_" + $Org.val() + '> <span>' + VIS.Utility.encodeText($Org.children()[$Org[0].selectedIndex].text) + '</span></li>');
+                        $OrgSelected.append('<ul><li id=' + "VA009_li_" + $Org.val() + '><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_Delimg_" + $Org.val() + '></i> <span>' + VIS.Utility.encodeText($Org.children()[$Org[0].selectedIndex].text) + '</span></li>');
                         orgids.push($Org.val());
                         whereClause("cs.AD_Org_ID", orgids);
                     }
@@ -295,7 +295,7 @@
             });
             $OrgSelected.on("click", function (e) {
 
-                if (e.target.localName == "img") {
+                if (e.target.localName == "i") {
                     var Remove = "#" + e.target.id;
                     $(Remove).parent().remove(); // remove li from div
 
@@ -321,7 +321,7 @@
             });
 
             $BPSelected.on("click", function (e) {
-                if (e.target.localName == "img") {
+                if (e.target.localName == "i") {
                     var Remove = "#" + e.target.id;
                     $(Remove).parent().remove(); // remove li from div
 
@@ -349,7 +349,7 @@
                 if ($PayMSelected.find("li").length > 0) // For Continues Selection
                 {
                     if (paymntIds.indexOf($payMthd.val()) == -1) {
-                        $PayMSelected.find("ul").append('<li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelPayimg_" + $payMthd.val() + '> <span>' + VIS.Utility.encodeText($payMthd.children()[$payMthd[0].selectedIndex].text) + '</span></li>');
+                        $PayMSelected.find("ul").append('<li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelPayimg_" + $payMthd.val() + '> </i><span>' + VIS.Utility.encodeText($payMthd.children()[$payMthd[0].selectedIndex].text) + '</span></li>');
                         paymntIds.push($payMthd.val());
                         whereClause("pm.VA009_PaymentMethod_ID", paymntIds);
                     }
@@ -357,7 +357,7 @@
                         VIS.ADialog.info("VA009_AlrdySlctd");
                 }
                 else {
-                    $PayMSelected.append('<ul id=' + "VA009_PayMthUL_" + $payMthd.val() + ' ><li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelPayimg_" + $payMthd.val() + '> <span>' + VIS.Utility.encodeText($payMthd.children()[$payMthd[0].selectedIndex].text) + '</span></li> </ul>');
+                    $PayMSelected.append('<ul id=' + "VA009_PayMthUL_" + $payMthd.val() + ' ><li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelPayimg_" + $payMthd.val() + '></i> <span>' + VIS.Utility.encodeText($payMthd.children()[$payMthd[0].selectedIndex].text) + '</span></li> </ul>');
                     paymntIds.push($payMthd.val());
                     whereClause("pm.VA009_PaymentMethod_ID", paymntIds);
                 }
@@ -371,7 +371,7 @@
             });
             $PayMSelected.on("click", function (e) {
 
-                if (e.target.localName == "img") {
+                if (e.target.localName == "i") {
                     var Remove = "#" + e.target.id;
                     $(Remove).parent().remove(); // remove li from ul
 
@@ -400,7 +400,7 @@
                 if ($statusSelected.find("li").length > 0) // For Continues Selection
                 {
                     if (statusIds.indexOf($status.val()) == -1) {
-                        $statusSelected.find("ul").append('<li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelStaimg_" + $status.val() + '> <span>' + VIS.Utility.encodeText($status.children()[$status[0].selectedIndex].text) + '</span></li>');
+                        $statusSelected.find("ul").append('<li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelStaimg_" + $status.val() + '></i> <span>' + VIS.Utility.encodeText($status.children()[$status[0].selectedIndex].text) + '</span></li>');
                         statusIds.push($status.val()); // Add Values in Array For Search
                         whereClause("cs.VA009_ExecutionStatus", statusIds);
                     }
@@ -408,7 +408,7 @@
                         VIS.ADialog.info("VA009_AlrdySlctd");
                 }
                 else {
-                    $statusSelected.append('<ul id=' + "VA009_StatusUL_" + $status.val() + ' ><li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelStaimg_" + $status.val() + '> <span>' + VIS.Utility.encodeText($status.children()[$status[0].selectedIndex].text) + '</span></li> </ul>');
+                    $statusSelected.append('<ul id=' + "VA009_StatusUL_" + $status.val() + ' ><li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelStaimg_" + $status.val() + '></i> <span>' + VIS.Utility.encodeText($status.children()[$status[0].selectedIndex].text) + '</span></li> </ul>');
                     statusIds.push($status.val());
                     whereClause("cs.VA009_ExecutionStatus", statusIds);
                 }
@@ -422,7 +422,7 @@
             });
             $statusSelected.on("click", function (e) {
 
-                if (e.target.localName == "img") {
+                if (e.target.localName == "i") {
                     var Remove = "#" + e.target.id;
                     $(Remove).parent().remove(); // Remove li from ul
 
@@ -448,7 +448,7 @@
                 if ($TransactionTypeSelected.find("li").length > 0) // For Continues Selection
                 {
                     if (transtypes.indexOf($TransactionType.val()) == -1) {
-                        $TransactionTypeSelected.find("ul").append('<li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelStaimg_" + $TransactionType.val() + '> <span>' + VIS.Utility.encodeText($TransactionType.children()[$TransactionType[0].selectedIndex].text) + '</span></li>');
+                        $TransactionTypeSelected.find("ul").append('<li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelStaimg_" + $TransactionType.val() + '></i> <span>' + VIS.Utility.encodeText($TransactionType.children()[$TransactionType[0].selectedIndex].text) + '</span></li>');
                         transtypes.push($TransactionType.val()); // Add Values in Array For Search
                     }
                     else
@@ -458,7 +458,7 @@
                     // Remove unwanted ul
                     $TransactionTypeSelected.find("ul").remove();
 
-                    $TransactionTypeSelected.append('<ul id=' + "VA009_StatusUL_" + $TransactionType.val() + ' ><li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelStaimg_" + $TransactionType.val() + '> <span>' + VIS.Utility.encodeText($TransactionType.children()[$TransactionType[0].selectedIndex].text) + '</span></li> </ul>');
+                    $TransactionTypeSelected.append('<ul id=' + "VA009_StatusUL_" + $TransactionType.val() + ' ><li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelStaimg_" + $TransactionType.val() + '></i> <span>' + VIS.Utility.encodeText($TransactionType.children()[$TransactionType[0].selectedIndex].text) + '</span></li> </ul>');
                     transtypes.push($TransactionType.val());
                 }
                 $TransactionType.prop('selectedIndex', 0);
@@ -477,7 +477,7 @@
             });
             $TransactionTypeSelected.on("click", function (e) {
 
-                if (e.target.localName == "img") {
+                if (e.target.localName == "i") {
                     var Remove = "#" + e.target.id;
                     $(Remove).parent().remove(); // Remove li from ul
 
@@ -617,7 +617,7 @@
                 if ($DueDateSelected.find("li").length > 0) // For Continues Selection
                 {
                     if (Duedateval.indexOf($Duedateul.val()) == -1) {
-                        $DueDateSelected.find("ul").append('<li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelDueimg_" + $Duedateul.val() + '> <span>' + VIS.Utility.encodeText($Duedateul.children()[$Duedateul[0].selectedIndex].text) + '</span></li>');
+                        $DueDateSelected.find("ul").append('<li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelDueimg_" + $Duedateul.val() + '></i> <span>' + VIS.Utility.encodeText($Duedateul.children()[$Duedateul[0].selectedIndex].text) + '</span></li>');
                         Duedateval.push($Duedateul.val());
                         whereClause("DueDate", Duedateval);
                     }
@@ -625,7 +625,7 @@
                         VIS.ADialog.info("VA009_AlrdySlctd");
                 }
                 else {
-                    $DueDateSelected.append('<ul id=' + "VA009_PayMthUL_" + $Duedateul.val() + ' ><li ><img src="Areas/VA009/Images/cross.png" alt="' + VIS.Msg.getMsg("VA009_Cancel") + '" title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn" id=' + "VA009_DelDueimg_" + $Duedateul.val() + '> <span>' + VIS.Utility.encodeText($Duedateul.children()[$Duedateul[0].selectedIndex].text) + '</span></li> </ul>');
+                    $DueDateSelected.append('<ul id=' + "VA009_PayMthUL_" + $Duedateul.val() + ' ><li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelDueimg_" + $Duedateul.val() + '></i> <span>' + VIS.Utility.encodeText($Duedateul.children()[$Duedateul[0].selectedIndex].text) + '</span></li> </ul>');
                     Duedateval.push($Duedateul.val());
                     whereClause("DueDate", Duedateval);
                 }
@@ -640,7 +640,7 @@
 
             $DueDateSelected.on("click", function (e) {
 
-                if (e.target.localName == "img") {
+                if (e.target.localName == "i") {
                     var Remove = "#" + e.target.id;
                     $(Remove).parent().remove(); // remove li from div
 
@@ -1007,71 +1007,83 @@
                 lblAmount.append(VIS.Msg.getMsg("VA009_AccountBalance"));
                 cheqAmount.setValue(0);
                 format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
-                divAmount = $("<div class='VA009-popform-data'style='width:32.5%;margin-right:7.5px;'>");
-                divAmount.append(lblAmount).append(cheqAmount.getControl());
-                $chequePayble = $("<div class='VA009-popform-content' style='min-height:450px !important'>");
+                divAmount = $("<div class='VA009-popCheck-data input-group vis-input-wrap'>");
+                var $divchequeAmtCtrlWrp = $("<div class='vis-control-wrap'>");
+                divAmount.append($divchequeAmtCtrlWrp);
+                $divchequeAmtCtrlWrp.append(cheqAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
+                $chequePayble = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:450px !important'>");
                 //var _ChequePayble = "";
                 _ChequePayble = $("<div class='VA009-popfrm-wrap'>");
-                _chequedata = $("<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                _chequedata = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select></div>");
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "</div></div>");
 
-                    //+ "<div class='VA009-popCheck-data'>"
-                    //+ "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
-                    //+ "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
+                //+ "<div class='VA009-popCheck-data'>"
+                //+ "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
+                //+ "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
 
-                _chequedata1 =$("<div class='VA009-popCheck-data'>"
+                _chequedata1 = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='text' id='VA009_Chqnotxt_" + $self.windowNo + "' placeholder=' ' data-placeholder='' disabled > "
                     + "<label>" + VIS.Msg.getMsg("VA009_Chqnolbl") + "</label>"
-                    + "<input type='text' style='background-color: #ededed;' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/> </div>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PaymentSelection") + "</label>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbPaySelectn_" + $self.windowNo + "'>"
                     + ' <option value="M">' + VIS.Msg.getMsg("VA009_PayManully") + '</option>'
                     + ' <option value="P">' + VIS.Msg.getMsg("VA009_PayPrint") + '</option>'
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PaymentSelection") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
 
                     //+ "<div class='VA009-popCheck-data' style=' padding-left: 0 !important;'>"
                     //+ '<label>&nbsp;</label><div style=" padding-left: 0; "><input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo + '"> <label>Consolidate Payment</label></div>'
                     //+ "</div>"
 
-                    + "<div class='VA009-popCheck-data' id='VA009_POP_textCheckNoDiv'>"
-                    + "<label><div style=' padding-left: 0 !important;'>"
-                    + '<div style="padding-left: 0; "><input type="checkbox" style="float: left;" id="VA009_chkConsolidate_' + $self.windowNo
-                    + '"> <label style="margin-bottom: 0;font-weight: normal;">' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label></div>'
-                    + "</div></label>"
-                    + "<input type='text' style='background-color: #ededed;' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
-                    + "</div> "
+                    + "<div class='VA009-popCheck-data VA009-popformchkctrlwrap' id='VA009_POP_textCheckNoDiv'>"
+                    + "<div>"
+                    + '<input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo
+                    + '"> <label>' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label>'
+                    + "</div></div>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
+                    + "</div></div> "
 
-                    + "<div class='VA009-popCheck-data'>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 33px;'> </div>"
+                    + "</div></div>"
 
                     //Transaction Date
-                    + "<div class='VA009-popCheck-data'>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
                     + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "</div></div>"
 
-                    + "<div style='display: none !important' class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "<div style='display: none !important' class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "</div></div>"
 
                     //+ "<div style='width: 100%; float: left;'>"                            
 
@@ -1110,9 +1122,9 @@
                         ChequePayDialog.show();
                         // loadbank();
                         loadbanks($POP_cmbBank, orgids);
-                        $POP_cmbBank.css('background-color', SetMandatory(true));
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
-                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
                         CHQPayGrid_Layout();
                         loadgrdPay(callbackchqPay);
                         loadCurrencyType();
@@ -1736,13 +1748,13 @@
                     $pop_cmbCurrencyType = $chequePayble.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_PayMthd = $chequePayble.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
                     $POPtxtCheckNumber = $chequePayble.find("#VA009_POP_textCheckNo_" + $self.windowNo);
-                    //$POPtxtCheckNumber.css('background-color', SetMandatory(true));
+                    //$POPtxtCheckNumber.addClass('vis-ev-col-mandatory');
                     $POP_DateAcct = $chequePayble.find("#VA009_AccountDate_" + $self.windowNo);
                     $POP_Consolidate = $chequePayble.find("#VA009_chkConsolidate_" + $self.windowNo);
                     //Transaction Date
                     $POP_DateTrx = $chequePayble.find("#VA009_TransactionDate" + $self.windowNo);
                     $POP_cmbOrg = $chequePayble.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                 };
 
                 function loadPayMthd() {
@@ -1897,10 +1909,10 @@
                 $POP_cmbOrg.on("change", function () {
                     //to set Org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
@@ -1908,11 +1920,11 @@
                     $POP_cmbBankAccount.empty();
                     //to set bank mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                        $POP_cmbBank.css('background-color', SetMandatory(false));
+                        $POP_cmbBank.removeClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbBank.css('background-color', SetMandatory(true));
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     }
                     //end
                     cheqAmount.setValue(0);
@@ -1936,10 +1948,10 @@
                 $POP_cmbBankAccount.on("change", function () {
                     //to set bank mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(false));
+                        $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     }
                     //end
                     cheqAmount.setValue(0);
@@ -1951,10 +1963,10 @@
 
                         //change by amit
                         if ($POP_cmbBankAccount.val() == "0") {
-                            $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                            $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_cmbBankAccount.css('background-color', SetMandatory(false));
+                            $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                         }
                         //end
 
@@ -2017,13 +2029,13 @@
                         if (target.prop("checked") == true) {
                             $POPtxtCheckNumber.removeAttr("disabled");
                             $POPtxtCheckNumber.css('background-color', 'white');
-                            $POPtxtCheckNumber.css('background-color', SetMandatory(true));
+                            $POPtxtCheckNumber.addClass('vis-ev-col-mandatory');
                         }
                         else {
                             //$('#VA009_POP_textCheckNoDiv').css('display', 'none');
                             $POPtxtCheckNumber.val("");
                             $POPtxtCheckNumber.attr('disabled', 'disabled');
-                            $POPtxtCheckNumber.css('background-color', SetMandatory(false));
+                            $POPtxtCheckNumber.removeClass('vis-ev-col-mandatory');
                             $POPtxtCheckNumber.css('background-color', '#ededed');
                         }
                     }
@@ -2033,10 +2045,10 @@
                 $POPtxtCheckNumber.on("change", function () {
 
                     if ($POPtxtCheckNumber.val() == "") {
-                        $POPtxtCheckNumber.css('background-color', SetMandatory(true));
+                        $POPtxtCheckNumber.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POPtxtCheckNumber.css('background-color', SetMandatory(false));
+                        $POPtxtCheckNumber.removeClass('vis-ev-col-mandatory');
                         CheuePaybleGrid = $chequePayble.find("#VA009_btnPopupGrid");
                         var cBPartnerIds = [];
                         var chknumbers = [];
@@ -2094,10 +2106,10 @@
                 $POP_DateAcct.on("change", function () {
                     //to set Date acct mandatory given by ashish on 28 May 2020
                     if ($POP_DateAcct.val() == "") {
-                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_DateAcct.css('background-color', SetMandatory(false));
+                        $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
@@ -2410,45 +2422,38 @@
                 CheueRecevableGrid, _Cheque_no = "";
                 var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
                 $bsyDiv[0].style.visibility = "visible";
-                $chequeRecivable = $("<div class='VA009-popform-content' style='min-height:385px !important'>");
+                $chequeRecivable = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
                 var _ChequeRecevble = "";
-                _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
+                _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'><div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                            + "</div></div> "
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                            + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select></div> "
+                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                            + "</div></div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                            + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                            + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                            + " </div></div>"
+                            //Transaction Date
+                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                            + "</div></div></div>"
 
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                    + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                    + "</select></div>"
-
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
-                    //Transaction Date
-                    + "<div class='VA009-popCheck-data'>"
-                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
-
-                    //+ "<div class='VA009-popfrm-wrap'>"
-                    + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
+                            //+ "<div class='VA009-popfrm-wrap'>"
+                            + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
                 //+ "</div>";
 
                 $chequeRecivable.append(_ChequeRecevble);
@@ -2478,9 +2483,9 @@
                         CHQRecGrid_Layout();
                         //loadbank();
                         loadbanks($RPOP_cmbBank, orgids);
-                        $RPOP_cmbBank.css('background-color', SetMandatory(true));
-                        $RPOP_cmbBankAccount.css('background-color', SetMandatory(true));
-                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                        $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
                         loadgrd(callbackchqRec);
                         loadCurrencyType();
                         loadPayMthd();
@@ -2497,7 +2502,7 @@
                     $POP_DateAcct = $chequeRecivable.find("#VA009_AccountDate_" + $self.windowNo);
                     $POP_DateTrx = $chequeRecivable.find("#VA009_TransactionDate" + $self.windowNo);
                     $POP_cmbOrg = $chequeRecivable.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                 };
 
                 function loadCurrencyType() {
@@ -2562,10 +2567,10 @@
                 $POP_cmbOrg.on("change", function () {
                     //to set Org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
@@ -2573,11 +2578,11 @@
                     $RPOP_cmbBankAccount.empty();
                     //to set Org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) == 0) {
-                        $RPOP_cmbBank.css('background-color', SetMandatory(true));
-                        $RPOP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $RPOP_cmbBank.css('background-color', SetMandatory(false));
+                        $RPOP_cmbBank.removeClass('vis-ev-col-mandatory');
                     }
                     //end
                     //to get bank account of selected organization assigned by Ashish on 28 May 2020
@@ -2599,10 +2604,10 @@
                 $RPOP_cmbBankAccount.on("change", function () {
                     //to set Org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) == 0) {
-                        $RPOP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $RPOP_cmbBankAccount.css('background-color', SetMandatory(false));
+                        $RPOP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                     }
                     //end
                     $.ajax({
@@ -2643,10 +2648,10 @@
                 $POP_DateAcct.on("change", function () {
                     //to set Date acct mandatory given by ashish on 28 May 2020
                     if ($POP_DateAcct.val() == "") {
-                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_DateAcct.css('background-color', SetMandatory(false));
+                        $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
@@ -3497,37 +3502,44 @@
                 lblAmount.append(VIS.Msg.getMsg("VA009_lblopngbal"));
                 cashAmount.setValue(0);
                 format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
-                divAmount = $("<div class='VA009-popform-data'style='width:49%;'>");
-                divAmount.append(lblAmount).append(cashAmount.getControl());
-                $cash = $("<div class='VA009-popform-content' style='min-height:385px !important'>");
+                divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
+                divAmountCtrlWrap = $("<div class='vis-control-wrap'>");
+                divAmount.append(divAmountCtrlWrap);
+                divAmountCtrlWrap.append(cashAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
+                $cash = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
                 //var _Cash = "";
                 _Cash = $("<div class='VA009-popfrm-wrap'>");
 
-                cashData = $("<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                cashData = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select>"
                     + "<label>" + VIS.Msg.getMsg("VA009_lblcashbook") + "</label>"
-                    + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select></div> ");
+                    + "</div></div> ");
 
-                    //+ "<div class='VA009-popform-data'>"
-                    //+ "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
-                    //+ "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
+                //+ "<div class='VA009-popform-data'>"
+                //+ "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
+                //+ "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
 
-                cashDataa = $("<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                cashDataa = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
                     + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    + "</div></div>"
                     //Transaction Date
-                    + "<div class='VA009-popform-data'>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
                     + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "</div> </div>"
 
                     + "<div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div>"
                     + "</div>");
@@ -3712,7 +3724,7 @@
                 function loadcashbook() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCashBook", { "Orgs": orgids.toString() }, callbackloadcashbook);
                     function callbackloadcashbook(dr) {
-                        $Cash_cmbcashbk.css('background-color', SetMandatory(true));
+                        $Cash_cmbcashbk.addClass('vis-ev-col-mandatory');
                         $Cash_cmbcashbk.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -3727,10 +3739,10 @@
                     cashAmount.setValue(0);
                     //to set cashbook mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) == 0) {
-                        $Cash_cmbcashbk.css('background-color', SetMandatory(true));
+                        $Cash_cmbcashbk.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $Cash_cmbcashbk.css('background-color', SetMandatory(false));
+                        $Cash_cmbcashbk.removeClass('vis-ev-col-mandatory');
                     }
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCashBookData", { "CashBook": $Cash_cmbcashbk.val() }, callbackloadcashbk);
                     var currency = 0;
@@ -3782,10 +3794,10 @@
                 $POP_cmbOrg.on("change", function () {
                     //to set org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
@@ -3795,11 +3807,11 @@
                     CashGrid = $cash.find("#VA009_btnPopupGrid");
                     $pop_cmbCurrencyType = $cash.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_DateAcct = $cash.find("#VA009_AccountDate_" + $self.windowNo);
-                    $POP_DateAcct.css('background-color', SetMandatory(true));
+                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     //Transaction Date
                     $POP_DateTrx = $cash.find("#VA009_TransactionDate" + $self.windowNo);
                     $POP_cmbOrg = $cash.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                 };
 
                 function loadgrdCash(callback) {
@@ -4299,9 +4311,10 @@
 
                 $opnbatch = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
                 var _openbatch = "";
-                _openbatch += "<div> <div>"
-                    + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>&nbsp;&nbsp;" + VIS.Msg.getMsg("VA009_BasedOnSelection") + '<br><br>'
-                    + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'>&nbsp;&nbsp;" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</div>';
+                _openbatch += "<div> <div class='VA009-popfrmradiowrp'>"
+                            + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>" 
+                            + "<label>" + VIS.Msg.getMsg("VA009_BasedOnSelection") + "</label></div>"
+                            + "<div class='VA009-popfrmradiowrp'><input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'><label>" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</label></div>';
 
                 $opnbatch.append(_openbatch);
                 //Batch_getControls();
@@ -4374,49 +4387,54 @@
 
                 var BatchGrid, _Cheque_no = "";
                 var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
-                $batch = $("<div class='VA009-popform-content' style='min-height:395px !important'>");
+                $batch = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:395px !important'>");
                 var _batch = "";
                 _batch += "<div class='VA009-popfrm-wrap'>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select></div> "
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "</div></div> "
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "</div></div>"
 
                     // Payment method and overwrite payment method Suggested by Ashish and Rajni
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label style='visibility:hidden;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
-                    + "<input type='checkbox' style='width:10%;'  disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</div>'
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
+                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</label></div></div>'
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label style='visibility:hidden;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
-                    + "<input type='checkbox' style='width:10%;' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</div>'
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
+                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
 
-                    + "<div class='VA009-popform-data' style='display:none !important'>"
-                    + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap' style='display:none !important'><div class='vis-control-wrap'>"
                     + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-table-container' style='margin-top:20px !important; height:300px;' id='VA009_btnPopupGrid'> </div>"
+                    + "<div class='VA009-table-container' style='height:300px;' id='VA009_btnPopupGrid'> </div>"
                     + "</div>";
 
-                $batch.append(_batch);
+                $batch.append(_batch); 
                 Batch_getControls();
 
                 var BatchDialog = new VIS.ChildDialog();
@@ -4432,10 +4450,10 @@
                 loadOrg();
                 //loadbank();
                 loadbanks($POP_cmbBank, orgids);
-                $POP_cmbBank.css('background-color', SetMandatory(true));
-                $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                 //set payment method mandatory assigned by ashish 28 May 2020
-                $POP_PayMthd.css('background-color', SetMandatory(true));
+                $POP_PayMthd.addClass('vis-ev-col-mandatory');
                 loadPayMthd();
                 loadCurrencyType();
 
@@ -4505,7 +4523,7 @@
                     $overwritepay = $batch.find("#VA009_OverwritePayMthd_" + $self.windowNo);
                     $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.css('background-color', SetMandatory(true));
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     // Payment method and overwrite payment method Suggested by Ashish and Rajni
                     $consolidate.prop('checked', true);
                     $overwritepay.prop('checked', true);
@@ -4602,20 +4620,20 @@
                 $POP_cmbOrg.on("change", function () {
                     //to set org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
                 $POP_cmbBank.on('change', function () {
                     //to set bank mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                        $POP_cmbBank.css('background-color', SetMandatory(false));
+                        $POP_cmbBank.removeClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbBank.css('background-color', SetMandatory(true));
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
                     }
                     $POP_cmbBankAccount.empty();
                     //to get bank account of selected organization assigned by Ashish on 28 May 2020
@@ -4636,10 +4654,10 @@
                 $POP_cmbBankAccount.on("change", function () {
                     //to set bank account mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(false));
+                        $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                     }
                     //end
                     $.ajax({
@@ -4735,10 +4753,10 @@
                 $POP_PayMthd.on('change', function (event) {
                     //to set payment method mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                        $POP_PayMthd.css('background-color', SetMandatory(false));
+                        $POP_PayMthd.removeClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_PayMthd.css('background-color', SetMandatory(true));
+                        $POP_PayMthd.addClass('vis-ev-col-mandatory');
                     }
                     Payrule = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentRule", { "PaymentMethod": $POP_PayMthd.val() }, null);
                     if (Payrule == "S")
@@ -4914,15 +4932,15 @@
                 var SplitGrid, _Cheque_no = "";
                 var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
                 $bsyDiv[0].style.visibility = "visible";
-                $split = $("<div class='VA009-popform-content' style='min-height:333px !important'>");
+                $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
                 var _split = "";
-                _split += "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label>"
-                    + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "' style='width: 60% !important'/>"
-                    + "  <a class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important'>Split Schedule</a> </div>"
+                _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
+                            + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
+                            + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
 
-                    + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
-                    + "</div>";
+                            + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
+                            + "</div>";
 
                 $split.append(_split);
                 Split_getControls();
@@ -5326,32 +5344,34 @@
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
                 txtAmount.setValue(0);
                 format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
-                divAmount = $("<div class='VA009-popform-data'>");
-                divAmount.append(lblAmount).append(txtAmount.getControl());
+                divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
+                var $divb2bAmountCtrlWrp = $("<div class='vis-control-wrap'>");
+                divAmount.append($divb2bAmountCtrlWrp);
+                $divb2bAmountCtrlWrp.append(txtAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
 
-                $b2b = $("<div class='VA009-popform-content vis-forms-container' style='min-height:380px !important'>");
+                $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:380px !important'>");
                 //var _b2b = "";
                 //_b2b.append(divAmount);
                 _b2b = $("<div class='VA009-popfrm-wrap'>");
-                _b2bdata = $("<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select></div> "
+                _b2bdata = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                            + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                    + "<div><input type='checkbox' id=VA009_Payment_" + $self.windowNo + "> <label style=width:auto !important>Payment</label><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + " style=margin-left:60px !important> <label style=width:auto !important>Receipt</label></div>"
-                    + "</div> "
+                             + "<div class='VA009-popform-data VA009-popformchkctrlwrap'>"
+                            //+ "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+                            + "<div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Payment_" + $self.windowNo + ">Payment</label></div><div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + ">Receipt</label></div>"
+                            + "</div> "
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                    + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
-                    + "</select></div> "
+                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+                            + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
-                    + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
-                    + "</select></div>");
+                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
+                            + "</div></div>");
 
                 //"<div class='VA009-popform-data'>"
                 //    + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
@@ -5359,45 +5379,44 @@
 
                 //+ new VIS.Controls.VAmountTextBox("Amount", true, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"))
 
-                _b2bdata1 = $("<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
-                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    //        + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    //        + "<input type='number' placeholder=' ' data-placeholder='' id='VA009_Amount" + $self.windowNo + "' value=0><label>" + VIS.Msg.getMsg("Amount") + "</label>"
+                    //+ "</div></div>");
 
-                    + "<div class='VA009-popform-data VA009-b2b-popup'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
-                    + "<input type='text' style='background-color: #ededed;' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/> </div>"
+                _b2bdata1 = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                            + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
-                    + "<input type='date' id='VA009_CheckDate_" + $self.windowNo + "' style='height: 30px;background-color: #ededed;' disabled> </div>"
+                             + "<div class='VA009-popform-data VA009-b2b-popup input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                             + "<input type='text' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label></div><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
+                             + "</div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("Currency") + "</label>"
-                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<input type='date' id='VA009_CheckDate_" + $self.windowNo + "' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' disabled><label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+                            + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                             + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                             + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+                             + "</select><label>" + VIS.Msg.getMsg("Currency") + "</label>"
+                             + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+                            + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                            + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "<input type='date' id='VA009_AccountDate" + $self.windowNo + "' > </div>"
+                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                            + "</div></div>"
 
-                    //btn get Cheque number
-                    // + "<div class='VA009-popform-data'>"
-                    //+ "<button class='ui-button ui-widget ui-state-default ui-corner-all ui-button-text-only' id='VA009_getCheckNo_" + $self.windowNo + "'><span class='ui-button-text'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</span></button>"
-                    //+ "</div>"
+                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                            + "<input type='date' id='VA009_AccountDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                            + "</div></div>"
 
-                    + "<div style='float:left;'>"
-                    + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
-                    + "</div>"
+                            + "<div style='float:left;'>"
+                            + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
+                            + "</div>"
                 );
 
                 _b2b.append(_b2bdata).append(divAmount).append(_b2bdata1);
@@ -5552,7 +5571,7 @@
                         if (parseInt($OrgCmb.val()) > 0) {
                             organizationids = [];
                             organizationids.push($OrgCmb.val());
-                            $OrgCmb.css('background-color', SetMandatory(false));
+                            $OrgCmb.removeClass('vis-ev-col-mandatory');
 
                             if ($isPayment.prop("checked") == true) {
                                 loadBankAccount($From_cmbBank, organizationids);
@@ -5564,71 +5583,71 @@
                             }
                         }
                         else {
-                            $OrgCmb.css('background-color', SetMandatory(true));
+                            $OrgCmb.addClass('vis-ev-col-mandatory');
                         }
                     });
 
                     $From_cmbBank.on("change", function () {
                         if (parseInt($From_cmbBank.val()) > 0) {
-                            $From_cmbBank.css('background-color', SetMandatory(false));
+                            $From_cmbBank.removeClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $From_cmbBank.css('background-color', SetMandatory(true));
+                            $From_cmbBank.addClass('vis-ev-col-mandatory');
                         }
                     });
 
                     $To_cmbBank.on("change", function () {
                         if (parseInt($To_cmbBank.val()) > 0) {
-                            $To_cmbBank.css('background-color', SetMandatory(false));
+                            $To_cmbBank.removeClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $To_cmbBank.css('background-color', SetMandatory(true));
+                            $To_cmbBank.addClass('vis-ev-col-mandatory');
                         }
                     });
 
                     $cmbCurrencies.on("change", function () {
                         if (parseInt($cmbCurrencies.val()) > 0) {
-                            $cmbCurrencies.css('background-color', SetMandatory(false));
+                            $cmbCurrencies.removeClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $cmbCurrencies.css('background-color', SetMandatory(true));
+                            $cmbCurrencies.addClass('vis-ev-col-mandatory');
                         }
                     });
 
                     // change the color if the value is change other than 0
                     txtAmount.getControl().on("change", function () {
                         if (parseInt(txtAmount.getValue()) > 0) {
-                            txtAmount.getControl().css('background-color', SetMandatory(false));
+                            txtAmount.getControl().removeClass('vis-ev-col-mandatory');
                         }
                         else {
-                            txtAmount.getControl().css('background-color', SetMandatory(true));
+                            txtAmount.getControl().addClass('vis-ev-col-mandatory');
                         }
                     });
                     $paymentMthd.on("change", function () {
                         if (parseInt($paymentMthd.val()) > 0) {
-                            $paymentMthd.css('background-color', SetMandatory(false));
+                            $paymentMthd.removeClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $paymentMthd.css('background-color', SetMandatory(true));
+                            $paymentMthd.addClass('vis-ev-col-mandatory');
                         }
 
                         if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
                             getCheckNo();
                             $txtCheckNo.removeAttr("disabled");
                             $txtCheckNo.css('background-color', 'white');
-                            $txtCheckNo.css('background-color', SetMandatory(true));
+                            $txtCheckNo.addClass('vis-ev-col-mandatory');
                             $checkDate.removeAttr("disabled");
                             $checkDate.css('background-color', 'white');
-                            $checkDate.css('background-color', SetMandatory(true));
+                            $checkDate.addClass('vis-ev-col-mandatory');
                         }
                         else {
                             $txtCheckNo.val("");
                             $txtCheckNo.attr('disabled', 'disabled');
-                            $txtCheckNo.css('background-color', SetMandatory(false));
+                            $txtCheckNo.removeClass('vis-ev-col-mandatory');
                             $txtCheckNo.css('background-color', '#ededed');
                             $checkDate.val("");
                             $checkDate.attr('disabled', 'disabled');
-                            $checkDate.css('background-color', SetMandatory(false));
+                            $checkDate.removeClass('vis-ev-col-mandatory');
                             $checkDate.css('background-color', '#ededed');
                         }
                     });
@@ -5668,12 +5687,12 @@
                     $checkDate = $b2b.find("#VA009_CheckDate_" + $self.windowNo);
                     $note = $b2b.find("#VA009_Note" + $self.windowNo);
                     $getNextChkno = $b2b.find("#VA009_getCheckNo_" + $self.windowNo);
-                    $OrgCmb.css('background-color', SetMandatory(true));
-                    $From_cmbBank.css('background-color', SetMandatory(true));
-                    $To_cmbBank.css('background-color', SetMandatory(true));
-                    txtAmount.getControl().css('background-color', SetMandatory(true));//for default color to control
-                    $cmbCurrencies.css('background-color', SetMandatory(true));
-                    $paymentMthd.css('background-color', SetMandatory(true));
+                    $OrgCmb.addClass('vis-ev-col-mandatory');
+                    $From_cmbBank.addClass('vis-ev-col-mandatory');
+                    $To_cmbBank.addClass('vis-ev-col-mandatory');
+                    txtAmount.getControl().addClass('vis-ev-col-mandatory');//for default color to control
+                    $cmbCurrencies.addClass('vis-ev-col-mandatory');
+                    $paymentMthd.addClass('vis-ev-col-mandatory');
 
                 };
 
@@ -5801,7 +5820,7 @@
                         $note.css('visibility', 'hidden');
                         if (dr != null) {
                             $txtCheckNo.val(dr);
-                            $txtCheckNo.css('background-color', SetMandatory(false));
+                            $txtCheckNo.removeClass('vis-ev-col-mandatory');
                         }
                     }
                 };
@@ -5818,42 +5837,47 @@
             },
 
             Pay_ManualDialog: function () {
-                $payManual = $("<div class='VA009-popform-content' style='min-height:385px !important'>");
+                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
                 var _payManual = "";
                 _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "</div ></div > "
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + " </div></div>"
                     //currency type list
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
                     //trx date
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' > </div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "'  placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + " </div></div>"
 
                     + "</div>";
                 $payManual.append(_payManual);
@@ -5881,35 +5905,35 @@
                     $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
                     $POP_DateAcct = $payManual.find("#VA009_AccountDate_" + $self.windowNo);
                     $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
-                    $POP_DateAcct.css('background-color', SetMandatory(true));
+                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     $POP_DateTrx = $payManual.find("#VA009_TransactionDate" + $self.windowNo);
                     $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.css('background-color', SetMandatory(true));
-                    $POP_PayMthd.css('background-color', SetMandatory(true));
-                    $POP_CurrencyType.css('background-color', SetMandatory(true));
-                    $POP_cmbBank.css('background-color', SetMandatory(true));
-                    $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                    $POP_PayMthd.addClass('vis-ev-col-mandatory');
+                    $POP_CurrencyType.addClass('vis-ev-col-mandatory');
+                    $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                 };
 
                 $POP_cmbOrg.on("change", function () {
                     //to set org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.css('background-color', SetMandatory(true));
+                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbOrg.css('background-color', SetMandatory(false));
+                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
                 $POP_cmbBank.on("change", function () {
                     $POP_cmbBankAccount.empty();
-                    $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     //to set org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
-                        $POP_cmbBank.css('background-color', SetMandatory(true));
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbBank.css('background-color', SetMandatory(false));
+                        $POP_cmbBank.removeClass('vis-ev-col-mandatory');
                     }
                     //to get bank account of selected organization assigned by Ashish on 28 May 2020
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
@@ -5929,40 +5953,40 @@
                 $POP_CurrencyType.on("change", function () {
                     //to set org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) == 0) {
-                        $POP_CurrencyType.css('background-color', SetMandatory(true));
+                        $POP_CurrencyType.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_CurrencyType.css('background-color', SetMandatory(false));
+                        $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
                 $POP_PayMthd.on("change", function () {
                     //to set PAYMENT MENNDATORY mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) == 0) {
-                        $POP_PayMthd.css('background-color', SetMandatory(true));
+                        $POP_PayMthd.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_PayMthd.css('background-color', SetMandatory(false));
+                        $POP_PayMthd.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
                 $POP_DateAcct.on("change", function () {
                     //to set Date acct mandatory given by ashish on 28 May 2020
                     if ($POP_DateAcct.val() == "") {
-                        $POP_DateAcct.css('background-color', SetMandatory(true));
+                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_DateAcct.css('background-color', SetMandatory(false));
+                        $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
                 $POP_cmbBankAccount.on("change", function () {
                     //to set bank account mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                        $POP_cmbBankAccount.css('background-color', SetMandatory(false));
+                        $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
@@ -6118,89 +6142,102 @@
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
                 payAmount.setValue(0);
                 format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);//formating the value of amount into number
-                divAmount = $("<div class='VA009-popform-data'style='margin-right: 1%;margin-left: 0%;width:49.2%;'>");
-                divAmount.append(lblAmount).append(payAmount.getControl());
-                $payManual = $("<div class='VA009-popform-content' style='min-height:435px'>");
+                divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
+                var $DivAmtCtrlWrp = $("<div class='vis-control-wrap'>");
+                divAmount.append($DivAmtCtrlWrp);
+                $DivAmtCtrlWrp.append(payAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
+                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:435px'>");
                 //var _payManual = "";
                 _payManual = $("<div class='VA009-popfrm-wrap' style='height:auto !important'>");
 
-                _addOrg = $("<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                _addOrg = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select></div>"
-
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("DocType") + "</label>"
-                    + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
-                    + "</select></div>"
-
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select></div>"
-
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select></div>"
-
-                    //trx date
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "<input type='date' id='VA009_TransactionDate_" + $self.windowNo + "' style='height:33px;'> </div>"
-
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' style='height:33px;'> </div>"
-
-
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>"
-                    + "<div id='VA009_POP_cmbBP_" + $self.windowNo + "'style='margin-left:0%;width:100%;'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
                     + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("BPLocation") + "</label>"
-                    + "<select id='VA009_POP_cmbLocation_" + $self.windowNo + "'style='margin-left:0%;width:100%;'>"
-                    + "</select></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("DocType") + "</label>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popform-data'>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "</div></div>"
+
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "</div></div>"
+
+                    //trx date
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_TransactionDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
+                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "</div></div>"
+
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
+                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "</div> </div>"
+
+
+                    + "<div class='VA009-popform-data input-group vis-input-wrap' id='VA009_POP_cmbBP_" + $self.windowNo + "'>"
+                    //+ "<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>"
+                    //+ "<div></div>"
+                    + "</div>"
+
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbLocation_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("BPLocation") + "</label>"
+                    + "</div></div>"
+
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+                    + "</select>"
                     + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
-                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "' style='margin-left:0%;width:100%;'>"
-                    + "</select></div>"
+                    + "</div></div>"
 
                     //currency type list
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select></div>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
 
                     //+ "<div class='VA009-popform-data'>"
                     //+ "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
                     //+ "<select id='VA009_cmbCharge_" + $self.windowNo + "'>"
                     //+ "</select></div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
-                    + "<div id='VA009_Charge_" + $self.windowNo + "'style='margin-left:0%;width:100%;height:33px;'>"
-                    + "</div></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap' id='VA009_Charge_" + $self.windowNo + "'>"
+                    //+ "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
+                    + "</div>"
 
-                    + "<div class='VA009-popform-data'>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                    + "</select></div>");
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "</div></div>");
 
                 //      +"<div class='VA009-popform-data'>"
                 //      + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
                 //      + "<input type='text' id='VA009_cmbAmt_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
 
-                _addAmt = ("<div class='VA009-popform-data' id= VA009_DivCheck_" + $self.windowNo + ">"
+                _addAmt = ("<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheck_" + $self.windowNo + "><div class='vis-control-wrap'>"
+                    + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("CheckNo") + "</label>"
-                    + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' style='height: 33px;width:100%;'> </div>"
+                    + "</div> </div>"
 
-                    + "<div class='VA009-popform-data' id= VA009_DivCheckDate_" + $self.windowNo + ">"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheckDate_" + $self.windowNo + "><div class='vis-control-wrap'>"
+                    + "<input type='Date' id='VA009_chkDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
-                    + "<input type='Date' id='VA009_chkDate_" + $self.windowNo + "'style='height: 33px;width:100%;'> </div>"
+                    + "</div> </div>"
                     + "</div>"
                     + "</div>");
                 _payManual.append(_addOrg).append(divAmount).append(_addAmt);//append the child tags to parent div
@@ -6235,8 +6272,13 @@
                     //BPartner look Up
                     _BusinessPartnerLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3499, VIS.DisplayType.Search);
                     $BpartnerControl = new VIS.Controls.VTextBoxButton("C_BPartner_ID", true, false, true, VIS.DisplayType.Search, _BusinessPartnerLookUp);
-                    $POP_cmbBP.append($BpartnerControl.getControl().css('width', '93.5%')).append($BpartnerControl.getBtn(0).css('width', '6%').css('height', '33px').css('padding', '0px').css('border-color', '#BBBBBB'));
-                    $BpartnerControl.getControl().css('background-color', SetMandatory(true));
+                    var $POP_cmbBPCtrlwrp = $('<div class="vis-control-wrap">');
+                    var $POP_cmbBPBtnwrp = $('<div class="input-group-append">');
+                    $POP_cmbBP.append($POP_cmbBPCtrlwrp);
+                    $POP_cmbBP.append($POP_cmbBPBtnwrp);
+                    $POP_cmbBPCtrlwrp.append($BpartnerControl.getControl().attr('placeholder', ' ').attr('data-placeholder', '').attr('data-hasbtn', ' ')).append("<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>");
+                    $POP_cmbBPBtnwrp.append($BpartnerControl.getBtn(0));
+                    $BpartnerControl.getControl().addClass('vis-ev-col-mandatory');
                     //end
                     //Charge look Up
                     //VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.TableDir, "C_Charge_ID", 0, false, null);
@@ -6244,7 +6286,12 @@
 
                     _ChargeLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.Search);
                     $ChargeControl = new VIS.Controls.VTextBoxButton("C_Charge_ID", true, false, true, VIS.DisplayType.Search, _ChargeLookUp);
-                    $POP_lookCharge.append($ChargeControl.getControl().css('width', '93%').css('height', '33px')).append($ChargeControl.getBtn(0).css('width', '6.5%').css('height', '33px').css('padding', '0px').css('border-color', '#BBBBBB'));
+                    var $pop_lookchargeCtrlwrp = $('<div class="vis-control-wrap">');
+                    var $pop_lookchargeBtnwrp = $('<div class="input-group-append">');
+                    $POP_lookCharge.append($pop_lookchargeCtrlwrp);
+                    $POP_lookCharge.append($pop_lookchargeBtnwrp);
+                    $pop_lookchargeCtrlwrp.append($ChargeControl.getControl().attr('placeholder', ' ').attr('data-placeholder', '').attr('data-hasbtn', ' ')).append("<label>" + VIS.Msg.getMsg("Charge") + "</label>");
+                    $pop_lookchargeBtnwrp.append($ChargeControl.getBtn(0));
                     //end
 
                     $POP_cmbLocation = $payManual.find("#VA009_POP_cmbLocation_" + $self.windowNo);
@@ -6257,17 +6304,17 @@
                     $POP_ChkDate = $payManual.find("#VA009_chkDate_" + $self.windowNo);
                     $DivChkNo = $payManual.find("#VA009_DivCheck_" + $self.windowNo);
                     $DivChkDate = $payManual.find("#VA009_DivCheckDate_" + $self.windowNo);
-                    $POP_DateAcct.css('background-color', SetMandatory(true));
-                    $POP_DateTrx.css('background-color', SetMandatory(true));
-                    $POP_cmbOrg.css('background-color', SetMandatory(true));
-                    $POP_cmbDocType.css('background-color', SetMandatory(true));
-                    $POP_cmbBank.css('background-color', SetMandatory(true));
-                    $POP_cmbBankAccount.css('background-color', SetMandatory(true));
-                    $POP_Currency.css('background-color', SetMandatory(true));
-                    $POP_PayMthd.css('background-color', SetMandatory(true));
-                    payAmount.getControl().css('background-color', SetMandatory(true));//for default background color to control
-                    $POP_CurrencyType.css('background-color', SetMandatory(true));
-                    $POP_cmbLocation.css('background-color', SetMandatory(true));
+                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                    $POP_DateTrx.addClass('vis-ev-col-mandatory');
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                    $POP_cmbDocType.addClass('vis-ev-col-mandatory');
+                    $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                    $POP_Currency.addClass('vis-ev-col-mandatory');
+                    $POP_PayMthd.addClass('vis-ev-col-mandatory');
+                    payAmount.getControl().addClass('vis-ev-col-mandatory');//for default background color to control
+                    $POP_CurrencyType.addClass('vis-ev-col-mandatory');
+                    $POP_cmbLocation.addClass('vis-ev-col-mandatory');
                 };
 
                 // for restricting the special keys from the user
@@ -6294,10 +6341,10 @@
                         $POP_cmbBankAccount.empty();
                         //to set bank account mandatory given by ashish on 28 May 2020
                         if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
-                            $POP_cmbBank.css('background-color', SetMandatory(true));
+                            $POP_cmbBank.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_cmbBank.css('background-color', SetMandatory(false));
+                            $POP_cmbBank.removeClass('vis-ev-col-mandatory');
                         }
                         //to get bank account of selected organization assigned by Ashish on 28 May 2020
                         VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
@@ -6317,34 +6364,34 @@
                     $POP_cmbBankAccount.on("change", function () {
                         //to set bank account mandatory given by ashish on 28 May 2020
                         if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
-                            $POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                            $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_cmbBankAccount.css('background-color', SetMandatory(false));
+                            $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                         }
                     });
                     $POP_cmbDocType.on("change", function () {
                         if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) == 0) {
-                            $POP_cmbDocType.css('background-color', SetMandatory(true));
+                            $POP_cmbDocType.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_cmbDocType.css('background-color', SetMandatory(false));
+                            $POP_cmbDocType.removeClass('vis-ev-col-mandatory');
                         }
                     });
                     $POP_DateTrx.on("change", function () {
                         if ($POP_DateTrx.val() == "") {
-                            $POP_DateTrx.css('background-color', SetMandatory(true));
+                            $POP_DateTrx.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_DateTrx.css('background-color', SetMandatory(false));
+                            $POP_DateTrx.removeClass('vis-ev-col-mandatory');
                         }
                     });
                     $POP_DateAcct.on("change", function () {
                         if ($POP_DateAcct.val() == "") {
-                            $POP_DateAcct.css('background-color', SetMandatory(true));
+                            $POP_DateAcct.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_DateAcct.css('background-color', SetMandatory(false));
+                            $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                         }
                     });
                     $POP_cmbOrg.on("change", function () {
@@ -6356,11 +6403,11 @@
                         $POP_PayMthd.empty();
                         //change by Amit
                         if ($POP_cmbOrg.val() == "0") {
-                            $POP_cmbOrg.css('background-color', SetMandatory(true));
-                            //$POP_cmbBankAccount.css('background-color', SetMandatory(true));
+                            $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                            //$POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_cmbOrg.css('background-color', SetMandatory(false));
+                            $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                         }
                         loadDocType();
                         loadbanks($POP_cmbBank);
@@ -6372,40 +6419,40 @@
                     });
                     $BpartnerControl.fireValueChanged = function () {
                         if ($BpartnerControl.value != null) {
-                            $BpartnerControl.getControl().css('background-color', SetMandatory(false));
+                            $BpartnerControl.getControl().removeClass('vis-ev-col-mandatory');
                         }
                         loadLocation();
                     };
                     $POP_cmbLocation.on("change", function () {
                         if ($POP_cmbLocation.val() == "0") {
-                            $POP_cmbLocation.css('background-color', SetMandatory(true));
+                            $POP_cmbLocation.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_cmbLocation.css('background-color', SetMandatory(false));
+                            $POP_cmbLocation.removeClass('vis-ev-col-mandatory');
                         }
                     });
                     $POP_Currency.on("change", function () {
                         if ($POP_Currency.val() == "0") {
-                            $POP_Currency.css('background-color', SetMandatory(true));
+                            $POP_Currency.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_Currency.css('background-color', SetMandatory(false));
+                            $POP_Currency.removeClass('vis-ev-col-mandatory');
                         }
                     });
                     $POP_CurrencyType.on("change", function () {
                         if ($POP_CurrencyType.val() == "0") {
-                            $POP_CurrencyType.css('background-color', SetMandatory(true));
+                            $POP_CurrencyType.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_CurrencyType.css('background-color', SetMandatory(false));
+                            $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
                         }
                     });
                     $POP_PayMthd.on("change", function () {
                         if ($POP_PayMthd.val() == "0") {
-                            $POP_PayMthd.css('background-color', SetMandatory(true));
+                            $POP_PayMthd.addClass('vis-ev-col-mandatory');
                         }
                         else {
-                            $POP_PayMthd.css('background-color', SetMandatory(false));
+                            $POP_PayMthd.removeClass('vis-ev-col-mandatory');
                         }
                         if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
                             $DivChkDate.show();
@@ -6420,10 +6467,10 @@
                     //onchange for changinng background-color if value is entered and validate
                     payAmount.getControl().on('change', function () {
                         if (parseFloat(payAmount.getValue()) > 0) {
-                            payAmount.getControl().css('background-color', SetMandatory(false));
+                            payAmount.getControl().removeClass('vis-ev-col-mandatory');
                         }
                         else {
-                            payAmount.getControl().css('background-color', SetMandatory(true));
+                            payAmount.getControl().addClass('vis-ev-col-mandatory');
                         }
                     });
                 };
@@ -7047,19 +7094,20 @@
                         dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString() + ' </span> </div> ';
                     }
 
-                    dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
-                        ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
-                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
-                        + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
+                    dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><i class="VA009_AddNoteimg fa fa-list-alt" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" > </i></span> </div> ' +
+                            ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
+                            ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
+                                       + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
                     if (data.paymentdata[i].DocBaseType == "APC" || data.paymentdata[i].DocBaseType == "ARC") {
                         dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
                     }
                     else {
                         dsgn += ' </div></div>';
                     }
-                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="glyphicon glyphicon-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
-                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString() + '</span><br> </div> </div> ' +
-                        '</div></div></div>';
+                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
+                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].DueAmt, "N") + '</span><br> </div> </div> ' +
+                            '</div></div></div>';
+
 
                     $divPayment.append(dsgn);
                     $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
@@ -7407,8 +7455,8 @@
                     else {
                         dsgn += ' </div></div>';
                     }
-                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="glyphicon glyphicon-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon" style="margin-right: 8px;" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + parseFloat(data.result[i].VA009_ConvertedAmt).toLocaleString() + '</span><br> </div> </div> ' +
-                        '</div></div></div>';
+                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
+                            '</div></div></div>';
 
                     $xmlpopGrid.append(dsgn);
                 }
@@ -7439,10 +7487,10 @@
         //Load BusyDiv
         //*****************
         function createBusyIndicator() {
-            $bsyDiv = $("<div class='vis-apanel-busy'>");
-            $bsyDiv.css({
-                "position": "absolute", "width": "98%", "height": "97%", 'text-align': 'center', 'z-index': '999'
-            });
+            $bsyDiv = $('<div class="vis-busyindicatorouterwrap va012-busy-bank-statement" ><div class="vis-busyindicatorinnerwrap"><i class="vis-busyindicatordiv"></i></div></div>');
+            //$bsyDiv.css({
+            //    "position": "absolute", "width": "98%", "height": "97%", 'text-align': 'center', 'z-index': '999'
+            //});
             $bsyDiv[0].style.visibility = "visible";
             $root.append($bsyDiv);
         };
@@ -7562,7 +7610,7 @@
 
             $("#VA009-content-area_" + $self.windowNo).height($("#VA009-main-container_" + $self.windowNo).height() - 20);
             $("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
-            lbdata.height($lbmain.height() - 43);
+            lbdata.height($lbmain.height() - (43 + 20));
         };
 
         this.lockUI = function () {
