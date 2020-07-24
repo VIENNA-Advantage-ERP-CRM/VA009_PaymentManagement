@@ -805,7 +805,7 @@
 
             var chk;
             var target = $(e.target);
-            if (target.hasClass('glyphicon glyphicon-edit')) {
+            if (target.hasClass('vis vis-edit')) {
                 Pay_ID = target.data("uid");
                 var InvID = target.data("invoiceid");
                 var TransactionType = target.data("transactiontype");
@@ -1065,7 +1065,7 @@
                     + '"> <label>' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label>'
                     + "</div></div>"
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
+                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("VA009_ChkNo") +  "</label>"
                     + "</div></div> "
 
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
