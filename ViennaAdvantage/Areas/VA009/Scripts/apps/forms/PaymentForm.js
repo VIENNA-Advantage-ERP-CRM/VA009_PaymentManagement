@@ -522,7 +522,8 @@
             $divPayment.on("scroll", paymentScroll);
 
             $divPayment.on("click", function (e) {
-                if (e.target.className == "VA009-info-icon") {
+                //if (e.target.className == "VA009-info-icon") {
+                if (e.target.className.contains("VA009-info-icon")) {
                     var target = $(e.target);
 
                     if (target.hasClass('VA009-info-icon')) {
