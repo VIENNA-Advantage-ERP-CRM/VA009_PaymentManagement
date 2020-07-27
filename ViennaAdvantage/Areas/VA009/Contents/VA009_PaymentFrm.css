@@ -117,8 +117,9 @@ height: 650px;
     float: left;*/
 }
 .VA009-left-data {
-    /*padding: 10px 10px 0 10px;*/
-    margin-bottom: 15px;
+    /* padding: 10px 10px 0 10px; */
+    /* margin-bottom: 15px; */
+    padding-bottom: 15px;
 }
 .VA009-left-data > select > option {
 /*color: white;
@@ -362,7 +363,7 @@ text-align:center;
 }
 .VA009-pay-text > span{
     font-size: 12px;
-    color: rgba(var(--v-c-on-secondary), .6);
+    color: rgba(var(--v-c-on-secondary), .7);
     display: block;
 }
 .VA009-pay-mid-sec{ padding: 0;}
@@ -373,10 +374,10 @@ text-align:center;
 .VA009-pay-mid-sec > span.VA009-play-icon{
     font-size: 10px;
 }
-.VA009-color-gray {
-    color: rgba(var(--v-c-on-secondary), .6);
+.VA009-color-gray,
+.VA009-Chatcolor-gray {
+    color: rgba(var(--v-c-on-secondary), .7);
 }
-.VA009-Chatcolor-gray{ color: #999 !important;}
 .VA009-right-part > span, .VA009-pay-amount > span{ float: right;}
 .VA009-right-part > span {
     cursor: pointer;
@@ -513,7 +514,7 @@ span.VA009-info-icon{
     /* border: 1px solid #CCC; */
     /*padding: 6px 10px;
     width: 100%;
-    color: rgba(var(--v-c-on-secondary), .6);
+    color: rgba(var(--v-c-on-secondary), .7);
     font-size: 13px;
     resize: none;*/
     /* outline: medium none; */
@@ -766,4 +767,7 @@ p.VA009-data-bot:last-child {
 .VA009-popformchkctrlwrap label {
     font-weight: normal;
     margin-bottom: 0;
+}
+.VA009-popCheck-data input:not([type="checkbox"]) {
+    padding: 5px 10px;
 }
