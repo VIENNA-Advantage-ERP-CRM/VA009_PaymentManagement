@@ -5350,7 +5350,7 @@
                 divAmount.append($divb2bAmountCtrlWrp);
                 $divb2bAmountCtrlWrp.append(txtAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
 
-                $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:380px !important'>");
+                $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:325px !important'>");
                 //var _b2b = "";
                 //_b2b.append(divAmount);
                 _b2b = $("<div class='VA009-popfrm-wrap'>");
@@ -5838,7 +5838,7 @@
             },
 
             Pay_ManualDialog: function () {
-                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
+                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:210px !important'>");
                 var _payManual = "";
                 _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
 
