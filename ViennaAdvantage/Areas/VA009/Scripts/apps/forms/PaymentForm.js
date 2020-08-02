@@ -522,7 +522,8 @@
             $divPayment.on("scroll", paymentScroll);
 
             $divPayment.on("click", function (e) {
-                if (e.target.className == "VA009-info-icon") {
+                //if (e.target.className == "VA009-info-icon") {
+                if (e.target.className.contains("VA009-info-icon")) {
                     var target = $(e.target);
 
                     if (target.hasClass('VA009-info-icon')) {
@@ -805,7 +806,7 @@
 
             var chk;
             var target = $(e.target);
-            if (target.hasClass('glyphicon glyphicon-edit')) {
+            if (target.hasClass('vis vis-edit')) {
                 Pay_ID = target.data("uid");
                 var InvID = target.data("invoiceid");
                 var TransactionType = target.data("transactiontype");
@@ -1065,7 +1066,7 @@
                     + '"> <label>' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label>'
                     + "</div></div>"
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
+                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("VA009_ChkNo") +  "</label>"
                     + "</div></div> "
 
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
@@ -5349,7 +5350,7 @@
                 divAmount.append($divb2bAmountCtrlWrp);
                 $divb2bAmountCtrlWrp.append(txtAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
 
-                $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:380px !important'>");
+                $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:325px !important'>");
                 //var _b2b = "";
                 //_b2b.append(divAmount);
                 _b2b = $("<div class='VA009-popfrm-wrap'>");
@@ -5837,7 +5838,7 @@
             },
 
             Pay_ManualDialog: function () {
-                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
+                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:210px !important'>");
                 var _payManual = "";
                 _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
 

@@ -546,11 +546,11 @@ namespace VA009.Models
             string BankName = string.Empty;
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
-                //to calculate if bank name is more than 30 character then we need to trim it by 30 character.
+                //to calculate if bank name is more than 40 character then we need to trim it by 40 character.
                 BankName = Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]);
-                if(BankName.Length > 30)
+                if(BankName.Length > 40)
                 {
-                    BankName = RemoveSpecialCharacters(BankName).Substring(0, 30);
+                    BankName = RemoveSpecialCharacters(BankName).Substring(0, 40);
                 }
                 dateFr = Convert.ToDateTime(ds.Tables[0].Rows[0]["DateAcct"]).ToString("ddMMyyyy").ToString();
                 // Need to replace BulkPayment with  01 and set allignment to left to right added blank column to match sequence
