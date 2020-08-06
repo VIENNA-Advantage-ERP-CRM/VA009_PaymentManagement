@@ -451,7 +451,8 @@ namespace ViennaAdvantage.Process
                                     alloclne.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
                                     alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
                                     alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                    alloclne.SetDateTrx(_batch.GetDocumentDate());
+                                    //to set document date of batch header on all payments and allocations
+                                    alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
 
                                     #region Commented Code
                                     //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
@@ -497,8 +498,9 @@ namespace ViennaAdvantage.Process
                                     MAllocationHdr allocHdr = new MAllocationHdr(GetCtx(), 0, Get_TrxName());
                                     allocHdr.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                     allocHdr.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    allocHdr.SetDateAcct(_batch.GetDocumentDate());
-                                    allocHdr.SetDateTrx(_batch.GetDocumentDate());
+                                    //to set document date of batch header on all payments and allocations
+                                    allocHdr.SetDateAcct(_batch.GetVA009_DocumentDate());
+                                    allocHdr.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     //allocHdr.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                                     allocHdr.SetC_Currency_ID(BlineDetailCur_ID);
                                     allocHdr.SetDocStatus("DR");
@@ -529,7 +531,8 @@ namespace ViennaAdvantage.Process
                                         alloclne.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
                                         alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
                                         alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                        alloclne.SetDateTrx(_batch.GetDocumentDate());
+                                        //to set document date of batch header on all payments and allocations
+                                        alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
 
                                         #region Commented Code
                                         //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
@@ -662,7 +665,8 @@ namespace ViennaAdvantage.Process
                                     _pay = new MPayment(GetCtx(), 0, Get_TrxName());
                                     if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
                                     {
-                                        checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetDocumentDate());
+                                        //to set document date of batch header on all payments and allocations
+                                        checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate());
                                         if (checkMsg != "")
                                         {
                                             Get_TrxName().Rollback();
@@ -675,8 +679,9 @@ namespace ViennaAdvantage.Process
                                         _pay.SetC_DocType_ID(C_Doctype_ID);
                                         _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                         _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                        _pay.SetDateAcct(_batch.GetDocumentDate());
-                                        _pay.SetDateTrx(_batch.GetDocumentDate());
+                                        //to set document date of batch header on all payments and allocations
+                                        _pay.SetDateAcct(_batch.GetVA009_DocumentDate());
+                                        _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                         _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
                                         #region to set bank account of business partner and name on batch line
@@ -941,7 +946,8 @@ namespace ViennaAdvantage.Process
                                 _pay = new MPayment(GetCtx(), 0, Get_TrxName());
                                 if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
                                 {
-                                    checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetDocumentDate());
+                                    //to set document date of batch header on all payments and allocations
+                                    checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate());
                                     if (checkMsg != "")
                                     {
                                         return checkMsg;
@@ -955,8 +961,9 @@ namespace ViennaAdvantage.Process
                                     _pay.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
                                     _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                     _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    _pay.SetDateAcct(_batch.GetDocumentDate());
-                                    _pay.SetDateTrx(_batch.GetDocumentDate());
+                                    //to set document date of batch header on all payments and allocations
+                                    _pay.SetDateAcct(_batch.GetVA009_DocumentDate());
+                                    _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                     _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
                                     _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
@@ -1329,6 +1336,7 @@ namespace ViennaAdvantage.Process
             _pay.SetVA009_OrderPaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]));
             _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
             _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
+            //to set document date of batch header on all payments and allocations
             _pay.SetDateAcct(docdate);
             _pay.SetDateTrx(docdate);
             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
