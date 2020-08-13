@@ -153,9 +153,9 @@
             //change by amit - 16-nov-2016
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_TransactionType_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Order") + '</option>  <option value=1>' + VIS.Msg.getMsg("VA009_Invoice") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_TransactionType") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_TransactionTypeDiv_" + $self.windowNo + '> </div>  </div>';
             //end
-            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="date" id="VA009_FromDate_' + $self.windowNo + '"><label>' + VIS.Msg.getMsg("VA009_FromDate") + '</label></div></div> </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="date" max="9999-12-31" id="VA009_FromDate_' + $self.windowNo + '"><label>' + VIS.Msg.getMsg("VA009_FromDate") + '</label></div></div> </div>';
 
-            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="date" id="VA009_ToDate_' + $self.windowNo + '"> <label>' + VIS.Msg.getMsg("VA009_ToDate") + '</label></div></div></div> </div></div></td>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="date" max="9999-12-31" id="VA009_ToDate_' + $self.windowNo + '"> <label>' + VIS.Msg.getMsg("VA009_ToDate") + '</label></div></div></div> </div></div></td>';
 
             //End Left Panel
 
@@ -762,6 +762,8 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
+                $tabCashbook.removeClass("VA009-active-tab");
+                $tabFunds.addClass("VA009-active-tab");
                 _DocType = 'ARI'; _isinvoice = 'Y';
                 pgNo = 1;
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -4341,7 +4343,6 @@
                 BatchDialog.show();
 
                 BatchDialog.onOkClick = function () {
-
                     Selected = $opnbatch.find("input[name='VA009_Sel" + $self.windowNo + "']:checked").val();
                     $bsyDiv[0].style.visibility = "visible";
                     if (Selected == "S") {
