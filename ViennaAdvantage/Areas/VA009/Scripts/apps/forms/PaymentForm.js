@@ -4332,7 +4332,6 @@
                 BatchDialog.show();
 
                 BatchDialog.onOkClick = function () {
-                    debugger;
                     Selected = $opnbatch.find("input[name='VA009_Sel" + $self.windowNo + "']:checked").val();
                     $bsyDiv[0].style.visibility = "visible";
                     if (Selected == "S") {
