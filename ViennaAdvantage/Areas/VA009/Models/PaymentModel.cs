@@ -597,6 +597,11 @@ namespace VA009.Models
                                     else
                                         _pay.SetDiscountAmt(PaymentData[0].Discount);
 
+                                    if (PaymentData[0].Writeoff < 0)
+                                        _pay.SetWriteOffAmt(-1 * (PaymentData[0].Writeoff));
+                                    else
+                                        _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
+
                                     if (_doctype.GetDocBaseType() == "API")
                                     {
                                         _pay.SetOverUnderAmt((PaymentData[0].OverUnder));
@@ -614,14 +619,19 @@ namespace VA009.Models
                                             _pay.SetOverUnderAmt(-1 * (PaymentData[0].OverUnder));
                                         else
                                             _pay.SetOverUnderAmt((PaymentData[0].OverUnder));
+
+                                        if (PaymentData[0].Discount > 0)
+                                            _pay.SetDiscountAmt(-1 * (PaymentData[0].Discount));
+                                        else
+                                            _pay.SetDiscountAmt(PaymentData[0].Discount);
+
+                                        if (PaymentData[0].Writeoff > 0)
+                                            _pay.SetWriteOffAmt(-1 * (PaymentData[0].Writeoff));
+                                        else
+                                            _pay.SetWriteOffAmt((PaymentData[0].Writeoff));
                                     }
                                     else
                                         _pay.SetOverUnderAmt(PaymentData[0].OverUnder);
-
-                                    if (PaymentData[0].Writeoff < 0)
-                                        _pay.SetWriteOffAmt(-1 * (PaymentData[0].Writeoff));
-                                    else
-                                        _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
                                 }
                                 else
                                 {
@@ -797,6 +807,11 @@ namespace VA009.Models
                                                 else
                                                     M_Allocate.SetDiscountAmt(PaymentData[i].Discount);
 
+                                                if (PaymentData[i].Writeoff < 0)
+                                                    M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
+                                                else
+                                                    M_Allocate.SetWriteOffAmt(PaymentData[i].Writeoff);
+
                                                 if (_doctype.GetDocBaseType() == "API")
                                                 {
                                                     if (PaymentData[i].OverUnder > 0)
@@ -813,10 +828,6 @@ namespace VA009.Models
                                                 else
                                                     M_Allocate.SetOverUnderAmt(PaymentData[i].OverUnder);
 
-                                                if (PaymentData[i].Writeoff < 0)
-                                                    M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
-                                                else
-                                                    M_Allocate.SetWriteOffAmt(PaymentData[i].Writeoff);
                                             }
                                             else
                                             {
