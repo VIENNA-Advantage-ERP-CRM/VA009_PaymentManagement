@@ -5483,6 +5483,11 @@
                         return $note.css('visibility', 'visible');
                     }
 
+                    if (parseInt($From_cmbBank.val()) == parseInt($To_cmbBank.val())) {
+                        $note.text(VIS.Msg.getMsg("VA009_Banknotbesame"));
+                        return $note.css('visibility', 'visible');
+                    }
+
                     if (parseFloat(txtAmount.getValue()) == 0) {
                         $note.text(VIS.Msg.getMsg("VA009_PlsEnterAmount"));
                         return $note.css('visibility', 'visible');
@@ -5516,6 +5521,14 @@
                         $note.text(VIS.Msg.getMsg("VA009_PlsSelectCurrency"));
                         return $note.css('visibility', 'visible');
                     }
+
+                    //var paramString = $From_cmbBank.val() + "," + $cmbCurrencies.val() + "," + $acctDate.val().toString() +
+                    //    "," + $cmbCurrencyType.val() + "," + VIS.Env.getCtx().getAD_Client_ID() + "," + $OrgCmb.val();
+                    //var dr = VIS.dataContext.getJSONRecord("VA009/Payment/CheckConversionRate", paramString);
+                    //if (dr <= 0) {
+                    //    $note.text(VIS.Msg.getMsg("VA009_ConversionRateNotFound"));
+                    //    return $note.css('visibility', 'visible');
+                    //}
 
                     $note.css('visibility', 'hidden');
 
