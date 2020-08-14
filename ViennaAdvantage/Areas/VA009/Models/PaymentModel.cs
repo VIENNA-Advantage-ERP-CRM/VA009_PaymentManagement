@@ -644,14 +644,24 @@ namespace VA009.Models
                                             _pay.SetOverUnderAmt(-1 * (PaymentData[0].OverUnder));
                                         else
                                             _pay.SetOverUnderAmt(PaymentData[0].OverUnder);
+
+                                        if (PaymentData[0].Discount > 0)
+                                            _pay.SetDiscountAmt(Decimal.Negate(PaymentData[0].Discount));
+                                        else
+                                            _pay.SetDiscountAmt(PaymentData[0].Discount);
+
+                                        if (PaymentData[0].Writeoff > 0)
+                                            _pay.SetWriteOffAmt(Decimal.Negate(PaymentData[0].Writeoff));
+                                        else
+                                            _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
                                     }
                                     else
                                     {
                                         _pay.SetPayAmt(PaymentData[0].VA009_RecivedAmt);
                                         _pay.SetOverUnderAmt(PaymentData[0].OverUnder);
+                                        _pay.SetDiscountAmt(PaymentData[0].Discount);
+                                        _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
                                     }
-                                    _pay.SetDiscountAmt(PaymentData[0].Discount);
-                                    _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
                                 }
                                 //change by amit
 
@@ -828,6 +838,9 @@ namespace VA009.Models
                                                 else
                                                     M_Allocate.SetOverUnderAmt(PaymentData[i].OverUnder);
 
+                                                // set invoice amount
+                                                M_Allocate.SetInvoiceAmt(M_Allocate.GetAmount() + M_Allocate.GetDiscountAmt() +
+                                                                         M_Allocate.GetWriteOffAmt() + M_Allocate.GetOverUnderAmt());
                                             }
                                             else
                                             {
@@ -844,6 +857,10 @@ namespace VA009.Models
                                                     M_Allocate.SetDiscountAmt(-1 * (PaymentData[i].Discount));
                                                     M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
                                                 }
+
+                                                // set invoice amount
+                                                M_Allocate.SetInvoiceAmt(M_Allocate.GetAmount() + M_Allocate.GetDiscountAmt() +
+                                                                         M_Allocate.GetWriteOffAmt() + M_Allocate.GetOverUnderAmt());
                                             }
                                             if (!M_Allocate.Save())
                                             {
@@ -945,22 +962,34 @@ namespace VA009.Models
                                             {
                                                 if (_doctype.GetDocBaseType() == "ARC")
                                                 {
+                                                    // payment amount
                                                     if (PaymentData[i].VA009_RecivedAmt > 0)
                                                         _pay.SetPayAmt(-1 * (PaymentData[i].VA009_RecivedAmt));
                                                     else
                                                         _pay.SetPayAmt(PaymentData[i].VA009_RecivedAmt);
+                                                    //under amount
                                                     if (PaymentData[i].OverUnder > 0)
                                                         _pay.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                                     else
                                                         _pay.SetOverUnderAmt(PaymentData[i].OverUnder);
+                                                    // discount amount
+                                                    if (PaymentData[0].Discount > 0)
+                                                        _pay.SetDiscountAmt(Decimal.Negate(PaymentData[0].Discount));
+                                                    else
+                                                        _pay.SetDiscountAmt(PaymentData[0].Discount);
+                                                    // write-off amount
+                                                    if (PaymentData[0].Writeoff > 0)
+                                                        _pay.SetWriteOffAmt(Decimal.Negate(PaymentData[0].Writeoff));
+                                                    else
+                                                        _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
                                                 }
                                                 else
                                                 {
                                                     _pay.SetPayAmt(PaymentData[i].VA009_RecivedAmt);
                                                     _pay.SetOverUnderAmt(PaymentData[i].OverUnder);
-                                                }
-                                                _pay.SetDiscountAmt(PaymentData[i].Discount);
-                                                _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
+                                                    _pay.SetDiscountAmt(PaymentData[i].Discount);
+                                                    _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
+                                                }                                               
                                             }
                                             if (PaymentData[i].CheckDate != null)
                                             {
@@ -1057,6 +1086,18 @@ namespace VA009.Models
                                                         _pay.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                                     else
                                                         _pay.SetOverUnderAmt(PaymentData[i].OverUnder);
+
+                                                    // discount amount
+                                                    if (PaymentData[0].Discount > 0)
+                                                        _pay.SetDiscountAmt(Decimal.Negate(PaymentData[0].Discount));
+                                                    else
+                                                        _pay.SetDiscountAmt(PaymentData[0].Discount);
+
+                                                    // write-off amount
+                                                    if (PaymentData[0].Writeoff > 0)
+                                                        _pay.SetWriteOffAmt(Decimal.Negate(PaymentData[0].Writeoff));
+                                                    else
+                                                        _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
                                                 }
                                                 else
                                                 {
@@ -1180,6 +1221,10 @@ namespace VA009.Models
                                                     M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
                                                 else
                                                     M_Allocate.SetWriteOffAmt(PaymentData[i].Writeoff);
+
+                                                // set invoice amount
+                                                M_Allocate.SetInvoiceAmt(M_Allocate.GetAmount() + M_Allocate.GetDiscountAmt() +
+                                                                        M_Allocate.GetWriteOffAmt() + M_Allocate.GetOverUnderAmt());
                                             }
                                             else
                                             {
@@ -1195,6 +1240,9 @@ namespace VA009.Models
                                                     M_Allocate.SetDiscountAmt(-1 * (PaymentData[i].Discount));
                                                     M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
                                                 }
+                                                // set invoice amount
+                                                M_Allocate.SetInvoiceAmt(M_Allocate.GetAmount() + M_Allocate.GetDiscountAmt() +
+                                                                        M_Allocate.GetWriteOffAmt() + M_Allocate.GetOverUnderAmt());
                                             }
                                             if (!M_Allocate.Save())
                                             {
@@ -1507,8 +1555,8 @@ namespace VA009.Models
                     else
                     {
                         _Cash = new MCash(ct, 0, trx);
-                        _Cash.SetAD_Org_ID(ct.GetAD_Org_ID());
                         _Cash.SetAD_Client_ID(ct.GetAD_Client_ID());
+                        _Cash.SetAD_Org_ID(PaymentData[0].AD_Org_ID);
                         _Cash.SetC_CashBook_ID(C_CashBook_ID);
                         _Cash.SetC_DocType_ID(C_doctype_ID);
                         _Cash.SetName(DateTime.Now.ToShortDateString());
@@ -4960,7 +5008,7 @@ namespace VA009.Models
             {
                 _pay = new MPayment(ct, 0, trx);
                 _pay.SetAD_Client_ID(Util.GetValueOfInt(ct.GetAD_Client_ID()));
-                _pay.SetAD_Org_ID(Util.GetValueOfInt(ct.GetAD_Org_ID()));
+                _pay.SetAD_Org_ID(Util.GetValueOfInt(paymentData[0]["Org"]));
                 _pay.SetC_BankAccount_ID(Util.GetValueOfInt(paymentData[0]["BankAccountID"]));
                 //_pay.SetC_DocType_ID(Util.GetValueOfInt(paymentData[0]["DocType"]));
                 _pay.SetDateAcct(Convert.ToDateTime(paymentData[0]["DateAcct"]));
@@ -4977,7 +5025,7 @@ namespace VA009.Models
                     DataSet ds1 = new DataSet();
                     ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
                                   a_name,RoutingNo,AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(paymentData[0]["BPID"]) + " AND "
-                           + " AD_Org_ID =" + ct.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo ");
+                           + " AD_Org_ID  IN (0 , " + paymentData[0]["Org"] + ") GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo ");
                     if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                     {
                         _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
@@ -5624,8 +5672,9 @@ namespace VA009.Models
         /// <returns>C_DocType_ID</returns>
         public int getDocumentTypeID(Ctx ct, int org_id, Trx trx)
         {
-            int ID= Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = " + org_id, null, trx));
-            if(ID == 0) {
+            int ID = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = " + org_id, null, trx));
+            if (ID == 0)
+            {
                 ID = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = 0", null, trx));
             }
             return ID;

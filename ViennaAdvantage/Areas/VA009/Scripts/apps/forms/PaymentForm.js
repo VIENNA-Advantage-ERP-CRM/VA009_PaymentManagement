@@ -71,6 +71,11 @@
         var File_Para = 'M';
         var culture = new VIS.CultureSeparator();
 
+        //var elements = [
+        //    "VA009_Cancel",
+        //];
+        //VIS.translatedTexts = VIS.Msg.translate(VIS.Env.getCtx(), elements, true);
+
         this.Initialize = function () {
             Initialize();
         };
@@ -177,8 +182,8 @@
 
             // Add Search
             MainRoot += '  <div class="VA009-mid-search" id="VA009-mid-search_' + $self.windowNo + '">';
-            MainRoot += ' <div class="VA009-midleftsecwrap"><div class="VA009-selectall"><input type="checkbox" id="VA009_SelectAll_' + $self.windowNo + '"> <label>Select All</label></div>';
-            MainRoot += ' <div class="VA009-selectall" style=" margin-left: 15px; "><label style=" font-weight: bold; text-decoration: underline; ">Total Amount (In Base): </label><label id="VA009_TotalSelected_' + $self.windowNo + '"" style="font-weight: bold;"> 0 </label></div></div>';
+            MainRoot += ' <div class="VA009-midleftsecwrap"><div class="VA009-selectall"><input type="checkbox" id="VA009_SelectAll_' + $self.windowNo + '"> <label>' + VIS.Msg.getMsg("VA009_HeaderSelectAll") + '</label></div>';
+            MainRoot += ' <div class="VA009-selectall" style=" margin-left: 15px; "><label style=" font-weight: bold; text-decoration: underline; ">' + VIS.Msg.getMsg("VA009_TotlAmtBase") + ' </label><label id="VA009_TotalSelected_' + $self.windowNo + '"" style="font-weight: bold;"> 0 </label></div></div>';
             MainRoot += '<div class="VA009-search-wrap"> <input value="" placeholder="Search..." type="text" id=' + "VA009_SrchTxtbx_" + $self.windowNo + '> <a class="VA009-search-icon" id=' + "VA009_SrchBtn_" + $self.windowNo + '><span class="vis vis-search"></span></a> </div>';
 
             //Add Selected Payment
@@ -1068,7 +1073,7 @@
                     + '"> <label>' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label>'
                     + "</div></div>"
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("VA009_ChkNo") +  "</label>"
+                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label>"
                     + "</div></div> "
 
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
@@ -2427,36 +2432,42 @@
                 $bsyDiv[0].style.visibility = "visible";
                 $chequeRecivable = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
                 var _ChequeRecevble = "";
-                _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'><div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                            + "</div></div> "
+                _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
+                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "</div></div> "
 
-                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                            + "</div></div>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                    + "</div></div> "
 
-                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                            + "</div></div></div>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "</div></div></div>"
 
-                            + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                            + "</div></div>"
+                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
 
-                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                            + " </div></div>"
-                            //Transaction Date
-                            + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                            + "</div></div></div>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                    + "</div></div>"
 
-                            //+ "<div class='VA009-popfrm-wrap'>"
-                            + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + " </div></div></div>"
+                    //Transaction Date
+                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "</div></div></div>"
+
+                    //+ "<div class='VA009-popfrm-wrap'>"
+                    + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
                 //+ "</div>";
 
                 $chequeRecivable.append(_ChequeRecevble);
@@ -4315,9 +4326,9 @@
                 $opnbatch = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
                 var _openbatch = "";
                 _openbatch += "<div> <div class='VA009-popfrmradiowrp'>"
-                            + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>" 
-                            + "<label>" + VIS.Msg.getMsg("VA009_BasedOnSelection") + "</label></div>"
-                            + "<div class='VA009-popfrmradiowrp'><input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'><label>" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</label></div>';
+                    + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_BasedOnSelection") + "</label></div>"
+                    + "<div class='VA009-popfrmradiowrp'><input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'><label>" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</label></div>';
 
                 $opnbatch.append(_openbatch);
                 //Batch_getControls();
@@ -4436,7 +4447,7 @@
                     + "<div class='VA009-table-container' style='height:300px;' id='VA009_btnPopupGrid'> </div>"
                     + "</div>";
 
-                $batch.append(_batch); 
+                $batch.append(_batch);
                 Batch_getControls();
 
                 var BatchDialog = new VIS.ChildDialog();
@@ -4937,12 +4948,12 @@
                 $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
                 var _split = "";
                 _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
-                            + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
-                            + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
+                    + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
+                    + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
 
-                            + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
-                            + "</div>";
+                    + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
+                    + "</div>";
 
                 $split.append(_split);
                 Split_getControls();
@@ -5356,24 +5367,24 @@
                 //_b2b.append(divAmount);
                 _b2b = $("<div class='VA009-popfrm-wrap'>");
                 _b2bdata = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                            + "</div></div>"
+                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                    + "</div></div>"
 
-                             + "<div class='VA009-popform-data VA009-popformchkctrlwrap'>"
-                            //+ "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                            + "<div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Payment_" + $self.windowNo + ">Payment</label></div><div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + ">Receipt</label></div>"
-                            + "</div> "
+                    + "<div class='VA009-popform-data VA009-popformchkctrlwrap'>"
+                    //+ "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+                    + "<div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Payment_" + $self.windowNo + ">Payment</label></div><div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + ">Receipt</label></div>"
+                    + "</div> "
 
-                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                            + "</div></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+                    + "</div></div>"
 
-                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
-                            + "</div></div>");
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
+                    + "</div></div>");
 
                 //"<div class='VA009-popform-data'>"
                 //    + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
@@ -5381,44 +5392,44 @@
 
                 //+ new VIS.Controls.VAmountTextBox("Amount", true, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"))
 
-                    //        + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    //        + "<input type='number' placeholder=' ' data-placeholder='' id='VA009_Amount" + $self.windowNo + "' value=0><label>" + VIS.Msg.getMsg("Amount") + "</label>"
-                    //+ "</div></div>");
+                //        + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                //        + "<input type='number' placeholder=' ' data-placeholder='' id='VA009_Amount" + $self.windowNo + "' value=0><label>" + VIS.Msg.getMsg("Amount") + "</label>"
+                //+ "</div></div>");
 
                 _b2bdata1 = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
-                            + "</div></div>"
+                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+                    + "</div></div>"
 
-                             + "<div class='VA009-popform-data VA009-b2b-popup input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                             + "<input type='text' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label></div><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
-                             + "</div>"
+                    + "<div class='VA009-popform-data VA009-b2b-popup input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='text' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label></div><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
+                    + "</div>"
 
-                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<input type='date' id='VA009_CheckDate_" + $self.windowNo + "' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' disabled><label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
-                            + "</div></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_CheckDate_" + $self.windowNo + "' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' disabled><label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+                    + "</div></div>"
 
-                             + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                             + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
-                             + "</select><label>" + VIS.Msg.getMsg("Currency") + "</label>"
-                             + "</div></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("Currency") + "</label>"
+                    + "</div></div>"
 
-                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                            + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                            + "</div></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
 
-                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                            + "</div></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "</div></div>"
 
-                            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                            + "<input type='date' id='VA009_AccountDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                            + "</div></div>"
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='date' id='VA009_AccountDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "</div></div>"
 
-                            + "<div style='float:left;'>"
-                            + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
-                            + "</div>"
+                    + "<div style='float:left;'>"
+                    + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
+                    + "</div>"
                 );
 
                 _b2b.append(_b2bdata).append(divAmount).append(_b2bdata1);
@@ -7020,9 +7031,6 @@
             var data = JSON.parse(result);
             //If payment schedule found
             if (data.paymentdata.length > 0) {
-                if ($selectall.is(":checked")) {
-                    $selectall.prop('checked', false);
-                }
                 if (pgNo == 1 && data.paymentdata.length > 0) {
                     paymentCount = data.paymentdata[0].paymentCount;
                     noPages = Math.ceil(paymentCount / PAGESIZE);
@@ -7097,9 +7105,9 @@
                     }
 
                     dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><i class="VA009_AddNoteimg fa fa-list-alt" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" > </i></span> </div> ' +
-                            ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
-                            ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
-                                       + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
+                        ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
+                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
+                        + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
                     if (data.paymentdata[i].DocBaseType == "APC" || data.paymentdata[i].DocBaseType == "ARC") {
                         dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
                     }
@@ -7108,7 +7116,7 @@
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
                         + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].DueAmt, "N") + '</span><br> </div> </div> ' +
-                            '</div></div></div>';
+                        '</div></div></div>';
 
 
                     $divPayment.append(dsgn);
@@ -7117,6 +7125,10 @@
                         $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString() + '</span> ');
                 }
 
+                if ($selectall.is(":checked")) {
+                    $selectall.prop('checked', false);
+                    $selectall.trigger("click");
+                }
             }
 
             //if banks and accounts found
@@ -7147,15 +7159,15 @@
                         TotalUnreAll = TotalUnreAll + data.bankdetails[j].UnreconsiledAmt;
                     }
                     else {
-                        $divpanel = '<div class="panel-group" id="accordion_' + data.bankdetails[j].C_Bank_ID + '" role="tablist" aria-multiselectable="true">'
+                        $divpanel = '<div class="panel-group" id="accordion_' + data.bankdetails[j].CurrencyCode1 + '" role="tablist" aria-multiselectable="true">'
                             + '<div class="panel panel-default">'
-                            + '<div class="panel-heading" role="tab" id="headingOne_' + data.bankdetails[j].C_Bank_ID + '">'
+                            + '<div class="panel-heading" role="tab" id="headingOne_' + data.bankdetails[j].CurrencyCode1 + '">'
                             + '<h4 class="panel-title">'
-                            + '<a role="button" data-toggle="collapse" data-parent="#accordion_' + data.bankdetails[j].C_Bank_ID + '" href="#collapseOne_' + data.bankdetails[j].C_Bank_ID + '" aria-expanded="true" aria-controls="collapseOne" class="VA009-Accordion-head" id=VA009_TotalAmtCurr_' + data.bankdetails[j].CurrencyCode1 + '>'
+                            + '<a role="button" data-toggle="collapse" data-parent="#accordion_' + data.bankdetails[j].CurrencyCode1 + '" href="#collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" aria-expanded="true" aria-controls="collapseOne" class="VA009-Accordion-head" id=VA009_TotalAmtCurr_' + data.bankdetails[j].CurrencyCode1 + '>'
                             + '</a>'
                             + '</h4>'
                             + '</div>'
-                            + '<div id="collapseOne_' + data.bankdetails[j].C_Bank_ID + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
+                            + '<div id="collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
                             + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
                             + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
                             + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</a></p>'
@@ -7223,8 +7235,10 @@
                 }
             }
             $BP.val("");
-            $totalAmt.text(0);
-            $totalAmt.data('ttlamt', parseFloat(0));
+            if (!($selectall.is(":checked"))) {
+                $totalAmt.text(0);
+                $totalAmt.data('ttlamt', parseFloat(0));
+            }
             $bsyDiv[0].style.visibility = "hidden";
         };
         //End 
@@ -7458,7 +7472,7 @@
                         dsgn += ' </div></div>';
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
-                            '</div></div></div>';
+                        '</div></div></div>';
 
                     $xmlpopGrid.append(dsgn);
                 }
