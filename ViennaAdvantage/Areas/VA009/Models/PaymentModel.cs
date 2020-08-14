@@ -979,7 +979,7 @@ namespace VA009.Models
                                                     _pay.SetOverUnderAmt(PaymentData[i].OverUnder);
                                                     _pay.SetDiscountAmt(PaymentData[i].Discount);
                                                     _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
-                                                }                                               
+                                                }
                                             }
                                             if (PaymentData[i].CheckDate != null)
                                             {
@@ -5668,6 +5668,44 @@ namespace VA009.Models
                 ID = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT NVL(Max(C_DocType_ID),0) FROM C_DocType WHERE DocBaseType IN ('BAP') AND AD_Org_ID = 0", null, trx));
             }
             return ID;
+        }
+
+        /// <summary>
+        /// This function is used to check the conversion rate availabe or not
+        /// </summary>
+        /// <param name="ctx">context</param>
+        /// <param name="fields">bank, currencyTo, ConversionType, Date, client , org</param>
+        /// <returns>Conversion rate</returns>
+        public Decimal CheckConversionRate(Ctx ctx, string fields)
+        {
+            string[] paramValue = fields.Split(',');
+            int CurFrom_ID;
+            int CurTo_ID;
+            DateTime? convDate;
+            int ConversionType_ID;
+            int AD_Client_ID;
+            int AD_Org_ID;
+            int bankAccountId = 0;
+
+            bankAccountId = Util.GetValueOfInt(paramValue[0].ToString());
+            CurFrom_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankAccount_ID = " + bankAccountId));
+            CurTo_ID = Util.GetValueOfInt(paramValue[1].ToString());
+
+            try
+            {
+                convDate = System.Convert.ToDateTime(paramValue[2].ToString());
+            }
+            catch
+            {
+                convDate = DateTime.Now;
+            }
+
+            ConversionType_ID = Util.GetValueOfInt(paramValue[3].ToString());
+            AD_Client_ID = Util.GetValueOfInt(paramValue[4].ToString());
+            AD_Org_ID = Util.GetValueOfInt(paramValue[5].ToString());
+
+            Decimal rate = MConversionRate.GetRate(CurFrom_ID, CurTo_ID, convDate, ConversionType_ID, AD_Client_ID, AD_Org_ID);
+            return rate;
         }
 
     }
