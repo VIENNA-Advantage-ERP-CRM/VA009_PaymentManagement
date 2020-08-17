@@ -433,5 +433,21 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(obj), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// This function is used to check the conversion rate availabe or not
+        /// </summary>
+        /// <param name="fields">bank, currencyTo, ConversionType, Date, client , org</param>
+        /// <returns>conversion Rate</returns>
+        public JsonResult CheckConversionRate(string fields)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                VAdvantage.Utility.Ctx ctx = Session["ctx"] as Ctx;
+                PaymentModel objConversionModel = new PaymentModel();
+                retJSON = JsonConvert.SerializeObject(objConversionModel.CheckConversionRate(ctx, fields));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
     }
 }
