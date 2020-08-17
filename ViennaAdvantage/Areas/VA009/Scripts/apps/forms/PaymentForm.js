@@ -1077,13 +1077,13 @@
                     + "</div></div> "
 
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
+                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
                     + "</div></div>"
 
                     //Transaction Date
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
+                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
                     + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
                     + "</div></div>"
 
@@ -2459,11 +2459,11 @@
                     + "</div></div>"
 
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
                     + " </div></div></div>"
                     //Transaction Date
                     + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
                     + "</div></div></div>"
 
                     //+ "<div class='VA009-popfrm-wrap'>"
@@ -3546,12 +3546,12 @@
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
+                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
                     + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
                     + "</div></div>"
                     //Transaction Date
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
+                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
                     + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
                     + "</div> </div>"
 
@@ -5420,11 +5420,11 @@
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_AccountDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
                     + "</div></div>"
 
                     + "<div style='float:left;'>"
@@ -5892,7 +5892,7 @@
                     + "</div ></div > "
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
                     + " </div></div>"
                     //currency type list
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
@@ -5902,7 +5902,7 @@
                     + "</div></div>"
                     //trx date
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_TransactionDate" + $self.windowNo + "'  placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "'  placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
                     + " </div></div>"
 
                     + "</div>";
@@ -6202,12 +6202,12 @@
 
                     //trx date
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_TransactionDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
+                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
                     + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
+                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
                     + "</div> </div>"
 
