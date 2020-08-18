@@ -5406,7 +5406,7 @@
                     + "</div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' id='VA009_CheckDate_" + $self.windowNo + "' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' disabled><label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+                    + "<input type='date' max='9999-12-31' id='VA009_CheckDate_" + $self.windowNo + "' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' disabled><label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
@@ -6261,7 +6261,7 @@
                     + "</div> </div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheckDate_" + $self.windowNo + "><div class='vis-control-wrap'>"
-                    + "<input type='Date' id='VA009_chkDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
+                    + "<input type='Date' max='9999-12-31' id='VA009_chkDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
                     + "</div> </div>"
                     + "</div>"
