@@ -2820,7 +2820,7 @@
                                             this.value = this.value.replace('.', '');
                                         }
                                         if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
-                                            this.value = t-his.value.replace(',', '');
+                                            this.value = this.value.replace(',', '');
                                         }
                                         if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
                                             (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
