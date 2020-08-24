@@ -3693,7 +3693,7 @@ namespace VA009.Models
         /// <param name="DateTrx">Date Trx</param>
         /// <param name="AD_Org_ID">Org ID</param>
         /// <returns>String, Message</returns>
-        public string CreatePaymentsMannualy(Ctx ct, string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID)
+        public string CreatePaymentsMannualy(Ctx ct, string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct1, string CurrencyType, string DateTrx1, int AD_Org_ID)
         {
             Trx trx = Trx.GetTrx("Manually_" + DateTime.Now.ToString("yyMMddHHmmssff"));
             string[] invoiceIds = { };
@@ -3702,6 +3702,8 @@ namespace VA009.Models
             string msg = Msg.GetMsg(ct, "VA009_PaymentCompletedWith");
             StringBuilder docno = new StringBuilder();
             string processMsg = "";
+            DateTime? DateAcct = (DateAcct1 != null ? Convert.ToDateTime(DateAcct1) : System.DateTime.Now);
+            DateTime? DateTrx = (DateTrx1 != null ? Convert.ToDateTime(DateTrx1) : System.DateTime.Now);
             try
             {
                 MInvoicePaySchedule _payschedule = null, _payschedule1 = null;
