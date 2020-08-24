@@ -4966,7 +4966,7 @@
                 $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
                 var _split = "";
                 _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
+                    + "<input type='text' step='any' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
                     + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
 
@@ -4999,7 +4999,7 @@
                             field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _Split_Columns.push({
                             field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%',
@@ -5101,10 +5101,29 @@
                 });
 
                 $TxtSplitAmt.on('keypress', function (event) {
-
-                    if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57)) && (event.keyCode != 45)) {
+                    var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+                    if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57))  && (event.keyCode != 45) && (event.keyCode != 44)) {
                         return false;
                     }
+
+                    if (!isDotSeparator && event.keyCode == 46) {// , separator
+                        return false;
+                    }
+                    if (isDotSeparator && event.keyCode == 44) { // . separator
+                        return false;
+                    }
+
+                    if (event.target.value.contains(".") && (event.which == 46 || event.which == 44)) {
+                        if (event.target.value.indexOf('.') > -1) {
+                            event.target.value = event.target.value.replace('.', '');
+                        }
+                    }
+                    if (event.target.value.contains(",") && (event.which == 46 || event.which == 44)) {
+                        if (event.target.value.indexOf(',') > -1) {
+                            event.target.value = event.target.value.replace(',', '');
+                        }
+                    }
+
                     if (event.keyCode == 13) {
                         //Splitgrd.selectAll();
                         if (Splitgrd.getSelection().length == 0) {
@@ -5191,9 +5210,9 @@
                 function SplitSchedule() {
                     _CollaborateData = [];  //done By Bharat
                     //Splitgrd.selectAll();
-
                     var DueAmt = parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']);
-                    var SplitAMt = parseFloat($TxtSplitAmt.val());
+                    var SplitAMt = checkcommaordot(event, $TxtSplitAmt.val(), $TxtSplitAmt.val());
+                    SplitAMt = parseFloat(SplitAMt);
                     // IF Value in Negative 
                     if (DueAmt < 0) {
                         DueAmt = -1 * DueAmt;
@@ -5374,7 +5393,7 @@
                 txtAmount = new VIS.Controls.VAmountTextBox("VA009_Amount" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
                 txtAmount.setValue(0);
-                format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
+               format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
                 divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
                 var $divb2bAmountCtrlWrp = $("<div class='vis-control-wrap'>");
                 divAmount.append($divb2bAmountCtrlWrp);
@@ -7146,7 +7165,7 @@
                         dsgn += ' </div></div>';
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
-                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].DueAmt, "N") + '</span><br> </div> </div> ' +
+                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString() + '</span><br> </div> </div> ' +
                         '</div></div></div>';
 
 
@@ -7174,12 +7193,10 @@
                 var $divbnknew; var colorclass = 'pull-right VA009-color-green', ULcolorclass = 'pull-right VA009-color-green', Ulcolor = 'VA009-color-green';
                 var $divaccordion = $('<div class="VA009-accordion"></div>');
                 for (var j in data.bankdetails) {
-
                     if (data.bankdetails[j].CurrentBalance < 0)
                         colorclass = 'pull-right VA009-color-red';
                     if (data.bankdetails[j].UnreconsiledAmt < 0)
                         ULcolorclass = 'pull-right VA009-color-red';
-
                     if (_prvCurrencyCode == data.bankdetails[j].CurrencyCode1) {
                         $divbnknew = $divBank.find("#VA009_bankdtl_" + data.bankdetails[j].CurrencyCode1);
                         //bnkdiv = '<p class="VA009-data-top"><span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <span class="pull-left"> ' + VIS.Msg.getMsg("VA009_Reconciled") + ' </span> <span class= "' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
@@ -7201,7 +7218,7 @@
                             + '<div id="collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
                             + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
                             + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
-                            + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</a></p>'
+                            + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>'
                             //+ '<p class="VA009-data-top">  <span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span><span class="pull-left">' + VIS.Msg.getMsg("VA009_Reconciled") + '  </span> <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
                             // + '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p> </div>';
                             + ' </div></div>'
