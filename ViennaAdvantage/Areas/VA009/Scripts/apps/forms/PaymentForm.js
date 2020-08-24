@@ -1152,39 +1152,39 @@
                         _CHQPay_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
                         _CHQPay_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
                         _CHQPay_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _CHQPay_Columns.push({
-                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["ConvertedAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _CHQPay_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {                              
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {                              
                                 var val = record["VA009_RecivedAmt"];
                                 val = checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
                         _CHQPay_Columns.push({
-                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["OverUnder"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _CHQPay_Columns.push({
-                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["Writeoff"];
                                 val = checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
                         _CHQPay_Columns.push({
-                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["Discount"];
                                 val = checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
@@ -2726,39 +2726,39 @@
                         _CHQRec_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
                         _CHQRec_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
                         _CHQRec_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _CHQRec_Columns.push({
-                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["ConvertedAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _CHQRec_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["VA009_RecivedAmt"];
                              val =  checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
                         _CHQRec_Columns.push({
-                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["OverUnder"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _CHQRec_Columns.push({
-                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["Writeoff"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
                         _CHQRec_Columns.push({
-                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: function (record, index, col_index) {
+                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["Discount"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
@@ -3662,19 +3662,19 @@
                         _Cash_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
                         _Cash_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
                         _Cash_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _Cash_Columns.push({
-                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', render: function (record, index, col_index) {
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["ConvertedAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _Cash_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["VA009_RecivedAmt"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
@@ -3682,20 +3682,20 @@
                         });
                         //changeby amit
                         _Cash_Columns.push({
-                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', render: function (record, index, col_index) {
+                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["OverUnder"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _Cash_Columns.push({
-                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', render: function (record, index, col_index) {
+                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["Writeoff"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
                         _Cash_Columns.push({
-                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', render: function (record, index, col_index) {
+                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["Discount"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
@@ -4498,14 +4498,14 @@
                         _batch_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%' });
                         _batch_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
                         _batch_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: function (record, index, col_index) {
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         // _batch_Columns.push({ field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '10%', render: 'float:2',style: 'text-align: left', editable: { type: 'float' } });
                         _batch_Columns.push({
-                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', render: function (record, index, col_index) {
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["ConvertedAmt"];
                                 return parseFloat(val).toLocaleString();
                             }
@@ -4996,7 +4996,7 @@
                         _Split_Columns.push({ field: "DocumentNo", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
                         _Split_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
                         _Split_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: function (record, index, col_index) {
+                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
