@@ -936,6 +936,11 @@ namespace VA009.Models
                                                 else
                                                     _pay.SetDiscountAmt(PaymentData[i].Discount);
 
+                                                if (PaymentData[i].Writeoff < 0)
+                                                    _pay.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
+                                                else
+                                                    _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
+
                                                 if (_doctype.GetDocBaseType() == "API")
                                                 {
                                                     if (PaymentData[i].OverUnder > 0)
@@ -949,14 +954,21 @@ namespace VA009.Models
                                                         _pay.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                                     else
                                                         _pay.SetOverUnderAmt((PaymentData[i].OverUnder));
+
+                                                    if (PaymentData[i].Discount > 0)
+                                                        _pay.SetDiscountAmt(-1 * (PaymentData[i].Discount));
+                                                    else
+                                                        _pay.SetDiscountAmt(PaymentData[i].Discount);
+
+                                                    if (PaymentData[i].Writeoff > 0)
+                                                        _pay.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
+                                                    else
+                                                        _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
                                                 }
                                                 else
+                                                {
                                                     _pay.SetOverUnderAmt(PaymentData[i].OverUnder);
-
-                                                if (PaymentData[i].Writeoff < 0)
-                                                    _pay.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
-                                                else
-                                                    _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
+                                                }
                                             }
                                             else
                                             {
@@ -1202,6 +1214,11 @@ namespace VA009.Models
                                                 else
                                                     M_Allocate.SetDiscountAmt(PaymentData[i].Discount);
 
+                                                if (PaymentData[i].Writeoff < 0)
+                                                    M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
+                                                else
+                                                    M_Allocate.SetWriteOffAmt(PaymentData[i].Writeoff);
+
                                                 if (_doctype.GetDocBaseType() == "API")
                                                 {
                                                     if (PaymentData[i].OverUnder > 0)
@@ -1213,14 +1230,15 @@ namespace VA009.Models
                                                         _pay.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                                     if (PaymentData[i].VA009_RecivedAmt > 0)
                                                         M_Allocate.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
+                                                    if (PaymentData[i].Discount > 0)
+                                                        M_Allocate.SetDiscountAmt(-1 * (PaymentData[i].Discount));
+                                                    if (PaymentData[i].Writeoff > 0)
+                                                        M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
                                                 }
                                                 else
+                                                {
                                                     M_Allocate.SetOverUnderAmt(PaymentData[i].OverUnder);
-
-                                                if (PaymentData[i].Writeoff < 0)
-                                                    M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
-                                                else
-                                                    M_Allocate.SetWriteOffAmt(PaymentData[i].Writeoff);
+                                                }
 
                                                 // set invoice amount
                                                 M_Allocate.SetInvoiceAmt(M_Allocate.GetAmount() + M_Allocate.GetDiscountAmt() +
@@ -3693,7 +3711,7 @@ namespace VA009.Models
         /// <param name="DateTrx">Date Trx</param>
         /// <param name="AD_Org_ID">Org ID</param>
         /// <returns>String, Message</returns>
-        public string CreatePaymentsMannualy(Ctx ct, string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID)
+        public string CreatePaymentsMannualy(Ctx ct, string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct1, string CurrencyType, string DateTrx1, int AD_Org_ID)
         {
             Trx trx = Trx.GetTrx("Manually_" + DateTime.Now.ToString("yyMMddHHmmssff"));
             string[] invoiceIds = { };
@@ -3702,6 +3720,8 @@ namespace VA009.Models
             string msg = Msg.GetMsg(ct, "VA009_PaymentCompletedWith");
             StringBuilder docno = new StringBuilder();
             string processMsg = "";
+            DateTime? DateAcct = (DateAcct1 != null ? Convert.ToDateTime(DateAcct1) : System.DateTime.Now);
+            DateTime? DateTrx = (DateTrx1 != null ? Convert.ToDateTime(DateTrx1) : System.DateTime.Now);
             try
             {
                 MInvoicePaySchedule _payschedule = null, _payschedule1 = null;
