@@ -70,7 +70,8 @@
         //'M'--- Manual, 'B'---Batch
         var File_Para = 'M';
         var culture = new VIS.CultureSeparator();
-
+        var format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
+        var dotFormatter = VIS.Env.isDecimalPoint();
         //var elements = [
         //    "VA009_Cancel",
         //];
@@ -1163,10 +1164,11 @@
                             }
                         });
                         _CHQPay_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {                              
                                 var val = record["VA009_RecivedAmt"];
+                                val = checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _CHQPay_Columns.push({
                             field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: function (record, index, col_index) {
@@ -1177,14 +1179,16 @@
                         _CHQPay_Columns.push({
                             field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: function (record, index, col_index) {
                                 var val = record["Writeoff"];
+                                val = checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _CHQPay_Columns.push({
                             field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: function (record, index, col_index) {
                                 var val = record["Discount"];
+                                val = checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
 
                         _CHQPay_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
@@ -1227,6 +1231,9 @@
                             event.onComplete = function (event) {
                                 id = event.recid;
                                 if (event.column == 6 || event.column == 8 || event.column == 9) {
+                                    chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field] = checkcommaordot(event, chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field]);
+                                    var _value = format.GetFormatAmount(chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field], "init", dotFormatter);
+                                    chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
                                     $('#grid_CheuePaybleGrid_' + $self.windowNo + '_edit_' + id + '_' + event.column).keydown(function (event) {
                                         var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
 
@@ -1272,7 +1279,7 @@
                                             event.value_new = 0;
                                         }
                                         else {
-                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqpaygrd.records[event.index]['ConvertedAmt'])));
+                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                         }
 
                                         //else if (event.value_new.toString().contains(',')) {
@@ -1286,7 +1293,7 @@
                                             chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             return;
                                         }
-                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
                                         chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
                                         if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
@@ -1373,13 +1380,13 @@
                                             event.value_new = 0;
                                         }
                                         else {
-                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqpaygrd.records[event.index]['Writeoff'])));
+                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                         }
                                         //else if (event.value_new.toString().contains(',')) {
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
 
-                                        chqpaygrd.records[event.index]['Writeoff'] = event.value_new;
+                                        chqpaygrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
 
                                         if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                             if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
@@ -1552,13 +1559,13 @@
                                             event.value_new = 0;
                                         }
                                         else {
-                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqpaygrd.records[event.index]['Discount'])));
+                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                         }
                                         //else if (event.value_new.toString().contains(',')) {
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
 
-                                        chqpaygrd.records[event.index]['Discount'] = event.value_new;
+                                        chqpaygrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
 
                                         if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
 
@@ -2733,8 +2740,9 @@
                         _CHQRec_Columns.push({
                             field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
                                 var val = record["VA009_RecivedAmt"];
+                             val =  checkcommaordot(event, val, val); 
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _CHQRec_Columns.push({
                             field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', render: function (record, index, col_index) {
@@ -2745,14 +2753,16 @@
                         _CHQRec_Columns.push({
                             field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', render: function (record, index, col_index) {
                                 var val = record["Writeoff"];
+                                val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _CHQRec_Columns.push({
                             field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', render: function (record, index, col_index) {
                                 var val = record["Discount"];
+                                val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
                         _CHQRec_Columns.push({
@@ -2789,11 +2799,14 @@
                             if (event.column == 6 || event.column == 8 || event.column == 9) {
                                 if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
                                     event.isCancelled = true;
-                                }
+                                }                               
                             }
                             event.onComplete = function (event) {
                                 id = event.recid;
                                 if (event.column == 8 || event.column == 9 || event.column == 6) {
+                                    chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field] = checkcommaordot(event, chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field]);
+                                    var _value = format.GetFormatAmount(chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field], "init", dotFormatter);
+                                    chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
                                     $('#grid_CheueRecevableGrid_' + $self.windowNo + '_edit_' + id + '_' + event.column).keydown(function (event) {
                                         var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
 
@@ -2828,7 +2841,6 @@
                                     if (stdPrecision == null || stdPrecision == 0) {
                                         stdPrecision = 2;
                                     }
-
                                     chqrecgrd.records[event.index]['ConvertedAmt'] = parseFloat(chqrecgrd.records[event.index]['ConvertedAmt']);
                                     chqrecgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']);
                                     chqrecgrd.records[event.index]['OverUnder'] = parseFloat(chqrecgrd.records[event.index]['OverUnder']);
@@ -2839,8 +2851,9 @@
                                         if (event.value_new == "") {
                                             event.value_new = 0;
                                         }
-                                        else {
-                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['ConvertedAmt'])));
+                                        else { 
+                                          //  event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                         }
                                         //else if (event.value_new.toString().contains(',')) {
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
@@ -2853,7 +2866,7 @@
                                             chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             return;
                                         }
-                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
                                         chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
                                         if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
@@ -2940,12 +2953,13 @@
                                             event.value_new = 0;
                                         }
                                         else {
-                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['Writeoff'])));
+                                          //  event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['Writeoff'])));
+                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                         }
                                         //else if (event.value_new.toString().contains(',')) {
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
-                                        chqrecgrd.records[event.index]['Writeoff'] = event.value_new;
+                                        chqrecgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
 
                                         if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                             if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
@@ -3108,13 +3122,13 @@
                                             event.value_new = 0;
                                         }
                                         else {
-                                            event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['Discount'])));
+                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                         }
                                         //else if (event.value_new.toString().contains(',')) {
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
 
-                                        chqrecgrd.records[event.index]['Discount'] = event.value_new;
+                                        chqrecgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
 
                                         if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                             if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
@@ -3347,7 +3361,6 @@
                 };
 
                 ChequeReceDialog.onOkClick = function () {
-
                     var _CollaborateData = [];
                     chqrecgrd.sort(['C_BPartner_ID', 'CheckNumber'], 'asc');
                     chqrecgrd.selectAll();
@@ -3663,8 +3676,9 @@
                         _Cash_Columns.push({
                             field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', render: function (record, index, col_index) {
                                 var val = record["VA009_RecivedAmt"];
+                                val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         //changeby amit
                         _Cash_Columns.push({
@@ -3676,14 +3690,16 @@
                         _Cash_Columns.push({
                             field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', render: function (record, index, col_index) {
                                 var val = record["Writeoff"];
+                                val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _Cash_Columns.push({
                             field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', render: function (record, index, col_index) {
                                 var val = record["Discount"];
+                                val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _Cash_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
                         //end
@@ -3706,6 +3722,9 @@
                             event.onComplete = function (event) {
                                 id = event.recid;
                                 if (event.column == 8 || event.column == 7 || event.column == 5) {
+                                    Cashgrd.records[event.index][Cashgrd.columns[event.column].field] = checkcommaordot(event, Cashgrd.records[event.index][Cashgrd.columns[event.column].field]);
+                                    var _value = format.GetFormatAmount(Cashgrd.records[event.index][Cashgrd.columns[event.column].field], "init", dotFormatter);
+                                    Cashgrd.records[event.index][Cashgrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
                                     $('#grid_CashGrid_edit_' + id + '_' + event.column).keydown(function (event) {
                                         var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
 
@@ -3891,7 +3910,6 @@
                         if (w2ui.CashGrid.getChanges(event.recid) != undefined) {
                             //var sql = "SELECT stdprecision FROM c_currency WHERE c_currency_id =   (SELECT c_currency_id FROM c_cashbook WHERE C_Cashbook_ID=" + $Cash_cmbcashbk.val() + " ) ";
                             //var stdPrecision = VIS.DB.executeScalar(sql, null, null);
-
                             var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $Cash_cmbcashbk.val(), "CurrencyFrom": "C" }, null);
                             if (stdPrecision == null || stdPrecision == 0) {
                                 stdPrecision = 2;
@@ -3911,7 +3929,7 @@
                                     event.value_new = 0;
                                 }
                                 else {
-                                    event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(Cashgrd.records[event.index]['ConvertedAmt'])));
+                                    event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                 }
                                 //else if (event.value_new.toString().contains(',')) {
                                 //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
@@ -3924,7 +3942,7 @@
                                     Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                     return;
                                 }
-                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
                                 Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
                                 if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
@@ -3989,13 +4007,13 @@
                                     event.value_new = 0;
                                 }
                                 else {
-                                    event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(Cashgrd.records[event.index]['Writeoff'])));
+                                    event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                 }
                                 //else if (event.value_new.toString().contains(',')) {
                                 //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                 //}
 
-                                Cashgrd.records[event.index]['Writeoff'] = event.value_new;
+                                Cashgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
 
                                 if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                     if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
@@ -4080,13 +4098,13 @@
                                     event.value_new = 0;
                                 }
                                 else {
-                                    event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(Cashgrd.records[event.index]['Discount'])));
+                                    event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                 }
                                 //else if (event.value_new.toString().contains(',')) {
                                 //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                 //}
 
-                                Cashgrd.records[event.index]['Discount'] = event.value_new;
+                                Cashgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
 
                                 if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                     if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
@@ -4948,7 +4966,7 @@
                 $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
                 var _split = "";
                 _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
+                    + "<input type='text' step='any' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
                     + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
 
@@ -4981,7 +4999,7 @@
                             field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'float' }
+                            }, editable: { type: 'number' }
                         });
                         _Split_Columns.push({
                             field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%',
@@ -5083,10 +5101,29 @@
                 });
 
                 $TxtSplitAmt.on('keypress', function (event) {
-
-                    if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57)) && (event.keyCode != 45)) {
+                    var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+                    if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57))  && (event.keyCode != 45) && (event.keyCode != 44)) {
                         return false;
                     }
+
+                    if (!isDotSeparator && event.keyCode == 46) {// , separator
+                        return false;
+                    }
+                    if (isDotSeparator && event.keyCode == 44) { // . separator
+                        return false;
+                    }
+
+                    if (event.target.value.contains(".") && (event.which == 46 || event.which == 44)) {
+                        if (event.target.value.indexOf('.') > -1) {
+                            event.target.value = event.target.value.replace('.', '');
+                        }
+                    }
+                    if (event.target.value.contains(",") && (event.which == 46 || event.which == 44)) {
+                        if (event.target.value.indexOf(',') > -1) {
+                            event.target.value = event.target.value.replace(',', '');
+                        }
+                    }
+
                     if (event.keyCode == 13) {
                         //Splitgrd.selectAll();
                         if (Splitgrd.getSelection().length == 0) {
@@ -5173,9 +5210,9 @@
                 function SplitSchedule() {
                     _CollaborateData = [];  //done By Bharat
                     //Splitgrd.selectAll();
-
                     var DueAmt = parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']);
-                    var SplitAMt = parseFloat($TxtSplitAmt.val());
+                    var SplitAMt = checkcommaordot(event, $TxtSplitAmt.val(), $TxtSplitAmt.val());
+                    SplitAMt = parseFloat(SplitAMt);
                     // IF Value in Negative 
                     if (DueAmt < 0) {
                         DueAmt = -1 * DueAmt;
@@ -5356,7 +5393,7 @@
                 txtAmount = new VIS.Controls.VAmountTextBox("VA009_Amount" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
                 txtAmount.setValue(0);
-                format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
+               format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
                 divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
                 var $divb2bAmountCtrlWrp = $("<div class='vis-control-wrap'>");
                 divAmount.append($divb2bAmountCtrlWrp);
@@ -5522,13 +5559,13 @@
                         return $note.css('visibility', 'visible');
                     }
 
-                    //var paramString = $From_cmbBank.val() + "," + $cmbCurrencies.val() + "," + $acctDate.val().toString() +
-                    //    "," + $cmbCurrencyType.val() + "," + VIS.Env.getCtx().getAD_Client_ID() + "," + $OrgCmb.val();
-                    //var dr = VIS.dataContext.getJSONRecord("VA009/Payment/CheckConversionRate", paramString);
-                    //if (dr <= 0) {
-                    //    $note.text(VIS.Msg.getMsg("VA009_ConversionRateNotFound"));
-                    //    return $note.css('visibility', 'visible');
-                    //}
+                    var paramString = $From_cmbBank.val() + "," + $cmbCurrencies.val() + "," + $acctDate.val().toString() +
+                        "," + $cmbCurrencyType.val() + "," + VIS.Env.getCtx().getAD_Client_ID() + "," + $OrgCmb.val();
+                    var dr = VIS.dataContext.getJSONRecord("VA009/Payment/CheckConversionRate", paramString);
+                    if (dr <= 0) {
+                        $note.text(VIS.Msg.getMsg("VA009_ConversionRateNotFound"));
+                        return $note.css('visibility', 'visible');
+                    }
 
                     $note.css('visibility', 'hidden');
 
@@ -7128,7 +7165,7 @@
                         dsgn += ' </div></div>';
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
-                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + Globalize.format(data.paymentdata[i].DueAmt, "N") + '</span><br> </div> </div> ' +
+                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString() + '</span><br> </div> </div> ' +
                         '</div></div></div>';
 
 
@@ -7156,12 +7193,10 @@
                 var $divbnknew; var colorclass = 'pull-right VA009-color-green', ULcolorclass = 'pull-right VA009-color-green', Ulcolor = 'VA009-color-green';
                 var $divaccordion = $('<div class="VA009-accordion"></div>');
                 for (var j in data.bankdetails) {
-
                     if (data.bankdetails[j].CurrentBalance < 0)
                         colorclass = 'pull-right VA009-color-red';
                     if (data.bankdetails[j].UnreconsiledAmt < 0)
                         ULcolorclass = 'pull-right VA009-color-red';
-
                     if (_prvCurrencyCode == data.bankdetails[j].CurrencyCode1) {
                         $divbnknew = $divBank.find("#VA009_bankdtl_" + data.bankdetails[j].CurrencyCode1);
                         //bnkdiv = '<p class="VA009-data-top"><span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <span class="pull-left"> ' + VIS.Msg.getMsg("VA009_Reconciled") + ' </span> <span class= "' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
@@ -7183,7 +7218,7 @@
                             + '<div id="collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
                             + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
                             + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
-                            + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</a></p>'
+                            + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>'
                             //+ '<p class="VA009-data-top">  <span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span><span class="pull-left">' + VIS.Msg.getMsg("VA009_Reconciled") + '  </span> <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
                             // + '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p> </div>';
                             + ' </div></div>'
@@ -7548,6 +7583,9 @@
         //end
         function checkcommaordot(event, val, amt) {
             var foundComma = false;
+            if (event == undefined) {
+                return val;
+            }
             event.value_new = VIS.Utility.Util.getValueOfString(val);
             if (event.value_new.contains(".")) {
                 foundComma = true;
