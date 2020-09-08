@@ -129,7 +129,7 @@ namespace ViennaAdvantage.Process
             DateTime? payDueDate = null;
             if (payterm.IsNextBusinessDay())
             {
-                payDueDate = payterm.GetNextBusinessDate(TimeUtil.AddDays(order.GetDateOrdered(), payterm.GetNetDays()));
+                payDueDate = payterm.GetNextBusinessDate(TimeUtil.AddDays(order.GetDateOrdered(), payterm.GetNetDays()), order.GetAD_Org_ID());
             }
             else
             {
@@ -141,7 +141,7 @@ namespace ViennaAdvantage.Process
 
             if (payterm.IsNextBusinessDay())
             {
-                payDueDate = payterm.GetNextBusinessDate(TimeUtil.AddDays(order.GetDateOrdered(), payterm.GetDiscountDays()));
+                payDueDate = payterm.GetNextBusinessDate(TimeUtil.AddDays(order.GetDateOrdered(), payterm.GetDiscountDays()), order.GetAD_Org_ID());
             }
             else
             {
@@ -154,7 +154,7 @@ namespace ViennaAdvantage.Process
 
             if (payterm.IsNextBusinessDay())
             {
-                payDueDate = payterm.GetNextBusinessDate(TimeUtil.AddDays(order.GetDateOrdered(), payterm.GetDiscountDays2()));
+                payDueDate = payterm.GetNextBusinessDate(TimeUtil.AddDays(order.GetDateOrdered(), payterm.GetDiscountDays2()), order.GetAD_Org_ID());
             }
             else
             {
@@ -271,10 +271,10 @@ namespace ViennaAdvantage.Process
                 DateTime? payDueDate = null;
                 if (payterm.IsNextBusinessDay())
                 {
-                    payDueDate = payterm.GetNextBusinessDate(ips.GetDueDate());
+                    payDueDate = payterm.GetNextBusinessDate(ips.GetDueDate(), order.GetAD_Org_ID());
                     ips.SetDueDate(payDueDate);
 
-                    payDueDate = payterm.GetNextBusinessDate(ips.GetDiscountDate());
+                    payDueDate = payterm.GetNextBusinessDate(ips.GetDiscountDate(), order.GetAD_Org_ID());
                     ips.SetDiscountDate(payDueDate);
                 }
 
