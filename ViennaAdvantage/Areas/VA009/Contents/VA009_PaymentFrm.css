@@ -818,7 +818,7 @@ html[dir="rtl"] .VA009-icons-wrap > span {
 html[dir="rtl"] .VA009-right-part > span {
     margin-right: 10px;
 }
-html[dir="rtl"] .VA009-pay-mid-sec > span {
+html[dir="rtl"] .VA009-pay-mid-sec > span.glyphicon-play {
     transform: rotate(180deg);
 }
 html[dir="rtl"] .VA009-padd-right-0 {
