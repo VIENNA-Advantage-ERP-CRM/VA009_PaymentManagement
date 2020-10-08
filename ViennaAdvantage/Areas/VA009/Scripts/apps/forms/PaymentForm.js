@@ -7667,7 +7667,7 @@
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
             popupgrddata = null;
-            CheueRecevableGrid = null, chqrecgrd = null;
+            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null;
         };
         //********************
         //Set Size OF Div's
@@ -7705,6 +7705,16 @@
         this.frame.getContentGrid().append(this.getRoot());
         this.setSize();
 
+    };
+
+    VA009.PaymentForm.prototype.dispose = function () {
+        /*CleanUp Code */
+        //dispose this component
+        this.disposeComponent();
+        //call frame dispose function
+        if (this.frame)
+            this.frame.dispose();
+        this.frame = null;
     };
 
 })(VA009, jQuery);
