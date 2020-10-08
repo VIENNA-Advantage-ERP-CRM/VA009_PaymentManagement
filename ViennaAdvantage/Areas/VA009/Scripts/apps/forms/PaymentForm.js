@@ -7707,7 +7707,7 @@
 
     };
 
-        VA009.PaymentForm.prototype.dispose = function () {
+    VA009.PaymentForm.prototype.dispose = function () {
         /*CleanUp Code */
         //dispose this component
         this.disposeComponent();
