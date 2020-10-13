@@ -34,16 +34,17 @@ namespace ViennaAdvantage //  Please replace namespace with prefix of your modul
             /* ==>  Here include all css files in style bundle......see example below....  */
             ScriptBundle script = new ScriptBundle("~/Areas/VA009/Scripts/VA009Js");
 
-            //style.Include("~/Areas/VA009/Contents/VA009_PaymentFrm.css");
+            style.Include("~/Areas/VA009/Contents/VA009_PaymentFrm.css");
+            style.Include("~/Areas/VA009/Contents/VA009_rtl.css");
 
 
-            //script.Include("~/Areas/VA009/Scripts/apps/forms/PaymentForm.js",
-            //    "~/Areas/VA009/Scripts/model/callouts.js",
-            //"~/Areas/VA009/Scripts/apps/forms/DownloadXML.js",
-            //"~/Areas/VA009/Scripts/apps/forms/DownloadDATFile.js");
+            script.Include("~/Areas/VA009/Scripts/apps/forms/PaymentForm.js",
+                "~/Areas/VA009/Scripts/model/callouts.js",
+            "~/Areas/VA009/Scripts/apps/forms/DownloadXML.js",
+            "~/Areas/VA009/Scripts/apps/forms/DownloadDATFile.js");
 
-            script.Include("~/Areas/VA009/Scripts/VA009.all.min.js");
-            style.Include("~/Areas/VA009/Contents/VA009.all.min.css");
+            //script.Include("~/Areas/VA009/Scripts/VA009.all.min.js");
+            //style.Include("~/Areas/VA009/Contents/VA009.all.min.css");
 
 
 
