@@ -199,10 +199,8 @@ namespace ViennaAdvantage.Process
                                bld.c_currency_id, 
                                bld.c_invoice_id,
                                NULL AS C_order_ID,  
-                               --bld.dueamt ,
                                IPS.DueAmt, 
                                bld.VA009_ConvertedAmt, 
-                               --bld.discountamt,
                                IPS.discountamt,
                                bld.va009_batchlinedetails_ID ,
                                bl.va009_batchlines_id , 
@@ -229,10 +227,10 @@ namespace ViennaAdvantage.Process
                                       AND NVL(bld.c_payment_id , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
                                       AND  b.va009_batch_id    =" + GetRecord_ID());
-                    // if (IsBankresponse == "Y")
+                     // if (IsBankresponse == "Y")
                     //    sql.Append(" AND bld.va009_bankresponse='RE' ORDER BY bl.c_bpartner_id ASC ");
                     // else if (IsBankresponse == "N")
-                    // sql.Append(" ORDER BY bld.va009_batchlines_id ,  bl.c_bpartner_id ASC ");
+                    // sql.Append(" ORDER BY bld.va009_batchlines_id ,  bl.c_bpartner_id ASC ");   
                     //Added by Arpit TO Create Payment against Order as well as Invoice on 14the Dec,2016
                     sql.Append(@" UNION SELECT bld.C_ConversionType_ID,b.c_bankaccount_id, 
                                bl.c_bpartner_id, 
@@ -240,10 +238,8 @@ namespace ViennaAdvantage.Process
                                bld.c_currency_id, 
                                NULL AS C_Invoice_ID,
                                bld.C_order_ID,  
-                              -- bld.dueamt,
                                OPS.DueAmt, 
                                bld.VA009_ConvertedAmt, 
-                               --bld.discountamt,
                                OPS.discountamt,
                                bld.va009_batchlinedetails_ID ,
                                bl.va009_batchlines_id , 
