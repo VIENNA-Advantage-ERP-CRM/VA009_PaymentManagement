@@ -175,16 +175,17 @@ background: #575757;*/
     color: rgba(var(--v-c-on-primary), 1);
     padding: .2rem;
 }
-.VA009-content-area{
-     float: left;
+.VA009-content-area {
+    float: left;
     width: 100%;
     height: 97%;
     margin-top: 10px;
+    display: flex;
 }
-.VA009-middle-wrap{
+.VA009-middle-wrap {
     float: left;
     width: 60%;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid rgba(var(--v-c-on-secondary), .2);
     height: 100%;
     padding: 0 10px;
 }
@@ -277,14 +278,17 @@ ul.VA009-right-tabs > li{ padding: 8px 15px;}
 }
 .VA009-selectall {
     float: left;
+    display: flex;
 }
-    .VA009-selectall > input {
-        float: left;
-        margin-left: 0;
-    }
-    .VA009-selectall > label {
-        font-weight: normal;font-size: 13px;margin-left: 3px;
-    }
+.VA009-selectall > input {
+    /* float: left; */
+    /* margin-left: 0; */
+}
+.VA009-selectall > label {
+    /* font-weight: normal; */
+    font-size: 13px;
+    margin-left: 3px;
+}
 
 .VA009-search-icon {
     float: left;
@@ -315,9 +319,13 @@ ul.VA009-right-tabs > li{ padding: 8px 15px;}
     border-bottom: 2px solid rgba(var(--v-c-primary), 1);
     background: rgba(var(--v-c-secondary), .6);
 }
-.VA009-payment-wrap input{ float: left; margin: 0;}
-.VA009-pay-left, .VA009-pay-img-wrap{
+.VA009-payment-wrap input {
     float: left;
+    margin: 0;
+}
+.VA009-pay-left {
+    width: 91%;
+    display: inline-flex;
 }
 .VA009-pay-left{ width: 91%;}
 .VA009-pay-img-wrap{
@@ -694,6 +702,7 @@ p.VA009-data-bot:last-child {
 
 .VA009-midleftsecwrap {
     flex: 1;
+    display: flex;
 }
 .VA009-tabs-wrap {
     /*padding-bottom: 10px;*/
@@ -770,4 +779,65 @@ p.VA009-data-bot:last-child {
 }
 .VA009-popCheck-data input:not([type="checkbox"]) {
     padding: 5px 10px;
+}
+.VA009-mid-top-wrap {
+    display: flex;
+    justify-content: space-between;
+}
+.VA009-total-textDiv {
+    margin-left: 15px;
+}
+.VA009-padd-right-0 {
+    padding-right: 0
+}
+/* RTL CSS*/
+html[dir="rtl"] .VA009-right-part > span,
+html[dir="rtl"] .VA009-pay-amount > span,
+html[dir="rtl"] .VA009-color-green,
+html[dir="rtl"] .VA009-color-red {
+    float: left;
+}
+html[dir="rtl"] .VA009-payment-wrap input,
+html[dir="rtl"] ul.VA009-tabs > li,
+html[dir="rtl"] ul.VA009-right-tabs > li {
+    float: right;
+}
+html[dir="rtl"] .VA009-selectall > label,
+html[dir="rtl"] .VA009-total-textDiv,
+html[dir="rtl"] .VA009-icons-wrap > span,
+html[dir="rtl"] .VA009-right-part > span {
+    margin-left: 0;
+}
+html[dir="rtl"] .VA009-selectall > label {
+    margin-right: 3px;
+}
+html[dir="rtl"] .VA009-total-textDiv,
+html[dir="rtl"] .VA009-icons-wrap > span {
+    margin-right: 15px;
+}
+html[dir="rtl"] .VA009-right-part > span {
+    margin-right: 10px;
+}
+html[dir="rtl"] .VA009-pay-mid-sec > span.glyphicon-play {
+    transform: rotate(180deg);
+}
+html[dir="rtl"] .VA009-padd-right-0 {
+    padding-right: 15px;
+    padding-left: 0;
+}
+html[dir="rtl"] .VA009-payment-list .row {
+    margin-right: -15px;
+    margin-left: -8px;
+}
+html[dir="rtl"] .VA009-popfrmradiowrp label {
+    padding-left: 0;
+    padding-right: 5px;
+}
+html[dir="rtl"] .VA009-payment-wrap {
+    padding-right: 0;
+    padding-left: 10px;
+}
+html[dir="rtl"] .VA009-middle-wrap {
+    border-right: none;
+    border-left: 1px solid rgba(var(--v-c-on-secondary), .2);
 }

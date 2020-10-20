@@ -184,7 +184,7 @@
             // Add Search
             MainRoot += '  <div class="VA009-mid-search" id="VA009-mid-search_' + $self.windowNo + '">';
             MainRoot += ' <div class="VA009-midleftsecwrap"><div class="VA009-selectall"><input type="checkbox" id="VA009_SelectAll_' + $self.windowNo + '"> <label>' + VIS.Msg.getMsg("VA009_HeaderSelectAll") + '</label></div>';
-            MainRoot += ' <div class="VA009-selectall" style=" margin-left: 15px; "><label style=" font-weight: bold; text-decoration: underline; ">' + VIS.Msg.getMsg("VA009_TotlAmtBase") + ' </label><label id="VA009_TotalSelected_' + $self.windowNo + '"" style="font-weight: bold;"> 0 </label></div></div>';
+            MainRoot += ' <div class="VA009-selectall VA009-total-textDiv"><label style=" font-weight: bold; text-decoration: underline; ">' + VIS.Msg.getMsg("VA009_TotlAmtBase") + ' </label><label id="VA009_TotalSelected_' + $self.windowNo + '"" style="font-weight: bold;"> 0 </label></div></div>';
             MainRoot += '<div class="VA009-search-wrap"> <input value="" placeholder="Search..." type="text" id=' + "VA009_SrchTxtbx_" + $self.windowNo + '> <a class="VA009-search-icon" id=' + "VA009_SrchBtn_" + $self.windowNo + '><span class="vis vis-search"></span></a> </div>';
 
             //Add Selected Payment
@@ -7126,7 +7126,7 @@
                     }
 
                     dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '"> <div class="row" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '">' +
-                        '<div class="col-md-4 col-sm-4 width-sm-35" style="padding-right:0px;"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID
+                        '<div class="col-md-4 col-sm-4 width-sm-35 VA009-padd-right-0"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID
                         + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '" data-NAME="' + data.paymentdata[i].TransactionType + '" data-PaymentRule="' + data.paymentdata[i].PaymentRule
                         + '" data-PaymentType="' + data.paymentdata[i].PaymentType + '" data-PaymentTriggerBy="' + data.paymentdata[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.paymentdata[i].PaymwentBaseType
                         + '" data-DocBaseType="' + data.paymentdata[i].DocBaseType + '" data-CurrencyCode="' + data.paymentdata[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select")
@@ -7136,7 +7136,7 @@
                         "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.paymentdata[i].VA009_ExecutionStatus + "</span> </div>" +
                         ' <div class="VA009-pay-text"><p>' + data.paymentdata[i].C_Bpartner + '</p><span>' + data.paymentdata[i].C_BP_Group + '</span> <span>' + data.paymentdata[i].DocumentNo + '</span> <span>' + data.paymentdata[i].VA009_PaymentMethod + '</span> </div>' +
                         '</div></div>'
-                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd" style="padding-right:0;">';
+                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd VA009-padd-right-0">';
 
                     if (VA009_FollowupDate != "" && VA009_plannedduedate != "")
                         dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + VA009_plannedduedate + '</span> <span class="glyphicon glyphicon-play play-icon"></span> <span title="Planned Due Date">' + VA009_FollowupDate + '</span> </div> ';
@@ -7156,7 +7156,7 @@
 
                     dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><i class="VA009_AddNoteimg fa fa-list-alt" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" > </i></span> </div> ' +
                         ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
-                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
+                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd VA009-padd-right-0">'
                         + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
                     if (data.paymentdata[i].DocBaseType == "APC" || data.paymentdata[i].DocBaseType == "ARC") {
                         dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
@@ -7491,13 +7491,13 @@
                 var dsgn, imgname = '';
                 for (var i = 0; i < data.result.length; i++) {
                     dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.result[i].DocumentNo + '"> <div class="row" data-UID="' + data.result[i].DocumentNo + '">' +
-                        '<div class="col-md-4 col-sm-4 width-sm-35" style="padding-right:0px;"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.result[i].DocumentNo + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '"  data-NAME="' + data.result[i].DocumentNo + '" data-PaymentRule="' + data.result[i].PaymentRule + '" data-PaymentType="' + data.result[i].PaymentType + '" data-PaymentTriggerBy="' + data.result[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.result[i].PaymwentBaseType + '" data-DocBaseType="' + data.result[i].DocBaseType + '" data-CurrencyCode="' + data.result[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select") + '">' +
+                        '<div class="col-md-4 col-sm-4 width-sm-35"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.result[i].DocumentNo + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '"  data-NAME="' + data.result[i].DocumentNo + '" data-PaymentRule="' + data.result[i].PaymentRule + '" data-PaymentType="' + data.result[i].PaymentType + '" data-PaymentTriggerBy="' + data.result[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.result[i].PaymwentBaseType + '" data-DocBaseType="' + data.result[i].DocBaseType + '" data-CurrencyCode="' + data.result[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select") + '">' +
                         '<div class="VA009-pay-left">' +
                         '<div class="VA009-pay-img-wrap">' +
                         "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.result[i].VA009_ExecutionStatus + "</span> </div>" +
                         ' <div class="VA009-pay-text"><p>' + data.result[i].C_Bpartner + '</p><span>' + data.result[i].C_BP_Group + '</span> <span>' + data.result[i].DocumentNo + '</span> <span>' + data.result[i].PaymentMethod + '</span> </div>' +
                         '</div></div>'
-                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd" style="padding-right:0;">';
+                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd VA009-padd-right-0">';
 
                     if (data.result[i].VA009_DocumentDate != "")
                         dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + data.result[i].VA009_DocumentDate + '</span> </div> ';
@@ -7511,7 +7511,7 @@
 
                     dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.result[i].DocumentNo + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.result[i].DocumentNo + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
                         ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.result[i].DocumentNo + '>' + data.result[i].LastChat + '</span> </div> ' +
-                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd" style="padding-right:0;">'
+                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd VA009-padd-right-0">'
                         + '<div class="VA009-transactionType"> <span>' + data.result[i].TransactionType + '</span> '
                     if (data.result[i].DocBaseType == "APC" || data.result[i].DocBaseType == "ARC") {
                         dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
@@ -7667,7 +7667,7 @@
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
             popupgrddata = null;
-            CheueRecevableGrid = null, chqrecgrd = null;
+            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null;
         };
         //********************
         //Set Size OF Div's
@@ -7705,6 +7705,16 @@
         this.frame.getContentGrid().append(this.getRoot());
         this.setSize();
 
+    };
+
+    VA009.PaymentForm.prototype.dispose = function () {
+        /*CleanUp Code */
+        //dispose this component
+        this.disposeComponent();
+        //call frame dispose function
+        if (this.frame)
+            this.frame.dispose();
+        this.frame = null;
     };
 
 })(VA009, jQuery);
