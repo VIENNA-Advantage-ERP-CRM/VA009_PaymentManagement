@@ -1,36 +1,4 @@
-﻿/*Version 1.0.39.0*/
-/* Minification failed. Returning unminified contents.
-(38,1): run-time error CSS1019: Unexpected token, found '}'
-(100,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-secondary'
-(174,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(175,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-primary'
-(231,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(232,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-primary'
-(240,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(258,40): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(276,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(293,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-secondary'
-(294,33): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(306,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(310,40): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(314,37): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(315,40): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(316,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-secondary'
-(328,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(333,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-primary'
-(366,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(379,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(534,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(543,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-primary'
-(545,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-primary'
-(620,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(702,33): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(706,22): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(707,33): run-time error CSS1039: Token not allowed after unary operator: '-v-c-secondary'
-(708,29): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(724,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-secondary'
-(755,40): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
- */
+﻿/***Version 1.0.40.0*/
 /*body{
 	margin: 0;
 	padding: 0;	
@@ -233,12 +201,13 @@ background: #575757;*/
     width: 100%;
     height: 97%;
     margin-top: 10px;
+    display: flex;
 }
 
 .VA009-middle-wrap {
     float: left;
     width: 60%;
-    border-right: 1px solid #ccc;
+    border-right: 1px solid rgba(var(--v-c-on-secondary), .2);
     height: 100%;
     padding: 0 10px;
 }
@@ -358,15 +327,16 @@ ul.VA009-right-tabs > li {
 
 .VA009-selectall {
     float: left;
+    display: flex;
 }
 
     .VA009-selectall > input {
-        float: left;
-        margin-left: 0;
+        /* float: left; */
+        /* margin-left: 0; */
     }
 
     .VA009-selectall > label {
-        font-weight: normal;
+        /* font-weight: normal; */
         font-size: 13px;
         margin-left: 3px;
     }
@@ -410,8 +380,9 @@ ul.VA009-right-tabs > li {
         margin: 0;
     }
 
-.VA009-pay-left, .VA009-pay-img-wrap {
-    float: left;
+.VA009-pay-left {
+    width: 91%;
+    display: inline-flex;
 }
 
 .VA009-pay-left {
@@ -914,6 +885,7 @@ p.VA009-data-bot:last-child {
 
 .VA009-midleftsecwrap {
     flex: 1;
+    display: flex;
 }
 
 .VA009-tabs-wrap {
@@ -1006,4 +978,79 @@ p.VA009-data-bot:last-child {
 
 .VA009-popCheck-data input:not([type="checkbox"]) {
     padding: 5px 10px;
+}
+
+.VA009-mid-top-wrap {
+    display: flex;
+    justify-content: space-between;
+}
+
+.VA009-total-textDiv {
+    margin-left: 15px;
+}
+
+.VA009-padd-right-0 {
+    padding-right: 0
+}
+/* RTL CSS*/
+html[dir="rtl"] .VA009-right-part > span,
+html[dir="rtl"] .VA009-pay-amount > span,
+html[dir="rtl"] .VA009-color-green,
+html[dir="rtl"] .VA009-color-red {
+    float: left;
+}
+
+html[dir="rtl"] .VA009-payment-wrap input,
+html[dir="rtl"] ul.VA009-tabs > li,
+html[dir="rtl"] ul.VA009-right-tabs > li {
+    float: right;
+}
+
+html[dir="rtl"] .VA009-selectall > label,
+html[dir="rtl"] .VA009-total-textDiv,
+html[dir="rtl"] .VA009-icons-wrap > span,
+html[dir="rtl"] .VA009-right-part > span {
+    margin-left: 0;
+}
+
+html[dir="rtl"] .VA009-selectall > label {
+    margin-right: 3px;
+}
+
+html[dir="rtl"] .VA009-total-textDiv,
+html[dir="rtl"] .VA009-icons-wrap > span {
+    margin-right: 15px;
+}
+
+html[dir="rtl"] .VA009-right-part > span {
+    margin-right: 10px;
+}
+
+html[dir="rtl"] .VA009-pay-mid-sec > span.glyphicon-play {
+    transform: rotate(180deg);
+}
+
+html[dir="rtl"] .VA009-padd-right-0 {
+    padding-right: 15px;
+    padding-left: 0;
+}
+
+html[dir="rtl"] .VA009-payment-list .row {
+    margin-right: -15px;
+    margin-left: -8px;
+}
+
+html[dir="rtl"] .VA009-popfrmradiowrp label {
+    padding-left: 0;
+    padding-right: 5px;
+}
+
+html[dir="rtl"] .VA009-payment-wrap {
+    padding-right: 0;
+    padding-left: 10px;
+}
+
+html[dir="rtl"] .VA009-middle-wrap {
+    border-right: none;
+    border-left: 1px solid rgba(var(--v-c-on-secondary), .2);
 }
