@@ -261,7 +261,10 @@ ul.VA009-right-tabs > li{ padding: 8px 15px;}
     display: flex;
     align-items: center;
 }
-.VA009-search-wrap{ width: 45%;}
+.VA009-search-wrap {
+    width: 45%;
+    display: flex;
+}
 .VA009-search-wrap > input {
     /* border: 1px solid #CCC; */
     height: 31px;
@@ -744,7 +747,7 @@ p.VA009-data-bot:last-child {
 .VA009-left-data .vis-input-wrap {
     margin-bottom: 0;
 }
-.VA009-popfrmrow .VA009-popCheck-data:last-child {
+.VA009-popfrmrow .VA009-popCheck-data:not(:only-child):last-child {
     padding-right: 0;
 }
 .VA009-popfrmradiowrp {

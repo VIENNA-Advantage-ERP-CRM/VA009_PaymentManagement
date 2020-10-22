@@ -9,7 +9,8 @@ html[dir="rtl"] .VA009-color-red {
 html[dir="rtl"] .VA009-payment-wrap input,
 html[dir="rtl"] ul.VA009-tabs > li,
 html[dir="rtl"] ul.VA009-right-tabs > li,
-html[dir="rtl"] .VA009-popform-data {
+html[dir="rtl"] .VA009-popform-data,
+html[dir="rtl"] .VA009-popCheck-data {
     float: right;
 }
 
@@ -70,4 +71,11 @@ html[dir="rtl"] .VA009-popform-data:nth-child(odd) {
 html[dir="rtl"] .VA009-popform-data:nth-child(even) {
     padding-left: 0;
     padding-right: 7px;
+}
+html[dir="rtl"] .VA009-popCheck-data {
+    padding-right: 0;
+    padding-left: 8px;
+}
+.VA009-popfrmrow .VA009-popCheck-data:not(:only-child):last-child {
+    padding-left: 0;
 }
