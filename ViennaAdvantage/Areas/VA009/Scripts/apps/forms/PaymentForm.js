@@ -2108,7 +2108,9 @@
                                 return false;
                             }
                             chqpaygrd.records[i]['CheckNumber'] = "";
-                            chqpaygrd.records[i]['CheckDate'] = null;
+                            //to set Current Date as checkDate
+                            //chqpaygrd.records[i]['CheckDate'] = null;
+                            chqpaygrd.records[i]['CheckDate'] = new Date();
                             chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckNumber");
                             chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckDate");
                         }
