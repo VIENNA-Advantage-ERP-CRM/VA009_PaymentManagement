@@ -326,6 +326,9 @@ ul.VA009-right-tabs > li{ padding: 8px 15px;}
     float: left;
     margin: 0;
 }
+.VA009-payment-wrap-selctd {
+    background-color: #e6f5ff;
+}
 .VA009-pay-left {
     width: 91%;
     display: inline-flex;

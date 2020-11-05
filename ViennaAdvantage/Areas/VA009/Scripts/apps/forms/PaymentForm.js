@@ -92,7 +92,8 @@
             pgNo = 1; //Commented on 10 Jan 2019 "AND cs.AD_Org_ID IN (" + VIS.context.getAD_Org_ID() + ")"
             loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), 99, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
             isloaded = true;
-            $divPayment.on("click", paymentContainerClick);
+            //calling two times that's why commented here
+            //$divPayment.on("click", paymentContainerClick);
             $BP.autocomplete({
                 minLength: 0,
                 source: function (request, response) {
@@ -526,18 +527,21 @@
             });
 
             $divPayment.on("scroll", paymentScroll);
+            //commented and pasted inside condition in paymentContainerClick()
+            //$divPayment.on("click", function (e) {
+            //    //if (e.target.className == "VA009-info-icon") {
+            //    if (e.target.className.contains("VA009-info-icon")) {
+            //        var target = $(e.target);
 
-            $divPayment.on("click", function (e) {
-                //if (e.target.className == "VA009-info-icon") {
-                if (e.target.className.contains("VA009-info-icon")) {
-                    var target = $(e.target);
+            //        if (target.hasClass('VA009-info-icon')) {
+            //            infoWinID = target.data("uid");
+            //            zoomToWindow(infoWinID, "Business Partner Info", "C_BPartner_ID");
+            //        }
+            //    }
+            //});
 
-                    if (target.hasClass('VA009-info-icon')) {
-                        infoWinID = target.data("uid");
-                        zoomToWindow(infoWinID, "Business Partner Info", "C_BPartner_ID");
-                    }
-                }
-            });
+            //click event for payment records
+            $divPayment.on("click", paymentContainerClick);
 
             $togglebtn.on("click", function (e) {
                 e.stopPropagation();
@@ -733,6 +737,11 @@
                         //SlctdOrderPaymentIds = SelectallOrdIds;
                         $divPayment.find(':checkbox').not(":disabled").prop('checked', true);
                         var v = [];
+                        //clear the records from the array
+                        SlctdPaymentIds = [];
+                        SlctdOrderPaymentIds = [];
+                        batchObjInv = [];
+                        batchObjOrd = [];
                         for (var i = 0; i < SelectallInvIds.length; i++) {
                             v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallInvIds[i] + ']'))[0];
                             if (!v.target == false) {
@@ -752,6 +761,8 @@
                         SlctdOrderPaymentIds = [];
                         $divPayment.find(':checkbox').prop('checked', false);
                         $selectall.find(':checkbox').prop('checked', false);
+                        //removing the background color for unselected records
+                        $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
                         $totalAmt.text(0);
                         $totalAmt.data('ttlamt', parseFloat(0));
                     }
@@ -849,6 +860,8 @@
             }
             else if (e.target.type == 'checkbox') {
                 if (target.prop("checked") == true) {
+                    //added css for selected record
+                    target.parents(".VA009-payment-wrap").addClass("VA009-payment-wrap-selctd");
                     //Edit By Amit - 18-11-2016
                     if (target.data("name") == "Invoice") {
                         SlctdPaymentIds.push(target.data("uid"));
@@ -858,6 +871,12 @@
                         SlctdOrderPaymentIds.push(target.data("uid"));
                         batchObjOrd.push({ "ID": target.data("uid"), "PM": target.data() });
 
+                    }
+                    //when max payment records selected at that time need to checkall checkbox true.
+                    var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length;
+                    var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
+                    if (countRecords == selRecords) {
+                        $selectall.prop('checked', true);
                     }
                     record_ID = target.data("uid");
                     var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(2);
@@ -874,6 +893,8 @@
                 }
                 else {
                     $selectall.prop('checked', false);
+                    //removing background color when checkbox false
+                    target.parents('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
                     var DeslctPaymt_ID = target.data("uid");
                     SlctdPaymentIds = jQuery.grep(SlctdPaymentIds, function (value) {
                         return value != DeslctPaymt_ID;
@@ -905,6 +926,103 @@
 
                 record_ID = target.data("uid");
                 _loadFunctions.ChatWindow();
+            }
+            //if (e.target.className == "VA009-info-icon") {
+            else if (target.hasClass("VA009-info-icon")) {
+                infoWinID = target.data("uid");
+                zoomToWindow(infoWinID, "Business Partner Info", "C_BPartner_ID");
+            }
+            //handled record selection from div level
+            //select/unselect the payment record when click on anywhere in the row div 
+            else if (target.parents(".VA009-payment-wrap")) {
+                //if user click on div class "VA009-payment-wrap" this condition will execute
+                if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked") == undefined) {
+                    if (target.find(".VA009-clckd-checkbx").prop("checked")) {
+                        $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
+                        $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
+                        $selectall.prop('checked', false);
+                        SlctdPaymentIds = [];
+                        SlctdOrderPaymentIds = [];
+                        batchObjInv = [];
+                        batchObjOrd = [];
+                        $totalAmt.text(0);
+                        $totalAmt.data('ttlamt', parseFloat(0));
+                    }
+                    else {
+                        $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
+                        $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
+                        target.find(".VA009-clckd-checkbx").prop("checked", true);
+                        target.addClass("VA009-payment-wrap-selctd");
+                        var inputTag = target.find(".VA009-clckd-checkbx")[0];
+                        record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
+                        SlctdPaymentIds = [];
+                        SlctdOrderPaymentIds = [];
+                        batchObjInv = [];
+                        batchObjOrd = [];
+                        if (inputTag.dataset["name"] == "Invoice") {
+                            SlctdPaymentIds.push(record_ID);
+                            batchObjInv.push({ "ID": record_ID, "PM": inputTag.dataset });
+                        }
+                        else {
+                            SlctdOrderPaymentIds.push(record_ID);
+                            batchObjOrd.push({ "ID": record_ID, "PM": inputTag.dataset });
+                        }
+                        var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length;
+                        var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
+                        if (countRecords == selRecords) {
+                            $selectall.prop('checked', true);
+                        }
+                        var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]);
+                        if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
+                            baseAmt = (-1 * baseAmt);
+                        }
+                        $totalAmt.data('ttlamt', parseFloat(baseAmt, 2));
+                        $totalAmt.text(getFormattednumber(baseAmt, 2));
+                    }
+                }
+                //if user click on inside div class "VA009-payment-wrap" this condition will execute
+                else if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked")) {
+                    $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
+                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
+                    $selectall.prop('checked', false);
+                    SlctdPaymentIds = [];
+                    SlctdOrderPaymentIds = [];
+                    batchObjInv = [];
+                    batchObjOrd = [];
+                    $totalAmt.text(0);
+                    $totalAmt.data('ttlamt', parseFloat(0));
+                }
+                else {
+                    $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
+                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
+                    target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked", true);
+                    target.parents(".VA009-payment-wrap").addClass("VA009-payment-wrap-selctd");
+                    var inputTag = target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx")[0];
+                    record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
+                    SlctdPaymentIds = [];
+                    SlctdOrderPaymentIds = [];
+                    batchObjInv = [];
+                    batchObjOrd = [];
+                    if (inputTag.dataset["name"] == "Invoice") {
+                        SlctdPaymentIds.push(record_ID);
+                        batchObjInv.push({ "ID": record_ID, "PM": inputTag.dataset });
+                    }
+                    else {
+                        SlctdOrderPaymentIds.push(record_ID);
+                        batchObjOrd.push({ "ID": record_ID, "PM": inputTag.dataset });
+                    }
+                    var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length;
+                    var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
+                    if (countRecords == selRecords) {
+                        $selectall.prop('checked', true);
+                    }
+                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]);
+                    if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
+                        baseAmt = (-1 * baseAmt);
+                    }
+                    $totalAmt.data('ttlamt', parseFloat(baseAmt, 2));
+                    $totalAmt.text(getFormattednumber(baseAmt, 2));
+                }
             }
         };
         //******************
@@ -7081,6 +7199,13 @@
         function loadcallback(result) {
             var id = 0; var imgname = ""; var dsgn = "";
             var data = JSON.parse(result);
+            //handled no records found when filter the records from left panel 
+            if (data.paymentdata.length == 0) {
+                if ($selectall.is(":checked")) {
+                    $selectall.trigger("click");
+                }
+            }
+
             //If payment schedule found
             if (data.paymentdata.length > 0) {
                 if (pgNo == 1 && data.paymentdata.length > 0) {
