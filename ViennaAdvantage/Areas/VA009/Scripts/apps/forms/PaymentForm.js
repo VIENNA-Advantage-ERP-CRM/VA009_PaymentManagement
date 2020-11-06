@@ -3713,7 +3713,8 @@
                         CashDialog.show();
                         CashGrid_Layout();
                         loadgrdCash(callbackCASHPay);
-                        loadcashbook();
+                        //load cashbook based on selected Org_ID
+                        //loadcashbook();
                         loadCurrencyType();
                         loadOrg();
                     }
@@ -3875,11 +3876,17 @@
                 };
 
                 function loadcashbook() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCashBook", { "Orgs": orgids.toString() }, callbackloadcashbook);
+                    //selected Org_Id assign to a variable & passed that variable as parameter
+                    var org_Id = $POP_cmbOrg.val();
+                    if (org_Id != null && org_Id != "")
+                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCashBook", { "Orgs": org_Id }, callbackloadcashbook);
+
                     function callbackloadcashbook(dr) {
+                        $Cash_cmbcashbk.empty();
                         $Cash_cmbcashbk.addClass('vis-ev-col-mandatory');
                         $Cash_cmbcashbk.append("<option value='0'></option>");
-                        if (dr.length > 0) {
+                        //avoid null exception used below condition 'dr != null' 
+                        if (dr != null && dr.length > 0) {
                             for (var i in dr) {
                                 $Cash_cmbcashbk.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_CashBook_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
                             }
@@ -3948,9 +3955,13 @@
                     //to set org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                        //clear the Options in Cashbook field
+                        $Cash_cmbcashbk.empty();
                     }
                     else {
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+                        //based on selected org load the Cashbook
+                        loadcashbook();
                     }
                 });
 
