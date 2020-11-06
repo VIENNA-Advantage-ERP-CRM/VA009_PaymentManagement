@@ -1606,7 +1606,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("P");
                                 _cline.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
-                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].convertedAmt)));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].VA009_RecivedAmt)));
                                 _cline.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                 _cline.SetDiscountAmt(-1 * (PaymentData[i].Discount));
                                 _cline.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
@@ -1615,7 +1616,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("R");
                                 _cline.SetAmount(PaymentData[i].VA009_RecivedAmt);
-                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].convertedAmt));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].VA009_RecivedAmt));
                                 _cline.SetOverUnderAmt(PaymentData[i].OverUnder);
                                 _cline.SetDiscountAmt(PaymentData[i].Discount);
                                 _cline.SetWriteOffAmt(PaymentData[i].Writeoff);
@@ -1627,7 +1629,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("P");
                                 _cline.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
-                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].convertedAmt)));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].VA009_RecivedAmt)));
                                 _cline.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                 _cline.SetDiscountAmt(-1 * (PaymentData[i].Discount));
                                 _cline.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
@@ -1636,7 +1639,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("R");
                                 _cline.SetAmount(PaymentData[i].VA009_RecivedAmt);
-                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].convertedAmt));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].VA009_RecivedAmt));
                                 _cline.SetOverUnderAmt(PaymentData[i].OverUnder);
                                 _cline.SetDiscountAmt(PaymentData[i].Discount);
                                 _cline.SetWriteOffAmt(PaymentData[i].Writeoff);
@@ -1652,6 +1656,8 @@ namespace VA009.Models
                         _cline.SetC_Currency_ID(cashbookid.GetC_Currency_ID());
                         _cline.SetC_InvoicePaySchedule_ID(PaymentData[i].C_InvoicePaySchedule_ID);
                         _cline.SetC_Invoice_ID(PaymentData[i].C_Invoice_ID);
+                        //to set ConversionType in Cash Journal Line
+                        _cline.SetC_ConversionType_ID(PaymentData[i].CurrencyType);
                         //amit
                         if (!_cline.Save())
                         {
@@ -3560,13 +3566,14 @@ namespace VA009.Models
             List<Dictionary<string, object>> retDic = null;
             StringBuilder qry = new StringBuilder();
             string sql = @"SELECT cb.C_Cashbook_ID, cb.Name || '_' || cu.ISO_Code AS Name FROM C_CashBook cb INNER JOIN C_Currency cu ON cb.C_Currency_ID=cu.C_Currency_ID 
-                    WHERE cb.ISACTIVE='Y' AND cb.AD_Client_ID=" + ct.GetAD_Client_ID();
+                    WHERE cb.ISACTIVE='Y' AND cb.AD_Client_ID=" + ct.GetAD_Client_ID() + " AND cb.AD_Org_ID = " + Util.GetValueOfInt(orgs) + " ORDER BY cb.Name";
             qry.Append(MRole.GetDefault(ct).AddAccessSQL(sql, "cb", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO));
-            if (orgs.Length > 0)
-            {
-                qry.Append(" AND cb.AD_Org_ID IN (" + orgs + ")");
-            }
-            qry.Append(" ORDER BY cb.Name");
+            //commented code, used directly in above query!
+            //if (orgs.Length > 0)
+            //{
+            //    qry.Append(" AND cb.AD_Org_ID IN (" + orgs + ")");
+            //}
+            //qry.Append(" ORDER BY cb.Name");
             DataSet ds = DB.ExecuteDataset(qry.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
