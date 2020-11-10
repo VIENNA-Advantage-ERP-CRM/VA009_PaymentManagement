@@ -1239,11 +1239,11 @@
             mTab.setValue("a_name", dr["a_name"]);
             mTab.setValue("RoutingNo", dr["RoutingNo"]);
             mTab.setValue("AccountNo", dr["AccountNo"]);
-            if (mTab.getValue("IsReceipt") == "N") {
-                mTab.setValue("a_name", "");
-                mTab.setValue("RoutingNo", "");
-                mTab.setValue("AccountNo", "");
-            }
+            //if (mTab.getValue("IsReceipt") == "N") {
+            //    mTab.setValue("a_name", "");
+            //    mTab.setValue("RoutingNo", "");
+            //    mTab.setValue("AccountNo", "");
+            //}
         }
         this.setCalloutActive(false);
         return "";
