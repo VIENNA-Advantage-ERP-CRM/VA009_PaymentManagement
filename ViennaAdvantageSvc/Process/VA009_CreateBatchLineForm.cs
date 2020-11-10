@@ -35,10 +35,10 @@ namespace ViennaAdvantage.Process
         DateTime? _DateDoc_From = null;
         DateTime? _DateDoc_To = null;
         int _VA009_BatchLine_ID = 0;
-        int batchid = 0, _C_BankAccount_ID=0;
+        int batchid = 0, _C_BankAccount_ID = 0;
         bool VA009_IsSameCurrency = false;
         //variable to get value of cosnolidate parameter
-        bool isConsolidate = false; 
+        bool isConsolidate = false;
         int C_ConversionType_ID = 0;
         //int _VA009_BatchDetail_ID = 0;
 
@@ -107,7 +107,7 @@ namespace ViennaAdvantage.Process
 
         protected override string DoIt()
         {
-            batchid=GetBatchId();
+            batchid = GetBatchId();
             if (batchid > 0)
             {
                 StringBuilder _sql = new StringBuilder();
@@ -230,17 +230,28 @@ namespace ViennaAdvantage.Process
                             #region to set bank account of business partner and name on batch line
                             if (_BPartner > 0)
                             {
-                                DataSet ds1 = new DataSet();
-                                //to set value of routing number and account number of batch lines 
-                                ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name,RoutingNo,AccountNo  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
-                                       + " AD_Org_ID IN (0," + batch.GetAD_Org_ID() + ")  GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo  ");
-                                if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                                //to check if payment method is CHECK then skip otherwise set these values
+                                string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
+                                VA009_PaymentMethod_ID=" + batch.GetVA009_PaymentMethod_ID(), null,
+                                 Get_TrxName()));
+                                if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
                                 {
-                                    line.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
-                                    line.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
-                                    line.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
-                                    line.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
+                                    // 
+                                    DataSet ds1 = new DataSet();
+                                    //to set value of routing number and account number of batch lines 
+                                    ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name,RoutingNo,AccountNo  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
+                                           + " AD_Org_ID IN (0," + batch.GetAD_Org_ID() + ")  GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo  ");
+                                    if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                                    {
+                                        line.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                        //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
+                                        if (Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) == 0)
+                                           line.Set_Value("C_BP_BankAccount_ID", null);
+                                        line.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                        line.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                        line.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
+                                    }
                                 }
                             }
                             #endregion
@@ -369,20 +380,21 @@ namespace ViennaAdvantage.Process
                 }
                 else
                 {
-                    DB.ExecuteQuery("DELETE FROM VA009_Batch WHERE VA009_Batch_ID=" + batchid,null,Get_TrxName());
+                    DB.ExecuteQuery("DELETE FROM VA009_Batch WHERE VA009_Batch_ID=" + batchid, null, Get_TrxName());
 
                     return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
                 }
             }
             else
             {
-                DB.ExecuteQuery("DELETE FROM VA009_Batch WHERE VA009_Batch_ID=" + batchid,null,Get_TrxName());
+                DB.ExecuteQuery("DELETE FROM VA009_Batch WHERE VA009_Batch_ID=" + batchid, null, Get_TrxName());
 
                 return Msg.GetMsg(GetCtx(), "VA009_BatchNotCrtd");
             }
         }
 
-        public int GetBatchId() {
+        public int GetBatchId()
+        {
             MVA009PaymentMethod paym = new MVA009PaymentMethod(GetCtx(), _paymentMethod, Get_TrxName());
             MVA009Batch batch = new MVA009Batch(GetCtx(), 0, Get_TrxName());
             batch.SetAD_Client_ID(GetCtx().GetAD_Client_ID());
@@ -402,7 +414,7 @@ namespace ViennaAdvantage.Process
             batch.SetVA009_Consolidate(isConsolidate);
             if (!batch.Save())
             {
-               return batchid = 0;
+                return batchid = 0;
             }
             return batch.GetVA009_Batch_ID();
         }

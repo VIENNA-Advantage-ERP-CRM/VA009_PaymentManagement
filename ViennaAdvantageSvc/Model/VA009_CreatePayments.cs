@@ -11,7 +11,7 @@ using ViennaAdvantage.Model;
 
 namespace ViennaAdvantage.Model
 {
-  public  class VA009_CreatePayments
+    public class VA009_CreatePayments
     {
         string IsBankresponse = "N";
         string msg = "VA009_PymentSaved";
@@ -33,12 +33,12 @@ namespace ViennaAdvantage.Model
         private string allocationDocumentNo = string.Empty;
 
 
-        public string DoIt(int recordID,Ctx ct,Trx trx,int CurrencyType_ID)
+        public string DoIt(int recordID, Ctx ct, Trx trx, int CurrencyType_ID)
         {
             //Check Bank Response
-//            sql.Append(@"SELECT count(bd.VA009_BankResponse) FROM va009_batchlinedetails bd INNER JOIN va009_batchlines bl ON bl.va009_batchlines_id=bd.va009_batchlines_id
-//                          WHERE bl.va009_batch_id=" + recordID + " AND bd.VA009_BankResponse='IP' AND bd.AD_Client_ID = " + ct.GetAD_Client_ID() + " Group by bd.VA009_BankResponse ");
-//            countresponse = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null,trx));
+            //            sql.Append(@"SELECT count(bd.VA009_BankResponse) FROM va009_batchlinedetails bd INNER JOIN va009_batchlines bl ON bl.va009_batchlines_id=bd.va009_batchlines_id
+            //                          WHERE bl.va009_batch_id=" + recordID + " AND bd.VA009_BankResponse='IP' AND bd.AD_Client_ID = " + ct.GetAD_Client_ID() + " Group by bd.VA009_BankResponse ");
+            //            countresponse = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null,trx));
             sql.Clear();
             sql.Append(@"SELECT b.c_bankaccount_id,  bl.c_bpartner_id,  bld.c_currency_id,  bld.c_invoice_id,  bld.dueamt, bld.VA009_ConvertedAmt,  bld.discountamt, bld.va009_batchlinedetails_ID , bl.va009_batchlines_id , 
                                      bld.discountdate, inv.issotrx,  inv.isreturntrx, bld.c_invoicepayschedule_id, bld.ad_org_id, bld.ad_client_id , doc.DocBaseType , bld.va009_paymentmethod_id , bl.VA009_DueAmount
@@ -88,7 +88,7 @@ namespace ViennaAdvantage.Model
                                 msg = Msg.GetMsg(ct, "VA009_PymentNotSaved");
                                 ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
                                 SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-                                                    recordID, ppE.ToString(),ct,trx);
+                                                    recordID, ppE.ToString(), ct, trx);
                                 trx.Rollback();
                                 payment.Clear();
                                 viewAllocationId.Clear();
@@ -229,7 +229,7 @@ namespace ViennaAdvantage.Model
                         else
                         {
                             MPayment _pay = new MPayment(ct, 0, trx);
-                            int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]),ct);
+                            int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]), ct);
                             _pay.SetC_DocType_ID(C_Doctype_ID);
                             _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                             _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
@@ -246,7 +246,11 @@ namespace ViennaAdvantage.Model
                                        + " AD_Org_ID =" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]) + " GROUP BY C_BP_BankAccount_ID, a_name ");
                                 if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                                 {
-                                    _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                    //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
+                                    if (Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) > 0)
+                                        _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                    else
+                                        _pay.Set_Value("C_BP_BankAccount_ID", null);
                                     _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
                                 }
                             }
@@ -380,7 +384,7 @@ namespace ViennaAdvantage.Model
                     for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                     {
                         MPayment _pay = new MPayment(ct, 0, trx);
-                        int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]),ct);
+                        int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]), ct);
                         _pay.SetC_DocType_ID(C_Doctype_ID);
                         _pay.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
                         _pay.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
@@ -401,6 +405,9 @@ namespace ViennaAdvantage.Model
                             if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                             {
                                 _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
+                                if (Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) == 0)
+                                    _pay.Set_Value("C_BP_BankAccount_ID", null);
                                 _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
                             }
                         }
@@ -472,13 +479,13 @@ namespace ViennaAdvantage.Model
 
             if (paymentDocumentNo != "" || allocationDocumentNo != "")
             {
-                SaveRecordPaymentBachLog(_batch.GetAD_Client_ID(), _batch.GetAD_Org_ID(), recordID, paymentDocumentNo, allocationDocumentNo,ct,trx);
+                SaveRecordPaymentBachLog(_batch.GetAD_Client_ID(), _batch.GetAD_Org_ID(), recordID, paymentDocumentNo, allocationDocumentNo, ct, trx);
             }
 
             return msg;
         }
 
-        public int GetDocbaseType(string issotrx, string isreturntrx,Ctx ct)
+        public int GetDocbaseType(string issotrx, string isreturntrx, Ctx ct)
         {
             string Docbasetype = string.Empty;
 
@@ -509,7 +516,7 @@ namespace ViennaAdvantage.Model
             return DocType_ID;
         }
 
-        public void SavePaymentBachLog(int ClientId, int OrgId, int BatchId, string ErrorMsg,Ctx ct,Trx trx)
+        public void SavePaymentBachLog(int ClientId, int OrgId, int BatchId, string ErrorMsg, Ctx ct, Trx trx)
         {
             MVA009PaymentBatchLog paymentBatchLog = new MVA009PaymentBatchLog(ct, 0, trx);
             paymentBatchLog.SetAD_Client_ID(ClientId);

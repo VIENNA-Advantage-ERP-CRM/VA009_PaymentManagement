@@ -70,12 +70,19 @@ namespace ViennaAdvantage.Model
 
         public string CompleteIt()
         {
-            // to check whether partner bank account and account name is selected on batch line or not
-            if (Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(va009_batchlines_ID) FROM va009_batchlines
-                WHERE c_bp_bankaccount_id IS NULL AND a_name IS NULL AND VA009_Batch_ID = " + GetVA009_Batch_ID(), null, null)) > 0)
+            //to check if payment method is CHECK then skip otherwise set these values
+            string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
+                                VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null,
+             Get_TrxName()));
+            if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
             {
-                _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
-                return DocActionVariables.STATUS_INVALID;
+                // to check whether partner bank account and account name is selected on batch line or not
+                if (Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(va009_batchlines_ID) FROM va009_batchlines
+                WHERE c_bp_bankaccount_id IS NULL AND a_name IS NULL AND VA009_Batch_ID = " + GetVA009_Batch_ID(), null, null)) > 0)
+                {
+                    _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
+                    return DocActionVariables.STATUS_INVALID;
+                }
             }
             return DocActionVariables.STATUS_COMPLETED;
         }
