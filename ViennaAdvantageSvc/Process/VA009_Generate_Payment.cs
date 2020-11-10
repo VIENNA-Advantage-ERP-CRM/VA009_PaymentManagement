@@ -227,7 +227,7 @@ namespace ViennaAdvantage.Process
                                       AND NVL(bld.c_payment_id , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
                                       AND  b.va009_batch_id    =" + GetRecord_ID());
-                     // if (IsBankresponse == "Y")
+                    // if (IsBankresponse == "Y")
                     //    sql.Append(" AND bld.va009_bankresponse='RE' ORDER BY bl.c_bpartner_id ASC ");
                     // else if (IsBankresponse == "N")
                     // sql.Append(" ORDER BY bld.va009_batchlines_id ,  bl.c_bpartner_id ASC ");   
@@ -699,6 +699,9 @@ namespace ViennaAdvantage.Process
                                         {
                                             //T.C_BP_BankAccount_ID,//T.swiftcode,//T.Acctnumber,//T.AcctName
                                             _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                                            //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
+                                            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) == 0)
+                                                _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", null);
                                             _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"]));
                                             _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["swiftcode"]));
                                             _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"]));
@@ -857,7 +860,7 @@ namespace ViennaAdvantage.Process
                                 if (completePayment.CompleteIt() == "CO")
                                 {
                                     //to set total amount in case of consolidated payment
-                                    totalPayAmt = Util.GetValueOfDecimal(DB.ExecuteScalar("SELECT SUM(amount) FROM c_paymentallocate WHERE c_payment_id=" + payment[i],null, Get_Trx()));
+                                    totalPayAmt = Util.GetValueOfDecimal(DB.ExecuteScalar("SELECT SUM(amount) FROM c_paymentallocate WHERE c_payment_id=" + payment[i], null, Get_Trx()));
                                     if (totalPayAmt > 0)
                                         completePayment.SetPayAmt(totalPayAmt);
 
@@ -901,7 +904,7 @@ namespace ViennaAdvantage.Process
                                     if (discountAmt > 0)
                                     {
                                         discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                            //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
+                                              //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
                                               BlineDetailCur_ID,
                                                DateTime.Now,
                                                Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
@@ -1140,7 +1143,8 @@ namespace ViennaAdvantage.Process
                     return (e.Message);
                 }
             }
-            else {
+            else
+            {
                 msg = Msg.GetMsg(GetCtx(), "VA009_PaymentAlreadyGenerated");
             }
             return msg;
@@ -1347,6 +1351,9 @@ namespace ViennaAdvantage.Process
                 if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
                 {
                     _pay.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                    //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
+                    if (Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) == 0)
+                        _pay.Set_Value("C_BP_BankAccount_ID", null);
                     _pay.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
                 }
             }
