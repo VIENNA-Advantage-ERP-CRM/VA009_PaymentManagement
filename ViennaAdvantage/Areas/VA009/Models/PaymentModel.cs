@@ -1552,8 +1552,10 @@ namespace VA009.Models
                     int C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='CMC' AND IsActive = 'Y' AND AD_Client_ID="
                             + PaymentData[0].AD_Client_ID + " AND AD_Org_ID IN (0, " + PaymentData[0].AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, null));
 
-                    int no = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(*) FROM C_Cash WHERE IsActive = 'Y' AND DocStatus NOT IN ('CO' , 'CL', 'VO')  
-                                 AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') != to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_CashBook_ID = " + C_CashBook_ID, null, null));
+                    //fetch the Cash_ID with the StatementDate not the AccountDate
+                    int no = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(C_Cash_ID) FROM C_Cash WHERE IsActive = 'Y' AND DocStatus NOT IN ('CO' , 'CL', 'VO')  
+                                 AND StatementDate != " + GlobalVariable.TO_DATE(PaymentData[0].DateTrx, true) + " AND C_CashBook_ID = " + C_CashBook_ID, null, null));
+                    //AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') != to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_CashBook_ID = " + C_CashBook_ID, null, null));
                     if (no > 0)
                     {
                         msg = Msg.GetMsg(ct, "VIS_CantOpenNewCashBook");
@@ -1561,8 +1563,10 @@ namespace VA009.Models
                     }
                     else
                     {
+                        //fetch the Cash_ID with the StatementDate not the AccountDate
                         C_Cash_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_Cash_ID FROM C_Cash WHERE IsActive='Y' AND DocStatus='DR' 
-                                AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') = to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_Cashbook_ID=" + C_CashBook_ID + "", null, null));
+                                    AND StatementDate = " + GlobalVariable.TO_DATE(PaymentData[0].DateTrx, true) + " AND C_CashBook_ID = " + C_CashBook_ID, null, null));
+                        //AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') = to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_Cashbook_ID=" + C_CashBook_ID + "", null, null));
                     }
 
                     MCash _Cash = null;
@@ -1577,7 +1581,9 @@ namespace VA009.Models
                         _Cash.SetAD_Org_ID(PaymentData[0].AD_Org_ID);
                         _Cash.SetC_CashBook_ID(C_CashBook_ID);
                         _Cash.SetC_DocType_ID(C_doctype_ID);
-                        _Cash.SetName(DateTime.Now.ToShortDateString());
+                        //_Cash.SetName(DateTime.Now.ToShortDateString());
+                        //set Name as TransactionDate 
+                        _Cash.SetName(PaymentData[0].DateTrx.Value.ToShortDateString());
                         _Cash.SetDateAcct(PaymentData[0].DateAcct);
                         // to set Transaction date 
                         _Cash.SetStatementDate(PaymentData[0].DateTrx);
@@ -1589,6 +1595,9 @@ namespace VA009.Models
                             ValueNamePair pp = VLogger.RetrieveError();
                             if (pp != null)
                                 msg = pp.GetName();
+                            //if GetName is Empty then it will check GetValue
+                            if (string.IsNullOrEmpty(msg))
+                                msg = Msg.GetMsg("", pp.GetValue());
                             _log.Info(msg);
                             return msg;
                         }
