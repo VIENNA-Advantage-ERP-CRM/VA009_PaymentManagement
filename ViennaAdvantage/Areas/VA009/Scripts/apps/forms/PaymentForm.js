@@ -933,8 +933,9 @@
                 zoomToWindow(infoWinID, "Business Partner Info", "C_BPartner_ID");
             }
             //handled record selection from div level
-            //select/unselect the payment record when click on anywhere in the row div 
-            else if (target.parents(".VA009-payment-wrap")) {
+            //select/unselect the payment record when click on anywhere in the row div
+                //handled when click on payment list div area with out having the records in that area
+            else if (target.parents(".VA009-payment-wrap") && !target.is(".VA009-payment-list")) {
                 //if user click on div class "VA009-payment-wrap" this condition will execute
                 if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked") == undefined) {
                     if (target.find(".VA009-clckd-checkbx").prop("checked")) {
@@ -4438,7 +4439,9 @@
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
-                    VIS.ADialog.info("", null, result, null);
+                    //VIS.ADialog.info("", null, result, null);
+                    // changed info message window to Error message window according to requirement
+                    VIS.ADialog.error("", null, result, null);
                     //w2alert(result.toString());
                 };
 
