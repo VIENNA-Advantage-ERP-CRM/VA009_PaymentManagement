@@ -261,7 +261,10 @@ ul.VA009-right-tabs > li{ padding: 8px 15px;}
     display: flex;
     align-items: center;
 }
-.VA009-search-wrap{ width: 45%;}
+.VA009-search-wrap {
+    width: 45%;
+    display: flex;
+}
 .VA009-search-wrap > input {
     /* border: 1px solid #CCC; */
     height: 31px;
@@ -322,6 +325,9 @@ ul.VA009-right-tabs > li{ padding: 8px 15px;}
 .VA009-payment-wrap input {
     float: left;
     margin: 0;
+}
+.VA009-payment-wrap-selctd {
+    background-color: #e6f5ff;
 }
 .VA009-pay-left {
     width: 91%;
@@ -744,7 +750,7 @@ p.VA009-data-bot:last-child {
 .VA009-left-data .vis-input-wrap {
     margin-bottom: 0;
 }
-.VA009-popfrmrow .VA009-popCheck-data:last-child {
+.VA009-popfrmrow .VA009-popCheck-data:not(:only-child):last-child {
     padding-right: 0;
 }
 .VA009-popfrmradiowrp {
@@ -789,55 +795,4 @@ p.VA009-data-bot:last-child {
 }
 .VA009-padd-right-0 {
     padding-right: 0
-}
-/* RTL CSS*/
-html[dir="rtl"] .VA009-right-part > span,
-html[dir="rtl"] .VA009-pay-amount > span,
-html[dir="rtl"] .VA009-color-green,
-html[dir="rtl"] .VA009-color-red {
-    float: left;
-}
-html[dir="rtl"] .VA009-payment-wrap input,
-html[dir="rtl"] ul.VA009-tabs > li,
-html[dir="rtl"] ul.VA009-right-tabs > li {
-    float: right;
-}
-html[dir="rtl"] .VA009-selectall > label,
-html[dir="rtl"] .VA009-total-textDiv,
-html[dir="rtl"] .VA009-icons-wrap > span,
-html[dir="rtl"] .VA009-right-part > span {
-    margin-left: 0;
-}
-html[dir="rtl"] .VA009-selectall > label {
-    margin-right: 3px;
-}
-html[dir="rtl"] .VA009-total-textDiv,
-html[dir="rtl"] .VA009-icons-wrap > span {
-    margin-right: 15px;
-}
-html[dir="rtl"] .VA009-right-part > span {
-    margin-right: 10px;
-}
-html[dir="rtl"] .VA009-pay-mid-sec > span.glyphicon-play {
-    transform: rotate(180deg);
-}
-html[dir="rtl"] .VA009-padd-right-0 {
-    padding-right: 15px;
-    padding-left: 0;
-}
-html[dir="rtl"] .VA009-payment-list .row {
-    margin-right: -15px;
-    margin-left: -8px;
-}
-html[dir="rtl"] .VA009-popfrmradiowrp label {
-    padding-left: 0;
-    padding-right: 5px;
-}
-html[dir="rtl"] .VA009-payment-wrap {
-    padding-right: 0;
-    padding-left: 10px;
-}
-html[dir="rtl"] .VA009-middle-wrap {
-    border-right: none;
-    border-left: 1px solid rgba(var(--v-c-on-secondary), .2);
 }

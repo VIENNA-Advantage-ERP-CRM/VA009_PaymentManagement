@@ -1552,8 +1552,10 @@ namespace VA009.Models
                     int C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='CMC' AND IsActive = 'Y' AND AD_Client_ID="
                             + PaymentData[0].AD_Client_ID + " AND AD_Org_ID IN (0, " + PaymentData[0].AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, null));
 
-                    int no = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(*) FROM C_Cash WHERE IsActive = 'Y' AND DocStatus NOT IN ('CO' , 'CL', 'VO')  
-                                 AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') != to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_CashBook_ID = " + C_CashBook_ID, null, null));
+                    //fetch the Cash_ID with the StatementDate not the AccountDate
+                    int no = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(C_Cash_ID) FROM C_Cash WHERE IsActive = 'Y' AND DocStatus NOT IN ('CO' , 'CL', 'VO')  
+                                 AND StatementDate != " + GlobalVariable.TO_DATE(PaymentData[0].DateTrx, true) + " AND C_CashBook_ID = " + C_CashBook_ID, null, null));
+                    //AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') != to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_CashBook_ID = " + C_CashBook_ID, null, null));
                     if (no > 0)
                     {
                         msg = Msg.GetMsg(ct, "VIS_CantOpenNewCashBook");
@@ -1561,8 +1563,10 @@ namespace VA009.Models
                     }
                     else
                     {
+                        //fetch the Cash_ID with the StatementDate not the AccountDate
                         C_Cash_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_Cash_ID FROM C_Cash WHERE IsActive='Y' AND DocStatus='DR' 
-                                AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') = to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_Cashbook_ID=" + C_CashBook_ID + "", null, null));
+                                    AND StatementDate = " + GlobalVariable.TO_DATE(PaymentData[0].DateTrx, true) + " AND C_CashBook_ID = " + C_CashBook_ID, null, null));
+                        //AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') = to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_Cashbook_ID=" + C_CashBook_ID + "", null, null));
                     }
 
                     MCash _Cash = null;
@@ -1577,7 +1581,9 @@ namespace VA009.Models
                         _Cash.SetAD_Org_ID(PaymentData[0].AD_Org_ID);
                         _Cash.SetC_CashBook_ID(C_CashBook_ID);
                         _Cash.SetC_DocType_ID(C_doctype_ID);
-                        _Cash.SetName(DateTime.Now.ToShortDateString());
+                        //_Cash.SetName(DateTime.Now.ToShortDateString());
+                        //set Name as TransactionDate 
+                        _Cash.SetName(PaymentData[0].DateTrx.Value.ToShortDateString());
                         _Cash.SetDateAcct(PaymentData[0].DateAcct);
                         // to set Transaction date 
                         _Cash.SetStatementDate(PaymentData[0].DateTrx);
@@ -1589,6 +1595,9 @@ namespace VA009.Models
                             ValueNamePair pp = VLogger.RetrieveError();
                             if (pp != null)
                                 msg = pp.GetName();
+                            //if GetName is Empty then it will check GetValue
+                            if (string.IsNullOrEmpty(msg))
+                                msg = Msg.GetMsg("", pp.GetValue());
                             _log.Info(msg);
                             return msg;
                         }
@@ -1606,7 +1615,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("P");
                                 _cline.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
-                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].convertedAmt)));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].VA009_RecivedAmt)));
                                 _cline.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                 _cline.SetDiscountAmt(-1 * (PaymentData[i].Discount));
                                 _cline.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
@@ -1615,7 +1625,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("R");
                                 _cline.SetAmount(PaymentData[i].VA009_RecivedAmt);
-                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].convertedAmt));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].VA009_RecivedAmt));
                                 _cline.SetOverUnderAmt(PaymentData[i].OverUnder);
                                 _cline.SetDiscountAmt(PaymentData[i].Discount);
                                 _cline.SetWriteOffAmt(PaymentData[i].Writeoff);
@@ -1627,7 +1638,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("P");
                                 _cline.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
-                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].convertedAmt)));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(-1 * (PaymentData[i].VA009_RecivedAmt)));
                                 _cline.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                 _cline.SetDiscountAmt(-1 * (PaymentData[i].Discount));
                                 _cline.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
@@ -1636,7 +1648,8 @@ namespace VA009.Models
                             {
                                 _cline.SetVSS_PAYMENTTYPE("R");
                                 _cline.SetAmount(PaymentData[i].VA009_RecivedAmt);
-                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].convertedAmt));
+                                //both Amount and ConvertedAmt must be equal in CashLine
+                                _cline.SetConvertedAmt(Util.GetValueOfString(PaymentData[i].VA009_RecivedAmt));
                                 _cline.SetOverUnderAmt(PaymentData[i].OverUnder);
                                 _cline.SetDiscountAmt(PaymentData[i].Discount);
                                 _cline.SetWriteOffAmt(PaymentData[i].Writeoff);
@@ -1652,6 +1665,8 @@ namespace VA009.Models
                         _cline.SetC_Currency_ID(cashbookid.GetC_Currency_ID());
                         _cline.SetC_InvoicePaySchedule_ID(PaymentData[i].C_InvoicePaySchedule_ID);
                         _cline.SetC_Invoice_ID(PaymentData[i].C_Invoice_ID);
+                        //to set ConversionType in Cash Journal Line
+                        _cline.SetC_ConversionType_ID(PaymentData[i].CurrencyType);
                         //amit
                         if (!_cline.Save())
                         {
@@ -3560,13 +3575,14 @@ namespace VA009.Models
             List<Dictionary<string, object>> retDic = null;
             StringBuilder qry = new StringBuilder();
             string sql = @"SELECT cb.C_Cashbook_ID, cb.Name || '_' || cu.ISO_Code AS Name FROM C_CashBook cb INNER JOIN C_Currency cu ON cb.C_Currency_ID=cu.C_Currency_ID 
-                    WHERE cb.ISACTIVE='Y' AND cb.AD_Client_ID=" + ct.GetAD_Client_ID();
+                    WHERE cb.ISACTIVE='Y' AND cb.AD_Client_ID=" + ct.GetAD_Client_ID() + " AND cb.AD_Org_ID = " + Util.GetValueOfInt(orgs) + " ORDER BY cb.Name";
             qry.Append(MRole.GetDefault(ct).AddAccessSQL(sql, "cb", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO));
-            if (orgs.Length > 0)
-            {
-                qry.Append(" AND cb.AD_Org_ID IN (" + orgs + ")");
-            }
-            qry.Append(" ORDER BY cb.Name");
+            //commented code, used directly in above query!
+            //if (orgs.Length > 0)
+            //{
+            //    qry.Append(" AND cb.AD_Org_ID IN (" + orgs + ")");
+            //}
+            //qry.Append(" ORDER BY cb.Name");
             DataSet ds = DB.ExecuteDataset(qry.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
