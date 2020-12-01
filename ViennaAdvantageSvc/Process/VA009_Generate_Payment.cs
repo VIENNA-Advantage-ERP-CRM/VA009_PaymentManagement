@@ -676,7 +676,7 @@ namespace ViennaAdvantage.Process
                                         _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                         _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
                                         //to set document date of batch header on all payments and allocations
-                                        _pay.SetDateAcct(_batch.GetVA009_DocumentDate());
+                                        _pay.SetDateAcct(DateTime.Now); //_batch.GetVA009_DocumentDate()
                                         _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                         _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
@@ -961,7 +961,7 @@ namespace ViennaAdvantage.Process
                                     _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                     _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
                                     //to set document date of batch header on all payments and allocations
-                                    _pay.SetDateAcct(_batch.GetVA009_DocumentDate());
+                                    _pay.SetDateAcct(DateTime.Now);//_batch.GetVA009_DocumentDate()
                                     _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                     _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
@@ -1337,7 +1337,7 @@ namespace ViennaAdvantage.Process
             _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
             _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
             //to set document date of batch header on all payments and allocations
-            _pay.SetDateAcct(docdate);
+            _pay.SetDateAcct(DateTime.Now);//docdate
             _pay.SetDateTrx(docdate);
             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
             _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
