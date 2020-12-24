@@ -49,6 +49,8 @@ namespace ViennaAdvantage.Process
         MPayment _pay = null;
         Int32 currencyTo_ID = 0, BlineDetailCur_ID = 0;
 
+        private int allocationId = 0;
+
         #endregion
 
         protected override void Prepare()
@@ -1087,17 +1089,18 @@ namespace ViennaAdvantage.Process
                                                     AND AL.C_Payment_ID =" + _pay.GetC_Payment_ID());
                                             try
                                             {
-                                                using (IDataReader idr = DB.ExecuteReader(sql.ToString(), null, Get_TrxName()))
+                                                //using (IDataReader idr = DB.ExecuteReader(sql.ToString(), null, Get_TrxName()))
+                                                //{
+                                                //    while (idr.Read())
+                                                //    {
+                                                allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
+                                                batchLineDetails.SetC_AllocationHdr_ID(allocationId);
+                                                if (!batchLineDetails.Save(Get_TrxName()))
                                                 {
-                                                    while (idr.Read())
-                                                    {
-                                                        batchLineDetails.SetC_AllocationHdr_ID(Util.GetValueOfInt(idr["C_AllocationHdr_ID"]));
-                                                        if (!batchLineDetails.Save(Get_TrxName()))
-                                                        {
-                                                            return ErrorMessage();
-                                                        }
-                                                    }
+                                                    return ErrorMessage();
                                                 }
+                                                //    }
+                                                //}
                                             }
                                             catch (Exception ex)
                                             {
