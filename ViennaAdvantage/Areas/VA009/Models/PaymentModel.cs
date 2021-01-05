@@ -2344,6 +2344,8 @@ namespace VA009.Models
                         schedule.SetVA009_PaymentType(_Oldschedule.GetVA009_PaymentType());
                         schedule.SetVA009_PaymentTrigger(_Oldschedule.GetVA009_PaymentTrigger());
                         schedule.SetVA009_ExecutionStatus(_Oldschedule.GetVA009_ExecutionStatus());
+                        //JID_1932_1 payment schedule read only
+                        schedule.SetProcessed(true);
                         if (!schedule.Save())
                         {
                             trx.Rollback();
@@ -2513,6 +2515,8 @@ namespace VA009.Models
                     schedule.SetC_Currency_ID(invoice.GetC_Currency_ID());
                     schedule.SetVA009_OpnAmntInvce(Util.GetValueOfDecimal(PaymentData[i].DueAmt));
                     schedule.SetVA009_GrandTotal(_Oldschedule.GetVA009_GrandTotal());
+                    //JID_1932_1 payment schedule read only
+                    schedule.SetProcessed(true);
                     if (!schedule.Save())
                     {
                         trx.Rollback();

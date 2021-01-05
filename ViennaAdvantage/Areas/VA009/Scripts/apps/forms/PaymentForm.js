@@ -4787,8 +4787,8 @@
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
-                    else {
-                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+                    else {                   
+                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');                     
                     }
                 });
 
@@ -5133,7 +5133,7 @@
                             field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
                                 var val = record["DueAmt"];
                                 return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'number' }
+                            }
                         });
                         _Split_Columns.push({
                             field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%',
@@ -5236,7 +5236,7 @@
 
                 $TxtSplitAmt.on('keypress', function (event) {
                     var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
-                    if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57))  && (event.keyCode != 45) && (event.keyCode != 44)) {
+                    if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57))  && (event.keyCode == 45) && (event.keyCode != 44)) {
                         return false;
                     }
 
@@ -5312,7 +5312,8 @@
                         }
 
                         //if (SplitAMt != "") {   done by Bharat
-                        if (DueAmt < SplitAMt) {
+                        //JID_1932_1 if dueamt = spliamt then ne need to split the schedule
+                        if (DueAmt <= SplitAMt) {
                             VIS.ADialog.info("VA009_CantEnterGreaterAmt");
                         }
                         else if (DueAmt > 0) {
@@ -5393,14 +5394,20 @@
 
                 SplitDialog.onOkClick = function () {
                     datasplit = [];
-                    if (Splitgrd.getSelection().length > 0) {
+                    datasplit = Splitgrd.records //no of records on grid
+                    if (Splitgrd.getSelection().length > 0 || datasplit.length > 1 ) {
                         Splitgrd.selectAll();
-                        datasplit = Splitgrd.records;
+                       
+                        //JID_1932_2 check if amount is splitted 
+                        if (datasplit.length == 1) {
+                            VIS.ADialog.info("VA009_SplitRecordFirst");
+                            return false;
+                        }
                         for (var i = 0; i < datasplit.length; i++) {
                             if (Splitgrd.get(Splitgrd.getSelection()[i])['DueDate'] == null) {
                                 VIS.ADialog.info("VA009_PlzSelctDueDate");
                                 return false;
-                            }
+                            }                         
                         }
                         //}
                         $bsyDiv[0].style.visibility = "visible";
