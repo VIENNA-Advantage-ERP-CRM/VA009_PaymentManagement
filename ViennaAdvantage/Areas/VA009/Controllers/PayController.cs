@@ -206,5 +206,22 @@ namespace VA009.Controllers
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// Get true or false based on OrderSchedule count
+        /// </summary>
+        /// <param name="C_Order_ID">C_Order_ID</param>
+        /// <returns>true or false based on count</returns>
+        public JsonResult GetIsAdvanceOrder(int C_Order_ID)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                Ctx ctx = Session["ctx"] as Ctx;
+                PayModel payModel = new PayModel();
+                retJSON = JsonConvert.SerializeObject(payModel.GetIsAdvanceOrder(ctx, C_Order_ID));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
     }
 }

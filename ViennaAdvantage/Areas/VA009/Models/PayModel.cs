@@ -183,6 +183,18 @@ namespace VA009.Models
             return result;
         }
 
+        /// <summary>
+        /// Get VA009_OrderPaySchedule_ID to check it is avanced payment or not
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="c_Order_ID">c_Order_ID</param>
+        /// <returns> bool true or false </returns>
+        public bool GetIsAdvanceOrder(Ctx ctx, int c_Order_ID)
+        {
+            int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(VA009_OrderPaySchedule_ID) FROM VA009_OrderPaySchedule pay INNER JOIN C_Order o ON pay.C_Order_ID=o.C_Order_ID WHERE o.IsActive='Y' AND  o.C_Order_ID=" + c_Order_ID, null, null));
+            return count > 0 ? true : false;
+        }
+
         /// Get Mandate Value from selected Payment Method
         /// </summary>
         /// <param name="ctx"></param>

@@ -83,6 +83,13 @@
         //if (this.isCalloutActive() || value == null) {
         //    return "";
         //}
+
+        // olny for Advance payment on order Schedules otherwise not execute this functio
+        var isAdvOrder = VIS.dataContext.getJSONRecord("Pay/GetIsAdvanceOrder", ctx.getContextAsInt(windowNo, "C_Order_ID"));
+        if (isAdvOrder != null && !isAdvOrder) {
+            return "";
+        }
+
         if (value == null || value.toString() == "") {
             // mTab.setValue("TenderType", null);
             mTab.setValue("VA009_ExecutionStatus", null);
