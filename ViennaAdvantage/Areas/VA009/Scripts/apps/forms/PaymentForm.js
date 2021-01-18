@@ -5127,7 +5127,7 @@
                     if (_Split_Columns.length == 0) {
                         _Split_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
                         _Split_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
-                        _Split_Columns.push({ field: "DocumentNo", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
+                        _Split_Columns.push({ field: "DocumentNo", caption: VIS.Msg.getMsg("VA009_Invoice/Order"), sortable: true, size: '10%' });
                         _Split_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
                         _Split_Columns.push({
                             field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
@@ -5312,7 +5312,7 @@
                         }
 
                         //if (SplitAMt != "") {   done by Bharat
-                        //JID_1932_1 if dueamt = spliamt then ne need to split the schedule
+                        //JID_1932_1if dueamt = spliamt then ne need to split the schedule
                         if (DueAmt <= SplitAMt) {
                             VIS.ADialog.info("VA009_CantEnterGreaterAmt");
                         }
