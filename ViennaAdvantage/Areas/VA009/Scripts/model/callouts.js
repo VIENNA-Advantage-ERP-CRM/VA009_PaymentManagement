@@ -309,7 +309,7 @@
         }
         var C_Order_ID = ctx.getContextAsInt(windowNo, "C_Order_ID");
         var VA009_OrderPaySchedule_ID = ctx.getContextAsInt(windowNo, "VA009_OrderPaySchedule_ID");
-        if (C_Order_ID > 0 && VA009_OrderPaySchedule_ID > 0) {
+        if (C_Order_ID > 0 || VA009_OrderPaySchedule_ID > 0) {
             //	New Payment
             if (ctx.getContextAsInt(windowNo, "C_Payment_ID") == 0
                 && ctx.getContextAsInt(windowNo, "C_BPartner_ID") == 0
