@@ -1274,6 +1274,9 @@
         this.setCalloutActive(true);
         if (value == true) {
             mTab.setValue("VA009_IsPayScheduleTabDisabled", true);
+            //** clearing WeekDay value when Advance checkbox is true ** Dt: 02/04/2021 ** Modified By: Kumar ** //
+            mTab.setValue("NetDay", "");
+            mTab.setValue("WeekOffset", "0");
         }
         else {
             mTab.setValue("VA009_IsPayScheduleTabDisabled", false);
