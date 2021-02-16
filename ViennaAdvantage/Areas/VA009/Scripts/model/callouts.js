@@ -83,6 +83,13 @@
         //if (this.isCalloutActive() || value == null) {
         //    return "";
         //}
+
+        // olny for Advance payment on order Schedules otherwise not execute this functio
+        var isAdvOrder = VIS.dataContext.getJSONRecord("Pay/GetIsAdvanceOrder", ctx.getContextAsInt(windowNo, "C_Order_ID"));
+        if (isAdvOrder != null && !isAdvOrder) {
+            return "";
+        }
+
         if (value == null || value.toString() == "") {
             // mTab.setValue("TenderType", null);
             mTab.setValue("VA009_ExecutionStatus", null);
@@ -309,7 +316,7 @@
         }
         var C_Order_ID = ctx.getContextAsInt(windowNo, "C_Order_ID");
         var VA009_OrderPaySchedule_ID = ctx.getContextAsInt(windowNo, "VA009_OrderPaySchedule_ID");
-        if (C_Order_ID > 0 && VA009_OrderPaySchedule_ID > 0) {
+        if (C_Order_ID > 0 || VA009_OrderPaySchedule_ID > 0) {
             //	New Payment
             if (ctx.getContextAsInt(windowNo, "C_Payment_ID") == 0
                 && ctx.getContextAsInt(windowNo, "C_BPartner_ID") == 0
@@ -1266,6 +1273,29 @@
         }
         this.setCalloutActive(true);
         if (value == true) {
+            mTab.setValue("VA009_IsPayScheduleTabDisabled", true);
+            //** clearing WeekDay value when Advance checkbox is true ** Dt: 02/04/2021 ** Modified By: Kumar ** //
+            mTab.setValue("NetDay", "");
+            mTab.setValue("WeekOffset", "0");
+        }
+        else {
+            mTab.setValue("VA009_IsPayScheduleTabDisabled", false);
+        }
+        this.setCalloutActive(false);
+        return "";
+    };
+
+    //** Disabling PaySchedule tab when WeekDay value is selected ** Dt: 02/04/2021 ** Modified By: Kumar ** //
+    // Is used to update VA009_IsPayScheduleTabDisabled as True / False based on WeekDay. 
+    // If this is TRUE then schedule tab should be Read Only (Disabled)
+    VA009_CalloutPaymentTerm.prototype.SetPayScheduleTabDisabledForWeekDay = function (ctx, windowNo, mTab, mField, value, oldValue) {
+        if (this.isCalloutActive() || value == null || value.toString() == "") {
+            mTab.setValue("VA009_IsPayScheduleTabDisabled", false);
+            return "";
+        }
+        this.setCalloutActive(true);
+
+        if (Util.getValueOfInt(value) > 0) {
             mTab.setValue("VA009_IsPayScheduleTabDisabled", true);
         }
         else {
