@@ -212,14 +212,14 @@ namespace VA009.Controllers
         /// </summary>
         /// <param name="C_Order_ID">C_Order_ID</param>
         /// <returns>true or false based on count</returns>
-        public JsonResult GetIsAdvanceOrder(int C_Order_ID)
+        public JsonResult GetIsAdvanceOrder(string fields)
         {
             string retJSON = "";
             if (Session["ctx"] != null)
             {
                 Ctx ctx = Session["ctx"] as Ctx;
                 PayModel payModel = new PayModel();
-                retJSON = JsonConvert.SerializeObject(payModel.GetIsAdvanceOrder(ctx, C_Order_ID));
+                retJSON = JsonConvert.SerializeObject(payModel.GetIsAdvanceOrder(ctx, fields));
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
