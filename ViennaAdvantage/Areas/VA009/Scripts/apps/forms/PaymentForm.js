@@ -619,8 +619,13 @@
 
             //Bank TO Bank
             $PayBankToBank.on("click", function (e) {
-
-                _loadFunctions.B2B_Dialog();
+                //bug176:for bank to bank transfer if any schedule is selected then donot let open the dialog 
+                if (SlctdPaymentIds.length > 0) {
+                    VIS.ADialog.info("VA009_PlzNotSelctSch");
+                }
+                else {
+                    _loadFunctions.B2B_Dialog();
+                }
             });
 
             $Duedateul.on("change", function (e) {
@@ -6435,7 +6440,7 @@
 
                 _addAmt = ("<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheck_" + $self.windowNo + "><div class='vis-control-wrap'>"
                     + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
-                    + "<label>" + VIS.Msg.getMsg("CheckNo") + "</label>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_ChequeNo") + "</label>"
                     + "</div> </div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheckDate_" + $self.windowNo + "><div class='vis-control-wrap'>"
