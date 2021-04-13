@@ -67,7 +67,15 @@
                                 VIS.ADialog.info(error + "," + VIS.Msg.getMsg("VA009_PaymentCompletedWith") + DocNumber)
                         }
                         else {
-                            downloadURL("\\PaymentFiles\\" + result[i]._filename, i);
+                            // checking extension
+                            var varExt = result[i]._filename.split('.');
+                            if (varExt[varExt.length - 1] == "txt" || varExt[varExt.length - 1] == "TXT") {
+                                // download text file
+                                downloadTextFile("\\PaymentFiles\\" + result[i]._filename, result[i]._filename, i);
+                            }
+                            else {
+                                downloadURL("\\PaymentFiles\\" + result[i]._filename, i);
+                            }
 
                         }
                     }
@@ -92,7 +100,7 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ "RecordID": RecordID, "isBatch": batchWindow, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID")  }),
+                data: ({ "RecordID": RecordID, "isBatch": batchWindow, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID") }),
                 success: function (result) {
                     //result = JSON.parse(result);
                     docNo = result;
@@ -111,6 +119,32 @@
             var $idown;  // Keep it outside of the function, so it's initialized once.
             $idown = $('<iframe>', { id: 'idown_' + no, src: url }).hide().appendTo('body');
             //}
+        };
+
+        /**
+        * This function is used to download Text File
+        * @param {any} url
+        * @param {any} fileName
+        * @param {any} no
+        */
+        var downloadTextFile = function (url, fileName, no) {
+            //Create anchor tag
+            var link = document.createElement('a');
+
+            //Define Url
+            link.href = url;
+
+            // set fileName as attribute
+            link.setAttribute('download', fileName);
+
+            //Firefox requires the link to be in the body
+            document.body.appendChild(link);
+
+            //simulate click
+            link.click();
+
+            //remove the link when done
+            document.body.removeChild(link);
         };
 
         this.getRoot = function () {

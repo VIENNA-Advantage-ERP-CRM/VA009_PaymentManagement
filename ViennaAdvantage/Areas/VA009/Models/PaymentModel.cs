@@ -5219,7 +5219,7 @@ namespace VA009.Models
             PaymentResponse obj = null;
             sql.Clear();
             sql.Append(@"SELECT bpc.value FROM c_payment p INNER JOIN VA009_BankPaymentClass pc
-                                  ON (pc.C_bankAccount_ID= p.c_bankaccount_id AND pc.VA009_PaymentMethod_ID=p.VA009_PaymentMethod_ID)
+                                  ON (pc.C_bankAccount_ID= p.c_bankaccount_id AND pc.VA009_PaymentMethod_ID=p.VA009_PaymentMethod_ID AND pc.IsActive = 'Y')
                                   INNER JOIN VA009_PaymentClass  bpc ON pc.VA009_PaymentClass_ID=bpc.VA009_PaymentClass_ID ");
             if (isBatch)
             {
@@ -5282,7 +5282,7 @@ namespace VA009.Models
             if (Class.Contains("VA009_"))
                 type = Type.GetType(_className);
             else
-                type = ModuleTypeConatiner.GetClassType(_className, Class);
+                type = ClassTypeContainer.GetClassType(_className, Class.Substring(0, CharcterIndex));
 
             if (type != null)
             {
