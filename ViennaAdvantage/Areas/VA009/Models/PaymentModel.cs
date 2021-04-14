@@ -2743,6 +2743,7 @@ namespace VA009.Models
                         {
                             //payselectionID += _PaySelection.GetC_PaySelection_ID() + " , ";
                             NextRecord = true;
+                          
                         }
                     }
                     else if (recordSequence[i].C_BPartner_ID != recordSequence[i - 1].C_BPartner_ID)
@@ -4415,11 +4416,25 @@ namespace VA009.Models
                         _ord = new MOrder(ct, orderPaySchedule.GetC_Order_ID(), trx);
                         _curr = new MCurrency(ct, orderPaySchedule.GetC_Currency_ID(), trx);
                         //_doctype = new MDocType(ct, _ord.GetC_DocType_ID(), trx);
-                        _doctype = MDocType.Get(ct, _ord.GetC_DocType_ID());
+                        // _doctype = MDocType.Get(ct, _ord.GetC_DocType_ID());
+                       
+                        //Bug177 Get Doctype 
+                        if (!_ord.IsSOTrx())
+                        {
+                            //Ap Payment
+                            _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='APP' AND IsActive = 'Y' AND AD_Client_ID="
+                                + _ord.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
+                        }
+                        else
+                        {
+                            //Ar Receipt
+                            _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='ARR' AND IsActive = 'Y' AND AD_Client_ID="
+                                + _ord.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
+                        }
                         _pay = new MPayment(ct, 0, trx);
                         _pay.SetAD_Client_ID(Util.GetValueOfInt(orderPaySchedule.GetAD_Client_ID()));
                         _pay.SetAD_Org_ID(Util.GetValueOfInt(AD_Org_ID));
-                        _pay.SetC_DocType_ID(_doctype.GetC_DocType_ID());
+                        _pay.SetC_DocType_ID(_doctype_ID);
                         _pay.SetDateAcct(Util.GetValueOfDateTime(DateAcct));
                         //to set trx date 
                         _pay.SetDateTrx(Util.GetValueOfDateTime(DateTrx));
@@ -5204,7 +5219,7 @@ namespace VA009.Models
             PaymentResponse obj = null;
             sql.Clear();
             sql.Append(@"SELECT bpc.value FROM c_payment p INNER JOIN VA009_BankPaymentClass pc
-                                  ON (pc.C_bankAccount_ID= p.c_bankaccount_id AND pc.VA009_PaymentMethod_ID=p.VA009_PaymentMethod_ID)
+                                  ON (pc.C_bankAccount_ID= p.c_bankaccount_id AND pc.VA009_PaymentMethod_ID=p.VA009_PaymentMethod_ID AND pc.IsActive = 'Y')
                                   INNER JOIN VA009_PaymentClass  bpc ON pc.VA009_PaymentClass_ID=bpc.VA009_PaymentClass_ID ");
             if (isBatch)
             {
@@ -5267,7 +5282,7 @@ namespace VA009.Models
             if (Class.Contains("VA009_"))
                 type = Type.GetType(_className);
             else
-                type = ModuleTypeConatiner.GetClassType(_className, Class);
+                type = ClassTypeContainer.GetClassType(_className, Class.Substring(0, CharcterIndex));
 
             if (type != null)
             {
@@ -5468,7 +5483,14 @@ namespace VA009.Models
                             // _Bt.SetProcessed(true);
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
                             if (isconsolidate == "Y")
+                            {
                                 _Bt.SetVA009_Consolidate(true);
+                            }
+                            else
+                            {
+                                //Bug175 set consolidated check box false if on form not checked.
+                                _Bt.SetVA009_Consolidate(false);
+                            }
                             // if overwrite payment method is true then set payment method on Batch
                             if (isOverwrite == "Y")
                             {
@@ -5499,6 +5521,8 @@ namespace VA009.Models
 
                         }
                         #endregion
+
+
 
                         #region Create Batch Lines and Details
                         if (batchid > 0)
