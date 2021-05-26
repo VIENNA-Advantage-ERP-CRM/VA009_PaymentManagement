@@ -1318,13 +1318,30 @@
                         _CHQPay_Columns.push({
                             field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', render: function (record, index, col_index) {
                                 //Update the CheckNumber in form field or grid field either one of the field is changed
+                                //it will update when edited field is empty and when do change the value on CheckNumber field on form
                                 if (record.changes != undefined && event.currentTarget.id != undefined) {
                                     if (event.currentTarget.id == $POPtxtCheckNumber.toArray()[0].id) {
-                                        return record["CheckNumber"];
+                                        //wather on grid selected only one then if you change the value on checkNumber it will change grid field and vice versa
+                                        if (chqpaygrd.records.length == 1) {
+                                            record.changes.CheckNumber = record.CheckNumber;
+                                            return record.CheckNumber;
+                                        }
+                                        else {
+                                            if (record.changes.CheckNumber == "" || record.changes.CheckNumber == 0) {
+                                                record.changes.CheckNumber = record.CheckNumber;
+                                                return record.CheckNumber;
+                                            }
+                                            else {
+                                                return record.changes.CheckNumber;
+                                            }
+                                        }
                                     }
                                     else {
                                         return record.changes.CheckNumber;
                                     }
+                                }
+                                else {
+                                    return record.CheckNumber;
                                 }
                             }, editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' }
                         });
@@ -1878,7 +1895,10 @@
                                 if (event.column == 10) {
                                     chqpaygrd.records[event.index]['CheckNumber'] = event.value_new;
                                     //Update $POPtxtCheckNumber when change grid checkDate
-                                    $POPtxtCheckNumber.val(event.value_new);
+                                    //CheckNumber field will update when it grid records are only one
+                                    if (chqpaygrd.records.length == 1) {
+                                        $POPtxtCheckNumber.val(event.value_new);
+                                    }
                                 }
                                 if (event.column == 11)
                                     chqpaygrd.records[event.index]['CheckDate'] = event.value_new;
