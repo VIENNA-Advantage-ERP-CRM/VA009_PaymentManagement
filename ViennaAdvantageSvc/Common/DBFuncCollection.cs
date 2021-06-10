@@ -333,7 +333,7 @@ namespace ViennaAdvantage.Common
                     }
                 }
             }
-            //Get Payment Date Order By DueDate
+            //Get Payment Data Order By DueDate
             sql.Replace(sql.ToString(), "SELECT * FROM ( " + sql.ToString() + " ) t ORDER BY t.va009_plannedduedate");
 
             return sql.ToString();
