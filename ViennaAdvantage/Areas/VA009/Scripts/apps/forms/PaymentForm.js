@@ -1315,7 +1315,36 @@
                             }, editable: { type: 'number' }
                         });
 
-                        _CHQPay_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
+                        _CHQPay_Columns.push({
+                            field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '12%', render: function (record, index, col_index) {
+                                //Update the CheckNumber in form field or grid field either one of the field is changed
+                                //it will update when edited field is empty and when do change the value on CheckNumber field on form
+                                if (record.changes != undefined && event.currentTarget.id != undefined) {
+                                    if (event.currentTarget.id == $POPtxtCheckNumber.toArray()[0].id) {
+                                        //wather on grid selected only one then if you change the value on checkNumber it will change grid field and vice versa
+                                        if (chqpaygrd.records.length == 1) {
+                                            record.changes.CheckNumber = record.CheckNumber;
+                                            return record.CheckNumber;
+                                        }
+                                        else {
+                                            if (record.changes.CheckNumber == "" || record.changes.CheckNumber == 0) {
+                                                record.changes.CheckNumber = record.CheckNumber;
+                                                return record.CheckNumber;
+                                            }
+                                            else {
+                                                return record.changes.CheckNumber;
+                                            }
+                                        }
+                                    }
+                                    else {
+                                        return record.changes.CheckNumber;
+                                    }
+                                }
+                                else {
+                                    return record.CheckNumber;
+                                }
+                            }, editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' }
+                        });
                         _CHQPay_Columns.push({
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
                             render: function (record, index, col_index) {
@@ -1387,7 +1416,7 @@
                         onChange: function (event) {
                             window.setTimeout(function () {
                                 if (chqpaygrd.getChanges(event.recid) != undefined) {
-                                    var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $POP_cmbBankAccount.val(), "CurrencyFrom": "B" }, null);
+                                    var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), "CurrencyFrom": "B" }, null);
                                     if (stdPrecision == null || stdPrecision == 0) {
                                         stdPrecision = 2;
                                     }
@@ -1863,8 +1892,14 @@
                                     chqpaygrd.refreshCell(event.recid, "Writeoff");
                                     chqpaygrd.refreshCell(event.recid, "Discount");
                                 }
-                                if (event.column == 10)
+                                if (event.column == 10) {
                                     chqpaygrd.records[event.index]['CheckNumber'] = event.value_new;
+                                    //Update $POPtxtCheckNumber when change grid checkDate
+                                    //CheckNumber field will update when it grid records are only one
+                                    if (chqpaygrd.records.length == 1) {
+                                        $POPtxtCheckNumber.val(event.value_new);
+                                    }
+                                }
                                 if (event.column == 11)
                                     chqpaygrd.records[event.index]['CheckDate'] = event.value_new;
                                 if (event.column == 2)
