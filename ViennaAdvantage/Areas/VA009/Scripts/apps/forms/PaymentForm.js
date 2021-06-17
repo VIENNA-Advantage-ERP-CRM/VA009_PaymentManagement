@@ -2534,6 +2534,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -3650,6 +3652,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -4476,6 +4480,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -5089,6 +5095,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -5481,6 +5489,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -6317,6 +6327,8 @@
                                                         $divBank.find('.VA009-right-data-main').remove();
                                                         $divBank.find('.VA009-accordion').remove();
                                                         pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                                                        //after successfully created Payment selectall checkbox should be false
+                                                        $selectall.prop('checked', false);
                                                         //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                                                         loadPaymetsAll();
                                                         $bsyDiv[0].style.visibility = "hidden";
@@ -7861,11 +7873,28 @@
         //Set Size OF Div's
         //********************
         this.setSize = function () {
-            $table.height($(".VA009-main-container").height());
-
-            $("#VA009-content-area_" + $self.windowNo).height($("#VA009-main-container_" + $self.windowNo).height() - 20);
-            $("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
-            lbdata.height($lbmain.height() - (43 + 20));
+            //Set Payment Form Design, on refresh with mutiple tabs
+            //$table.height($(".VA009-main-container").height());
+            var container_h = $("#VA009-main-container_" + $self.windowNo).height();
+            var midpanel_h = $("#VA009-middle-wrap_" + $self.windowNo).height();
+            var leftpanel_h = 0;
+            if (container_h == 0) {
+                container_h = window.innerHeight - (40 + 43 + 24); // window height - (Header panel - Title Panel - Footer panel)
+                midpanel_h = container_h - 85;
+                leftpanel_h = container_h - 90;
+            }
+            $table.height(container_h);
+            //If left Panel height is > 0 then this condtion will execute
+            if (leftpanel_h <= $lbmain.height()) {
+                leftpanel_h = $lbmain.height();
+                midpanel_h = container_h;
+            }
+            //$("#VA009-content-area_" + $self.windowNo).height($("#VA009-main-container_" + $self.windowNo).height() - 20);
+            $("#VA009-content-area_" + $self.windowNo).height(container_h - 20);
+            //$("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
+            $("#VA009_Paymntlst_" + $self.windowNo).height(midpanel_h - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
+            //lbdata.height($lbmain.height() - (43 + 20));
+            lbdata.height(leftpanel_h - (43 + 20));
         };
 
         this.lockUI = function () {
