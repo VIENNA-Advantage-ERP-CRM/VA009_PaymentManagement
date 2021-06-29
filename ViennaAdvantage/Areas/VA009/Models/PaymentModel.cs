@@ -3836,7 +3836,6 @@ namespace VA009.Models
                             _dueAmt = MConversionRate.Convert(ct, _payschedule.GetDueAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
                             if (_dueAmt == 0 && _payschedule.GetDueAmt() != 0)
                             {
-                                trx.Rollback();
                                 ex.Append(Msg.GetMsg(ct, "NoCurrencyConversion") + ": " + _invoice.GetDocumentNo());
                                 _log.Info(ex.ToString());
                             }
