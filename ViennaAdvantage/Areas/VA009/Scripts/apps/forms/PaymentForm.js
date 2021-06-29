@@ -5187,11 +5187,18 @@
                             field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.DueDate == undefined) {
+                                if (record.changes == undefined || record.changes.DueDate == "") {
                                     val = record["DueDate"];
                                 }
                                 else {
-                                    val = record.changes.DueDate;
+                                    //DueDate Can't be less than the DateAcct
+                                    if (new Date(record.changes.DueDate).toLocaleDateString() >= new Date(Splitgrd.records[index]['DateAcct']).toLocaleDateString()) {
+                                        val = record.changes.DueDate;
+                                    }
+                                    else {
+                                        val = record["DueDate"];
+                                        record.changes.DueDate = record["DueDate"];
+                                    }
                                 }
                                 return new Date(val).toLocaleDateString();
                             }, style: 'text-align: left', editable: { type: 'date' }
@@ -5269,6 +5276,7 @@
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
                         line["TransactionType"] = rslt[i].TransactionType;
+                        line["DateAcct"] = rslt[i].DateAcct;
                         popupgrddata.push(line);
                     }
                     w2utils.encodeTags(popupgrddata);
@@ -5279,7 +5287,18 @@
                 Splitgrd.on('change', function (event) {
 
                     if (event.column == 5)
-                        Splitgrd.records[event.index]['DueDate'] = event.value_new;
+                        //handled on change event as well DueDate can't less than the DateAcct
+                        if (event.value_new != "") {
+                            if (new Date(event.value_new).toLocaleDateString() >= new Date(Splitgrd.records[event.index]['DateAcct']).toLocaleDateString()) {
+                                Splitgrd.records[event.index]['DueDate'] = event.value_new;
+                            }
+                            else {
+                                Splitgrd.records[event.index]['DueDate'] = event.value_previous == "" ? event.value_original : event.value_previous;
+                                event.value_previous = event.value_previous == "" ? event.value_original : event.value_previous;
+                                VIS.ADialog.info("VA009_PlsSelectDueDateMstGreaterThanTrxDate");
+                                return false;
+                            }
+                        }
                 });
 
                 $TxtSplitAmt.on('keypress', function (event) {
@@ -6306,43 +6325,50 @@
                                 if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
                                     if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
                                         if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                            //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
-                                            var isValid = true;
-                                            if (isValid) {
-                                                $bsyDiv[0].style.visibility = "visible";
-                                                $.ajax({
-                                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
-                                                    type: "POST",
-                                                    datatype: "json",
-                                                    // contentType: "application/json; charset=utf-8",
-                                                    async: true,
-                                                    data: ({
-                                                        InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
-                                                        BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
-                                                        DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
-                                                    }),
-                                                    success: function (result) {
-                                                        result = JSON.parse(result);
-                                                        $divPayment.find('.VA009-payment-wrap').remove();
-                                                        $divBank.find('.VA009-right-data-main').remove();
-                                                        $divBank.find('.VA009-accordion').remove();
-                                                        pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                                                        //after successfully created Payment selectall checkbox should be false
-                                                        $selectall.prop('checked', false);
-                                                        //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                                                        loadPaymetsAll();
-                                                        $bsyDiv[0].style.visibility = "hidden";
-                                                        VIS.ADialog.info("", null, result, "");
-                                                    },
-                                                    error: function (ex) {
-                                                        console.log(ex);
-                                                        $bsyDiv[0].style.visibility = "hidden";
-                                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                                    }
-                                                });
+                                            //Check CurrencyType Selected or not
+                                            if ($POP_CurrencyType.val() > 0) {
+                                                //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
+                                                var isValid = true;
+                                                if (isValid) {
+                                                    $bsyDiv[0].style.visibility = "visible";
+                                                    $.ajax({
+                                                        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
+                                                        type: "POST",
+                                                        datatype: "json",
+                                                        // contentType: "application/json; charset=utf-8",
+                                                        async: true,
+                                                        data: ({
+                                                            InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
+                                                            BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
+                                                            DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
+                                                        }),
+                                                        success: function (result) {
+                                                            result = JSON.parse(result);
+                                                            $divPayment.find('.VA009-payment-wrap').remove();
+                                                            $divBank.find('.VA009-right-data-main').remove();
+                                                            $divBank.find('.VA009-accordion').remove();
+                                                            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                                                            //after successfully created Payment selectall checkbox should be false
+                                                            $selectall.prop('checked', false);
+                                                            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+                                                            loadPaymetsAll();
+                                                            $bsyDiv[0].style.visibility = "hidden";
+                                                            VIS.ADialog.info("", null, result, "");
+                                                        },
+                                                        error: function (ex) {
+                                                            console.log(ex);
+                                                            $bsyDiv[0].style.visibility = "hidden";
+                                                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                                        }
+                                                    });
+                                                }
+                                                else {
+                                                    VIS.ADialog.info("VA009_PlzSelctapprPM");
+                                                    return false;
+                                                }
                                             }
                                             else {
-                                                VIS.ADialog.info("VA009_PlzSelctapprPM");
+                                                VIS.ADialog.info("VA009_SelectConversionType");
                                                 return false;
                                             }
                                         }
