@@ -5295,7 +5295,8 @@
                             else {
                                 Splitgrd.records[event.index]['DueDate'] = event.value_previous == "" ? event.value_original : event.value_previous;
                                 event.value_previous = event.value_previous == "" ? event.value_original : event.value_previous;
-                                VIS.ADialog.info("VA009_PlsSelectDueDateMstGreaterThanTrxDate");
+                                //message text size not more 22 characters
+                                VIS.ADialog.info("VA009_PlsSelctDueDateGreaterThanTrxDate");
                                 return false;
                             }
                         }
