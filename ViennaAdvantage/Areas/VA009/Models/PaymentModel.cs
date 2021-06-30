@@ -3895,44 +3895,48 @@ namespace VA009.Models
                             }
                         }
                         #endregion
-                        if (!_pay.Save())
+                        //_dueAmt should not be zero
+                        if (_dueAmt != 0)
                         {
-                            ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
-                            ValueNamePair pp = VLogger.RetrieveError();
-                            if (pp != null)
+                            if (!_pay.Save())
                             {
-                                ex.Append(", " + pp.GetName());
+                                ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                ValueNamePair pp = VLogger.RetrieveError();
+                                if (pp != null)
+                                {
+                                    ex.Append(", " + pp.GetName());
+                                }
+                                _log.Info(ex.ToString());
                             }
-                            _log.Info(ex.ToString());
-                        }
-                        else
-                        {
-                            _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                            if (_result[1].Equals("Y"))
-                            {
-                                docno.Append(_pay.GetDocumentNo());
-                            }
-                            //if (_pay.CompleteIt() == "CO")
-                            //{
-                            //    _pay.SetProcessed(true);
-                            //    _pay.SetDocAction("CL");
-                            //    _pay.SetDocStatus("CO");
-                            //    _pay.Save();
-                            //    docno.Append(_pay.GetDocumentNo());
-                            //}
                             else
                             {
-                                ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ": " + _pay.GetDocumentNo());
-                                if (_pay.GetProcessMsg() != null && _pay.GetProcessMsg().IndexOf("@") != -1)
+                                _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                                if (_result[1].Equals("Y"))
                                 {
-                                    processMsg = Msg.ParseTranslation(ct, _pay.GetProcessMsg());
+                                    docno.Append(_pay.GetDocumentNo());
                                 }
+                                //if (_pay.CompleteIt() == "CO")
+                                //{
+                                //    _pay.SetProcessed(true);
+                                //    _pay.SetDocAction("CL");
+                                //    _pay.SetDocStatus("CO");
+                                //    _pay.Save();
+                                //    docno.Append(_pay.GetDocumentNo());
+                                //}
                                 else
                                 {
-                                    processMsg = Msg.GetMsg(ct, _pay.GetProcessMsg());
+                                    ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ": " + _pay.GetDocumentNo());
+                                    if (_pay.GetProcessMsg() != null && _pay.GetProcessMsg().IndexOf("@") != -1)
+                                    {
+                                        processMsg = Msg.ParseTranslation(ct, _pay.GetProcessMsg());
+                                    }
+                                    else
+                                    {
+                                        processMsg = Msg.GetMsg(ct, _pay.GetProcessMsg());
+                                    }
+                                    ex.Append(", " + processMsg);
+                                    _log.Info(ex.ToString());
                                 }
-                                ex.Append(", " + processMsg);
-                                _log.Info(ex.ToString());
                             }
                         }
                     }

@@ -2549,6 +2549,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -5296,8 +5298,11 @@
                                 Splitgrd.records[event.index]['DueDate'] = event.value_previous == "" ? event.value_original : event.value_previous;
                                 event.value_previous = event.value_previous == "" ? event.value_original : event.value_previous;
                                 //message text size not more 22 characters
-                                VIS.ADialog.info("VA009_PlsSelctDueDateGreaterThanTrxDate");
-                                return false;
+                                //hide of Date picker div before Pop-up will be displayed
+                                window.setTimeout(function () {
+                                    VIS.ADialog.info("VA009_PlsSelctDueDateGreaterThanTrxDate");
+                                }, 5);
+                                //return false;
                             }
                         }
                 });
