@@ -1349,7 +1349,9 @@
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                                if (record.changes == undefined || record.changes.CheckDate == "") {
                                     val = record["CheckDate"];
                                 }
                                 else {
@@ -1901,7 +1903,14 @@
                                     }
                                 }
                                 if (event.column == 11)
-                                    chqpaygrd.records[event.index]['CheckDate'] = event.value_new;
+                                    //Used do double click on CheckDate field and closed without selecting the value at 
+                                    //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                                    if (event.value_new != "") {
+                                        chqpaygrd.records[event.index]['CheckDate'] = event.value_new;
+                                    }
+                                    else {
+                                        chqpaygrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                                    }
                                 if (event.column == 2)
                                     chqpaygrd.records[event.index]['Description'] = event.value_new;
                             }, 100);
@@ -2086,6 +2095,12 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $POP_cmbBank.val(0).prop('selected', true);
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.empty();
+                        $POP_cmbBankAccount.append("<option value='0'></option>");
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
@@ -2168,7 +2183,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2186,7 +2201,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2287,6 +2302,22 @@
                     else {
                         $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
+                    //used ajax call to get Converted Amount
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                        type: "POST",
+                        datatype: "json",
+                        // contentType: "application/json; charset=utf-8",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackchqReload(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
                 });
 
                 function callbackchqReload(result) {
@@ -2353,9 +2384,11 @@
                                                 _data["ConvertedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['ConvertedAmt'];
                                                 _data["PaymwentBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['PaymwentBaseType'];
                                                 _data["TransactionType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'];
-
-                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                //validate zero also, if the value is zero it will ask to enter the recieved amount
+                                                //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                if (VIS.Utility.Util.getValueOfInt(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
                                                     _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
+                                                }
                                                 else {
                                                     VIS.ADialog.info(("VA009_PLPayAmt"));
                                                     chqpaygrd.selectNone();
@@ -2756,6 +2789,12 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $RPOP_cmbBank.val(0).prop('selected', true);
+                        $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $RPOP_cmbBankAccount.empty();
+                        $RPOP_cmbBankAccount.append("<option value='0'></option>");
+                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
@@ -2802,7 +2841,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2820,7 +2859,8 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        //passed Org and DateAcct parameters to get the data according to the updated values
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2839,6 +2879,21 @@
                     else {
                         $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
+                    //Used ajax Cal to get the Converted Amount when change the DateAcct
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                        type: "GET",
+                        datatype: "json",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackchqReload(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
                 });
 
                 function callbackchqReload(result) {
@@ -2934,7 +2989,9 @@
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                                if (record.changes == undefined || record.changes.CheckDate == "") {
                                     val = record["CheckDate"];
                                 }
                                 else {
@@ -3460,8 +3517,16 @@
                                 }
                                 if (event.column == 10)
                                     chqrecgrd.records[event.index]['CheckNumber'] = event.value_new;
-                                if (event.column == 11)
-                                    chqrecgrd.records[event.index]['CheckDate'] = event.value_new;
+                                if (event.column == 11) {
+                                    //Used do double click on CheckDate field and closed without selecting the value at 
+                                    //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                                    if (event.value_new != "") {
+                                        chqrecgrd.records[event.index]['CheckDate'] = event.value_new;
+                                    }
+                                    else {
+                                        chqrecgrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                                    }
+                                }
                                 if (event.column == 2)
                                     chqrecgrd.records[event.index]['Description'] = event.value_new;
                             }, 100);
@@ -3587,8 +3652,11 @@
                                                     chqrecgrd.selectNone();
                                                     return false;
                                                 }
-                                                if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                //If the VA009_RecivedAmt value is "0" then the below condition will not work
+                                                //if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                if (VIS.Utility.Util.getValueOfInt(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
                                                     _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                                }
                                                 else {
                                                     VIS.ADialog.info(("VA009_PLRecivedAmt"));
                                                     chqrecgrd.selectNone();
@@ -3967,7 +4035,8 @@
                                 type: "POST",
                                 datatype: "json",
                                 async: true,
-                                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: currency, CurrencyType: $pop_cmbCurrencyType.val() }),
+                                //added Org and AccDate parameters to get the result with respect to the input values
+                                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: currency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                                 success: function (result) {
                                     callbackCASHPay(result);
                                 },
@@ -3987,7 +4056,25 @@
                         type: "POST",
                         datatype: "json",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackCASHPay(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+                });
+
+                //on change event for DateAcct it should convert the Amount accordingly
+                $POP_DateAcct.on("change", function () {
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
+                        type: "POST",
+                        datatype: "json",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackCASHPay(result);
                         },
@@ -4697,7 +4784,9 @@
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                                if (record.changes == undefined || record.changes.CheckDate == "") {
                                     val = record["CheckDate"];
                                 }
                                 else {
@@ -4835,7 +4924,13 @@
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
-                    else {                   
+                    else {                
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $POP_cmbBank.val(0).prop('selected', true);
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.empty();
+                        $POP_cmbBankAccount.append("<option value='0'></option>");
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');                     
                     }
                 });
@@ -4879,7 +4974,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -4897,7 +4992,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -4957,8 +5052,16 @@
                 BatchGrd.on('change', function (event) {
                     if (event.column == 7)
                         BatchGrd.records[event.index]['CheckNumber'] = event.value_new;
-                    if (event.column == 8)
-                        BatchGrd.records[event.index]['CheckDate'] = event.value_new;
+                    if (event.column == 8) {
+                        //Used do double click on CheckDate field and closed without selecting the value at 
+                        //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                        if (event.value_new != "") {
+                            BatchGrd.records[event.index]['CheckDate'] = event.value_new;
+                        }
+                        else {
+                            BatchGrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                        }
+                    }
                     if (event.column == 9)
                         BatchGrd.records[event.index]['ValidMonths'] = event.value_new;
                 });
@@ -6200,6 +6303,12 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $POP_cmbBank.val(0).prop('selected', true);
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.empty();
+                        $POP_cmbBankAccount.append("<option value='0'></option>");
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
