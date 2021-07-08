@@ -3061,11 +3061,11 @@ namespace VA009.Models
                         {
                             if (PaymentData[i].DueAmt < 0)
                             {
-                                _payData.convertedAmt = PaymentData[i].DueAmt;
+                                _payData.convertedAmt = -1 * PaymentData[i].DueAmt;//On UI should get amount in positive sign
                             }
                             else
                             {
-                                _payData.convertedAmt = -1 * PaymentData[i].DueAmt; // -1 Because during payble dont show negative amount on UI
+                                _payData.convertedAmt = PaymentData[i].DueAmt; // -1 Because during payble dont show negative amount on UI
                             }
                         }
                         else
@@ -3278,7 +3278,7 @@ namespace VA009.Models
                             //modified according to user selected AcctDate and BankAccount Org_ID
                             //convrtedamt = -1 * MConversionRate.Convert(ctx, -1 * PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
                             convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
-                            convrtedamt = convrtedamt < 0 ? convrtedamt : -1 * convrtedamt;
+                            convrtedamt = convrtedamt >= 0 ? convrtedamt : -1 * convrtedamt; //on UI will get amount in positive sign
                         }
                         else
                         {
@@ -3296,12 +3296,12 @@ namespace VA009.Models
                     {
                         if (PaymentData[i].DueAmt < 0)
                         {
-                            _payData.DueAmt = PaymentData[i].DueAmt;
+                            _payData.DueAmt = -1 * PaymentData[i].DueAmt; //on UI will get amount in positive sign
                         }
                         else
                         {
-                            //missing sign added
-                            _payData.DueAmt = -1 * PaymentData[i].DueAmt; //-1 Because during payble dont show negative amount on UI
+                            //on UI will get amount in positive sign
+                            _payData.DueAmt = PaymentData[i].DueAmt; //-1 Because during payble dont show negative amount on UI
                         }
                     }
                     else
