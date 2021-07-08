@@ -2972,7 +2972,17 @@ namespace VA009.Models
             return checkNo;
         }
 
-        public List<PaymentData> ConvertedAmt(Ctx ctx, GeneratePaymt[] PaymentData, int BankAccount, int CurrencyType)
+        /// <summary>
+        /// Get Payment Data
+        /// </summary>
+        /// <param name="ctx">Current Context</param>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="BankAccount">C_BankAccount_ID</param>
+        /// <param name="CurrencyType">C_ConversionType_ID</param>
+        /// <param name="dateAcct">Account Date</param>
+        /// <param name="_org_Id">AD_Org_ID</param>
+        /// <returns>returns Payment Data which is used to bind on grid</returns>
+        public List<PaymentData> ConvertedAmt(Ctx ctx, GeneratePaymt[] PaymentData, int BankAccount, int CurrencyType, DateTime? dateAcct, int _org_Id)
         {
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             if (PaymentData.Length > 0)
@@ -2993,12 +3003,14 @@ namespace VA009.Models
                     _payData.AD_Client_ID = PaymentData[i].AD_Client_ID;
                     _payData.recid = PaymentData[i].C_InvoicePaySchedule_ID;
                     _payData.VA009_PaymentMethod_ID = PaymentData[i].VA009_PaymentMethod_ID;
-                    convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID, CurrencyType);
-                    if (convertdamt == 0)
-                    {
-                        _payData.ERROR = "ConversionNotFound";
-                    }
-                    _payData.convertedAmt = convertdamt;
+                    //not required GetConvertedAmt() here bacause below calling this ConvertedAmt
+                    //convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID, CurrencyType, dateAcct);
+                    //if (convertdamt == 0)
+                    //{
+                    //    _payData.ERROR = "ConversionNotFound";
+                    //}
+                    //not required here
+                    //_payData.convertedAmt = convertdamt;
 
                     _payData.TransactionType = PaymentData[i].TransactionType;
                     int documentId = 0;
@@ -3028,17 +3040,19 @@ namespace VA009.Models
                     {
                         if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "API")
                         {
-                            convertdamt = -1 * GetConvertedAmt(ctx, -1 * PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID, CurrencyType);
-
+                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, dateAcct);
+                            convertdamt = convertdamt >= 0 ? convertdamt : -1 * convertdamt;
                             _payData.convertedAmt = convertdamt;
-
                         }
                         else
                         {
-                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID, CurrencyType);
-
+                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, dateAcct);
                             _payData.convertedAmt = convertdamt;
-
+                        }
+                        //If converted Amt is zero then Conversion Not found
+                        if (_payData.convertedAmt == 0)
+                        {
+                            _payData.ERROR = "ConversionNotFound";
                         }
                     }
                     else
@@ -3051,7 +3065,7 @@ namespace VA009.Models
                             }
                             else
                             {
-                                _payData.convertedAmt = 1 * PaymentData[i].DueAmt; // -1 Because during payble dont show negative amount on UI
+                                _payData.convertedAmt = -1 * PaymentData[i].DueAmt; // -1 Because during payble dont show negative amount on UI
                             }
                         }
                         else
@@ -3093,12 +3107,27 @@ namespace VA009.Models
             }
         }
 
-        public decimal GetConvertedAmt(Ctx ctx, decimal amt, int fromCurr, int bankaccount, int client_id, int org_id, int CurrencyType_ID)
+        /// <summary>
+        /// Get the Converted Amount
+        /// </summary>
+        /// <param name="ctx">Current Context</param>
+        /// <param name="amt">Actual Amount</param>
+        /// <param name="fromCurr">C_Currency_ID</param>
+        /// <param name="bankaccount">C_BankAccount_ID</param>
+        /// <param name="client_id">AD_Client_ID</param>
+        /// <param name="org_id">AD_Org_ID</param>
+        /// <param name="CurrencyType_ID">C_ConversionType_ID</param>
+        /// <param name="dateAcct">DateAcct</param>
+        /// <returns>returns Converted Amount</returns>
+        public decimal GetConvertedAmt(Ctx ctx, decimal amt, int fromCurr, int bankaccount, int client_id, int org_id, int CurrencyType_ID, DateTime? dateAcct)
         {
-            MBankAccount _bnkAcct = new MBankAccount(ctx, bankaccount, null);
-            decimal comvertedamt = 0;
+            //MBankAccount _bnkAcct = new MBankAccount(ctx, bankaccount, null);//to get single Value not required to create Object fetch directly from query
+            int _bnkAcctCurrency_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE IsActive='Y' AND C_BankAccount_ID=" + bankaccount, null, null));
+            //decimal comvertedamt = 0;
             //comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, _bnkAcct.GetC_Currency_ID(), client_id, org_id);
-            comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, _bnkAcct.GetC_Currency_ID(), DateTime.Now, CurrencyType_ID, client_id, org_id);
+            //comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, _bnkAcct.GetC_Currency_ID(), DateTime.Now, CurrencyType_ID, client_id, org_id);
+            //Use User selected Date of Account from the grid not the System Date
+            decimal comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, _bnkAcctCurrency_ID, dateAcct, CurrencyType_ID, client_id, org_id);
             return comvertedamt;
         }
         //added by amit
@@ -3202,7 +3231,17 @@ namespace VA009.Models
             return 0;
         }
 
-        public List<PaymentData> CashBookConvertedAmt(Ctx ctx, GeneratePaymt[] PaymentData, int CurrencyCashBook, int CurrencyType)
+        /// <summary>
+        /// Get List of Data with Converted Amonunt
+        /// </summary>
+        /// <param name="ctx">Current Context</param>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="CurrencyCashBook">CashBook C_Currency_ID</param>
+        /// <param name="CurrencyType">C_ConversionType_ID</param>
+        /// <param name="dateAcct">DateAcct</param>
+        /// <param name="org_ID">AD_Org_ID</param>
+        /// <returns>returns List of Data to do Payment</returns>
+        public List<PaymentData> CashBookConvertedAmt(Ctx ctx, GeneratePaymt[] PaymentData, int CurrencyCashBook, int CurrencyType, DateTime? dateAcct, int org_ID)
         {
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             if (PaymentData.Length > 0)
@@ -3236,25 +3275,21 @@ namespace VA009.Models
                     {
                         if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "API")
                         {
-                            convrtedamt = -1 * MConversionRate.Convert(ctx, -1 * PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
-
-                            _payData.convertedAmt = convrtedamt;
-                            if (convrtedamt == 0)
-                            {
-                                _payData.ERROR = "ConversionNotFound";
-                            }
-
+                            //modified according to user selected AcctDate and BankAccount Org_ID
+                            //convrtedamt = -1 * MConversionRate.Convert(ctx, -1 * PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
+                            convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
+                            convrtedamt = convrtedamt < 0 ? convrtedamt : -1 * convrtedamt;
                         }
                         else
                         {
-                            convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
-
-                            _payData.convertedAmt = convrtedamt;
-                            if (convrtedamt == 0)
-                            {
-                                _payData.ERROR = "ConversionNotFound";
-                            }
-
+                            //modified according to user selected AcctDate and BankAccount Org_ID
+                            //convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
+                            convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
+                        }
+                        _payData.convertedAmt = convrtedamt;
+                        if (_payData.convertedAmt == 0)
+                        {
+                            _payData.ERROR = "ConversionNotFound";
                         }
                     }
                     if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "API")
@@ -3265,7 +3300,8 @@ namespace VA009.Models
                         }
                         else
                         {
-                            _payData.DueAmt = 1 * PaymentData[i].DueAmt; //-1 Because during payble dont show negative amount on UI
+                            //missing sign added
+                            _payData.DueAmt = -1 * PaymentData[i].DueAmt; //-1 Because during payble dont show negative amount on UI
                         }
                     }
                     else

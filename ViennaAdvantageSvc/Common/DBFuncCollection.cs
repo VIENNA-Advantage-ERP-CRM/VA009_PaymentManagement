@@ -12,6 +12,17 @@ namespace ViennaAdvantage.Common
 {
     public static class DBFuncCollection
     {
+        /// <summary>
+        /// Get the Query in string format to get Invoice and Order Schedules
+        /// </summary>
+        /// <param name="ctx">Currenct Context</param>
+        /// <param name="whereQry">WHERE CLAUSE query</param>
+        /// <param name="SearchText">Search Text</param>
+        /// <param name="WhrDueDate">Due Date</param>
+        /// <param name="TransType">Transaction Type</param>
+        /// <param name="FromDate">From Date</param>
+        /// <param name="ToDate">To Date</param>
+        /// <returns>returns string value query to get Invoice and Order Schedules</returns>
         public static string GetPaymentDataSql(Ctx ctx, string whereQry, string SearchText, string WhrDueDate, string TransType, string FromDate, string ToDate)
         {
             StringBuilder sql = new StringBuilder();
@@ -30,7 +41,8 @@ namespace ViennaAdvantage.Common
             {
                 TransTypes = new int[0];
             }
-            int conversionType_ID = ctx.GetContextAsInt("#C_ConversionType_ID");
+            //when load the Schedules should get Converted Amount based on Schedule ConversionType not the default ConversionType
+            //int conversionType_ID = ctx.GetContextAsInt("#C_ConversionType_ID");
 
             if (DB.IsOracle())
             {
@@ -48,8 +60,8 @@ namespace ViennaAdvantage.Common
                          CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('API','ARC'))     
                          THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt,
                          cs.VA009_OpenAmnt, rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id ,
-                         inv.C_Currency_ID,  cc.ISO_CODE, ac.c_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID
-                             + @",inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy')
+                         inv.C_Currency_ID,  cc.ISO_CODE, ac.c_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID, cs.DueDate, inv.C_ConversionType_ID,
+                         inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy')
                         -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
                          C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID INNER JOIN C_Doctype 
                          cd ON cs.C_Doctype_ID=cd.C_Doctype_ID INNER JOIN ad_ref_list rsf ON rsf.value= cs.VA009_ExecutionStatus INNER JOIN ad_reference re ON 
@@ -124,7 +136,7 @@ namespace ViennaAdvantage.Common
                         CASE  WHEN (cd.DOCBASETYPE IN ('SOO','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('POO','ARC')) 
                         THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1 END AS DueAmt,
                         cs.VA009_OpenAmnt, rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id, inv.C_Currency_ID, cc.ISO_CODE, ac.c_currency_id  AS basecurrency,
-                        CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID + @",inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
+                        CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,cs.DueDate, inv.C_ConversionType_ID,inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
                         inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) AS Due_Date_Diff,
                         cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
                         FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
@@ -198,8 +210,8 @@ namespace ViennaAdvantage.Common
                          CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('API','ARC'))     
                          THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt,
                          cs.VA009_OpenAmnt, rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id ,
-                         inv.C_Currency_ID,  cc.ISO_CODE, ac.c_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID
-                             + @",inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, 
+                         inv.C_Currency_ID,  cc.ISO_CODE, ac.c_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID, cs.DueDate, inv.C_ConversionType_ID,
+                         inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, 
                          DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy')-to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) 
                          as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
                          C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID INNER JOIN C_Doctype 
@@ -275,7 +287,7 @@ namespace ViennaAdvantage.Common
                         CASE  WHEN (cd.DOCBASETYPE IN ('SOO','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('POO','ARC')) 
                         THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1 END AS DueAmt,
                         cs.VA009_OpenAmnt, rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id, inv.C_Currency_ID, cc.ISO_CODE, ac.c_currency_id  AS basecurrency,
-                        CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID + @",inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
+                        CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID, cs.DueDate, inv.C_ConversionType_ID,inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
                         inv.GrandTotal, DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) AS Due_Date_Diff,
                         cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
                         FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID

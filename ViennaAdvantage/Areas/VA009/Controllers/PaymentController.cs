@@ -96,21 +96,39 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetConvertedAmt(string PaymentData, int BankAccount, int CurrencyType)
+        /// <summary>
+        /// Get Updated Converted Amount with Payment Data
+        /// </summary>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="BankAccount">C_BankAccount_ID</param>
+        /// <param name="CurrencyType">C_ConversionType_ID</param>
+        /// <param name="dateAcct">Account Date</param>
+        /// <param name="_org_Id">AD_Org_ID</param>
+        /// <returns>returns Payment Data to bind on grid</returns>
+        public JsonResult GetConvertedAmt(string PaymentData, int BankAccount, int CurrencyType, DateTime? dateAcct, int _org_Id)
         {
             GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
             Ctx ctx = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType);
+            List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, dateAcct, _org_Id);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
-        public JsonResult GetCashJournalConvertedAmt(string PaymentData, int CurrencyCashBook, int CurrencyType)
+        /// <summary>
+        /// Get CashLine Data in JSON format
+        /// </summary>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="CurrencyCashBook">CashBook C_Currency_ID</param>
+        /// <param name="CurrencyType">C_ConversionType_ID</param>
+        /// <param name="dateAcct">DateAcct</param>
+        /// <param name="_org_Id">AD_Org_ID</param>
+        /// <returns>returns JSON result</returns>
+        public JsonResult GetCashJournalConvertedAmt(string PaymentData, int CurrencyCashBook, int CurrencyType, DateTime? dateAcct, int _org_Id)
         {
             GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
             Ctx ctx = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            List<PaymentData> Paydata = _payMdl.CashBookConvertedAmt(ctx, arr, CurrencyCashBook, CurrencyType);
+            List<PaymentData> Paydata = _payMdl.CashBookConvertedAmt(ctx, arr, CurrencyCashBook, CurrencyType, dateAcct, _org_Id);
             return Json(JsonConvert.SerializeObject(Paydata), JsonRequestBehavior.AllowGet);
         }
 
