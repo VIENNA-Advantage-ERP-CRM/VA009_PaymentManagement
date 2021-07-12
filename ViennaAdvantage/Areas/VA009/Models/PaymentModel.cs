@@ -531,6 +531,7 @@ namespace VA009.Models
             StringBuilder docno = new StringBuilder();
             string docno1;
             string processMsg = "";
+            string[] _result = null;//to get result from CompleteOrReverse function and store into this variable to execute the condition based on this result
             try
             {
                 if (PaymentData.Length > 0)
@@ -717,7 +718,8 @@ namespace VA009.Models
                                 }
                                 else
                                 {
-                                    CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                                    //based on result get from Complete function should execute the condition
+                                    _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
                                     //if (_pay.CompleteIt() == "CO")
                                     //{
                                     //    _pay.SetProcessed(true);
@@ -726,7 +728,9 @@ namespace VA009.Models
                                     //    _pay.Save();
                                     //    docno.Append(_pay.GetDocumentNo());
                                     //}
-                                    if (_pay.Save())
+                                    //if (_pay.Save())
+                                    //'Y' Indicates the record is Completed Successfully
+                                    if (_result != null && _result[1].Equals("Y"))
                                     {
                                         docno.Append(_pay.GetDocumentNo());
                                     }
@@ -1168,10 +1172,11 @@ namespace VA009.Models
                                             }
                                             else
                                             {
-
-                                                CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                                                //based on result get from Complete function should execute the condition
+                                                _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
                                                 //if (_pay.CompleteIt() == "CO")
-                                                if (_pay.Save())
+                                                //'Y' indicates  the record is Completed Successfully
+                                                if (_result != null && _result[1].Equals("Y"))
                                                 {
                                                     //_pay.SetProcessed(true);
                                                     //_pay.SetDocAction("CL");
@@ -1310,7 +1315,8 @@ namespace VA009.Models
                             for (int j = 0; j < count.Count; j++)
                             {
                                 MPayment _PayComp = new MPayment(ct, count[j], trx);
-                                CompleteOrReverse(ct, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(), _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                                //based on result get from CompleteOrReverse function should execute the condition
+                                _result = CompleteOrReverse(ct, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(), _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
                                 //string docstatus = _PayComp.CompleteIt();
                                 //if (docstatus == "CO")
                                 //{
@@ -1318,7 +1324,9 @@ namespace VA009.Models
                                 //    _PayComp.SetDocAction("CL");
                                 //    _PayComp.SetProcessed(true);
 
-                                if (!_PayComp.Save())
+                                //if (!_PayComp.Save())
+                                //'N' indicates  the record is not Completed Successfully
+                                if (_result != null && _result[1].Equals("N"))
                                 {
                                     ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ": " + _PayComp.GetDocumentNo());
                                     ValueNamePair pp = VLogger.RetrieveError();
@@ -1390,6 +1398,8 @@ namespace VA009.Models
         {
             docno = "";
             string processMsg = "";
+            //to get result from CompleteOrReverse function and store into this variable to execute the condition based on this result
+            string[] _result = null;
             try
             {
                 MPayment _pay = null;
@@ -1498,7 +1508,8 @@ namespace VA009.Models
                 }
                 else
                 {
-                    CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                    //based on result get from CompleteOrReverse function should execute the condition
+                    _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
                     //if (_pay.CompleteIt() == "CO")
                     //{
                     //    _pay.SetProcessed(true);
@@ -1507,7 +1518,9 @@ namespace VA009.Models
                     //    _pay.Save();
                     //    docno = _pay.GetDocumentNo();
                     //}
-                    if (_pay.Save())
+                    //if (_pay.Save())
+                    //'Y' Indicates the record is Completed Successfully
+                    if (_result != null && _result[1].Equals("Y"))
                     {
                         docno = _pay.GetDocumentNo();
                     }
@@ -3947,7 +3960,8 @@ namespace VA009.Models
                             else
                             {
                                 _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                                if (_result[1].Equals("Y"))
+                                //avoid null exception used _result !=null
+                                if (_result != null && _result[1].Equals("Y"))
                                 {
                                     docno.Append(_pay.GetDocumentNo());
                                 }
@@ -4291,7 +4305,8 @@ namespace VA009.Models
                                         else
                                         {
                                             _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                                            if (_result[1].Equals("Y"))
+                                            //Used condition with null to avoid null exception
+                                            if (_result != null && _result[1].Equals("Y"))
                                             {
                                                 if (docno.Length > 0)
                                                 {
@@ -4667,7 +4682,8 @@ namespace VA009.Models
                             {
                                 _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
                                 //if (_pay.Save())
-                                if (_result[1].Equals("Y"))
+                                //used not null condtion to avoid null exception
+                                if (_result != null && _result[1].Equals("Y"))
                                 {
                                     if (docno.Length > 0)
                                     {
@@ -4809,6 +4825,7 @@ namespace VA009.Models
             bool isReceipt = Util.GetValueOfBool(PaymentData.isReceipt);
             bool isPayment = Util.GetValueOfBool(PaymentData.isPayment);
             int C_doctype_ID = 0;
+            string[] _result = null;
             //bool isAllocationSaved = false;
             try
             {
@@ -4874,8 +4891,11 @@ namespace VA009.Models
                         }
                         else
                         {
-                            CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                            if (_pay.Save())
+                            //based on result get from CompleteOrReverse function should execute the condition
+                            _result = CompleteOrReverse(ct, _pay.GetC_Payment_ID(), _pay.Get_Table_ID(), _pay.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                            //if (_pay.Save())
+                            //'Y' Indicates the record is Completed Successfully
+                            if (_result != null && _result[1].Equals("Y"))
                             {
                                 //if (_pay.CompleteIt() == "CO")
                                 //{
@@ -4892,7 +4912,7 @@ namespace VA009.Models
                                         //string checkno = getCheckNo(Util.GetValueOfInt(PaymentData.fromBank), Util.GetValueOfInt(PaymentData.paymentMethod));
                                         if (DB.ExecuteScalar("SELECT va009_paymentbasetype FROM VA009_PaymentMethod WHERE VA009_PaymentMethod_ID = " + Util.GetValueOfInt(PaymentData.paymentMethod)) == "S")
                                         {
-                                            if ((DB.ExecuteScalar(" UPDATE C_BankAccountDoc SET CurrentNext = " + (Util.GetValueOfInt(PaymentData.CheckNo) + 1) + " WHERE C_BankAccount_ID = " + Util.GetValueOfInt(PaymentData.fromBank) + " AND IsActive='Y' AND VA009_PaymentMethod_ID = " + Util.GetValueOfInt(PaymentData.paymentMethod), null, trx)) <= 0)
+                                            if (DB.ExecuteScalar(" UPDATE C_BankAccountDoc SET CurrentNext = " + (Util.GetValueOfInt(PaymentData.CheckNo) + 1) + " WHERE C_BankAccount_ID = " + Util.GetValueOfInt(PaymentData.fromBank) + " AND IsActive='Y' AND VA009_PaymentMethod_ID = " + Util.GetValueOfInt(PaymentData.paymentMethod), null, trx) <= 0)
                                             {
                                                 _log.Info("Checkno Not Updated.");
                                             }
