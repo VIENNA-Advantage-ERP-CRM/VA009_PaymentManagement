@@ -508,7 +508,14 @@
             });
             //end
 
-            $FromDate.on("change", function () {
+            //used blur incase of change to avoid cal the event immediatly when press change the single character
+            //$FromDate.on("change", function () {
+            $FromDate.on("blur", function () {
+                //if user not entered proper Date format 
+                if ($FromDate.val() == "") {
+                    VIS.ADialog.info("VA009_PlzSelectProperDate");
+                    return;
+                }
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
@@ -517,7 +524,14 @@
                 loadPaymetsAll();
             });
 
-            $ToDate.on("change", function () {
+            //used blur incase of change to avoid cal the event immediatly when press change the single character
+            /*$ToDate.on("change", function () {*/
+            $ToDate.on("blur", function () {
+                //if user not entered proper Date format 
+                if ($ToDate.val() == "") {
+                    VIS.ADialog.info("VA009_PlzSelectProperDate");
+                    return;
+                }
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
@@ -7450,12 +7464,12 @@
                     else {
                         var VA009_FollowupDate = data.paymentdata[i].Systemdate;
                     }
-                    var DueAmt = data.paymentdata[i].DueAmt;
+                    //var DueAmt = data.paymentdata[i].DueAmt;//not in use
 
                     var _SameCurrency = 'N';
-                    if (data.paymentdata[i].CurrencyCode == data.paymentdata[i].BaseCurrencyCode)
+                    if (data.paymentdata[i].CurrencyCode == data.paymentdata[i].BaseCurrencyCode) {
                         _SameCurrency = 'Y';
-
+                    }
                     if (data.paymentdata[i].PaymwentBaseType == "S") {
                         imgname = "cheque-white.png";
                     }
@@ -7511,9 +7525,11 @@
 
 
                     $divPayment.append(dsgn);
-                    $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
-                    if (_SameCurrency == 'N')
+                    //$ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
+                    if (_SameCurrency == 'N') {
+                        $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
                         $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString() + '</span> ');
+                    }
                 }
 
                 if ($selectall.is(":checked")) {
