@@ -508,7 +508,14 @@
             });
             //end
 
-            $FromDate.on("change", function () {
+            //used blur incase of change to avoid cal the event immediatly when press change the single character
+            //$FromDate.on("change", function () {
+            $FromDate.on("blur", function () {
+                //if user not entered proper Date format 
+                if ($FromDate.val() == "") {
+                    VIS.ADialog.info("VA009_PlzSelectProperDate");
+                    return;
+                }
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
@@ -517,7 +524,14 @@
                 loadPaymetsAll();
             });
 
-            $ToDate.on("change", function () {
+            //used blur incase of change to avoid cal the event immediatly when press change the single character
+            /*$ToDate.on("change", function () {*/
+            $ToDate.on("blur", function () {
+                //if user not entered proper Date format 
+                if ($ToDate.val() == "") {
+                    VIS.ADialog.info("VA009_PlzSelectProperDate");
+                    return;
+                }
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
@@ -1349,7 +1363,9 @@
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                                if (record.changes == undefined || record.changes.CheckDate == "") {
                                     val = record["CheckDate"];
                                 }
                                 else {
@@ -1901,7 +1917,14 @@
                                     }
                                 }
                                 if (event.column == 11)
-                                    chqpaygrd.records[event.index]['CheckDate'] = event.value_new;
+                                    //Used do double click on CheckDate field and closed without selecting the value at 
+                                    //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                                    if (event.value_new != "") {
+                                        chqpaygrd.records[event.index]['CheckDate'] = event.value_new;
+                                    }
+                                    else {
+                                        chqpaygrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                                    }
                                 if (event.column == 2)
                                     chqpaygrd.records[event.index]['Description'] = event.value_new;
                             }, 100);
@@ -2086,6 +2109,12 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $POP_cmbBank.val(0).prop('selected', true);
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.empty();
+                        $POP_cmbBankAccount.append("<option value='0'></option>");
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
@@ -2168,7 +2197,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2186,7 +2215,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2287,6 +2316,22 @@
                     else {
                         $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
+                    //used ajax call to get Converted Amount
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                        type: "POST",
+                        datatype: "json",
+                        // contentType: "application/json; charset=utf-8",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackchqReload(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
                 });
 
                 function callbackchqReload(result) {
@@ -2353,9 +2398,11 @@
                                                 _data["ConvertedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['ConvertedAmt'];
                                                 _data["PaymwentBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['PaymwentBaseType'];
                                                 _data["TransactionType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'];
-
-                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                //validate zero also, if the value is zero it will ask to enter the recieved amount
+                                                //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                if (VIS.Utility.Util.getValueOfInt(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
                                                     _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
+                                                }
                                                 else {
                                                     VIS.ADialog.info(("VA009_PLPayAmt"));
                                                     chqpaygrd.selectNone();
@@ -2534,6 +2581,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -2547,6 +2596,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -2752,6 +2803,12 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $RPOP_cmbBank.val(0).prop('selected', true);
+                        $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $RPOP_cmbBankAccount.empty();
+                        $RPOP_cmbBankAccount.append("<option value='0'></option>");
+                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
@@ -2798,7 +2855,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2816,7 +2873,8 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        //passed Org and DateAcct parameters to get the data according to the updated values
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2835,6 +2893,21 @@
                     else {
                         $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
+                    //Used ajax Cal to get the Converted Amount when change the DateAcct
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                        type: "GET",
+                        datatype: "json",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackchqReload(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
                 });
 
                 function callbackchqReload(result) {
@@ -2930,7 +3003,9 @@
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                                if (record.changes == undefined || record.changes.CheckDate == "") {
                                     val = record["CheckDate"];
                                 }
                                 else {
@@ -3456,8 +3531,16 @@
                                 }
                                 if (event.column == 10)
                                     chqrecgrd.records[event.index]['CheckNumber'] = event.value_new;
-                                if (event.column == 11)
-                                    chqrecgrd.records[event.index]['CheckDate'] = event.value_new;
+                                if (event.column == 11) {
+                                    //Used do double click on CheckDate field and closed without selecting the value at 
+                                    //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                                    if (event.value_new != "") {
+                                        chqrecgrd.records[event.index]['CheckDate'] = event.value_new;
+                                    }
+                                    else {
+                                        chqrecgrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                                    }
+                                }
                                 if (event.column == 2)
                                     chqrecgrd.records[event.index]['Description'] = event.value_new;
                             }, 100);
@@ -3583,8 +3666,11 @@
                                                     chqrecgrd.selectNone();
                                                     return false;
                                                 }
-                                                if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                //If the VA009_RecivedAmt value is "0" then the below condition will not work
+                                                //if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                if (VIS.Utility.Util.getValueOfInt(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
                                                     _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                                }
                                                 else {
                                                     VIS.ADialog.info(("VA009_PLRecivedAmt"));
                                                     chqrecgrd.selectNone();
@@ -3650,6 +3736,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -3961,7 +4049,8 @@
                                 type: "POST",
                                 datatype: "json",
                                 async: true,
-                                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: currency, CurrencyType: $pop_cmbCurrencyType.val() }),
+                                //added Org and AccDate parameters to get the result with respect to the input values
+                                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: currency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                                 success: function (result) {
                                     callbackCASHPay(result);
                                 },
@@ -3981,7 +4070,25 @@
                         type: "POST",
                         datatype: "json",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackCASHPay(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+                });
+
+                //on change event for DateAcct it should convert the Amount accordingly
+                $POP_DateAcct.on("change", function () {
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
+                        type: "POST",
+                        datatype: "json",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackCASHPay(result);
                         },
@@ -4476,6 +4583,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -4689,7 +4798,9 @@
                             field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.CheckDate == undefined) {
+                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                                if (record.changes == undefined || record.changes.CheckDate == "") {
                                     val = record["CheckDate"];
                                 }
                                 else {
@@ -4827,7 +4938,13 @@
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
-                    else {                   
+                    else {                
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $POP_cmbBank.val(0).prop('selected', true);
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.empty();
+                        $POP_cmbBankAccount.append("<option value='0'></option>");
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');                     
                     }
                 });
@@ -4871,7 +4988,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -4889,7 +5006,7 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -4949,8 +5066,16 @@
                 BatchGrd.on('change', function (event) {
                     if (event.column == 7)
                         BatchGrd.records[event.index]['CheckNumber'] = event.value_new;
-                    if (event.column == 8)
-                        BatchGrd.records[event.index]['CheckDate'] = event.value_new;
+                    if (event.column == 8) {
+                        //Used do double click on CheckDate field and closed without selecting the value at 
+                        //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                        if (event.value_new != "") {
+                            BatchGrd.records[event.index]['CheckDate'] = event.value_new;
+                        }
+                        else {
+                            BatchGrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                        }
+                    }
                     if (event.column == 9)
                         BatchGrd.records[event.index]['ValidMonths'] = event.value_new;
                 });
@@ -5089,6 +5214,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -5179,11 +5306,18 @@
                             field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%',
                             render: function (record, index, col_index) {
                                 var val;
-                                if (record.changes == undefined || record.changes.DueDate == undefined) {
+                                if (record.changes == undefined || record.changes.DueDate == "") {
                                     val = record["DueDate"];
                                 }
                                 else {
-                                    val = record.changes.DueDate;
+                                    //DueDate Can't be less than the DateAcct
+                                    if (new Date(record.changes.DueDate).toLocaleDateString() >= new Date(Splitgrd.records[index]['DateAcct']).toLocaleDateString()) {
+                                        val = record.changes.DueDate;
+                                    }
+                                    else {
+                                        val = record["DueDate"];
+                                        record.changes.DueDate = record["DueDate"];
+                                    }
                                 }
                                 return new Date(val).toLocaleDateString();
                             }, style: 'text-align: left', editable: { type: 'date' }
@@ -5261,6 +5395,7 @@
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
                         line["TransactionType"] = rslt[i].TransactionType;
+                        line["DateAcct"] = rslt[i].DateAcct;
                         popupgrddata.push(line);
                     }
                     w2utils.encodeTags(popupgrddata);
@@ -5271,7 +5406,22 @@
                 Splitgrd.on('change', function (event) {
 
                     if (event.column == 5)
-                        Splitgrd.records[event.index]['DueDate'] = event.value_new;
+                        //handled on change event as well DueDate can't less than the DateAcct
+                        if (event.value_new != "") {
+                            if (new Date(event.value_new).toLocaleDateString() >= new Date(Splitgrd.records[event.index]['DateAcct']).toLocaleDateString()) {
+                                Splitgrd.records[event.index]['DueDate'] = event.value_new;
+                            }
+                            else {
+                                Splitgrd.records[event.index]['DueDate'] = event.value_previous == "" ? event.value_original : event.value_previous;
+                                event.value_previous = event.value_previous == "" ? event.value_original : event.value_previous;
+                                //message text size not more 22 characters
+                                //hide of Date picker div before Pop-up will be displayed
+                                window.setTimeout(function () {
+                                    VIS.ADialog.info("VA009_PlsSelctDueDateGreaterThanTrxDate");
+                                }, 5);
+                                //return false;
+                            }
+                        }
                 });
 
                 $TxtSplitAmt.on('keypress', function (event) {
@@ -5481,6 +5631,8 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    //after successfully created Payment selectall checkbox should be false
+                    $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
@@ -6165,6 +6317,12 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                        //refresh the bank and BankAccount dropdowns and make it as mandatory
+                        $POP_cmbBank.val(0).prop('selected', true);
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.empty();
+                        $POP_cmbBankAccount.append("<option value='0'></option>");
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
                     }
                 });
@@ -6296,41 +6454,50 @@
                                 if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
                                     if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
                                         if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                            //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
-                                            var isValid = true;
-                                            if (isValid) {
-                                                $bsyDiv[0].style.visibility = "visible";
-                                                $.ajax({
-                                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
-                                                    type: "POST",
-                                                    datatype: "json",
-                                                    // contentType: "application/json; charset=utf-8",
-                                                    async: true,
-                                                    data: ({
-                                                        InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
-                                                        BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
-                                                        DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
-                                                    }),
-                                                    success: function (result) {
-                                                        result = JSON.parse(result);
-                                                        $divPayment.find('.VA009-payment-wrap').remove();
-                                                        $divBank.find('.VA009-right-data-main').remove();
-                                                        $divBank.find('.VA009-accordion').remove();
-                                                        pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                                                        //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                                                        loadPaymetsAll();
-                                                        $bsyDiv[0].style.visibility = "hidden";
-                                                        VIS.ADialog.info("", null, result, "");
-                                                    },
-                                                    error: function (ex) {
-                                                        console.log(ex);
-                                                        $bsyDiv[0].style.visibility = "hidden";
-                                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                                    }
-                                                });
+                                            //Check CurrencyType Selected or not
+                                            if ($POP_CurrencyType.val() > 0) {
+                                                //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
+                                                var isValid = true;
+                                                if (isValid) {
+                                                    $bsyDiv[0].style.visibility = "visible";
+                                                    $.ajax({
+                                                        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
+                                                        type: "POST",
+                                                        datatype: "json",
+                                                        // contentType: "application/json; charset=utf-8",
+                                                        async: true,
+                                                        data: ({
+                                                            InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
+                                                            BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
+                                                            DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
+                                                        }),
+                                                        success: function (result) {
+                                                            result = JSON.parse(result);
+                                                            $divPayment.find('.VA009-payment-wrap').remove();
+                                                            $divBank.find('.VA009-right-data-main').remove();
+                                                            $divBank.find('.VA009-accordion').remove();
+                                                            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                                                            //after successfully created Payment selectall checkbox should be false
+                                                            $selectall.prop('checked', false);
+                                                            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+                                                            loadPaymetsAll();
+                                                            $bsyDiv[0].style.visibility = "hidden";
+                                                            VIS.ADialog.info("", null, result, "");
+                                                        },
+                                                        error: function (ex) {
+                                                            console.log(ex);
+                                                            $bsyDiv[0].style.visibility = "hidden";
+                                                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                                        }
+                                                    });
+                                                }
+                                                else {
+                                                    VIS.ADialog.info("VA009_PlzSelctapprPM");
+                                                    return false;
+                                                }
                                             }
                                             else {
-                                                VIS.ADialog.info("VA009_PlzSelctapprPM");
+                                                VIS.ADialog.info("VA009_SelectConversionType");
                                                 return false;
                                             }
                                         }
@@ -7297,12 +7464,12 @@
                     else {
                         var VA009_FollowupDate = data.paymentdata[i].Systemdate;
                     }
-                    var DueAmt = data.paymentdata[i].DueAmt;
+                    //var DueAmt = data.paymentdata[i].DueAmt;//not in use
 
                     var _SameCurrency = 'N';
-                    if (data.paymentdata[i].CurrencyCode == data.paymentdata[i].BaseCurrencyCode)
+                    if (data.paymentdata[i].CurrencyCode == data.paymentdata[i].BaseCurrencyCode) {
                         _SameCurrency = 'Y';
-
+                    }
                     if (data.paymentdata[i].PaymwentBaseType == "S") {
                         imgname = "cheque-white.png";
                     }
@@ -7358,9 +7525,11 @@
 
 
                     $divPayment.append(dsgn);
-                    $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
-                    if (_SameCurrency == 'N')
+                    //$ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
+                    if (_SameCurrency == 'N') {
+                        $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
                         $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString() + '</span> ');
+                    }
                 }
 
                 if ($selectall.is(":checked")) {
@@ -7861,11 +8030,28 @@
         //Set Size OF Div's
         //********************
         this.setSize = function () {
-            $table.height($(".VA009-main-container").height());
-
-            $("#VA009-content-area_" + $self.windowNo).height($("#VA009-main-container_" + $self.windowNo).height() - 20);
-            $("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
-            lbdata.height($lbmain.height() - (43 + 20));
+            //Set Payment Form Design, on refresh with mutiple tabs
+            //$table.height($(".VA009-main-container").height());
+            var container_h = $("#VA009-main-container_" + $self.windowNo).height();
+            var midpanel_h = $("#VA009-middle-wrap_" + $self.windowNo).height();
+            var leftpanel_h = 0;
+            if (container_h == 0) {
+                container_h = window.innerHeight - (40 + 43 + 24); // window height - (Header panel - Title Panel - Footer panel)
+                midpanel_h = container_h - 85;
+                leftpanel_h = container_h - 90;
+            }
+            $table.height(container_h);
+            //If left Panel height is > 0 then this condtion will execute
+            if (leftpanel_h <= $lbmain.height()) {
+                leftpanel_h = $lbmain.height();
+                midpanel_h = container_h;
+            }
+            //$("#VA009-content-area_" + $self.windowNo).height($("#VA009-main-container_" + $self.windowNo).height() - 20);
+            $("#VA009-content-area_" + $self.windowNo).height(container_h - 20);
+            //$("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
+            $("#VA009_Paymntlst_" + $self.windowNo).height(midpanel_h - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
+            //lbdata.height($lbmain.height() - (43 + 20));
+            lbdata.height(leftpanel_h - (43 + 20));
         };
 
         this.lockUI = function () {
