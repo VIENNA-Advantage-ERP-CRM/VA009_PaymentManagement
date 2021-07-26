@@ -5563,7 +5563,9 @@
                         _data["C_Currency_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Currency_ID'];
                         _data["DueAmt"] = SplitAMt.toFixed(2);
                         _data["C_InvoicePaySchedule_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_InvoicePaySchedule_ID'];
-                        _data["DueDate"] = Splitgrd.get(Splitgrd.getSelection()[0])['DueDate'];;
+                        _data["DueDate"] = Splitgrd.get(Splitgrd.getSelection()[0])['DueDate'];
+                        //add DateAcct to Compare the Edited DueDate with Account Date because User Can't able to select Previous Date than AcctDate
+                        _data["DateAcct"] = Splitgrd.get(Splitgrd.getSelection()[0])['DateAcct'];
                         _data["TransactionType"] = Splitgrd.get(Splitgrd.getSelection()[0])['TransactionType'];
                         _CollaborateData.push(_data);
                         //}
