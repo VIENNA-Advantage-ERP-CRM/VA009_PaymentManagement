@@ -5311,7 +5311,8 @@
                                 }
                                 else {
                                     //DueDate Can't be less than the DateAcct
-                                    if (new Date(record.changes.DueDate).toLocaleDateString() >= new Date(Splitgrd.records[index]['DateAcct']).toLocaleDateString()) {
+                                    //some times not getting proper result if use toLocaleString()
+                                    if (new Date(record.changes.DueDate) >= new Date(Splitgrd.records[index]['DateAcct'])) {
                                         val = record.changes.DueDate;
                                     }
                                     else {
@@ -5408,7 +5409,8 @@
                     if (event.column == 5)
                         //handled on change event as well DueDate can't less than the DateAcct
                         if (event.value_new != "") {
-                            if (new Date(event.value_new).toLocaleDateString() >= new Date(Splitgrd.records[event.index]['DateAcct']).toLocaleDateString()) {
+                            //some times not getting proper result if use toLocaleString()
+                            if (new Date(event.value_new) >= new Date(Splitgrd.records[event.index]['DateAcct'])) {
                                 Splitgrd.records[event.index]['DueDate'] = event.value_new;
                             }
                             else {
