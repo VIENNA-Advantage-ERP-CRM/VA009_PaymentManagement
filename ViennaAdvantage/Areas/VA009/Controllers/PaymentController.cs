@@ -467,5 +467,22 @@ namespace VA009.Controllers
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// Get the C_Process_ID from Bank Account Document Tab from Bank Window
+        /// </summary>
+        /// <param name="_bankAct_Id">C_BankAccount_ID</param>
+        /// <returns>returns C_Process_ID</returns>
+        public JsonResult GetProcessId(string fields)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                Ctx ctx = Session["ctx"] as Ctx;
+                PaymentModel objConversionModel = new PaymentModel();
+                retJSON = JsonConvert.SerializeObject(objConversionModel.GetProcessId(ctx, fields));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
     }
 }
