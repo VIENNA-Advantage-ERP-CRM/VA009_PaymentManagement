@@ -2157,6 +2157,16 @@
                         $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     }
                     //end
+                    //check weather Process ID binded or not on Bank Account Document tab in Bank window
+                    if ($("#VA009_POP_cmbPaySelectn_" + $self.windowNo)[0].value != null && $("#VA009_POP_cmbPaySelectn_" + $self.windowNo)[0].value == "P") {
+                        var _process_Id = VIS.dataContext.getJSONRecord("VA009/Payment/GetProcessId", $POP_cmbBankAccount.val());
+                        if (!_process_Id) {
+                            VIS.ADialog.info("VA009_Plz_Process_IDNotFndBnkActDoc");
+                            $POp_cmbPaySelectn.val("M");
+                            return false;
+                        }
+                    }
+
                     cheqAmount.setValue(0);
                     $POP_txtChqNo.val('');
 
