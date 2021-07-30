@@ -355,6 +355,18 @@ namespace VA009.Models
             return _payList;
         }
 
+        /// <summary>
+        /// Get process_ID from Bank window
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="bankAct_Id">C_BankAccount_ID</param>
+        /// <returns>returns Process_ID</returns>
+        public int GetProcessId(Ctx ctx, string bankAct_Id)
+        {
+            int _process_Id = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Process_ID from C_BankAccountDoc WHERE IsActive='Y' AND C_BankAccount_ID=" + Util.GetValueOfInt(bankAct_Id), null, null));
+            return _process_Id;
+        }
+
         public List<CashBook> Getcashbooks(Ctx ctx, string OrgWhr)
         {
             List<CashBook> Cbk = new List<CashBook>();

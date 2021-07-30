@@ -2285,7 +2285,7 @@
 
                 $POp_cmbPaySelectn.on("change", function () {
                     if ($POp_cmbPaySelectn.val() == "P") {
-                        var obj;
+                        //var obj;
                         $POP_Consolidate.prop('cheched', false);
                         $POP_Consolidate.attr('disabled', 'disabled');
                         $POPtxtCheckNumber.val("");
@@ -2301,6 +2301,21 @@
                             chqpaygrd.records[i]['CheckDate'] = new Date();
                             chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckNumber");
                             chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckDate");
+                        }
+                        //Check Process_ID is bind on Bank Account Document window or not!
+                        var paramString = $("#VA009_POP_cmbBankAccount_" + $self.windowNo)[0].value > 0 ? $("#VA009_POP_cmbBankAccount_" + $self.windowNo)[0].value : 0;
+                        if (paramString) {
+                            var _process_Id = VIS.dataContext.getJSONRecord("VA009/Payment/GetProcessId", paramString);
+                            if (!_process_Id) {
+                                VIS.ADialog.info("VA009_Plz_Process_IDNotFndBnkActDoc");
+                                $POp_cmbPaySelectn.val("M");
+                                return false;
+                            }
+                        }
+                        else {
+                            VIS.ADialog.info("VA009_PLSelectBankAccount");
+                            $POp_cmbPaySelectn.val("M");
+                            return false;
                         }
                     }
                     else {
