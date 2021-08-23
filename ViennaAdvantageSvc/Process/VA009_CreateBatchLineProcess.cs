@@ -457,6 +457,9 @@ namespace ViennaAdvantage.Process
                                 Get_TrxName().Rollback();
                                 _BPartner = 0;
                                 _VA009_BatchLine_ID = 0;
+                                //return message
+                                return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
+
                             }
                         }
                     }

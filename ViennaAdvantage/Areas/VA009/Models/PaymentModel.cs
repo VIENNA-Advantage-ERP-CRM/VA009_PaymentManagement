@@ -5982,6 +5982,7 @@ namespace VA009.Models
                                         ex.Append(", " + pp.GetName());
                                     }
                                     _log.Info(ex.ToString());
+                                    break;
                                 }
                             }
                         }
