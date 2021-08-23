@@ -173,7 +173,8 @@ namespace ViennaAdvantage.Process
 
             DataSet ds = new DataSet();
             ds = DB.ExecuteDataset(_sql.ToString());
-            if (ds.Tables != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            //avoid null Exception removed ds.Tables word
+            if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
                 if (C_ConversionType_ID == 0) //to Set Default conversion Type 
                 {
@@ -420,17 +421,27 @@ namespace ViennaAdvantage.Process
                     if (!lineDetail.Save(Get_TrxName()))
                     {
                         Get_TrxName().Rollback();
-                        return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
+                        //return message
+                        ValueNamePair pp = VLogger.RetrieveError();
+                        //some times getting the error pp also
+                        //Check first GetName() then GetValue() to get proper Error Message
+                        string error = pp != null ? pp.ToString() ?? pp.GetName() : "";
+                        if (string.IsNullOrEmpty(error))
+                        {
+                            error = pp != null ? pp.GetValue() : "";
+                        }
+                        Get_TrxName().Close();
+                        return !string.IsNullOrEmpty(error) ? error : Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
                         //return"BatchLine Not Saved"; 
                     }
-                    else
-                    {
-                        //lineDetail.SetProcessed(true);
-                        //lineDetail.Save(Get_TrxName());
-                        //MInvoicePaySchedule _invpay = new MInvoicePaySchedule(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), Get_TrxName());
-                        //_invpay.SetVA009_ExecutionStatus("Y");
-                        //_invpay.Save(Get_TrxName());
-                    }
+                    //else
+                    //{
+                    //    //lineDetail.SetProcessed(true);
+                    //    //lineDetail.Save(Get_TrxName());
+                    //    //MInvoicePaySchedule _invpay = new MInvoicePaySchedule(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), Get_TrxName());
+                    //    //_invpay.SetVA009_ExecutionStatus("Y");
+                    //    //_invpay.Save(Get_TrxName());
+                    //}
                 }
                 //Updating the C_BP_BankAccount_ID on Batch Lines Tab
                 if (!X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check.Equals(_baseType) && !X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash.Equals(_baseType))
@@ -455,18 +466,38 @@ namespace ViennaAdvantage.Process
                             if (!line.Save(Get_TrxName()))
                             {
                                 Get_TrxName().Rollback();
-                                _BPartner = 0;
-                                _VA009_BatchLine_ID = 0;
                                 //return message
-                                return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
-
+                                ValueNamePair pp = VLogger.RetrieveError();
+                                //some times getting the error pp also
+                                //Check first GetName() then GetValue() to get proper Error Message
+                                string error = pp != null ? pp.ToString() ?? pp.GetName() : "";
+                                if (string.IsNullOrEmpty(error))
+                                {
+                                    error = pp != null ? pp.GetValue() : "";
+                                }
+                                Get_TrxName().Close();
+                                return !string.IsNullOrEmpty(error) ? error : Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
                             }
                         }
                     }
                 }
                 batch.SetVA009_GenerateLines("Y");
                 //batch.SetProcessed(true); //Commeted by Arpit asked by Ashish Gandhi to set processed only if the Payment completion is done
-                batch.Save(Get_TrxName());
+                if (!batch.Save(Get_TrxName())) 
+                {
+                    Get_TrxName().Rollback();
+                    //return message
+                    ValueNamePair pp = VLogger.RetrieveError();
+                    //some times getting the error pp also
+                    //Check first GetName() then GetValue() to get proper Error Message
+                    string error = pp != null ? pp.ToString() ?? pp.GetName() : "";
+                    if (string.IsNullOrEmpty(error))
+                    {
+                        error = pp != null ? pp.GetValue() : "";
+                    }
+                    Get_TrxName().Close();
+                    return !string.IsNullOrEmpty(error) ? error : Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
+                }
 
                 #region commented Payment Method because payment method is selected on Batch Header
                 //if (_paymentMethod != 0)

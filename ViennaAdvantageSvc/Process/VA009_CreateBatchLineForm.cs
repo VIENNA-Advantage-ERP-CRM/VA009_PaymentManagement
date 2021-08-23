@@ -425,10 +425,16 @@ namespace ViennaAdvantage.Process
                                 if (!line.Save(Get_TrxName()))
                                 {
                                     Get_TrxName().Rollback();
-                                    _BPartner = 0;
-                                    _VA009_BatchLine_ID = 0;
                                     //return message
-                                    return Msg.GetMsg(GetCtx(), "VA009_BatchNotCrtd");
+                                    ValueNamePair pp = VLogger.RetrieveError();
+                                    //some times getting the error pp also
+                                    //Check first GetName() then GetValue() to get proper Error Message
+                                    string error = pp != null ? pp.ToString() ?? pp.GetName() : "";
+                                    if (string.IsNullOrEmpty(error))
+                                    {
+                                        error = pp != null ? pp.GetValue() : "";
+                                    }
+                                    return !string.IsNullOrEmpty(error) ? error : Msg.GetMsg(GetCtx(), "VA009_BatchNotCrtd");
                                 }
                             }
                         }
@@ -438,7 +444,18 @@ namespace ViennaAdvantage.Process
                     batch.SetProcessed(true);
                     if (!batch.Save(Get_TrxName()))
                     {
-                        return Msg.GetMsg(GetCtx(), "VA009_BatchNotCrtd");
+                        Get_TrxName().Rollback();
+                        //return message
+                        ValueNamePair pp = VLogger.RetrieveError();
+                        //some times getting the error pp also
+                        //Check first GetName() then GetValue() to get proper Error Message
+                        string error = pp != null ? pp.ToString() ?? pp.GetName() : "";
+                        if (string.IsNullOrEmpty(error))
+                        {
+                            error = pp != null ? pp.GetValue() : "";
+                        }
+                        Get_TrxName().Close();
+                        return !string.IsNullOrEmpty(error) ? error : Msg.GetMsg(GetCtx(), "VA009_BatchNotCrtd");
                     }
                     //commented Payment Method because payment method is selected on Batch Header
                     //if (_paymentMethod != 0)
@@ -459,7 +476,7 @@ namespace ViennaAdvantage.Process
                     //        _Snrkl.GetMethod(batch.GetVA009_Batch_ID(), GetCtx(), Get_TrxName());
                     //    }
                     //}
-                    return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd"); ;
+                    return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd");
                 }
                 else
                 {

@@ -5975,14 +5975,27 @@ namespace VA009.Models
                                 if (!line.Save(trx))
                                 {
                                     trx.Rollback();
-                                    ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
                                     ValueNamePair pp = VLogger.RetrieveError();
-                                    if (pp != null)
+                                    //some times getting the error pp also
+                                    //Check first GetName() then GetValue() to get proper Error Message
+                                    string error = pp != null ? pp.ToString() ?? pp.GetName() : "";
+                                    if (string.IsNullOrEmpty(error))
                                     {
-                                        ex.Append(", " + pp.GetName());
+                                        error = pp != null ? pp.GetValue() : "";
+                                    }
+                                    error = !string.IsNullOrEmpty(error) ? error : Msg.GetMsg(ct, "VA009_BatchNotCrtd");
+                                    if (string.IsNullOrEmpty(ex.ToString()))
+                                    {
+                                        ex.Append(error);
+                                    }
+                                    else
+                                    {
+                                        ex.Append(", " + error);
                                     }
                                     _log.Info(ex.ToString());
-                                    break;
+                                    trx.Close();
+                                    trx = null;
+                                    return ex.ToString();
                                 }
                             }
                         }
