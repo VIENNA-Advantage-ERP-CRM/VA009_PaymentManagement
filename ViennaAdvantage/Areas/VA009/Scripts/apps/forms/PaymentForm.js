@@ -4736,6 +4736,13 @@
                     + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
                     + "</div></div>"
 
+                    //added new field called Target Type
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_TargetType_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_TargetType") + "</label>"
+                    + "</div></div>"
+
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
                     + "</select>"
@@ -4755,14 +4762,14 @@
                     + "</select>"
                     + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
                     + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    //re-arranged the place of the filed
+                    + "<div style='width:50%;float:left;position: relative;align-items: center;padding-left:0.5%;'><div class='vis-control-wrap'>"
                     + "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
-                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</label></div></div>'
+                    + "<label class='vis-ec-col-lblchkbox' style='width:60%;'><input type='checkbox' disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</label>'
 
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    //+ "<div class='vis-control-wrap'>"
                     + "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
-                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
+                    + "<label class='vis-ec-col-lblchkbox' style='padding-left:5%;'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap' style='display:none !important'><div class='vis-control-wrap'>"
                     + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
@@ -4787,6 +4794,8 @@
                 BatchGrid_Layout();
                 loadgrdBatch(callbackBatch);
                 loadOrg();
+                //calling target type to load the DocTypes
+                loadTargetType();
                 //loadbank();
                 loadbanks($POP_cmbBank, orgids);
                 $POP_cmbBank.addClass('vis-ev-col-mandatory');
@@ -4865,6 +4874,10 @@
                     $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
                     $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                    //get the Id of Target Type field
+                    $POP_targetDocType = $batch.find("#VA009_POP_TargetType_" + $self.windowNo);
+                    //set Target Type as Mandatory
+                    $POP_targetDocType.addClass('vis-ev-col-mandatory');
                     // Payment method and overwrite payment method Suggested by Ashish and Rajni
                     $consolidate.prop('checked', true);
                     $overwritepay.prop('checked', true);
@@ -4949,6 +4962,23 @@
                     };
                 };
 
+                //to load TargetType DocTypes
+                function loadTargetType() {
+                    $POP_targetDocType.empty();
+                    var _org_Id = $POP_cmbOrg != null ? $POP_cmbOrg.val() : 0;
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id }, callbacktargettype);
+                    function callbacktargettype(dr) {
+                        $POP_targetDocType.append(" <option value = 0></option>");
+                        if (dr != null && dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_targetDocType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_DocType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            }
+                        }
+                        $POP_targetDocType.prop('selectedIndex', 0);
+                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
+                    };
+                };
+
                 //Set Mandatory and Non-Mandatory
                 function SetMandatory(value) {
                     if (value)
@@ -4972,6 +5002,20 @@
                         $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');                     
                     }
+                    //get the Target Doc Types
+                    loadTargetType();
+                });
+
+                //on change event for Target Type field
+                $POP_targetDocType.on("change", function () {
+                    //to $POP_targetDocType org mandatory
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) == 0) {
+                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
+                    }
+                    else {
+                        //remove mandatory class if value > zero
+                        $POP_targetDocType.removeClass('vis-ev-col-mandatory');
+                    }
                 });
 
                 $POP_cmbBank.on('change', function () {
@@ -4983,6 +5027,8 @@
                         $POP_cmbBank.addClass('vis-ev-col-mandatory');
                     }
                     $POP_cmbBankAccount.empty();
+                    //added mandatory class
+                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                     //to get bank account of selected organization assigned by Ashish on 28 May 2020
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
@@ -5013,7 +5059,8 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        //fixed issue with null exeception
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -5125,99 +5172,112 @@
                     var _CollaborateData = [];
                     BatchGrd.selectAll();
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                    if (BatchGrd.getSelection().length > 0) {
-                                        for (var i = 0; i < BatchGrd.getSelection().length; i++) {
-                                            var _data = {};
-                                            _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
-                                            _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
-                                            _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                            //commented because ashish and surya said that payment will be created in selected organization
-                                            //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
-                                            _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
-                                            _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
-                                            _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
-                                            _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
-                                            //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
-                                            _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
-                                            _data["C_Bank_ID"] = $POP_cmbBank.val();
-                                            _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
+                        //Target Type is Mandatory
+                        if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                        if (BatchGrd.getSelection().length > 0) {
+                                            for (var i = 0; i < BatchGrd.getSelection().length; i++) {
+                                                var _data = {};
+                                                _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
+                                                _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
+                                                _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                                //commented because ashish and surya said that payment will be created in selected organization
+                                                //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
+                                                _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                                //Target Doc Type
+                                                _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
+                                                _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
+                                                _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
+                                                _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
+                                                //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
+                                                _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
+                                                _data["C_Bank_ID"] = $POP_cmbBank.val();
+                                                _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
 
-                                            if (BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
-                                                return false;
-                                            }
-                                            else
-                                                _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
-
-                                            if ($overwritepay.prop('checked') == true) {
-                                                _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
-                                                _data["isOverwrite"] = "Y";
-                                            }
-                                            else {
-                                                _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
-                                                _data["isOverwrite"] = "N";
-                                            }
-                                            if ($consolidate.prop('checked') == true) {
-                                                _data["isconsolidate"] = "Y";
-                                            }
-                                            else {
-                                                _data["isconsolidate"] = "N";
-                                            }
-                                            if (Payrule == "S") {
-                                                var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-                                                _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-
-                                                if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
-                                                    _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
-                                                else {
-                                                    VIS.ADialog.info("VA009_PLCheckNumber");
-                                                    BatchGrd.selectNone();
+                                                if (_data["DueAmt"] != 0 && BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
+                                                    //ConvertedAmt is zero then show the message Conversion Rate not found
+                                                    VIS.ADialog.info("VA009_ConversionNotFound");
                                                     return false;
                                                 }
+                                                else
+                                                    _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
+
+                                                if ($overwritepay.prop('checked') == true) {
+                                                    _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                                    _data["isOverwrite"] = "Y";
+                                                }
+                                                else {
+                                                    _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
+                                                    _data["isOverwrite"] = "N";
+                                                }
+                                                if ($consolidate.prop('checked') == true) {
+                                                    _data["isconsolidate"] = "Y";
+                                                }
+                                                else {
+                                                    _data["isconsolidate"] = "N";
+                                                }
+                                                if (Payrule == "S") {
+                                                    var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
+                                                    _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
+
+                                                    if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
+                                                        _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
+                                                    else {
+                                                        VIS.ADialog.info("VA009_PLCheckNumber");
+                                                        BatchGrd.selectNone();
+                                                        return false;
+                                                    }
+                                                }
+                                                else {
+                                                    _data["CheckNumber"] = null;
+                                                    _data["CheckDate"] = null;
+                                                    _data["ValidMonths"] = null;
+                                                }
+                                                _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                                _CollaborateData.push(_data);
                                             }
-                                            else {
-                                                _data["CheckNumber"] = null;
-                                                _data["CheckDate"] = null;
-                                                _data["ValidMonths"] = null;
-                                            }
-                                            _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                            _CollaborateData.push(_data);
                                         }
+                                        $bsyDiv[0].style.visibility = "visible";
+                                        $.ajax({
+                                            url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
+                                            type: "POST",
+                                            datatype: "json",
+                                            // contentType: "application/json; charset=utf-8",
+                                            async: true,
+                                            data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                                            success: function (result) {
+                                                callbackBatchPay(result);
+                                            },
+                                            error: function (ex) {
+                                                console.log(ex);
+                                                $bsyDiv[0].style.visibility = "hidden";
+                                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                            }
+                                        });
                                     }
-                                    $bsyDiv[0].style.visibility = "visible";
-                                    $.ajax({
-                                        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
-                                        type: "POST",
-                                        datatype: "json",
-                                        // contentType: "application/json; charset=utf-8",
-                                        async: true,
-                                        data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                                        success: function (result) {
-                                            callbackBatchPay(result);
-                                        },
-                                        error: function (ex) {
-                                            console.log(ex);
-                                            $bsyDiv[0].style.visibility = "hidden";
-                                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                        }
-                                    });
+                                    else {
+                                        VIS.ADialog.info("VA009_PlsSelectPayMethod");
+                                        BatchGrd.selectNone();
+                                        return false;
+                                    }
                                 }
                                 else {
-                                    VIS.ADialog.info("VA009_PlsSelectPayMethod");
+                                    VIS.ADialog.info("VA009_PLSelectBankAccount");
                                     BatchGrd.selectNone();
                                     return false;
                                 }
                             }
                             else {
-                                VIS.ADialog.info("VA009_PLSelectBankAccount");
+                                VIS.ADialog.info("VA009_PLSelectBank");
                                 BatchGrd.selectNone();
                                 return false;
                             }
                         }
                         else {
-                            VIS.ADialog.info("VA009_PLSelectBank");
+                            //Target Type field Validation Message
+                            VIS.ADialog.info(("VA009_PLSelectTargetDocType"));
                             BatchGrd.selectNone();
                             return false;
                         }

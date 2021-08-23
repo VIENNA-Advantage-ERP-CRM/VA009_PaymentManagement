@@ -484,5 +484,22 @@ namespace VA009.Controllers
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
+
+        /// <summary>
+        /// Get the DocumentTypes based on Batch Payments
+        /// </summary>
+        /// <param name="ad_org_Id">AD_Org_ID</param>
+        /// <returns>List of Document Types</returns>
+        public JsonResult LoadTargetType(string ad_org_Id)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                Ctx ctx = Session["ctx"] as Ctx;
+                PaymentModel objConversionModel = new PaymentModel();
+                retJSON = JsonConvert.SerializeObject(objConversionModel.GetTargetType(ctx, Util.GetValueOfInt(ad_org_Id)));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
     }
 }
