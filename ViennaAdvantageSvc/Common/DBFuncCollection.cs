@@ -69,8 +69,9 @@ namespace ViennaAdvantage.Common
                          cb.c_bpartner_id=inv.c_bpartner_id INNER JOIN c_bp_group cbg ON cb.c_bp_group_id=cbg.c_bp_group_id INNER JOIN C_Currency cc ON 
                          inv.C_Currency_ID=cc.C_Currency_ID INNER JOIN AD_ClientInfo aclnt ON aclnt.AD_Client_ID =cs.AD_Client_ID INNER JOIN C_acctschema ac ON 
                          ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID INNER JOIN C_CURRENCY CY ON AC.C_CURRENCY_ID=CY.C_CURRENCY_ID  " +
-                             whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')
-                         AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+                             whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
+                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
+                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);
@@ -145,8 +146,9 @@ namespace ViennaAdvantage.Common
                         ON inv.C_Doctype_ID=cd.C_Doctype_ID  INNER JOIN C_BPartner cb  ON cb.c_bpartner_id=inv.c_bpartner_id  INNER JOIN c_bp_group cbg  ON cb.c_bp_group_id=cbg.c_bp_group_id
                         INNER JOIN C_Currency cc  ON inv.C_Currency_ID=cc.C_Currency_ID  INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID =cs.AD_Client_ID
                         INNER JOIN C_acctschema ac  ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID  INNER JOIN C_CURRENCY CY  ON AC.C_CURRENCY_ID=CY.C_CURRENCY_ID " +
-                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')
-                        AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
+                        //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
+                        + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);
@@ -220,8 +222,9 @@ namespace ViennaAdvantage.Common
                          cb.c_bpartner_id=inv.c_bpartner_id INNER JOIN c_bp_group cbg ON cb.c_bp_group_id=cbg.c_bp_group_id INNER JOIN C_Currency cc ON 
                          inv.C_Currency_ID=cc.C_Currency_ID INNER JOIN AD_ClientInfo aclnt ON aclnt.AD_Client_ID =cs.AD_Client_ID INNER JOIN C_acctschema ac ON 
                          ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID INNER JOIN C_CURRENCY CY ON AC.C_CURRENCY_ID=CY.C_CURRENCY_ID  " +
-                             whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')
-                         AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+                             whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
+                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
+                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);
@@ -296,8 +299,9 @@ namespace ViennaAdvantage.Common
                         ON inv.C_Doctype_ID=cd.C_Doctype_ID  INNER JOIN C_BPartner cb  ON cb.c_bpartner_id=inv.c_bpartner_id  INNER JOIN c_bp_group cbg  ON cb.c_bp_group_id=cbg.c_bp_group_id
                         INNER JOIN C_Currency cc  ON inv.C_Currency_ID=cc.C_Currency_ID  INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID =cs.AD_Client_ID
                         INNER JOIN C_acctschema ac  ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID  INNER JOIN C_CURRENCY CY  ON AC.C_CURRENCY_ID=CY.C_CURRENCY_ID " +
-                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')
-                        AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
+                        //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
+                        + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);

@@ -107,9 +107,11 @@ namespace ViennaAdvantage.Process
             MBankAccount _bankacc = new MBankAccount(GetCtx(), batch.GetC_BankAccount_ID(), Get_TrxName());
 
             decimal dueamt = 0;
+            //docbasetype
+            string _baseType = null;
             _sql.Clear();
-            _sql.Append(@"Select cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, cp.duedate, 
-                          cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType
+            _sql.Append(@"Select cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, cp.duedate, C_BP_BankAccount_ID,
+                          cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, CI.C_ConversionType_ID
                           From C_Invoice CI inner join C_InvoicePaySchedule CP ON CI.c_invoice_id= CP.c_invoice_id INNER JOIN 
                           C_DocType doc ON doc.C_DocType_ID = CI.C_DocType_ID Where ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
                           CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
@@ -176,11 +178,11 @@ namespace ViennaAdvantage.Process
                 if (C_ConversionType_ID == 0) //to Set Default conversion Type 
                 {
                     C_ConversionType_ID = GetDefaultConversionType(_sql);
-
                 }
+
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
-                    if ((Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"])) == 0)
+                    if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]) == 0)
                     {
                         continue;
                     }
@@ -215,6 +217,36 @@ namespace ViennaAdvantage.Process
                     //    line = new MVA009BatchLines(GetCtx(), _VA009_BatchLine_ID, null);
                     //}
                     // else
+                    //to set value of routing number and account number of batch lines 
+                    DataSet _ds = new DataSet();
+                    if (Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) > 0)
+                    {
+                        //line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                        //to set value of routing number and account number of batch lines 
+                        _ds = DB.ExecuteDataset(@" SELECT C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo FROM C_BP_BankAccount WHERE IsActive='Y' AND 
+                                            C_BP_BankAccount_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]), null, Get_TrxName());
+                    }
+                    else
+                    {
+                        _BPartner = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
+                        if (_BPartner > 0)
+                        {
+                            //to set value of routing number and account number of batch lines 
+                            _ds = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  a_name,RoutingNo,AccountNo,AD_Org_ID  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND IsActive='Y' AND "
+                               + " AD_Org_ID IN (0, " + batch.GetAD_Org_ID() + ") GROUP BY C_BP_BankAccount_ID, A_Name, RoutingNo, AccountNo, AD_Org_ID ORDER BY AD_Org_ID DESC", null, Get_TrxName());
+                        }
+                        else
+                        {
+                            //to set value of routing number and account number of batch lines 
+                            _ds = DB.ExecuteDataset(@"SELECT MAX(BPBA.C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  BPBA.a_name,BPBA.RoutingNo,BPBA.AccountNo,BP.AD_Org_ID  FROM C_BP_BankAccount BPBA
+                                  INNER JOIN C_BPartner BP ON BPBA.C_BPartner_ID=BP.C_BPartner_ID
+                                  WHERE BPBA.AD_Org_ID IN (0, " + batch.GetAD_Org_ID() + @") AND BPBA.IsActive='Y' 
+                                  GROUP BY BPBA.C_BP_BankAccount_ID, BPBA.A_Name, RoutingNo, BPBA.AccountNo,BP.AD_Org_ID ORDER BY BPBA.AD_Org_ID DESC", null, Get_TrxName());
+                        }
+                    }
+
                     if (line == null)
                     {
                         line = new MVA009BatchLines(GetCtx(), 0, Get_TrxName());
@@ -222,7 +254,7 @@ namespace ViennaAdvantage.Process
                         line.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Org_ID"]));
                         line.SetVA009_Batch_ID(batch.GetVA009_Batch_ID());
 
-                        _BPartner = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
+                        //_BPartner = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
                         docBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]);
                         line.SetC_BPartner_ID(_BPartner);
 
@@ -230,26 +262,43 @@ namespace ViennaAdvantage.Process
                         if (_BPartner > 0)
                         {
                             //to check if payment method is CHECK then skip otherwise set these values
-                            string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
+                            _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
                                 VA009_PaymentMethod_ID=" + batch.GetVA009_PaymentMethod_ID(), null,
                              Get_TrxName()));
+
                             if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
                             {
                                 // 
-                                DataSet ds1 = new DataSet();
-                                //to set value of routing number and account number of batch lines 
-                                ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name,RoutingNo,AccountNo  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
-                                       + " AD_Org_ID IN (0, " + batch.GetAD_Org_ID() + ") GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo  ");
-                                if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                                //DataSet ds1 = new DataSet();
+                                //if (Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) > 0)
+                                //{
+                                //    //line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                //    //to set value of routing number and account number of batch lines 
+                                //    ds1 = DB.ExecuteDataset(@" SELECT C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + @" AND 
+                                //            C_BP_BankAccount_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                //}
+                                //else
+                                //{
+                                //    //to set value of routing number and account number of batch lines 
+                                //    ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                //  a_name,RoutingNo,AccountNo  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
+                                //           + " AD_Org_ID IN (0, " + batch.GetAD_Org_ID() + ") GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo ORDER BY C_BP_BankAccount_ID");
+                                //}
+                                if (_ds != null && _ds.Tables[0].Rows.Count > 0)
                                 {
-                                    line.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+
                                     //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
-                                    if (Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) == 0)
+                                    if (Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) == 0)
+                                    {
                                         line.Set_Value("C_BP_BankAccount_ID", null);
-                                    line.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
-                                    line.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
-                                    line.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
+                                    }
+                                    else
+                                    {
+                                        line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                                    }
+                                    line.Set_ValueNoCheck("A_Name", Util.GetValueOfString(_ds.Tables[0].Rows[0]["a_name"]));
+                                    line.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(_ds.Tables[0].Rows[0]["RoutingNo"]));
+                                    line.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(_ds.Tables[0].Rows[0]["AccountNo"]));
                                 }
                             }
                         }
@@ -287,7 +336,7 @@ namespace ViennaAdvantage.Process
                     lineDetail.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]));
                     lineDetail.SetDueDate(Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DueDate"]));
                     lineDetail.SetC_ConversionType_ID(C_ConversionType_ID);
-                    dueamt = (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]));
+                    dueamt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
                     Decimal DiscountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
 
                     bool issamme = true; decimal comvertedamt = 0;
@@ -363,7 +412,11 @@ namespace ViennaAdvantage.Process
                         //lineDetail.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]));
                         lineDetail.SetDiscountAmt(DiscountAmt);
                     }
-
+                    //set the C_BP_BankAccount_ID
+                    if (_ds != null && _ds.Tables[0].Rows.Count > 0)
+                    {
+                        lineDetail.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                    }
                     if (!lineDetail.Save(Get_TrxName()))
                     {
                         Get_TrxName().Rollback();
@@ -377,6 +430,35 @@ namespace ViennaAdvantage.Process
                         //MInvoicePaySchedule _invpay = new MInvoicePaySchedule(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), Get_TrxName());
                         //_invpay.SetVA009_ExecutionStatus("Y");
                         //_invpay.Save(Get_TrxName());
+                    }
+                }
+                //Updating the C_BP_BankAccount_ID on Batch Lines Tab
+                if (!X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check.Equals(_baseType) && !X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash.Equals(_baseType))
+                {
+                    ds = DB.ExecuteDataset(@"SELECT MAX(BLD.C_BP_BankAccount_ID) AS C_BP_BankAccount_ID,BL.VA009_BatchLines_ID, 
+                                        BPBA.A_Name,BPBA.RoutingNo,BPBA.AccountNo FROM VA009_BatchLineDetails BLD
+                                        INNER JOIN VA009_BatchLines BL ON BLD.VA009_BatchLines_ID = BL.VA009_BatchLines_ID
+                                        INNER JOIN VA009_Batch B ON BL.VA009_Batch_ID=B.VA009_Batch_ID
+                                        INNER JOIN C_BP_BankAccount BPBA ON BLD.C_BP_BankAccount_ID=BPBA.C_BP_BankAccount_ID
+                                        WHERE B.VA009_Batch_ID = " + batch.GetVA009_Batch_ID() + @" AND BPBA.IsActive='Y'
+                                        GROUP BY BL.VA009_BatchLines_ID, BLD.C_BP_BankAccount_ID, BPBA.A_Name, 
+                                        BPBA.RoutingNo, BPBA.AccountNo", null, Get_TrxName());
+                    if (ds != null && ds.Tables[0].Rows.Count > 0)
+                    {
+                        for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                        {
+                            line = new MVA009BatchLines(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]), Get_TrxName());
+                            line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                            line.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds.Tables[0].Rows[i]["a_name"]));
+                            line.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["RoutingNo"]));
+                            line.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["AccountNo"]));
+                            if (!line.Save(Get_TrxName()))
+                            {
+                                Get_TrxName().Rollback();
+                                _BPartner = 0;
+                                _VA009_BatchLine_ID = 0;
+                            }
+                        }
                     }
                 }
                 batch.SetVA009_GenerateLines("Y");
@@ -398,10 +480,10 @@ namespace ViennaAdvantage.Process
                 //}
                 #endregion
 
-                return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd"); ;
+                return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd"); 
             }
             else
-                return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd"); ;
+                return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd"); 
         }
         /// <summary>
         /// Get Default Conversion Type ID From the system

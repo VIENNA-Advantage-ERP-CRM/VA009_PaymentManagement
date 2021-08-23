@@ -5047,7 +5047,15 @@ namespace VA009.Models
             return ex.ToString();
         }
 
-        //added by Manjot 19/Feb/2019
+        /// <summary>
+        /// added by Manjot 19/Feb/2019
+        /// Generate Batch Lines
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="_Bt">MVA009Batch Object</param>
+        /// <param name="trx">Transaction</param>
+        /// <returns>VA009_BatchLine_ID</returns>
         public int GenerateBatchLine(Ctx ct, GeneratePaymt PaymentData, MVA009Batch _Bt, Trx trx)
         {
             MVA009BatchLines _BtLines = new MVA009BatchLines(ct, 0, trx);
@@ -5064,10 +5072,11 @@ namespace VA009.Models
                 {
                     // 
                     DataSet ds1 = new DataSet();
-                    ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name, RoutingNo, AccountNo FROM C_BP_BankAccount WHERE C_BPartner_ID = " + PaymentData.C_BPartner_ID + " AND "
-                           + " AD_Org_ID =" + _Bt.GetAD_Org_ID() + " GROUP BY C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo ");
-                    if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                    //updated query as per requirement
+                    ds1 = DB.ExecuteDataset(@"SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                  A_Name, RoutingNo, AccountNo FROM C_BP_BankAccount WHERE IsActive='Y' AND C_BPartner_ID = " + PaymentData.C_BPartner_ID + " AND "
+                           + " AD_Org_ID IN(0, " + _Bt.GetAD_Org_ID() + ") GROUP BY C_BP_BankAccount_ID, A_Name,RoutingNo,AccountNo, AD_Org_ID ORDER BY AD_Org_ID DESC");
+                    if (ds1 != null && ds1.Tables[0].Rows.Count > 0)
                     {
                         // _BtLines.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds1.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
                         // _BtLines.Set_Value("a_name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
@@ -5093,9 +5102,26 @@ namespace VA009.Models
                 return _BtLines.GetVA009_BatchLines_ID();
         }
 
-        //added by Manjot 19/Feb/2019
+
+        /// <summary>
+        /// added by Manjot 19/Feb/2019
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="_Bt">MVA009Batch Object</param>
+        /// <param name="_BankAcct">C_BankAccount_ID</param>
+        /// <param name="_invpaySchdule">C_InvoicePaySchedule_ID</param>
+        /// <param name="_doctype">C_DocType_ID</param>
+        /// <param name="convertedAmount">Converted Amount</param>
+        /// <param name="paymentmethdoID">VA009_PaymentMethod_ID</param>
+        /// <param name="Batchline_ID">VA009_BatchLines_ID</param>
+        /// <param name="isOverwrite">Is Overwrite Payment Method</param>
+        /// <param name="trx">Transaction</param>
+        /// <returns>VA009_BatchLineDetails_ID</returns>
         public int GenerateBatchLineDetails(Ctx ct, GeneratePaymt PaymentData, MVA009Batch _Bt, MBankAccount _BankAcct, MInvoicePaySchedule _invpaySchdule, MDocType _doctype, decimal convertedAmount, int paymentmethdoID, int Batchline_ID, string isOverwrite, Trx trx)
         {
+            //to get the BP_BankAccount_ID
+            int _BP_BankAccount_ID = 0;
             MVA009BatchLineDetails _btDetal = new MVA009BatchLineDetails(ct, 0, trx);
             _btDetal.SetAD_Client_ID(PaymentData.AD_Client_ID);
             _btDetal.SetAD_Org_ID(PaymentData.AD_Org_ID);
@@ -5118,12 +5144,25 @@ namespace VA009.Models
                     if (convertedAmount < 0)
                         convertedAmount = -1 * convertedAmount;
                 }
-
             }
             _btDetal.SetVA009_ConvertedAmt(convertedAmount);
             if (paymentmethdoID > 0)
+            {
                 _btDetal.SetVA009_PaymentMethod_ID(paymentmethdoID);
-
+            }
+            //to set the C_BP_BankAccount_ID get the C_BP_BankAccount_ID from Invoice or C_BP_BankAccount table
+            if (PaymentData.C_Invoice_ID > 0)
+            {
+                _BP_BankAccount_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_BP_BankAccount_ID FROM C_Invoice WHERE IsActive='Y' AND C_Invoice_ID=" + PaymentData.C_Invoice_ID, null, trx));
+                if (_BP_BankAccount_ID == 0)
+                {
+                    _BP_BankAccount_ID = Util.GetValueOfInt(DB.ExecuteScalar(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID
+                                  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + PaymentData.C_BPartner_ID + " AND IsActive='Y' AND "
+                               + " AD_Org_ID IN (0, " + PaymentData.AD_Org_ID + ") ORDER BY AD_Org_ID DESC", null, trx));
+                }
+            }
+            //Set the C_BP_BankAccount_ID Value
+            _btDetal.Set_Value("C_BP_BankAccount_ID", _BP_BankAccount_ID);
             //_btDetal.SetProcessed(true);
             if (!_btDetal.Save())
             {
@@ -5702,7 +5741,9 @@ namespace VA009.Models
                             _Bt.SetAD_Org_ID(PaymentData[0].AD_Org_ID);
                             _Bt.SetVA009_PaymentMethod_ID(paymentmethdoID);
                             //to set document type against batch payment
-                            _Bt.Set_ValueNoCheck("C_DocType_ID", getDocumentTypeID(ct, PaymentData[0].AD_Org_ID, trx));
+                            //_Bt.Set_ValueNoCheck("C_DocType_ID", getDocumentTypeID(ct, PaymentData[0].AD_Org_ID, trx));
+                            //Target Document Type selected by the User
+                            _Bt.Set_ValueNoCheck("C_DocType_ID", PaymentData[0].TargetDocType);
                             //end
                             _Bt.SetVA009_PaymentRule(paymethodDetails["VA009_PaymentRule"].ToString());
                             _Bt.SetVA009_PaymentTrigger(paymethodDetails["VA009_PaymentTrigger"].ToString());
@@ -5907,6 +5948,45 @@ namespace VA009.Models
                         }
                         #endregion
                     }
+
+                    //to check if payment method is CHECK then skip otherwise set these values
+                    string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
+                                VA009_PaymentMethod_ID=" + _Bt.GetVA009_PaymentMethod_ID(), null, trx));
+                    //Updating the C_BP_BankAccount_ID on Batch Lines Tab
+                    if (_Bt != null && !X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check.Equals(_baseType) && !X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash.Equals(_baseType))
+                    {
+                        DataSet ds = DB.ExecuteDataset(@"SELECT MAX(BLD.C_BP_BankAccount_ID) AS C_BP_BankAccount_ID,BL.VA009_BatchLines_ID, 
+                                        BPBA.A_Name,BPBA.RoutingNo,BPBA.AccountNo FROM VA009_BatchLineDetails BLD
+                                        INNER JOIN VA009_BatchLines BL ON BLD.VA009_BatchLines_ID = BL.VA009_BatchLines_ID
+                                        INNER JOIN VA009_Batch B ON BL.VA009_Batch_ID=B.VA009_Batch_ID
+                                        INNER JOIN C_BP_BankAccount BPBA ON BLD.C_BP_BankAccount_ID=BPBA.C_BP_BankAccount_ID
+                                        WHERE B.VA009_Batch_ID = " + _Bt.GetVA009_Batch_ID() + @" AND BPBA.IsActive='Y'
+                                        GROUP BY BL.VA009_BatchLines_ID, BLD.C_BP_BankAccount_ID, BPBA.A_Name, 
+                                        BPBA.RoutingNo, BPBA.AccountNo", null, trx);
+                        if (ds != null && ds.Tables[0].Rows.Count > 0)
+                        {
+                            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                            {
+                                MVA009BatchLines line = new MVA009BatchLines(ct, Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]), trx);
+                                line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                                line.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds.Tables[0].Rows[i]["a_name"]));
+                                line.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["RoutingNo"]));
+                                line.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["AccountNo"]));
+                                if (!line.Save(trx))
+                                {
+                                    trx.Rollback();
+                                    ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
+                                    ValueNamePair pp = VLogger.RetrieveError();
+                                    if (pp != null)
+                                    {
+                                        ex.Append(", " + pp.GetName());
+                                    }
+                                    _log.Info(ex.ToString());
+                                }
+                            }
+                        }
+                    }
+
                     if (BtachId.Count > 0)
                     {
                         for (int j = 0; j < BtachId.Count; j++)
@@ -6042,6 +6122,29 @@ namespace VA009.Models
             return rate;
         }
 
+        /// <summary>
+        /// Get C_DocType_ID against Batch Payment
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="org_id">Org ID</param>
+        /// <returns>List of Document Types</returns>
+        public List<DocTypeDetails> GetTargetType(Ctx ct, int org_id)
+        {
+            List<DocTypeDetails> _list = new List<DocTypeDetails>();
+            DocTypeDetails docTypes = null;
+            DataSet _ds = DB.ExecuteDataset("SELECT C_DocType_ID, Name FROM C_DocType WHERE IsActive='Y' AND DocBaseType='BAP' AND AD_Org_ID IN(" + org_id + ", 0)", null, null);
+            if (_ds != null && _ds.Tables[0].Rows.Count > 0)
+            {
+                for (int i = 0; i < _ds.Tables[0].Rows.Count; i++)
+                {
+                    docTypes = new DocTypeDetails();
+                    docTypes.C_DocType_ID = Util.GetValueOfInt(_ds.Tables[0].Rows[i]["C_DocType_ID"]);
+                    docTypes.Name = Util.GetValueOfString(_ds.Tables[0].Rows[i]["Name"]);
+                    _list.Add(docTypes);
+                }
+            }
+            return _list;
+        }
     }
 }
 //**************************************
@@ -6161,6 +6264,7 @@ public class GeneratePaymt
     public string PaymwentBaseType { get; set; }
     public decimal convertedAmt { get; set; }
     public string TransactionType { get; set; }
+    public int TargetDocType { get; set; }
     //end
 }
 public class PayBatchDetails
@@ -6186,5 +6290,9 @@ public class LocationDetails
 public class ChargeDetails
 {
     public int C_Charge_ID { get; set; }
+    public string Name { get; set; }
+}
+public class DocTypeDetails {
+    public int C_DocType_ID { get; set; }
     public string Name { get; set; }
 }
