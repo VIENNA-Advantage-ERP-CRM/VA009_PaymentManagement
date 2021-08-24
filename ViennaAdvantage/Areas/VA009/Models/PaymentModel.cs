@@ -6146,7 +6146,8 @@ namespace VA009.Models
         {
             List<DocTypeDetails> _list = new List<DocTypeDetails>();
             DocTypeDetails docTypes = null;
-            DataSet _ds = DB.ExecuteDataset("SELECT C_DocType_ID, Name FROM C_DocType WHERE IsActive='Y' AND DocBaseType='BAP' AND AD_Org_ID IN(" + org_id + ", 0)", null, null);
+            //applied filter with Client ID
+            DataSet _ds = DB.ExecuteDataset("SELECT C_DocType_ID, Name FROM C_DocType WHERE IsActive='Y' AND DocBaseType='BAP' AND AD_Org_ID IN(" + org_id + ", 0) AND AD_Client_ID=" + ct.GetAD_Client_ID(), null, null);
             if (_ds != null && _ds.Tables[0].Rows.Count > 0)
             {
                 for (int i = 0; i < _ds.Tables[0].Rows.Count; i++)
