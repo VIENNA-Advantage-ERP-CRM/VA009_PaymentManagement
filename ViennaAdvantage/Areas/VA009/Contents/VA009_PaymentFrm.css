@@ -796,3 +796,16 @@ p.VA009-data-bot:last-child {
 .VA009-padd-right-0 {
     padding-right: 0
 }
+/*for Consolidate and Override Payment method fields in Payment Schedule batch Pop-up window*/
+.VA009-popFormInn {
+    display: flex;
+}
+
+.VA009-popFormInn label {
+    flex: 1;
+}
+
+.VA009-popFormInn label:last-child {
+    padding-left: 1rem;
+}
+

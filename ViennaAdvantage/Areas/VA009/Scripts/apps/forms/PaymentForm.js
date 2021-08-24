@@ -4763,13 +4763,13 @@
                     + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
                     + "</div></div>"
                     //re-arranged the place of the filed
-                    + "<div style='width:50%;float:left;position: relative;align-items: center;padding-left:0.5%;'><div class='vis-control-wrap'>"
-                    + "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
-                    + "<label class='vis-ec-col-lblchkbox' style='width:60%;'><input type='checkbox' disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</label>'
+                    + "<div class='VA009-popform-data'><div class='VA009-popFormInn'>"
+                    //+ "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
+                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</label>'
 
                     //+ "<div class='vis-control-wrap'>"
-                    + "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
-                    + "<label class='vis-ec-col-lblchkbox' style='padding-left:5%;'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
+                    //+ "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
+                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap' style='display:none !important'><div class='vis-control-wrap'>"
                     + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
