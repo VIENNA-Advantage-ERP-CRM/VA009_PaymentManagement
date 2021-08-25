@@ -68,8 +68,9 @@ namespace VA009.Models
         {
             List<BankDetails> bd = new List<BankDetails>();
             StringBuilder sql = new StringBuilder();
+            //Table name must Camel format
             sql.Append(@"SELECT cs.Name,  bc.C_Bank_ID,  bc.C_BankAccount_ID,  bc.AccountNo,  cc.Iso_Code, bc.CurrentBalance, bc.UnMatchedBalance, cs.AD_Org_ID, cs.AD_Client_ID,
-                         SUM(p.PayAmt) AS TotalAmt FROM C_Bank cs INNER JOIN C_Bankaccount bc ON cs.C_Bank_ID =bc.C_Bank_ID LEFT JOIN c_Payment p ON 
+                         SUM(p.PayAmt) AS TotalAmt FROM C_Bank cs INNER JOIN C_BankAccount bc ON cs.C_Bank_ID =bc.C_Bank_ID LEFT JOIN C_Payment p ON 
                          bc.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN C_Currency cc ON bc.C_Currency_ID =cc.C_Currency_ID WHERE cs.ISACTIVE='Y' AND bc.ISACTIVE='Y' AND cs.IsOwnBank ='Y' ");
 
             // check access of Organization on Bank Account not on Bank
@@ -371,7 +372,8 @@ namespace VA009.Models
         {
             List<CashBook> Cbk = new List<CashBook>();
             StringBuilder sql = new StringBuilder();
-            sql.Append(@"SELECT cs.name,  cs.completedbalance,  c.iso_code,cs.C_Cashbook_ID FROM c_cashbook cs INNER JOIN C_currency c ON 
+            //Table name must Camel format
+            sql.Append(@"SELECT cs.name,  cs.completedbalance,  c.iso_code,cs.C_Cashbook_ID FROM C_CashBook cs INNER JOIN C_Currency c ON 
                          c.c_currency_id=cs.c_currency_id WHERE cs.ISACTIVE='Y' ");
             sql.Append(OrgWhr);
             string finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
@@ -4771,10 +4773,11 @@ namespace VA009.Models
         public List<PayBatchDetails> GetPayScheduleBatch(Ctx ctx)
         {
             List<PayBatchDetails> lst = new List<PayBatchDetails>();
+            //Table name must Camel format
             string sql = "SELECT b.DocumentNo,  b.VA009_DocumentDate,  bn.name AS bankName,  bna.ACCOUNTNO AS bankaccount,  b.c_bank_id,  b.c_bankaccount_id,  pm.VA009_NAME AS PaymentMethod,  b.va009_paymentmethod_id,"
-                        + "c.c_currency_id,  c.ISO_CODE,  bd.VA009_ConvertedAmt FROM VA009_batch b INNER JOIN c_bank bn ON bn.c_bank_id=b.c_bank_id INNER JOIN C_bankAccount bna ON bna.c_bankaccount_id=b.c_bankaccount_id"
-                        + " INNER JOIN va009_batchlines bl ON bl.VA009_batch_id=b.va009_batch_id INNER JOIN va009_batchlinedetails bd ON bd.va009_batchlines_id=bl.va009_batchlines_id INNER JOIN C_Currency c "
-                        + "ON c.c_Currency_id=bd.C_Currency_ID INNER JOIN va009_paymentmethod pm ON pm.va009_paymentmethod_id= b.va009_paymentmethod_id";
+                        + "c.c_currency_id,  c.ISO_CODE,  bd.VA009_ConvertedAmt FROM VA009_Batch b INNER JOIN C_Bank bn ON bn.c_bank_id=b.c_bank_id INNER JOIN C_BankAccount bna ON bna.c_bankaccount_id=b.c_bankaccount_id"
+                        + " INNER JOIN VA009_BatchLines bl ON bl.VA009_batch_id=b.va009_batch_id INNER JOIN VA009_BatchLineDetails bd ON bd.va009_batchlines_id=bl.va009_batchlines_id INNER JOIN C_Currency c "
+                        + "ON c.c_Currency_id=bd.C_Currency_ID INNER JOIN VA009_PaymentMethod pm ON pm.va009_paymentmethod_id= b.va009_paymentmethod_id";
 
             sql = MRole.GetDefault(ctx).AddAccessSQL(sql, "b", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
 
@@ -5254,7 +5257,8 @@ namespace VA009.Models
         public List<ChargeDetails> GetDocumentType(string orgs, Ctx ctx)
         {
             List<ChargeDetails> retDic = null;
-            string sql = @"SELECT Name,C_DOCTYPE_ID FROM C_DOCTYPE WHERE C_DOCTYPE.DOCBASETYPE IN ('ARR', 'APP') AND C_DOCTYPE.AD_ORG_ID IN (0, " + orgs + ")";
+            //Table name must Camel format because Table name is case sensitive
+            string sql = @"SELECT Name,C_DocType_ID FROM C_DocType WHERE C_DocType.DOCBASETYPE IN ('ARR', 'APP') AND C_DocType.AD_ORG_ID IN (0, " + orgs + ")";
             sql = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "C_DocType", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -5263,7 +5267,7 @@ namespace VA009.Models
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     ChargeDetails obj = new ChargeDetails();//
-                    obj.C_Charge_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_DOCTYPE_ID"]);
+                    obj.C_Charge_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_DocType_ID"]);
                     obj.Name = Util.GetValueOfString(ds.Tables[0].Rows[i]["Name"]);
                     retDic.Add(obj);
                 }
