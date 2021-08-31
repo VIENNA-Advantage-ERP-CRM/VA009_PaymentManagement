@@ -53,7 +53,7 @@ namespace ViennaAdvantage.Common
                          t.C_InvoicePaySchedule_ID,  t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,  t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,
                          t.va009_plannedduedate, t.VA009_FollowupDate,  t.VA009_RecivedAmt,  t.DueAmt, t.VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  
                          t.ISO_CODE, t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
-
+                    //Log Warnings handled
                     string query = @"SELECT pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
                          pm.VA009_PaymentMethod_ID, pm.VA009_name as VA009_PaymentMethod,pm.va009_paymentbasetype,pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger,
                          cs.duedate as va009_plannedduedate,
@@ -64,13 +64,13 @@ namespace ViennaAdvantage.Common
                          inv.C_Currency_ID,  cc.ISO_CODE, ac.c_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID, cs.DueDate, inv.C_ConversionType_ID,
                          inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy')
                         -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
-                         C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID INNER JOIN C_DocType 
-                         cd ON cs.C_DocType_ID=cd.C_DocType_ID INNER JOIN AD_Ref_List rsf ON rsf.value= cs.VA009_ExecutionStatus INNER JOIN AD_Reference re ON 
-                         rsf.AD_Reference_ID=re.AD_Reference_ID LEFT JOIN C_Invoice inv ON inv.c_invoice_id=cs.c_invoice_id LEFT JOIN C_BPartner cb ON 
-                         cb.C_BPartner_ID=inv.C_BPartner_ID INNER JOIN C_BP_Group cbg ON cb.C_BP_Group_ID=cbg.C_BP_Group_ID INNER JOIN C_Currency cc ON 
-                         inv.C_Currency_ID=cc.C_Currency_ID INNER JOIN AD_ClientInfo aclnt ON aclnt.AD_Client_ID =cs.AD_Client_ID INNER JOIN C_AcctSchema ac ON 
-                         ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID INNER JOIN C_Currency CY ON AC.C_Currency_ID=CY.C_Currency_ID  " +
-                             whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ('Y','J')"
+                         C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID) INNER JOIN C_DocType cd
+                         ON (cs.C_DocType_ID=cd.C_DocType_ID) INNER JOIN AD_Ref_List rsf ON (rsf.value= cs.VA009_ExecutionStatus) INNER JOIN AD_Reference re ON 
+                         (rsf.AD_Reference_ID=re.AD_Reference_ID) LEFT JOIN C_Invoice inv ON (inv.c_invoice_id=cs.c_invoice_id) LEFT JOIN C_BPartner cb ON 
+                         (cb.C_BPartner_ID=inv.C_BPartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
+                         (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
+                         (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
+                             whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ('Y','J')"
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
                          + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
@@ -131,7 +131,7 @@ namespace ViennaAdvantage.Common
                         t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
                         t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
                         t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
-
+                    //Log Warnings handled
                     string query = @" SELECT pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
                         cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
                         pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
@@ -142,12 +142,12 @@ namespace ViennaAdvantage.Common
                         CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,cs.DueDate, inv.C_ConversionType_ID,inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
                         inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) AS Due_Date_Diff,
                         cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
-                        FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
-                        INNER JOIN AD_Ref_List rsf  ON rsf.value= cs.VA009_ExecutionStatus  INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID
-                        AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON inv.C_Order_ID=cs.C_Order_ID  INNER JOIN C_DocType cd
-                        ON inv.C_DocType_ID=cd.C_DocType_ID  INNER JOIN C_BPartner cb  ON cb.C_Bpartner_ID=inv.C_Bpartner_ID  INNER JOIN C_BP_Group cbg  ON cb.C_BP_Group_ID=cbg.C_BP_Group_ID
-                        INNER JOIN C_Currency cc  ON inv.C_Currency_ID=cc.C_Currency_ID  INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID =cs.AD_Client_ID
-                        INNER JOIN C_AcctSchema ac  ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID  INNER JOIN C_Currency CY  ON AC.C_Currency_ID=CY.C_Currency_ID " +
+                        FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID)
+                        INNER JOIN AD_Ref_List rsf  ON (rsf.value= cs.VA009_ExecutionStatus)  INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID
+                        AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON (inv.C_Order_ID=cs.C_Order_ID)  INNER JOIN C_DocType cd
+                        ON (inv.C_DocType_ID=cd.C_DocType_ID)  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=inv.C_Bpartner_ID)  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                        INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
+                        INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
                             whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
@@ -207,7 +207,7 @@ namespace ViennaAdvantage.Common
                          t.C_InvoicePaySchedule_ID,  t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,  t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,
                          t.va009_plannedduedate, t.VA009_FollowupDate,  t.VA009_RecivedAmt,  t.DueAmt, t.VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  
                          t.ISO_CODE, t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
-
+                    //Log Warnings handled
                     string query = @"SELECT pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
                          pm.VA009_PaymentMethod_ID, pm.VA009_name as VA009_PaymentMethod,pm.va009_paymentbasetype,pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger,
                          cs.duedate as va009_plannedduedate,
@@ -219,12 +219,12 @@ namespace ViennaAdvantage.Common
                          inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, 
                          DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy')-to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) 
                          as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
-                         C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID INNER JOIN C_DocType 
-                         cd ON cs.C_DocType_ID=cd.C_DocType_ID INNER JOIN AD_Ref_List rsf ON rsf.value= cs.VA009_ExecutionStatus INNER JOIN AD_Reference re ON 
-                         rsf.AD_Reference_ID=re.AD_Reference_ID LEFT JOIN C_Invoice inv ON inv.c_invoice_id=cs.c_invoice_id LEFT JOIN C_BPartner cb ON 
-                         cb.C_Bpartner_ID=inv.C_Bpartner_ID INNER JOIN C_BP_Group cbg ON cb.C_BP_Group_ID=cbg.C_BP_Group_ID INNER JOIN C_Currency cc ON 
-                         inv.C_Currency_ID=cc.C_Currency_ID INNER JOIN AD_ClientInfo aclnt ON aclnt.AD_Client_ID =cs.AD_Client_ID INNER JOIN C_AcctSchema ac ON 
-                         ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID INNER JOIN C_Currency CY ON AC.C_Currency_ID=CY.C_Currency_ID  " +
+                         C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID) INNER JOIN C_DocType cd 
+                         ON (cs.C_DocType_ID=cd.C_DocType_ID) INNER JOIN AD_Ref_List rsf ON (rsf.value= cs.VA009_ExecutionStatus) INNER JOIN AD_Reference re ON 
+                         (rsf.AD_Reference_ID=re.AD_Reference_ID) LEFT JOIN C_Invoice inv ON (inv.c_invoice_id=cs.c_invoice_id) LEFT JOIN C_BPartner cb ON 
+                         (cb.C_Bpartner_ID=inv.C_Bpartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
+                         (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
+                         (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
                              whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
                          + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
@@ -286,7 +286,7 @@ namespace ViennaAdvantage.Common
                         t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
                         t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
                         t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
-
+                    //Log Warnings handled
                     string query = @" SELECT pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
                         cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
                         pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
@@ -297,12 +297,12 @@ namespace ViennaAdvantage.Common
                         CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID, cs.DueDate, inv.C_ConversionType_ID,inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
                         inv.GrandTotal, DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) AS Due_Date_Diff,
                         cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
-                        FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
-                        INNER JOIN AD_Ref_List rsf  ON rsf.value= cs.VA009_ExecutionStatus  INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID
-                        AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON inv.C_Order_ID=cs.C_Order_ID  INNER JOIN C_DocType cd
-                        ON inv.C_DocType_ID=cd.C_DocType_ID  INNER JOIN C_BPartner cb  ON cb.C_BPartner_ID=inv.C_BPartner_ID  INNER JOIN C_BP_Group cbg  ON cb.C_BP_Group_ID=cbg.C_BP_Group_ID
-                        INNER JOIN C_Currency cc  ON inv.C_Currency_ID=cc.C_Currency_ID  INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID =cs.AD_Client_ID
-                        INNER JOIN C_AcctSchema ac  ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID  INNER JOIN C_Currency CY  ON AC.C_Currency_ID=CY.C_Currency_ID " +
+                        FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID)
+                        INNER JOIN AD_Ref_List rsf  ON (rsf.value= cs.VA009_ExecutionStatus)  INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID
+                        AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON (inv.C_Order_ID=cs.C_Order_ID)  INNER JOIN C_DocType cd
+                        ON (inv.C_DocType_ID=cd.C_DocType_ID)  INNER JOIN C_BPartner cb  ON (cb.C_BPartner_ID=inv.C_BPartner_ID)  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                        INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
+                        INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
                             whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
