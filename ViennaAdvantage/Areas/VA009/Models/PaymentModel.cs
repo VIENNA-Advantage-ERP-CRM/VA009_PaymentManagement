@@ -69,9 +69,10 @@ namespace VA009.Models
             List<BankDetails> bd = new List<BankDetails>();
             StringBuilder sql = new StringBuilder();
             //Table name must Camel format
+            //Log Issue handled
             sql.Append(@"SELECT cs.Name,  bc.C_Bank_ID,  bc.C_BankAccount_ID,  bc.AccountNo,  cc.Iso_Code, bc.CurrentBalance, bc.UnMatchedBalance, cs.AD_Org_ID, cs.AD_Client_ID,
-                         SUM(p.PayAmt) AS TotalAmt FROM C_Bank cs INNER JOIN C_BankAccount bc ON cs.C_Bank_ID =bc.C_Bank_ID LEFT JOIN C_Payment p ON 
-                         bc.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN C_Currency cc ON bc.C_Currency_ID =cc.C_Currency_ID WHERE cs.ISACTIVE='Y' AND bc.ISACTIVE='Y' AND cs.IsOwnBank ='Y' ");
+                         SUM(p.PayAmt) AS TotalAmt FROM C_BankAccount bc INNER JOIN C_Bank cs ON (cs.C_Bank_ID =bc.C_Bank_ID) LEFT JOIN C_Payment p ON 
+                         (p.C_BankAccount_ID=bc.C_BankAccount_ID) INNER JOIN C_Currency cc ON (cc.C_Currency_ID =bc.C_Currency_ID) WHERE cs.ISACTIVE='Y' AND bc.ISACTIVE='Y' AND cs.IsOwnBank ='Y' ");
 
             // check access of Organization on Bank Account not on Bank
             string finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "bc", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
@@ -373,8 +374,9 @@ namespace VA009.Models
             List<CashBook> Cbk = new List<CashBook>();
             StringBuilder sql = new StringBuilder();
             //Table name must Camel format
+            //Log Issue handled
             sql.Append(@"SELECT cs.name,  cs.completedbalance,  c.iso_code,cs.C_Cashbook_ID FROM C_CashBook cs INNER JOIN C_Currency c ON 
-                         c.c_currency_id=cs.c_currency_id WHERE cs.ISACTIVE='Y' ");
+                         (c.c_currency_id=cs.c_currency_id) WHERE cs.ISACTIVE='Y' ");
             sql.Append(OrgWhr);
             string finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
 
