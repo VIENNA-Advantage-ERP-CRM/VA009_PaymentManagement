@@ -1398,7 +1398,8 @@ namespace ViennaAdvantage.Process
                     Get_TrxName().Rollback();
                     msg = Msg.GetMsg(GetCtx(), checkMsg);
                     MBankAccount ba = new MBankAccount(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]), Get_TrxName());
-                    return msg + ":" + ba.GetAccountNo();
+                    //Want space between the Message and AccountNo
+                    return msg + " : " + ba.GetAccountNo();
                 }
             }
             else if (tenderType == "T")    // Direct Deposit
