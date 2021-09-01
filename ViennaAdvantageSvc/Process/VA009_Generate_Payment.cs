@@ -44,7 +44,7 @@ namespace ViennaAdvantage.Process
         private string allocationDocumentNo = string.Empty;
 
         X_C_BankAccountDoc BAcctDoc = null;
-        bool CurrtNxtUpdated = false;
+        //bool CurrtNxtUpdated = false;
         Decimal discountAmt, DueAmount = 0;
         MPayment _pay = null;
         Int32 currencyTo_ID = 0, BlineDetailCur_ID = 0;
@@ -766,16 +766,16 @@ namespace ViennaAdvantage.Process
                                         }
                                         else
                                             docNos.Append(_pay.GetDocumentNo());
-
-                                        if (CurrtNxtUpdated)
-                                        {
-                                            BAcctDoc.SetCurrentNext(BAcctDoc.GetCurrentNext() + 1);
-                                            if (!BAcctDoc.Save(Get_TrxName()))
-                                            {
-                                                Get_TrxName().Rollback();
-                                            }
-                                            CurrtNxtUpdated = false;
-                                        }
+                                        //check number to generated on Payment Completion
+                                        //if (CurrtNxtUpdated)
+                                        //{
+                                        //    BAcctDoc.SetCurrentNext(BAcctDoc.GetCurrentNext() + 1);
+                                        //    if (!BAcctDoc.Save(Get_TrxName()))
+                                        //    {
+                                        //        Get_TrxName().Rollback();
+                                        //    }
+                                        //    CurrtNxtUpdated = false;
+                                        //}
                                         if (!payment.Contains(_pay.GetC_Payment_ID()))
                                         {
                                             payment.Add(_pay.GetC_Payment_ID());
@@ -1048,13 +1048,13 @@ namespace ViennaAdvantage.Process
                                     }
                                     else
                                         docNos.Append(_pay.GetDocumentNo());
-
-                                    if (CurrtNxtUpdated)
-                                    {
-                                        BAcctDoc.SetCurrentNext(BAcctDoc.GetCurrentNext() + 1);
-                                        BAcctDoc.Save(Get_TrxName());
-                                        CurrtNxtUpdated = false;
-                                    }
+                                    //check number to generated on Payment Completion
+                                    //if (CurrtNxtUpdated)
+                                    //{
+                                    //    BAcctDoc.SetCurrentNext(BAcctDoc.GetCurrentNext() + 1);
+                                    //    BAcctDoc.Save(Get_TrxName());
+                                    //    CurrtNxtUpdated = false;
+                                    //}
                                     paymentDocumentNo += _pay.GetDocumentNo() + " , ";
                                     batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_TrxName());
                                     batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
@@ -1185,15 +1185,24 @@ namespace ViennaAdvantage.Process
         private String UpdateCheckNoOnPayment(DataSet ds, int i, MPayment _pay)
         {
             sql.Clear();
-            sql.Append("SELECT C_BankAccountDoc_ID FROM C_BankAccountDoc Where IsActive='Y' AND PaymentRule='S' AND C_BankAccount_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
+            //get Bank Account document record on respective condition
+            sql.Append(@"SELECT C_BankAccountDoc.C_BankAccountDoc_ID FROM 
+                            C_BankAccountDoc C_BankAccountDoc INNER JOIN C_BankAccount C_BankAccount ON (C_BankAccount.C_BankAccount_ID = C_BankAccountDoc.C_BankAccount_ID)
+                        Where C_BankAccountDoc.IsActive='Y' 
+                        AND C_BankAccountDoc.PaymentRule='S' 
+                        AND C_BankAccount.ChkNoAutoControl = 'Y' 
+                        AND EndChkNumber != (CurrentNext-1)
+                        AND C_BankAccountDoc.VA009_PaymentMethod_ID = " + _pay.GetVA009_PaymentMethod_ID() + @"
+                        AND C_BankAccountDoc.C_BankAccount_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
             Int32 bankAcctDoc_ID = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString()));
             if (bankAcctDoc_ID > 0)
             {
                 BAcctDoc = new X_C_BankAccountDoc(GetCtx(), bankAcctDoc_ID, Get_TrxName());
                 if (BAcctDoc.GetCurrentNext() > 0)
                 {
-                    _pay.SetCheckNo(Util.GetValueOfString(BAcctDoc.GetCurrentNext()));
-                    CurrtNxtUpdated = true;
+                    //not required to set checkno from here
+                    //_pay.SetCheckNo(Util.GetValueOfString(BAcctDoc.GetCurrentNext()));
+                    //CurrtNxtUpdated = true;
                 }
                 else
                 {
@@ -1202,7 +1211,8 @@ namespace ViennaAdvantage.Process
             }
             else
             {
-                return "VA009_NoCurNxtForAcctNo";
+                //Auto check control not defined for selected Payment Method on Bank Account Document
+                return "VA009_PayMthodOrBkAcctDocNotFund";
             }
             return "";
         }
