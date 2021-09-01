@@ -5164,9 +5164,10 @@ namespace VA009.Models
                 _BP_BankAccount_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_BP_BankAccount_ID FROM C_Invoice WHERE IsActive='Y' AND C_Invoice_ID=" + PaymentData.C_Invoice_ID, null, trx));
                 if (_BP_BankAccount_ID == 0)
                 {
+                    //PostGre SQL for Aggragate funcation should use Group by clause whenever used Order By Clause otherwise through error
                     _BP_BankAccount_ID = Util.GetValueOfInt(DB.ExecuteScalar(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID
                                   FROM C_BP_BankAccount WHERE C_BPartner_ID = " + PaymentData.C_BPartner_ID + " AND IsActive='Y' AND "
-                               + " AD_Org_ID IN (0, " + PaymentData.AD_Org_ID + ") ORDER BY AD_Org_ID DESC", null, trx));
+                               + " AD_Org_ID IN (0, " + PaymentData.AD_Org_ID + ") GROUP BY AD_Org_ID ORDER BY AD_Org_ID DESC", null, trx));
                 }
             }
             //Set the C_BP_BankAccount_ID Value
