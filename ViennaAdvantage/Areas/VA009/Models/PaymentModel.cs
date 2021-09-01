@@ -3390,7 +3390,7 @@ namespace VA009.Models
             StringBuilder qry = new StringBuilder();
             //REMOVED ORGNIZATION NAME FROM BANK BECAUSE NOW WE ADDED ORG PARAMETER ON FORM
             string sql = @"SELECT DISTINCT bk.C_Bank_ID, bk.Name AS Bank FROM C_BankAccount bc INNER JOIN C_Bank bk 
-            ON bc.C_Bank_ID = bk.C_Bank_ID WHERE bc.IsActive='Y' AND bk.IsActive='Y' AND bk.IsOwnBank ='Y' ";
+            ON (bc.C_Bank_ID = bk.C_Bank_ID) WHERE bc.IsActive='Y' AND bk.IsActive='Y' AND bk.IsOwnBank ='Y' ";
 
             // Check Access of Organization on Bank Account not to Bank
             qry.Append(MRole.GetDefault(ct).AddAccessSQL(sql, "bc", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO));
@@ -3416,7 +3416,8 @@ namespace VA009.Models
         public Dictionary<string, object> GetBankAccountData(int bankAccount_ID, Ctx ct)
         {
             Dictionary<string, object> retBank = null;
-            string sql = @"SELECT ba.CurrentBalance,  bd.CurrentNext FROM c_bankaccount ba LEFT JOIN C_BankAccountDoc bd ON bd.C_BankAccount_ID = ba.C_BankAccount_ID 
+            //handled the logs
+            string sql = @"SELECT ba.CurrentBalance,  bd.CurrentNext FROM C_BankAccount ba LEFT JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)  
                         WHERE ba.ISACTIVE='Y' AND  ba.c_bankaccount_id=" + bankAccount_ID + " AND ba.ad_client_id =" + ct.GetAD_Client_ID();
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "ba", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
@@ -3555,12 +3556,13 @@ namespace VA009.Models
             string sql = "";
 
             // Show currency Code with Bank Account
-            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount acct INNER JOIN C_Currency cu ON acct.C_Currency_ID = cu.C_Currency_ID");
+            //handled logs
+            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount acct INNER JOIN C_Currency cu ON (acct.C_Currency_ID = cu.C_Currency_ID)");
             if (c_Bank_ID == 0)
             {
                 qry.Clear();
-                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount ba INNER JOIN C_Bank B ON b.C_Bank_ID=ba.C_Bank_ID
-                            INNER JOIN C_Currency cu ON ba.C_Currency_ID = cu.C_Currency_ID");
+                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount ba INNER JOIN C_Bank B ON (b.C_Bank_ID=ba.C_Bank_ID)
+                            INNER JOIN C_Currency cu ON (ba.C_Currency_ID = cu.C_Currency_ID)");
             }
 
             if (orgs.Length > 0)
@@ -3654,7 +3656,8 @@ namespace VA009.Models
         {
             List<Dictionary<string, object>> retDic = null;
             StringBuilder qry = new StringBuilder();
-            string sql = @"SELECT cb.C_Cashbook_ID, cb.Name || '_' || cu.ISO_Code AS Name FROM C_CashBook cb INNER JOIN C_Currency cu ON cb.C_Currency_ID=cu.C_Currency_ID 
+            //handled logs
+            string sql = @"SELECT cb.C_Cashbook_ID, cb.Name || '_' || cu.ISO_Code AS Name FROM C_CashBook cb INNER JOIN C_Currency cu ON (cb.C_Currency_ID=cu.C_Currency_ID)  
                     WHERE cb.ISACTIVE='Y' AND cb.AD_Client_ID=" + ct.GetAD_Client_ID() + " AND cb.AD_Org_ID = " + Util.GetValueOfInt(orgs) + " ORDER BY cb.Name";
             qry.Append(MRole.GetDefault(ct).AddAccessSQL(sql, "cb", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO));
             //commented code, used directly in above query!
@@ -5469,14 +5472,15 @@ namespace VA009.Models
             StringBuilder sql = new StringBuilder();
             if (isBatch)
             {
+                //handled logs
                 //add sql access to generate batch file for those who have access
                 sql.Clear();
                 sql.Append(@"SELECT VA009_Batch_ID FROM VA009_Batch
                             WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno) = UPPER('" + DocNumber + "')");
                 payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_Batch", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
                 sql.Clear();
-                sql.Append(@"SELECT Count(bld.C_Payment_ID) FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
-                    INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID LEFT JOIN C_Payment p ON p.C_Payment_ID      = bld.C_Payment_ID
+                sql.Append(@"SELECT Count(bld.C_Payment_ID) FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON (bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID)
+                    INNER JOIN VA009_Batch b ON (bl.VA009_Batch_ID = b.VA009_Batch_ID) LEFT JOIN C_Payment p ON (p.C_Payment_ID = bld.C_Payment_ID)
                     WHERE b.VA009_Batch_ID = " + payment_ID);
                 ispaymentGenerated = (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString())) > 0 ? true : false);
             }
@@ -5485,15 +5489,15 @@ namespace VA009.Models
                 //add sql access to generate batch file for those who have access
                 sql.Clear();
                 //removed brackets from this query because it was creating problem in case of document number was having special characters
-                sql.Append(@"SELECT c_payment_id FROM c_payment 
+                sql.Append(@"SELECT c_payment_id FROM C_Payment 
                             WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno)=UPPER('" + DocNumber + "') ");
                 payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
             }
             PaymentResponse obj = null;
             sql.Clear();
-            sql.Append(@"SELECT bpc.value FROM c_payment p INNER JOIN VA009_BankPaymentClass pc
+            sql.Append(@"SELECT bpc.value FROM C_Payment p INNER JOIN VA009_BankPaymentClass pc
                                   ON (pc.C_bankAccount_ID= p.c_bankaccount_id AND pc.VA009_PaymentMethod_ID=p.VA009_PaymentMethod_ID AND pc.IsActive = 'Y')
-                                  INNER JOIN VA009_PaymentClass  bpc ON pc.VA009_PaymentClass_ID=bpc.VA009_PaymentClass_ID ");
+                                  INNER JOIN VA009_PaymentClass  bpc ON (pc.VA009_PaymentClass_ID=bpc.VA009_PaymentClass_ID) ");
             if (isBatch)
             {
                 if (!ispaymentGenerated)
@@ -5503,8 +5507,8 @@ namespace VA009.Models
                     batchResponse.Add(obj);
                     return batchResponse;
                 }
-                sql.Append(@" WHERE p.c_payment_id IN (SELECT bld.C_Payment_ID FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
-                    INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID LEFT JOIN C_Payment p ON p.C_Payment_ID      = bld.C_Payment_ID
+                sql.Append(@" WHERE p.c_payment_id IN (SELECT bld.C_Payment_ID FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON (bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID)
+                    INNER JOIN VA009_Batch b ON (bl.VA009_Batch_ID = b.VA009_Batch_ID) LEFT JOIN C_Payment p ON (p.C_Payment_ID = bld.C_Payment_ID)
                     WHERE b.VA009_Batch_ID = " + payment_ID + ")");
             }
             else
