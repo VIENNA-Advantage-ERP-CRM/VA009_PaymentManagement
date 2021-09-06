@@ -37,6 +37,17 @@ namespace VA009.Models
             return obj;
         }
 
+        /// <summary>
+        /// Get Currency of Bank Account
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="BankAccount_ID">Bank Account</param>
+        /// <returns>C_Currency_ID</returns>
+        public int GetBankAccountCurrency(Ctx ctx, int BankAccount_ID)
+        {
+            string sql = "SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankACcount_ID="+ BankAccount_ID;
+            return Util.GetValueOfInt(DB.ExecuteScalar(sql));
+        }
         public List<BPDetails> GetBPnames(string searchText, Ctx ct)
         {
             List<BPDetails> Bp = new List<BPDetails>();
@@ -3011,7 +3022,7 @@ namespace VA009.Models
         /// <param name="dateAcct">Account Date</param>
         /// <param name="_org_Id">AD_Org_ID</param>
         /// <returns>returns Payment Data which is used to bind on grid</returns>
-        public List<PaymentData> ConvertedAmt(Ctx ctx, GeneratePaymt[] PaymentData, int BankAccount, int CurrencyType, DateTime? dateAcct, int _org_Id)
+        public List<PaymentData> ConvertedAmt(Ctx ctx, GeneratePaymt[] PaymentData, int BankAccount, int CurrencyType, int Tocurrency, DateTime? dateAcct, int _org_Id)
         {
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             if (PaymentData.Length > 0)
@@ -3069,13 +3080,15 @@ namespace VA009.Models
                     {
                         if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "API")
                         {
-                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, dateAcct);
+                            //get converted amount  as per the  selected currency
+                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType,Tocurrency, dateAcct);
                             convertdamt = convertdamt >= 0 ? convertdamt : -1 * convertdamt;
                             _payData.convertedAmt = convertdamt;
                         }
                         else
-                        {
-                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, dateAcct);
+                        { 
+                            //get converted amount  as per the  selected currency
+                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType,Tocurrency, dateAcct);
                             _payData.convertedAmt = convertdamt;
                         }
                         //If converted Amt is zero then Conversion Not found
@@ -3148,15 +3161,16 @@ namespace VA009.Models
         /// <param name="CurrencyType_ID">C_ConversionType_ID</param>
         /// <param name="dateAcct">DateAcct</param>
         /// <returns>returns Converted Amount</returns>
-        public decimal GetConvertedAmt(Ctx ctx, decimal amt, int fromCurr, int bankaccount, int client_id, int org_id, int CurrencyType_ID, DateTime? dateAcct)
+        public decimal GetConvertedAmt(Ctx ctx, decimal amt, int fromCurr, int bankaccount, int client_id, int org_id, int CurrencyType_ID, int ToCurrency, DateTime? dateAcct)
         {
-            //MBankAccount _bnkAcct = new MBankAccount(ctx, bankaccount, null);//to get single Value not required to create Object fetch directly from query
-            int _bnkAcctCurrency_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE IsActive='Y' AND C_BankAccount_ID=" + bankaccount, null, null));
-            //decimal comvertedamt = 0;
-            //comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, _bnkAcct.GetC_Currency_ID(), client_id, org_id);
-            //comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, _bnkAcct.GetC_Currency_ID(), DateTime.Now, CurrencyType_ID, client_id, org_id);
+            if (ToCurrency==0) {
+                //MBankAccount _bnkAcct = new MBankAccount(ctx, bankaccount, null);//to get single Value not required to create Object fetch directly from query
+                ToCurrency = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE IsActive='Y' AND C_BankAccount_ID=" + bankaccount, null, null));
+                //decimal comvertedamt = 0;
+            }
+            
             //Use User selected Date of Account from the grid not the System Date
-            decimal comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, _bnkAcctCurrency_ID, dateAcct, CurrencyType_ID, client_id, org_id);
+            decimal comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, ToCurrency, dateAcct, CurrencyType_ID, client_id, org_id);
             return comvertedamt;
         }
         //added by amit
@@ -5759,7 +5773,8 @@ namespace VA009.Models
                             _Bt.SetVA009_PaymentRule(paymethodDetails["VA009_PaymentRule"].ToString());
                             _Bt.SetVA009_PaymentTrigger(paymethodDetails["VA009_PaymentTrigger"].ToString());
                             //to set bank currency on Payment Batch given by Rajni and Ashish
-                            _Bt.Set_Value("C_Currency_ID", _BankAcct.GetC_Currency_ID());
+                            _Bt.Set_Value("C_Currency_ID", PaymentData[0].HeaderCurrency);
+                            _Bt.Set_Value("C_ConversionType_ID", PaymentData[0].CurrencyType);
                             // _Bt.SetProcessed(true);
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
                             if (isconsolidate == "Y")
@@ -6291,6 +6306,7 @@ public class GeneratePaymt
     public decimal convertedAmt { get; set; }
     public string TransactionType { get; set; }
     public int TargetDocType { get; set; }
+    public int HeaderCurrency { get; set; }
     //end
 }
 public class PayBatchDetails
