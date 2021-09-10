@@ -4723,7 +4723,7 @@
             },
 
             Batch_Dialog: function () {
-
+                var InvScheduleLookup = null; 
                 var BatchGrid, _Cheque_no = "";
                 var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
                 $batch = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:395px !important'>");
@@ -4753,6 +4753,19 @@
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
                     + "</select>"
                     + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                    + "</div></div>"
+
+                    //creae new form field  currency 
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
+                    + "</div></div>"
+                    //creae new form field  currency type
+                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
                     + "</div></div>"
 
                     // Payment method and overwrite payment method Suggested by Ashish and Rajni
@@ -4803,7 +4816,10 @@
                 //set payment method mandatory assigned by ashish 28 May 2020
                 $POP_PayMthd.addClass('vis-ev-col-mandatory');
                 loadPayMthd();
+                $POP_cmbCurrency.addClass('vis-ev-col-mandatory');
+                loadCurrency();
                 loadCurrencyType();
+                InvScheduleLookup = VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 0, VIS.DisplayType.TableDir, "C_InvoicePaySchedule_ID", 0, false, "C_InvoicePaySchedule.IsActive='Y' ");
 
                 function BatchGrid_Layout() {
 
@@ -4812,7 +4828,18 @@
                         _batch_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
                         _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
                         //_batch_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
-                        _batch_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%' });
+                        _batch_Columns.push({
+                            field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%',
+                            render: function (record, index, col_index) {
+                                var l = InvScheduleLookup;
+                                var val = record["C_InvoicePaySchedule_ID"];
+                                var d;
+                                if (l) {
+                                    d = l.getDisplay(val);
+                                }
+                                return d;
+                            }
+                        });
                         _batch_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
                         _batch_Columns.push({
                             field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
@@ -4867,6 +4894,7 @@
                 function Batch_getControls() {
                     $POP_cmbBank = $batch.find("#VA009_POP_cmbBank_" + $self.windowNo);
                     $POP_cmbBankAccount = $batch.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
+                    $POP_cmbCurrency = $batch.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
                     $POP_PayMthd = $batch.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
                     BatchGrid = $batch.find("#VA009_btnPopupGrid");
                     $consolidate = $batch.find("#VA009_Consolidate_" + $self.windowNo);
@@ -4986,8 +5014,21 @@
                     else
                         return 'White';
                 };
-                //end
+                //load currencies
+                function loadCurrency() {
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencies", null, callbackCurrencyType);
 
+                    function callbackCurrencyType(dr) {
+                        $POP_cmbCurrency.append("<option value='0'></option>");
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbCurrency.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + ">" + VIS.Utility.encodeText(dr[i].ISO_Code) + "</option>");
+                            }
+                            $POP_cmbCurrency.prop('selectedIndex', 0);
+                        }
+                    }
+                };
+                //end
                 $POP_cmbOrg.on("change", function () {
                     //to set org mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
@@ -5052,6 +5093,7 @@
                     else {
                         $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                     }
+                    
                     //end
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
@@ -5069,16 +5111,48 @@
                             VIS.ADialog.error("VA009_ErrorLoadingPayments");
                         }
                     });
+
+                    //get and set Currency of  Bank Account
+                    var Currency = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountCurrency", { "BankAccount_ID": $POP_cmbBankAccount.val() });
+                    if (Currency > 0) {
+                        $POP_cmbCurrency.val(Currency);
+                    }
                 });
 
+                //on the change of Currency type get the  converted amount
                 $pop_cmbCurrencyType.on("change", function () {
                     $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
                         type: "POST",
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), ToCurrency: $POP_cmbCurrency.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackchqReload(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+                });
+
+                //on the change of Currency get the  converted amount
+                $POP_cmbCurrency.on("change", function () {
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbCurrency.val()) == 0) {
+                        $POP_cmbCurrency.addClass('vis-ev-col-mandatory');
+                    }
+                    else {
+                        $POP_cmbCurrency.removeClass('vis-ev-col-mandatory');
+                    }
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
+                        type: "POST",
+                        datatype: "json",
+                        // contentType: "application/json; charset=utf-8",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), ToCurrency: $POP_cmbCurrency.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -5236,6 +5310,8 @@
                                                     _data["ValidMonths"] = null;
                                                 }
                                                 _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                                _data["HeaderCurrency"] = $POP_cmbCurrency.val();
+
                                                 _CollaborateData.push(_data);
                                             }
                                         }

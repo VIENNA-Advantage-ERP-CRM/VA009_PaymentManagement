@@ -29,6 +29,18 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get Currency of Bank Account
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="BankAccount_ID">Bank Account</param>
+        /// <returns>C_Currency_ID</returns>
+        public JsonResult GetBankAccountCurrency(Ctx ctx, int BankAccount_ID)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            return Json(JsonConvert.SerializeObject(_payMdl.GetBankAccountCurrency(ctx, BankAccount_ID)), JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetBPName(string searchText)
         {
             Ctx ct = Session["ctx"] as Ctx;
@@ -107,10 +119,31 @@ namespace VA009.Controllers
         /// <returns>returns Payment Data to bind on grid</returns>
         public JsonResult GetConvertedAmt(string PaymentData, int BankAccount, int CurrencyType, DateTime? dateAcct, int _org_Id)
         {
+            //GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
+            //Ctx ctx = Session["ctx"] as Ctx;
+            //PaymentModel _payMdl = new PaymentModel();
+            //List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, dateAcct, _org_Id);
+            return GetConvertedAmtBatch(PaymentData, BankAccount, CurrencyType, 0, dateAcct, _org_Id);
+        }
+
+
+
+        /// <summary>
+        /// Get Updated Converted Amount with Payment Data
+        /// </summary>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="BankAccount">C_BankAccount_ID</param>
+        /// <param name="CurrencyType">C_ConversionType_ID</param>
+        /// <param name="ToCurrency">C_Currency_ID</param>
+        /// <param name="dateAcct">Account Date</param>
+        /// <param name="_org_Id">AD_Org_ID</param>
+        /// <returns>returns Payment Data to bind on grid</returns>
+        public JsonResult GetConvertedAmtBatch(string PaymentData, int BankAccount, int CurrencyType, int ToCurrency, DateTime? dateAcct, int _org_Id)
+        {
             GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
             Ctx ctx = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, dateAcct, _org_Id);
+            List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, ToCurrency, dateAcct, _org_Id);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
