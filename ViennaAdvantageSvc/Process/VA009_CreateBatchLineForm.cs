@@ -42,6 +42,8 @@ namespace ViennaAdvantage.Process
         //variable to get value of cosnolidate parameter
         bool isConsolidate = false;
         int C_ConversionType_ID = 0;
+        int C_Currency_ID = 0;
+
         //int _VA009_BatchDetail_ID = 0;
 
 
@@ -103,6 +105,10 @@ namespace ViennaAdvantage.Process
                 else if (name.Equals("VA009_Consolidate"))
                 {
                     isConsolidate = "Y".Equals(para[i].GetParameter());
+                }
+                else if (name.Equals("C_Currency_ID"))
+                {
+                    C_Currency_ID = para[i].GetParameterAsInt();
                 }
                 else
                 {
@@ -277,11 +283,11 @@ namespace ViennaAdvantage.Process
                                 if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
                                 {
                                     // 
-                                  //  DataSet ds1 = new DataSet();
-                                  //  //to set value of routing number and account number of batch lines 
-                                  //  ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  //a_name,RoutingNo,AccountNo  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
-                                  //         + " AD_Org_ID IN (0," + batch.GetAD_Org_ID() + ")  GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo  ");
+                                    //  DataSet ds1 = new DataSet();
+                                    //  //to set value of routing number and account number of batch lines 
+                                    //  ds1 = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
+                                    //a_name,RoutingNo,AccountNo  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND "
+                                    //         + " AD_Org_ID IN (0," + batch.GetAD_Org_ID() + ")  GROUP BY C_BP_BankAccount_ID, a_name, RoutingNo, AccountNo  ");
                                     if (_ds != null && _ds.Tables[0].Rows.Count > 0)
                                     {
                                         line.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
@@ -341,7 +347,7 @@ namespace ViennaAdvantage.Process
                         }
 
                         bool issamme = true; decimal comvertedamt = 0;
-                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) == _bankacc.GetC_Currency_ID())
+                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) == (C_Currency_ID == 0 ? _bankacc.GetC_Currency_ID() : C_Currency_ID))
                             issamme = true;
                         else
                             issamme = false;
@@ -359,18 +365,17 @@ namespace ViennaAdvantage.Process
                         if (issamme == false)
                         {
                             comvertedamt = 0;
-                            comvertedamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
-                            lineDetail.SetC_Currency_ID(_bankacc.GetC_Currency_ID());
+                            //get converted amount in the selected currency or in bank currency if no currency is selected.
+                            comvertedamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), C_Currency_ID == 0 ? _bankacc.GetC_Currency_ID() : C_Currency_ID, DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
+                            //  lineDetail.SetC_Currency_ID(C_Currency_ID == 0 ? _bankacc.GetC_Currency_ID() : C_Currency_ID);
                             if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                             {
                                 comvertedamt = (-1 * comvertedamt);
                             }
                         }
-                        else
-                        {
-                            lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-                        }
 
+                        // set Invoice currency
+                        lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                         lineDetail.SetVA009_ConvertedAmt(comvertedamt);
                         lineDetail.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
                         if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) < Util.GetValueOfDateTime(batch.GetVA009_DocumentDate()))
@@ -507,8 +512,20 @@ namespace ViennaAdvantage.Process
             batch.Set_Value("C_DocType_ID", _targetDocType);
             //end
             batch.SetC_BankAccount_ID(_C_BankAccount_ID);
-            //to set bank currency on Payment Batch given by Rajni and Ashish
-            batch.Set_Value("C_Currency_ID", Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankAccount_ID=" + _C_BankAccount_ID)));
+            //to set bank currency on Payment Batch given by Rajni and Ashish           
+            if (C_Currency_ID == 0)
+            {
+                //if currency is not selected on the form then set the bank currency  
+                batch.Set_Value("C_Currency_ID", Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankAccount_ID=" + _C_BankAccount_ID)));
+            }
+            else
+            {
+               //set the currency selected on the form 
+                batch.Set_Value("C_Currency_ID", C_Currency_ID);
+            }
+            //set the selected conversion type.
+            batch.Set_Value("C_ConversionType_ID", C_ConversionType_ID);
+
             batch.SetVA009_PaymentMethod_ID(_paymentMethod);
             batch.SetVA009_PaymentRule(paym.GetVA009_PaymentRule());
             batch.SetVA009_PaymentTrigger(paym.GetVA009_PaymentTrigger());
