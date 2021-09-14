@@ -5149,7 +5149,8 @@ namespace VA009.Models
             _btDetal.SetAD_Org_ID(PaymentData.AD_Org_ID);
             _btDetal.SetC_InvoicePaySchedule_ID(PaymentData.C_InvoicePaySchedule_ID);
             _btDetal.SetC_Invoice_ID(PaymentData.C_Invoice_ID);
-            _btDetal.SetC_Currency_ID(_BankAcct.GetC_Currency_ID());
+            //set Invoice Currency 
+            _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
             _btDetal.SetVA009_BatchLines_ID(Batchline_ID);
             _btDetal.SetDueAmt(PaymentData.DueAmt);
             _btDetal.SetC_ConversionType_ID(PaymentData.CurrencyType);
