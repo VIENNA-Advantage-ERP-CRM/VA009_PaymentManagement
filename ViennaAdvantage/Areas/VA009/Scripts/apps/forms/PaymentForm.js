@@ -5116,6 +5116,7 @@
                     var Currency = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountCurrency", { "BankAccount_ID": $POP_cmbBankAccount.val() });
                     if (Currency > 0) {
                         $POP_cmbCurrency.val(Currency);
+                        $POP_cmbCurrency.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
