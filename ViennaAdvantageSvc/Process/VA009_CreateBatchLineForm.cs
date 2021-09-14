@@ -137,7 +137,7 @@ namespace ViennaAdvantage.Process
                               cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, C_BP_BankAccount_ID
                               From C_Invoice CI inner join C_InvoicePaySchedule CP ON CI.c_invoice_id= CP.c_invoice_id
                               INNER JOIN C_DocType doc ON doc.C_DocType_ID = CI.C_DocType_ID  Where ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL
-                              AND CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus NOT IN ( 'Y','J') AND CI.AD_Client_ID = " + GetAD_Client_ID() + " AND CI.AD_Org_ID = " + GetAD_Org_ID());
+                              AND CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus NOT IN ( 'Y','J') AND CI.AD_Client_ID = " + _bankacc.GetAD_Client_ID() + " AND CI.AD_Org_ID = " + _bankacc.GetAD_Org_ID());
 
                 if (_C_BPartner_ID > 0)
                 {
@@ -267,8 +267,8 @@ namespace ViennaAdvantage.Process
                         if (line == null)
                         {
                             line = new MVA009BatchLines(GetCtx(), 0, Get_TrxName());
-                            line.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Client_ID"]));
-                            line.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Org_ID"]));
+                            line.SetAD_Client_ID(_bankacc.GetAD_Client_ID());
+                            line.SetAD_Org_ID(_bankacc.GetAD_Org_ID());
                             line.SetVA009_Batch_ID(batch.GetVA009_Batch_ID());
 
                             _BPartner = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
@@ -332,8 +332,8 @@ namespace ViennaAdvantage.Process
                             }
                         }
                         lineDetail = new MVA009BatchLineDetails(GetCtx(), 0, Get_TrxName());
-                        lineDetail.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Client_ID"]));
-                        lineDetail.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Org_ID"]));
+                        lineDetail.SetAD_Client_ID(_bankacc.GetAD_Client_ID());
+                        lineDetail.SetAD_Org_ID(_bankacc.GetAD_Org_ID());
                         lineDetail.SetVA009_BatchLines_ID(line.GetVA009_BatchLines_ID());
                         lineDetail.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]));
                         lineDetail.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]));
@@ -446,6 +446,7 @@ namespace ViennaAdvantage.Process
                         }
                     }
 
+                    batch.SetAD_Org_ID(_bankacc.GetAD_Org_ID());
                     batch.SetVA009_GenerateLines("Y");
                     batch.SetProcessed(true);
                     if (!batch.Save(Get_TrxName()))
@@ -512,7 +513,6 @@ namespace ViennaAdvantage.Process
             batch.Set_Value("C_DocType_ID", _targetDocType);
             //end
             batch.SetC_BankAccount_ID(_C_BankAccount_ID);
-            //to set bank currency on Payment Batch given by Rajni and Ashish           
             if (C_Currency_ID == 0)
             {
                 //if currency is not selected on the form then set the bank currency  
