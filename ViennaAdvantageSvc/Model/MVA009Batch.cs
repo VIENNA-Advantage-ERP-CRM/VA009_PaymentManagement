@@ -341,9 +341,12 @@ namespace ViennaAdvantage.Model
             try
             {
                 ds = DB.ExecuteDataset(sql, null, Get_TrxName());
-                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                if (ds != null && ds.Tables.Count > 0)
                 {
-                    list.Add(new MVA009BatchLineDetails(GetCtx(), ds.Tables[0].Rows[i], Get_TrxName()));
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        list.Add(new MVA009BatchLineDetails(GetCtx(), ds.Tables[0].Rows[i], Get_TrxName()));
+                    }
                 }
                 ds = null;
             }
@@ -351,6 +354,7 @@ namespace ViennaAdvantage.Model
             {
                 log.Log(Level.SEVERE, sql, ex);
                 list = null;
+                ds.Dispose();
             }
             ds = null;
             //
