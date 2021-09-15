@@ -1336,11 +1336,12 @@ namespace ViennaAdvantage.Process
         /// <summary>
         /// Save Payment record in Case when Data Is having Order Payment Schedule
         /// </summary>
-        /// <param name="ds"></param>
-        /// <param name="i"></param>
-        /// <param name="_pay"></param>
-        /// <param name="discAmt"></param>
-        /// <param name="dueAmt"></param>
+        /// <param name="ds">dataset</param>
+        /// <param name="i">recordnumber</param>
+        /// <param name="_pay">payment object</param>
+        /// <param name="discAmt">dicsount amount</param>
+        /// <param name="dueAmt">Due amount</param>
+        /// <param name="dateAcct">Account Date</param>
         /// <returns></returns>
         public String CreatePaymentAgainstOrders(DataSet ds, int i, MPayment _pay, decimal discAmt, decimal dueAmt, int currencyTo_ID, DateTime? docdate, DateTime? dateAcct)
         {

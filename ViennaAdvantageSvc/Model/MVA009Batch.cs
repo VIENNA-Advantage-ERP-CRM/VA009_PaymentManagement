@@ -39,6 +39,10 @@ namespace ViennaAdvantage.Model
             return true;
         }
 
+        /// <summary>
+        /// Close batch
+        /// </summary>
+        /// <returns>true/false</returns>
         public bool CloseIt()
         {
             StringBuilder sql = new StringBuilder();
@@ -49,7 +53,6 @@ namespace ViennaAdvantage.Model
             if (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null)) > 0)
             {
                 _processMsg = Msg.GetMsg(GetCtx(), "VA009_PaymentNotGenerated");
-                SetDocAction(DOCACTION_None);
                 return false;
             }
             log.Info(ToString());
@@ -174,7 +177,10 @@ namespace ViennaAdvantage.Model
         {
             return true;
         }
-
+        /// <summary>
+        /// Prepare batch
+        /// </summary>
+        /// <returns>status result</returns>
         public string PrepareIt()
         {
             //Rakesh(VA228):Implemented prediod closed and nonbusiness day check
@@ -242,7 +248,10 @@ namespace ViennaAdvantage.Model
         {
             return true;
         }
-
+        /// <summary>
+        /// Void batch
+        /// </summary>
+        /// <returns>true/false</returns>
         public bool VoidIt()
         {
             StringBuilder sql = new StringBuilder();
@@ -253,7 +262,6 @@ namespace ViennaAdvantage.Model
             if (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null)) > 0)
             {
                 _processMsg = Msg.GetMsg(GetCtx(), "VA009_PaymentGenerated");
-                SetDocAction(DOCACTION_None);
                 return false;
             }
             log.Info(ToString());
