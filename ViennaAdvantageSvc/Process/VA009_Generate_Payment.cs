@@ -402,7 +402,7 @@ namespace ViennaAdvantage.Process
                                     {
                                         discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
                                                BlineDetailCur_ID,//Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                               DateTime.Now,
+                                               _batch.GetDateAcct(),//Changed to account date
                                                Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
                                                GetAD_Client_ID(), GetAD_Org_ID());
                                         if (discountAmt == 0)
@@ -418,7 +418,7 @@ namespace ViennaAdvantage.Process
                                     }
                                     DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
                                       BlineDetailCur_ID,//  Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                        DateTime.Now,
+                                        _batch.GetDateAcct(),//Changed to account date
                                         Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
                                         GetAD_Client_ID(), GetAD_Org_ID());
                                     if (DueAmount == 0)
@@ -496,8 +496,8 @@ namespace ViennaAdvantage.Process
                                     MAllocationHdr allocHdr = new MAllocationHdr(GetCtx(), 0, Get_TrxName());
                                     allocHdr.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                     allocHdr.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    //to set document date of batch header on all payments and allocations
-                                    allocHdr.SetDateAcct(_batch.GetVA009_DocumentDate());
+                                    //Rakesh(VA228):to set account date of batch header on all payments and allocations
+                                    allocHdr.SetDateAcct(_batch.GetDateAcct());
                                     allocHdr.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     //allocHdr.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                                     allocHdr.SetC_Currency_ID(BlineDetailCur_ID);
@@ -664,7 +664,7 @@ namespace ViennaAdvantage.Process
                                     if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
                                     {
                                         //to set document date of batch header on all payments and allocations
-                                        checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate());
+                                        checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
                                         if (checkMsg != "")
                                         {
                                             Get_TrxName().Rollback();
@@ -677,8 +677,8 @@ namespace ViennaAdvantage.Process
                                         _pay.SetC_DocType_ID(C_Doctype_ID);
                                         _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                         _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                        //to set document date of batch header on all payments and allocations
-                                        _pay.SetDateAcct(DateTime.Now); //_batch.GetVA009_DocumentDate()
+                                        //Rakesh(VA228):to set account date of batch header on all payments and allocations
+                                        _pay.SetDateAcct(_batch.GetDateAcct());
                                         _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                         _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
@@ -726,7 +726,7 @@ namespace ViennaAdvantage.Process
                                         {
                                             _pay.SetTenderType("K");
                                             //Arpit In Case of Payment is of check type then we insert Check Date + Check Number
-                                            _pay.SetCheckDate(DateTime.Now);
+                                            _pay.SetCheckDate(_batch.GetDateAcct());//Changed to account date from system date
                                             checkMsg = UpdateCheckNoOnPayment(ds, i, _pay);
                                             if (checkMsg != "")
                                             {
@@ -909,7 +909,7 @@ namespace ViennaAdvantage.Process
                                         discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
                                               //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
                                               BlineDetailCur_ID,
-                                               DateTime.Now,
+                                               _batch.GetDateAcct(),//Changed to account date
                                                Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
                                                GetAD_Client_ID(), GetAD_Org_ID());
                                         if (discountAmt == 0)
@@ -928,7 +928,7 @@ namespace ViennaAdvantage.Process
                                     DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
                                       BlineDetailCur_ID,
                                         //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                        DateTime.Now,
+                                        _batch.GetDateAcct(),//Changed to account date
                                         Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
                                         GetAD_Client_ID(), GetAD_Org_ID());
                                     if (DueAmount == 0)
@@ -949,7 +949,7 @@ namespace ViennaAdvantage.Process
                                 if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
                                 {
                                     //to set document date of batch header on all payments and allocations
-                                    checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate());
+                                    checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
                                     if (checkMsg != "")
                                     {
                                         return checkMsg;
@@ -963,8 +963,8 @@ namespace ViennaAdvantage.Process
                                     _pay.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
                                     _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                     _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    //to set document date of batch header on all payments and allocations
-                                    _pay.SetDateAcct(DateTime.Now);//_batch.GetVA009_DocumentDate()
+                                    //Rakesh(VA228):to set account date of batch header on all payments and allocations
+                                    _pay.SetDateAcct(_batch.GetDateAcct());
                                     _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                     _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
@@ -1011,7 +1011,7 @@ namespace ViennaAdvantage.Process
                                     {
                                         _pay.SetTenderType("K");
                                         //Arpit In Case of Payment is of check type then we insert Check Date + Check Number
-                                        _pay.SetCheckDate(DateTime.Now);
+                                        _pay.SetCheckDate(_batch.GetDateAcct());
                                         String checkMsg = UpdateCheckNoOnPayment(ds, i, _pay);
                                         if (checkMsg != "")
                                         {
@@ -1336,13 +1336,14 @@ namespace ViennaAdvantage.Process
         /// <summary>
         /// Save Payment record in Case when Data Is having Order Payment Schedule
         /// </summary>
-        /// <param name="ds"></param>
-        /// <param name="i"></param>
-        /// <param name="_pay"></param>
-        /// <param name="discAmt"></param>
-        /// <param name="dueAmt"></param>
+        /// <param name="ds">dataset</param>
+        /// <param name="i">recordnumber</param>
+        /// <param name="_pay">payment object</param>
+        /// <param name="discAmt">dicsount amount</param>
+        /// <param name="dueAmt">Due amount</param>
+        /// <param name="dateAcct">Account Date</param>
         /// <returns></returns>
-        public String CreatePaymentAgainstOrders(DataSet ds, int i, MPayment _pay, decimal discAmt, decimal dueAmt, int currencyTo_ID, DateTime? docdate)
+        public String CreatePaymentAgainstOrders(DataSet ds, int i, MPayment _pay, decimal discAmt, decimal dueAmt, int currencyTo_ID, DateTime? docdate, DateTime? dateAcct)
         {
             //MPayment _pay = new MPayment(GetCtx(), 0, Get_TrxName());
             int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]));
@@ -1351,8 +1352,8 @@ namespace ViennaAdvantage.Process
             _pay.SetVA009_OrderPaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]));
             _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
             _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-            //to set document date of batch header on all payments and allocations
-            _pay.SetDateAcct(DateTime.Now);//docdate
+            //Rakesh(VA228):to set account date of batch header on all payments and allocations
+            _pay.SetDateAcct(dateAcct);
             _pay.SetDateTrx(docdate);
             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
             _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
@@ -1393,7 +1394,7 @@ namespace ViennaAdvantage.Process
             else if (tenderType == "S")    // Check
             {
                 _pay.SetTenderType("K");
-                _pay.SetCheckDate(DateTime.Now);
+                _pay.SetCheckDate(dateAcct);
                 checkMsg = UpdateCheckNoOnPayment(ds, i, _pay);
                 if (checkMsg != "")
                 {

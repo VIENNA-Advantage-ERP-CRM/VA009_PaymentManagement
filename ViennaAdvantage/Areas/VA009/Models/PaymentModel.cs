@@ -45,7 +45,7 @@ namespace VA009.Models
         /// <returns>C_Currency_ID</returns>
         public int GetBankAccountCurrency(Ctx ctx, int BankAccount_ID)
         {
-            string sql = "SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankACcount_ID="+ BankAccount_ID;
+            string sql = "SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankACcount_ID=" + BankAccount_ID;
             return Util.GetValueOfInt(DB.ExecuteScalar(sql));
         }
         public List<BPDetails> GetBPnames(string searchText, Ctx ct)
@@ -567,17 +567,8 @@ namespace VA009.Models
                     List<string> Checkno = new List<string>();
                     int payid = 0; List<int> count = new List<int>();
                     bool Found = false, Allocate = false; MPayment _pay = null;
-                    int C_doctype_ID = 0;
-                    if (PaymentData[0].PaymwentBaseType == "ARR")
-                    {
-                        C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='ARR' AND IsActive = 'Y' AND AD_Client_ID="
-                            + PaymentData[0].AD_Client_ID + " AND AD_Org_ID IN (0, " + PaymentData[0].AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, null));
-                    }
-                    else if (PaymentData[0].PaymwentBaseType == "APP")
-                    {
-                        C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='APP' AND IsActive = 'Y' AND AD_Client_ID="
-                            + PaymentData[0].AD_Client_ID + " AND AD_Org_ID IN (0, " + PaymentData[0].AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, null));
-                    }
+                    //Rakesh(VA228):Set Document Type id (13/Sep/2021)
+                    int C_doctype_ID = PaymentData[0].TargetDocType;
                     int currencyTypeID = PaymentData[0].CurrencyType;
                     if (PaymentData.Length > 0)
                     {
@@ -1597,8 +1588,8 @@ namespace VA009.Models
                 int C_Cash_ID = 0;
                 if (PaymentData.Length > 0)
                 {
-                    int C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='CMC' AND IsActive = 'Y' AND AD_Client_ID="
-                            + PaymentData[0].AD_Client_ID + " AND AD_Org_ID IN (0, " + PaymentData[0].AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, null));
+                    //Rakesh(VA228):Set Document Type id (13/Sep/2021)
+                    int C_doctype_ID = PaymentData[0].TargetDocType;
 
                     //fetch the Cash_ID with the StatementDate not the AccountDate
                     int no = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(C_Cash_ID) FROM C_Cash WHERE IsActive = 'Y' AND DocStatus NOT IN ('CO' , 'CL', 'VO')  
@@ -2785,7 +2776,7 @@ namespace VA009.Models
                         {
                             //payselectionID += _PaySelection.GetC_PaySelection_ID() + " , ";
                             NextRecord = true;
-                          
+
                         }
                     }
                     else if (recordSequence[i].C_BPartner_ID != recordSequence[i - 1].C_BPartner_ID)
@@ -3081,14 +3072,14 @@ namespace VA009.Models
                         if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "API")
                         {
                             //get converted amount  as per the  selected currency
-                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType,Tocurrency, dateAcct);
+                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
                             convertdamt = convertdamt >= 0 ? convertdamt : -1 * convertdamt;
                             _payData.convertedAmt = convertdamt;
                         }
                         else
-                        { 
+                        {
                             //get converted amount  as per the  selected currency
-                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType,Tocurrency, dateAcct);
+                            convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
                             _payData.convertedAmt = convertdamt;
                         }
                         //If converted Amt is zero then Conversion Not found
@@ -3163,12 +3154,13 @@ namespace VA009.Models
         /// <returns>returns Converted Amount</returns>
         public decimal GetConvertedAmt(Ctx ctx, decimal amt, int fromCurr, int bankaccount, int client_id, int org_id, int CurrencyType_ID, int ToCurrency, DateTime? dateAcct)
         {
-            if (ToCurrency==0) {
+            if (ToCurrency == 0)
+            {
                 //MBankAccount _bnkAcct = new MBankAccount(ctx, bankaccount, null);//to get single Value not required to create Object fetch directly from query
                 ToCurrency = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_Currency_ID FROM C_BankAccount WHERE IsActive='Y' AND C_BankAccount_ID=" + bankaccount, null, null));
                 //decimal comvertedamt = 0;
             }
-            
+
             //Use User selected Date of Account from the grid not the System Date
             decimal comvertedamt = MConversionRate.Convert(ctx, amt, fromCurr, ToCurrency, dateAcct, CurrencyType_ID, client_id, org_id);
             return comvertedamt;
@@ -3824,7 +3816,7 @@ namespace VA009.Models
         /// <param name="DateTrx">Date Trx</param>
         /// <param name="AD_Org_ID">Org ID</param>
         /// <returns>String, Message</returns>
-        public string CreatePaymentsMannualy(Ctx ct, string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct1, string CurrencyType, string DateTrx1, int AD_Org_ID)
+        public string CreatePaymentsMannualy(Ctx ct, string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct1, string CurrencyType, string DateTrx1, int AD_Org_ID, int docTypeId)
         {
             Trx trx = Trx.GetTrx("Manually_" + DateTime.Now.ToString("yyMMddHHmmssff"));
             string[] invoiceIds = { };
@@ -3888,16 +3880,17 @@ namespace VA009.Models
 
                     //_doctype = new MDocType(ct, _invoice1.GetC_DocType_ID(), trx);
                     _doctype = MDocType.Get(ct, _invoice1.GetC_DocType_ID());
-                    if (_doctype.GetDocBaseType() == "API" || _doctype.GetDocBaseType() == "APC" || _doctype.GetDocBaseType() == "POO")
-                    {
-                        _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='APP' AND IsActive = 'Y' AND AD_Client_ID="
-                            + _invoice1.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + _invoice1.GetAD_Org_ID() + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
-                    }
-                    else if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "ARI" || _doctype.GetDocBaseType() == "SOO")
-                    {
-                        _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='ARR' AND IsActive = 'Y' AND AD_Client_ID="
-                            + _invoice1.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + _invoice1.GetAD_Org_ID() + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
-                    }
+                    _doctype_ID = docTypeId;
+                    //if (_doctype.GetDocBaseType() == "API" || _doctype.GetDocBaseType() == "APC" || _doctype.GetDocBaseType() == "POO")
+                    //{
+                    //    _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='APP' AND IsActive = 'Y' AND AD_Client_ID="
+                    //        + _invoice1.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + _invoice1.GetAD_Org_ID() + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
+                    //}
+                    //else if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "ARI" || _doctype.GetDocBaseType() == "SOO")
+                    //{
+                    //    _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='ARR' AND IsActive = 'Y' AND AD_Client_ID="
+                    //        + _invoice1.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + _invoice1.GetAD_Org_ID() + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
+                    //}
 
                     #region Single Invoice Schedule
                     if (invoiceIds.Length == 1)
@@ -4071,10 +4064,12 @@ namespace VA009.Models
                                     if (_dueAmt == 0 && _payschedule.GetDueAmt() != 0)
                                     {
                                         //trx.Rollback();
-                                        if (!string.IsNullOrEmpty(_conv.ToString())) {
+                                        if (!string.IsNullOrEmpty(_conv.ToString()))
+                                        {
                                             _conv.Append(", " + _invoice.GetDocumentNo() + "_" + _payschedule.GetDueAmt() + "_" + _payschedule.GetDueAmt());
                                         }
-                                        else {
+                                        else
+                                        {
                                             _conv.Append(Msg.GetMsg(ct, "NoCurrencyConversion") + ": " + _invoice.GetDocumentNo() + "_" + _payschedule.GetDueAmt());
                                         }
                                         _log.Info(_conv.ToString());
@@ -4096,7 +4091,7 @@ namespace VA009.Models
                                         M_Allocate.SetAmount(_dueAmt);
 
                                     //if (_payschedule.GetDiscountAmt() < 0)
-                                    if (_discAmt < 0) 
+                                    if (_discAmt < 0)
                                         M_Allocate.SetDiscountAmt(-1 * _discAmt);
                                     else
                                         M_Allocate.SetDiscountAmt(_discAmt);
@@ -4620,7 +4615,7 @@ namespace VA009.Models
                         _curr = new MCurrency(ct, orderPaySchedule.GetC_Currency_ID(), trx);
                         //_doctype = new MDocType(ct, _ord.GetC_DocType_ID(), trx);
                         // _doctype = MDocType.Get(ct, _ord.GetC_DocType_ID());
-                       
+
                         //Bug177 Get Doctype 
                         if (!_ord.IsSOTrx())
                         {
@@ -4669,7 +4664,8 @@ namespace VA009.Models
                                 _log.Info(_conv.ToString());
                             }
                         }
-                        else {
+                        else
+                        {
                             _dueAmt = orderPaySchedule.GetDueAmt();
                         }
                         //_pay.SetPayAmt(orderPaySchedule.GetDueAmt());
@@ -4874,29 +4870,26 @@ namespace VA009.Models
                         _pay.SetAD_Client_ID(Util.GetValueOfInt(PaymentData.clientID));
                         _pay.SetAD_Org_ID(Util.GetValueOfInt(PaymentData.OrgID));
 
+                        //Rakesh(VA228):Set value from properties on date 13/Sept/2021
                         if (isReceipt && i == 0) // For Receipt and making first Payment AR Receipt
                         {
-                            C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='ARR' AND IsActive = 'Y' AND AD_Client_ID="
-                            + PaymentData.clientID + " AND AD_Org_ID IN (0, " + PaymentData.OrgID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, trx));
+                            C_doctype_ID = Util.GetValueOfInt(PaymentData.ARDocumentTypeId);
                             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(PaymentData.toBank));
                             //Commented code because we don't need to set Business Partner and Business Partner Location while creating Payment and they both are UI mandatory on window
                         }
                         else if (isReceipt && i == 1)// For Payment and making Second Payment AR Receipt
                         {
-                            C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='APP' AND IsActive = 'Y' AND AD_Client_ID="
-                            + PaymentData.clientID + " AND AD_Org_ID IN (0, " + PaymentData.OrgID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, trx));
+                            C_doctype_ID = Util.GetValueOfInt(PaymentData.APDocumentTypeId);
                             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(PaymentData.fromBank));
                         }
                         if (isPayment && i == 0) // For Payment and making first Payment AP Payment
                         {
-                            C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='APP' AND IsActive = 'Y' AND AD_Client_ID="
-                            + PaymentData.clientID + " AND AD_Org_ID IN (0, " + PaymentData.OrgID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, trx));
+                            C_doctype_ID = Util.GetValueOfInt(PaymentData.APDocumentTypeId);
                             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(PaymentData.fromBank));
                         }
                         else if (isPayment && i == 1)// For Receipt and making Second Payment AP Payment
                         {
-                            C_doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='ARR' AND IsActive = 'Y' AND AD_Client_ID="
-                            + PaymentData.clientID + " AND AD_Org_ID IN (0, " + PaymentData.OrgID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC", null, trx));
+                            C_doctype_ID = Util.GetValueOfInt(PaymentData.ARDocumentTypeId);
                             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(PaymentData.toBank));
                         }
 
@@ -4913,6 +4906,11 @@ namespace VA009.Models
                         }
                         _pay.SetPayAmt(Util.GetValueOfDecimal(PaymentData.amount));
                         _pay.SetDocStatus("DR");
+                        //Rakesh(VA228):Check contra column exists and set value true
+                        if (_pay.Get_ColumnIndex("VA009_IsContra") >= 0)
+                        {
+                            _pay.Set_Value("VA009_IsContra", true);
+                        }
                         if (!_pay.Save())
                         {
                             trx.Rollback();
@@ -6168,13 +6166,35 @@ namespace VA009.Models
         /// </summary>
         /// <param name="ct">Context</param>
         /// <param name="org_id">Org ID</param>
+        /// <param name="baseType">1->AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment</param>
         /// <returns>List of Document Types</returns>
-        public List<DocTypeDetails> GetTargetType(Ctx ct, int org_id)
+        public List<DocTypeDetails> GetTargetType(Ctx ct, int org_id, int baseType)
         {
             List<DocTypeDetails> _list = new List<DocTypeDetails>();
             DocTypeDetails docTypes = null;
             //applied filter with Client ID
-            DataSet _ds = DB.ExecuteDataset("SELECT C_DocType_ID, Name FROM C_DocType WHERE IsActive='Y' AND DocBaseType='BAP' AND AD_Org_ID IN(" + org_id + ", 0) AND AD_Client_ID=" + ct.GetAD_Client_ID(), null, null);
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT C_DocType_ID, Name FROM C_DocType C_DocType WHERE IsActive='Y' AND AD_Org_ID IN(" + org_id + ", 0) AND AD_Client_ID IN(" + ct.GetAD_Client_ID() + ", 0)");
+            //AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment
+            if (baseType == 1)
+            {
+                sql.Append(" AND DocBaseType='ARR' ");
+            }
+            else if (baseType == 2)
+            {
+                sql.Append(" AND DocBaseType='APP' ");
+            }
+            else if (baseType == 3)
+            {
+                sql.Append(" AND DocBaseType='CMC' ");
+            }
+            else if (baseType == 4)
+            {
+                sql.Append(" AND DocBaseType='BAP' ");
+            }
+            //Check Role
+            string query = MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_DocType", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+            DataSet _ds = DB.ExecuteDataset(query, null, null);
             if (_ds != null && _ds.Tables[0].Rows.Count > 0)
             {
                 for (int i = 0; i < _ds.Tables[0].Rows.Count; i++)
@@ -6335,7 +6355,8 @@ public class ChargeDetails
     public int C_Charge_ID { get; set; }
     public string Name { get; set; }
 }
-public class DocTypeDetails {
+public class DocTypeDetails
+{
     public int C_DocType_ID { get; set; }
     public string Name { get; set; }
 }

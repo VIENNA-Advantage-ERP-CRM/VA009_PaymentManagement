@@ -444,7 +444,7 @@ SetVA009_Batch_ID (0);
             if (bd == null) return Env.ZERO;
             return Convert.ToDecimal(bd);
         }
-        
+
         /** DocAction AD_Reference_ID=135 */
         public static int DOCACTION_AD_Reference_ID = 135;/** <None> = -- */
         public static String DOCACTION_None = "--";/** Approve = AP */
@@ -498,7 +498,11 @@ SetVA009_Batch_ID (0);
             Set_Value("DocStatus", DocStatus);
         }/** Get Document Status.
 @return The current status of the document */
-        public String GetDocStatus() { return (String)Get_Value("DocStatus"); }
+        public String GetDocStatus() { return (String)Get_Value("DocStatus"); }/** Set Account Date.
+@param DateAcct General Ledger Date */
+        public void SetDateAcct(DateTime? DateAcct) { Set_Value("DateAcct", (DateTime?)DateAcct); }/** Get Account Date.
+@return General Ledger Date */
+        public DateTime? GetDateAcct() { return (DateTime?)Get_Value("DateAcct"); }
     }
 
 }

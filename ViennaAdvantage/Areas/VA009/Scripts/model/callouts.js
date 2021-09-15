@@ -1256,6 +1256,19 @@
         return "";
     };
 
+    //Rakesh(VA228):To Set AccountDate same as DocumentDate
+    VA009_CalloutPayment.prototype.SetDateAcct = function (ctx, windowNo, mTab, mField, value, oldValue) {
+        if (this.isCalloutActive() || value == null) {
+            return "";
+        }
+        this.setCalloutActive(true);
+
+        mTab.setValue("DateAcct", value);
+
+        this.setCalloutActive(false);
+        return "";
+    };
+
     VA009.Model = VA009.Model || {};
     VA009.Model.VA009_CalloutPayment = VA009_CalloutPayment; //assign object in Model NameSpace
 

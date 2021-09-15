@@ -348,10 +348,11 @@ namespace ViennaAdvantage.Process
                         issamme = false;
                     if (!issamme)
                     {
-                        dueamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
+                        //Rakesh(VA228):Changed system date to DateAcct
+                        dueamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), batch.GetDateAcct(), C_ConversionType_ID, batch.GetAD_Client_ID(), batch.GetAD_Org_ID());
                         if (DiscountAmt > 0)
                         {
-                            DiscountAmt = MConversionRate.Convert(GetCtx(), DiscountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
+                            DiscountAmt = MConversionRate.Convert(GetCtx(), DiscountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), batch.GetDateAcct(), C_ConversionType_ID, batch.GetAD_Client_ID(), batch.GetAD_Org_ID());
                             if (DiscountAmt == 0)
                             {
                                 Get_TrxName().Rollback();
