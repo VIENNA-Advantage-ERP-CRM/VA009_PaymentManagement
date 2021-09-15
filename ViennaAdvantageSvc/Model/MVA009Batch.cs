@@ -10,6 +10,8 @@ using ViennaAdvantage.Model;
 using VAdvantage.Process;
 using System.IO;
 using System.Text;
+using VAdvantage.Classes;
+using VAdvantage.Logging;
 
 namespace ViennaAdvantage.Model
 {
@@ -17,6 +19,10 @@ namespace ViennaAdvantage.Model
     {
         /**	Process Message 			*/
         private String _processMsg = null;
+        /**	Just Prepared Flag			*/
+        private bool _justPrepared = false;
+        //	Lines					
+        private MVA009BatchLineDetails[] _lines = null;
 
         public MVA009Batch(Ctx ctx, int VA009_Batch_ID, Trx trxName)
             : base(ctx, VA009_Batch_ID, trxName)
@@ -38,38 +44,61 @@ namespace ViennaAdvantage.Model
             StringBuilder sql = new StringBuilder();
             sql.Append(@"SELECT COUNT(va009_batchlines_id) FROM va009_batchlinedetails WHERE va009_batchlines_id IN
                     (SELECT va009_batchlines_id  FROM va009_batchlines  WHERE va009_batch_id= " + GetVA009_Batch_ID()
-                    + "  ) AND c_payment_id IS NOT NULL ");
+                    + "  ) AND c_payment_id IS NULL ");
+            //Rakesh(VA228):Do not allow to close untill all payment not generated
             if (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null)) > 0)
             {
+                _processMsg = Msg.GetMsg(GetCtx(), "VA009_PaymentNotGenerated");
+                SetDocAction(DOCACTION_None);
                 return false;
             }
-            else
-            {
-                //to update processed to flase when we perform Close.
-                int updateProcessedBD = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlinedetails set processed='N'
-                    WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() +
-                    ")"));
+            log.Info(ToString());
+            SetProcessed(true);
+            SetDocAction(DOCACTION_None);
+            #region CommentedOldCode
+            //StringBuilder sql = new StringBuilder();
+            //sql.Append(@"SELECT COUNT(va009_batchlines_id) FROM va009_batchlinedetails WHERE va009_batchlines_id IN
+            //        (SELECT va009_batchlines_id  FROM va009_batchlines  WHERE va009_batch_id= " + GetVA009_Batch_ID()
+            //        + "  ) AND c_payment_id IS NOT NULL ");
+            //if (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null)) > 0)
+            //{
+            //    return false;
+            //}
+            //else
+            //{
+            //    //to update processed to flase when we perform Close.
+            //    int updateProcessedBD = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlinedetails set processed='N'
+            //        WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() +
+            //        ")"));
 
-                int updateProcessedBL = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlines set processed='N' 
-                                WHERE va009_batch_id=" + GetVA009_Batch_ID()));
-                if (updateProcessedBL > 0 && updateProcessedBD > 0)
-                {
-                    //to update execution status to awaited when we perform delete.
-                    int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE c_invoicepayschedule SET VA009_ExecutionStatus = 'A' WHERE c_invoicepayschedule_id IN
-                (SELECT c_invoicepayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
-                    int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE va009_orderpayschedule SET VA009_ExecutionStatus = 'A'
-                WHERE va009_orderpayschedule_id IN (SELECT va009_orderpayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
-                    if (schdeuleCount > 0 || OrdschdeuleCount > 0)
-                    {
-                        return true;
-                    }
-                }
-            }
+            //    int updateProcessedBL = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlines set processed='N' 
+            //                    WHERE va009_batch_id=" + GetVA009_Batch_ID()));
+            //    if (updateProcessedBL > 0 && updateProcessedBD > 0)
+            //    {
+            //        //to update execution status to awaited when we perform delete.
+            //        int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE c_invoicepayschedule SET VA009_ExecutionStatus = 'A' WHERE c_invoicepayschedule_id IN
+            //    (SELECT c_invoicepayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
+            //        int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE va009_orderpayschedule SET VA009_ExecutionStatus = 'A'
+            //    WHERE va009_orderpayschedule_id IN (SELECT va009_orderpayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
+            //        if (schdeuleCount > 0 || OrdschdeuleCount > 0)
+            //        {
+            //            return true;
+            //        }
+            //    }
+            //}
+            #endregion
             return true;
         }
 
         public string CompleteIt()
         {
+            //	Re-Check
+            if (!_justPrepared)
+            {
+                String status = PrepareIt();
+                if (!DocActionVariables.STATUS_INPROGRESS.Equals(status))
+                    return status;
+            }
             //to check if payment method is CHECK then skip otherwise set these values
             string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
                                 VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null,
@@ -148,6 +177,37 @@ namespace ViennaAdvantage.Model
 
         public string PrepareIt()
         {
+            //Rakesh(VA228):Implemented prediod closed and nonbusiness day check
+            log.Info(ToString());
+            _processMsg = ModelValidationEngine.Get().FireDocValidate(this, ModalValidatorVariables.DOCTIMING_BEFORE_PREPARE);
+            if (_processMsg != null)
+                return DocActionVariables.STATUS_INVALID;
+
+            //	Std Period open?
+            if (!MPeriod.IsOpen(GetCtx(), GetDateAcct(), "BAP", GetAD_Org_ID()))
+            {
+                _processMsg = "@PeriodClosed@";
+                return DocActionVariables.STATUS_INVALID;
+            }
+
+            // is Non Business Day?
+            // JID_1205: At the trx, need to check any non business day in that org. if not fund then check * org.
+            if (MNonBusinessDay.IsNonBusinessDay(GetCtx(), GetDateAcct(), GetAD_Org_ID()))
+            {
+                _processMsg = VAdvantage.Common.Common.NONBUSINESSDAY;
+                return DocActionVariables.STATUS_INVALID;
+            }
+
+            //	Lines
+            MVA009BatchLineDetails[] lines = GetLines(true);
+            if (lines == null || lines.Length == 0)
+            {
+                _processMsg = "@NoLines@";
+                return DocActionVariables.STATUS_INVALID;
+            }
+            _justPrepared = true;
+            if (!DOCACTION_Complete.Equals(GetDocAction()))
+                SetDocAction(DOCACTION_Complete);
             return DocActionVariables.STATUS_INPROGRESS;
         }
 
@@ -185,6 +245,20 @@ namespace ViennaAdvantage.Model
 
         public bool VoidIt()
         {
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@"SELECT COUNT(va009_batchlines_id) FROM va009_batchlinedetails WHERE va009_batchlines_id IN
+                    (SELECT va009_batchlines_id  FROM va009_batchlines  WHERE va009_batch_id= " + GetVA009_Batch_ID()
+                    + "  ) AND c_payment_id IS NOT NULL ");
+            //Rakesh(VA228):Do not allow to void if any payment generated
+            if (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null)) > 0)
+            {
+                _processMsg = Msg.GetMsg(GetCtx(), "VA009_PaymentGenerated");
+                SetDocAction(DOCACTION_None);
+                return false;
+            }
+            log.Info(ToString());
+            SetProcessed(true);
+            SetDocAction(DOCACTION_None);
             return true;
         }
 
@@ -229,6 +303,62 @@ namespace ViennaAdvantage.Model
             }
             return true;
 
+        }
+
+        /// <summary>
+        /// Before Save
+        /// </summary>
+        /// <param name="newRecord">new</param>
+        /// <returns>true if success</returns>
+        protected override bool BeforeSave(bool newRecord)
+        {
+            if (!newRecord && Is_ValueChanged("DateAcct"))
+            {
+                int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT Count(VA009_BatchLineDetails_ID) FROM VA009_BatchLineDetails WHERE va009_batchlines_id IN (SELECT va009_batchlines_id 
+                                                FROM va009_batchlines WHERE VA009_BATCH_ID=" + GetVA009_Batch_ID() + ")"));
+                //Rakesh(VA228):Do not allow to change account date if any batch line detail exists
+                if (count > 0)
+                {
+                    log.SaveError("VA009_PlsDeleteBatchLinesDtl", "");
+                    return false;
+                }
+            }
+            return true;
+        }
+        /// <summary>
+        /// Get Lines of Shipment
+        /// <param name="requery">requery refresh from db</param>
+        /// <returns>lines</returns>
+        /// </summary>
+        public MVA009BatchLineDetails[] GetLines(bool requery)
+        {
+            if (_lines != null && !requery)
+                return _lines;
+            List<MVA009BatchLineDetails> list = new List<MVA009BatchLineDetails>();
+            String sql = "SELECT * FROM VA009_BatchLineDetails WHERE va009_batchlines_id IN (SELECT va009_batchlines_id " +
+                "FROM va009_batchlines WHERE VA009_BATCH_ID=" + GetVA009_Batch_ID() + ") ORDER BY VA009_BatchLineDetails_ID";
+            DataSet ds = null;
+            try
+            {
+                ds = DB.ExecuteDataset(sql, null, Get_TrxName());
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    list.Add(new MVA009BatchLineDetails(GetCtx(), ds.Tables[0].Rows[i], Get_TrxName()));
+                }
+                ds = null;
+            }
+            catch (Exception ex)
+            {
+                log.Log(Level.SEVERE, sql, ex);
+                list = null;
+            }
+            ds = null;
+            //
+            if (list == null)
+                return null;
+            _lines = new MVA009BatchLineDetails[list.Count];
+            _lines = list.ToArray();
+            return _lines;
         }
     }
 }

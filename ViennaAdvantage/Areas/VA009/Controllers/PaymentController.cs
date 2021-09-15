@@ -10,7 +10,7 @@ using VIS.Classes;
 using System.Dynamic;
 
 namespace VA009.Controllers
-{ 
+{
     public class PaymentController : Controller
     {
         // GET: /VA009/Payment/
@@ -357,13 +357,14 @@ namespace VA009.Controllers
         /// <param name="DateAcct">Account Date</param>
         /// <param name="CurrencyType">Currency Type</param>
         ///  <param name="DateTrx">Transaction Date</param>
+        ///  <param name="docTypeId">Document Type Id</param>
         /// <returns>Message in JSON Format</returns>
         [HttpPost]
-        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID)
+        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID, int docTypeId)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, PaymentMethodID, DateAcct, CurrencyType, DateTrx, AD_Org_ID);
+            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, PaymentMethodID, DateAcct, CurrencyType, DateTrx, AD_Org_ID, docTypeId);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -522,15 +523,16 @@ namespace VA009.Controllers
         /// Get the DocumentTypes based on Batch Payments
         /// </summary>
         /// <param name="ad_org_Id">AD_Org_ID</param>
+        /// <param name="baseType">1->AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment</param>
         /// <returns>List of Document Types</returns>
-        public JsonResult LoadTargetType(string ad_org_Id)
+        public JsonResult LoadTargetType(string ad_org_Id, int baseType)
         {
             string retJSON = "";
             if (Session["ctx"] != null)
             {
                 Ctx ctx = Session["ctx"] as Ctx;
                 PaymentModel objConversionModel = new PaymentModel();
-                retJSON = JsonConvert.SerializeObject(objConversionModel.GetTargetType(ctx, Util.GetValueOfInt(ad_org_Id)));
+                retJSON = JsonConvert.SerializeObject(objConversionModel.GetTargetType(ctx, Util.GetValueOfInt(ad_org_Id), baseType));
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
