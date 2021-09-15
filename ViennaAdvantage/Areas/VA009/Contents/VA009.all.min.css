@@ -1,4 +1,4 @@
-﻿/***version 1.0.41.0*/
+﻿/***version 1.0.41.1*/
 /* Minification failed. Returning unminified contents.
 (38,1): run-time error CSS1019: Unexpected token, found '}'
 (100,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-secondary'
@@ -31,7 +31,7 @@
 (723,29): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
 (739,27): run-time error CSS1039: Token not allowed after unary operator: '-v-c-secondary'
 (770,40): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
-(862,38): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
+(875,38): run-time error CSS1039: Token not allowed after unary operator: '-v-c-on-secondary'
  */
 /*body{
 	margin: 0;
@@ -1031,6 +1031,19 @@ p.VA009-data-bot:last-child {
 .VA009-padd-right-0 {
     padding-right: 0
 }
+/*for Consolidate and Override Payment method fields in Payment Schedule batch Pop-up window*/
+.VA009-popFormInn {
+    display: flex;
+}
+
+.VA009-popFormInn label {
+    flex: 1;
+}
+
+.VA009-popFormInn label:last-child {
+    padding-left: 1rem;
+}
+
 
 /* RTL CSS*/
 html[dir="rtl"] .VA009-right-part > span,
@@ -1115,5 +1128,4 @@ html[dir="rtl"] .VA009-popCheck-data {
 .VA009-popfrmrow .VA009-popCheck-data:not(:only-child):last-child {
     padding-left: 0;
 }
-
 

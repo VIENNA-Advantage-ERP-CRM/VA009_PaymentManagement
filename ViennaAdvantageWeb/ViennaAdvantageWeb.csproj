@@ -1855,10 +1855,6 @@
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\ViennaAdvantageSvc\ViennaAdvantageSvc.csproj">
-      <Project>{7a3d3a2f-81b9-41c5-a297-df96e78226b8}</Project>
-      <Name>ViennaAdvantageSvc</Name>
-    </ProjectReference>
     <ProjectReference Include="..\ViennaAdvantage\ViennaAdvantage.csproj">
       <Project>{b15d02cb-d93e-412b-8aeb-ee039264fa70}</Project>
       <Name>ViennaAdvantage</Name>
