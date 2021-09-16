@@ -1851,6 +1851,8 @@ namespace VA009.Models
                                 _Bt.Set_Value("C_Currency_ID", _BankAcct.GetC_Currency_ID());
                                 //_Bt.SetProcessed(true);
                                 _Bt.SetVA009_DocumentDate(DateTime.Now);
+                                //Rakesh(VA228):Set account date
+                                _Bt.SetDateAcct(DateTime.Now);
                                 if (isconsolidate == "Y")
                                     _Bt.SetVA009_Consolidate(true);
 
@@ -2113,6 +2115,8 @@ namespace VA009.Models
                                 _Bt.Set_Value("C_Currency_ID", _BankAcct.GetC_Currency_ID());
                                 //_Bt.SetProcessed(true);
                                 _Bt.SetVA009_DocumentDate(DateTime.Now);
+                                //Rakesh(VA228):Set account date
+                                _Bt.SetDateAcct(DateTime.Now);
                                 if (isconsolidate == "Y")
                                 {
                                     _Bt.SetVA009_Consolidate(true);
@@ -5775,6 +5779,8 @@ namespace VA009.Models
                             _Bt.Set_Value("C_ConversionType_ID", PaymentData[0].CurrencyType);
                             // _Bt.SetProcessed(true);
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
+                            //Rakesh(VA228):Set account date
+                            _Bt.SetDateAcct(DateTime.Now);
                             if (isconsolidate == "Y")
                             {
                                 _Bt.SetVA009_Consolidate(true);

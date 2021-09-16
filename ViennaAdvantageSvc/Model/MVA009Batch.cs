@@ -320,7 +320,7 @@ namespace ViennaAdvantage.Model
         /// <returns>true if success</returns>
         protected override bool BeforeSave(bool newRecord)
         {
-            if (!newRecord && Is_ValueChanged("DateAcct"))
+            if (!newRecord && (Is_ValueChanged("DateAcct") || Is_ValueChanged("C_Currency_Id") || Is_ValueChanged("C_ConversionType_ID")))
             {
                 int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT Count(VA009_BatchLineDetails_ID) FROM VA009_BatchLineDetails WHERE va009_batchlines_id IN (SELECT va009_batchlines_id 
                                                 FROM va009_batchlines WHERE VA009_BATCH_ID=" + GetVA009_Batch_ID() + ")"));
