@@ -393,19 +393,13 @@ namespace ViennaAdvantage.Process
                     if (issamme == false)
                     {
                         comvertedamt = dueamt;
-                        //comvertedamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
-                        lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-
                         if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                         {
                             comvertedamt = (-1 * comvertedamt);
                         }
                     }
-                    else
-                    {
-                        //Replaced bank currency with batch currency
-                        lineDetail.SetC_Currency_ID(batch.GetC_Currency_ID());
-                    }
+                    //Replaced bank currency with invoice currency
+                    lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                     lineDetail.SetVA009_ConvertedAmt(comvertedamt);
                     lineDetail.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
                     if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) < Util.GetValueOfDateTime(batch.GetDateAcct()))
