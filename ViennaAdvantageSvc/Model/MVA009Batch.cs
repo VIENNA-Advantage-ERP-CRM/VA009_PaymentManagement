@@ -137,12 +137,6 @@ namespace ViennaAdvantage.Model
         {
             return 0;
         }
-
-        public int GetC_Currency_ID()
-        {
-            return 0;
-        }
-
         public string GetDocBaseType()
         {
             return null;
@@ -320,7 +314,7 @@ namespace ViennaAdvantage.Model
         /// <returns>true if success</returns>
         protected override bool BeforeSave(bool newRecord)
         {
-            if (!newRecord && (Is_ValueChanged("DateAcct") || Is_ValueChanged("C_Currency_Id") || Is_ValueChanged("C_ConversionType_ID")))
+            if (!newRecord && (Is_ValueChanged("DateAcct") || Is_ValueChanged("C_Currency_ID") || Is_ValueChanged("C_ConversionType_ID")))
             {
                 int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT Count(VA009_BatchLineDetails_ID) FROM VA009_BatchLineDetails WHERE va009_batchlines_id IN (SELECT va009_batchlines_id 
                                                 FROM va009_batchlines WHERE VA009_BATCH_ID=" + GetVA009_Batch_ID() + ")"));
