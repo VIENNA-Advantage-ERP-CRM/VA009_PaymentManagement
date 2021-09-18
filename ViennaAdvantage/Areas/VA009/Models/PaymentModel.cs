@@ -430,14 +430,14 @@ namespace VA009.Models
             {
                 InvPayids = "0";
             }
-
+            //Rakesh(VA228):Get convertiontype,discount amount done on date 17/Sep/2021
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             StringBuilder sql = new StringBuilder();
             sql.Append(@"SELECT pm.VA009_PaymentMode,pm.VA009_PaymentMethod_ID,cb.c_Bpartner_id, inv.DocumentNo, cb.name AS C_Bpartner,cs.C_Invoice_ID,
                          cs.C_InvoicePaySchedule_ID,inv.C_Currency_ID,cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2))    
                                WHEN (cd.DOCBASETYPE IN ('API','ARC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt, "); // -1 Because during payble dont show negative amount on UI
-            sql.Append(@" cs.DueDate , 0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID , 'Invoice' AS va009_transactiontype, inv.DateAcct
+            sql.Append(@" cs.DueDate , 0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID , 'Invoice' AS va009_transactiontype, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate
                         FROM C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID LEFT JOIN 
                          C_invoice inv ON inv.C_Invoice_ID=cs.C_invoice_ID LEFT JOIN C_BPartner cb ON cb.c_bpartner_id=inv.c_bpartner_id INNER JOIN 
                          C_Currency cc ON inv.C_Currency_ID=cc.C_Currency_ID INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID =cs.AD_Client_ID 
@@ -450,7 +450,7 @@ namespace VA009.Models
 
             sql.Append(@" GROUP BY pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
                           cs.DueDate,  cs.C_InvoicePaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
-                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct");
+                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate");
 
             sql.Append(" UNION ");
 
@@ -458,7 +458,7 @@ namespace VA009.Models
                          cs.VA009_OrderPaySchedule_ID As C_InvoicePaySchedule_ID,  inv.C_Currency_ID,  cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('SOO')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) 
                               WHEN (cd.DOCBASETYPE IN ('POO')) THEN ROUND(cs.DUEAMT, NVL(CY.StdPrecision,2)) * 1   END AS DueAmt, "); // -1 Because during payble dont show negative amount on UI
-            sql.Append(@" cs.DueDate ,  0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID,  'Order' AS VA009_TransactionType, inv.DateAcct
+            sql.Append(@" cs.DueDate ,  0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID,  'Order' AS VA009_TransactionType, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate
                         FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
                         INNER JOIN C_Order inv ON inv.C_Order_ID=cs.C_Order_ID INNER JOIN C_Doctype cd ON inv.C_Doctype_ID= cd.C_Doctype_ID 
                         INNER JOIN C_BPartner cb ON cb.c_bpartner_id=inv.c_bpartner_id INNER JOIN C_Currency cc ON inv.C_Currency_ID=cc.C_Currency_ID
@@ -472,7 +472,7 @@ namespace VA009.Models
 
             sql.Append(@" GROUP BY pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_Order_ID,
                           cs.DueDate,  cs.VA009_OrderPaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
-                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct ORDER BY C_Bpartner");           // Order By Business Partner name not on ID
+                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate ORDER BY C_Bpartner");           // Order By Business Partner name not on ID
 
             DataSet ds = DB.ExecuteDataset(sql.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -536,6 +536,10 @@ namespace VA009.Models
                     {
                         _payData.convertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
                     }
+                    //Rakesh(VA228):Set invoice/order conversion type/discount amount on date 17/Sep/2021
+                    _payData.ConversionTypeId = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]);
+                    _payData.DiscountAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
+                    _payData.DiscountDate = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]);
                     //end
                     _lstChqPay.Add(_payData);
                 }
@@ -3022,7 +3026,7 @@ namespace VA009.Models
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             if (PaymentData.Length > 0)
             {
-                decimal convertdamt = 0;
+                decimal convertdamt = 0, discountAmt = 0;
                 for (int i = 0; i < PaymentData.Length; i++)
                 {
                     PaymentData _payData = new PaymentData();
@@ -3032,6 +3036,9 @@ namespace VA009.Models
                     _payData.C_InvoicePaySchedule_ID = PaymentData[i].C_InvoicePaySchedule_ID;
                     _payData.CurrencyCode = PaymentData[i].CurrencyCode;
                     _payData.C_Currency_ID = PaymentData[i].C_Currency_ID;
+                    //Rakesh(VA228):Set conversion type
+                    _payData.ConversionTypeId = PaymentData[i].ConversionTypeId;
+                    _payData.DiscountDate = PaymentData[i].DiscountDate;
                     _payData.DueAmt = PaymentData[i].DueAmt;
                     _payData.VA009_RecivedAmt = PaymentData[i].VA009_RecivedAmt;
                     _payData.AD_Org_ID = PaymentData[i].AD_Org_ID;
@@ -3070,6 +3077,8 @@ namespace VA009.Models
                     {
                         _payData.PaymwentBaseType = "ARR";
                     }
+                    _payData.DiscountAmount = PaymentData[i].DiscountAmount;
+
                     //change by amit
                     if (BankAccount > 0)
                     {
@@ -3079,15 +3088,37 @@ namespace VA009.Models
                             convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
                             convertdamt = convertdamt >= 0 ? convertdamt : -1 * convertdamt;
                             _payData.convertedAmt = convertdamt;
+
+                            //Rakesh(VA228):Check if any discount given
+                            if (_payData.DiscountAmount > 0)
+                            {
+                                //Get Converted discount amount as per the  selected currency
+                                discountAmt = GetConvertedAmt(ctx, PaymentData[i].DiscountAmount, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
+                                _payData.ConvertedDiscountAmount = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
+                            }
                         }
                         else
                         {
                             //get converted amount  as per the  selected currency
                             convertdamt = GetConvertedAmt(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
                             _payData.convertedAmt = convertdamt;
+
+                            //if any discount given
+                            if (_payData.DiscountAmount > 0)
+                            {
+                                //Get Converted discount amount as per the  selected currency
+                                discountAmt = GetConvertedAmt(ctx, PaymentData[i].DiscountAmount, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
+                                _payData.ConvertedDiscountAmount = discountAmt;
+                            }
                         }
+
                         //If converted Amt is zero then Conversion Not found
                         if (_payData.convertedAmt == 0)
+                        {
+                            _payData.ERROR = "ConversionNotFound";
+                        }
+                        //If any discount is applied and converted discount is zero then Conversion Not found
+                        if (PaymentData[i].DiscountAmount > 0 && discountAmt == 0)
                         {
                             _payData.ERROR = "ConversionNotFound";
                         }
@@ -5151,12 +5182,25 @@ namespace VA009.Models
             _btDetal.SetAD_Org_ID(PaymentData.AD_Org_ID);
             _btDetal.SetC_InvoicePaySchedule_ID(PaymentData.C_InvoicePaySchedule_ID);
             _btDetal.SetC_Invoice_ID(PaymentData.C_Invoice_ID);
-            //set Invoice Currency 
-            _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
             _btDetal.SetVA009_BatchLines_ID(Batchline_ID);
+            //Rakesh(VA228):Set currency and conversion type id from invoice
+            _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
+            _btDetal.SetC_ConversionType_ID(PaymentData.ConversionTypeId);
+            //Adjust discount amount from due amount if discount date greater than account date
+            if (Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
+            {
+                convertedAmount = convertedAmount - PaymentData.ConvertedDiscountAmount;
+                _btDetal.SetDiscountAmt(PaymentData.ConvertedDiscountAmount);
+                _btDetal.SetDiscountDate(_invpaySchdule.GetDiscountDate());
+            }
+            else
+            {
+                PaymentData.ConvertedDiscountAmount = 0;
+                PaymentData.DiscountDate = null;
+            }
             _btDetal.SetDueAmt(PaymentData.DueAmt);
-            _btDetal.SetC_ConversionType_ID(PaymentData.CurrencyType);
             _btDetal.SetDueDate(_invpaySchdule.GetDueDate());
+
             if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
             {
                 if (convertedAmount > 0)
@@ -5887,6 +5931,7 @@ namespace VA009.Models
                                     }
                                     else
                                     {
+                                        //Rakesh(VA228):Set batch line detail
                                         if (GenerateBatchLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _invpaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
                                         {
                                             trx.Rollback();
@@ -6264,6 +6309,10 @@ public class PaymentData
     public string DocBaseType { get; set; }
     public string IsHoldPayment { get; set; }
     public DateTime? DateAcct { get; set; }
+    public int ConversionTypeId { get; set; }
+    public decimal DiscountAmount { get; set; }
+    public decimal ConvertedDiscountAmount { get; set; }
+    public DateTime? DiscountDate { get; set; }
 }
 public class BPDetails
 {
@@ -6334,6 +6383,11 @@ public class GeneratePaymt
     public string TransactionType { get; set; }
     public int TargetDocType { get; set; }
     public int HeaderCurrency { get; set; }
+    public int ConversionTypeId { get; set; }
+    public decimal DiscountAmount { get; set; }
+    public decimal ConvertedDiscountAmount { get; set; }
+    public DateTime? DiscountDate { get; set; }
+
     //end
 }
 public class PayBatchDetails

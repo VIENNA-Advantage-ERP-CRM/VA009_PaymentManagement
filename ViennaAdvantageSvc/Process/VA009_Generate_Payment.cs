@@ -47,7 +47,7 @@ namespace ViennaAdvantage.Process
         //bool CurrtNxtUpdated = false;
         Decimal discountAmt, DueAmount = 0;
         MPayment _pay = null;
-        Int32 currencyTo_ID = 0, BlineDetailCur_ID = 0;
+        Int32 currencyTo_ID = 0, BlineDetailCur_ID = 0, _ConversionType_ID;
 
         private int allocationId = 0;
 
@@ -166,6 +166,7 @@ namespace ViennaAdvantage.Process
                 sql.Clear();
                 try
                 {
+                    //Rakesh(VA228):Fetched discount amount from Batch detail line instead of invoice and order pay schedule on 17/Sep/2021 as discussed with Ranvir
                     sql.Append(@"SELECT T.C_ConversionType_ID,
                                T.c_bankaccount_id, 
                                T.c_bpartner_id,
@@ -203,7 +204,7 @@ namespace ViennaAdvantage.Process
                                NULL AS C_order_ID,  
                                IPS.DueAmt, 
                                bld.VA009_ConvertedAmt, 
-                               IPS.discountamt,
+                               bld.discountamt,
                                bld.va009_batchlinedetails_ID ,
                                bl.va009_batchlines_id , 
                                bld.discountdate,
@@ -242,7 +243,7 @@ namespace ViennaAdvantage.Process
                                bld.C_order_ID,  
                                OPS.DueAmt, 
                                bld.VA009_ConvertedAmt, 
-                               OPS.discountamt,
+                               bld.discountamt,
                                bld.va009_batchlinedetails_ID ,
                                bl.va009_batchlines_id , 
                                bld.discountdate,
@@ -283,6 +284,8 @@ namespace ViennaAdvantage.Process
                     MVA009Batch _batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
 
                     currencyTo_ID = Util.GetValueOfInt(_batch.Get_Value("C_Currency_ID"));
+                    //Rakesh(VA228):Set ConversionTypeId
+                    _ConversionType_ID = _batch.GetC_ConversionType_ID();
 
                     if (ds != null && ds.Tables[0].Rows.Count > 0)
                     {
@@ -501,6 +504,8 @@ namespace ViennaAdvantage.Process
                                     allocHdr.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     //allocHdr.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                                     allocHdr.SetC_Currency_ID(BlineDetailCur_ID);
+                                    //Rakesh(VA228):Set ConversionType_ID
+                                    allocHdr.SetC_ConversionType_ID(_ConversionType_ID);
                                     allocHdr.SetDocStatus("DR");
                                     allocHdr.SetDocAction("CO");
                                     if (!allocHdr.Save(Get_TrxName()))
@@ -712,6 +717,8 @@ namespace ViennaAdvantage.Process
                                         _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
                                         //_pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                                         _pay.SetC_Currency_ID(BlineDetailCur_ID);
+                                        //Rakesh(VA228):Set ConversionType_ID
+                                        _pay.SetC_ConversionType_ID(_ConversionType_ID);
                                         _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
                                         tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"select VA009_PAYMENTBASETYPE from VA009_PAYMENTMETHOD where VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
                                         if (tenderType == "K")          // Credit Card
@@ -997,6 +1004,8 @@ namespace ViennaAdvantage.Process
 
                                     //_pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                                     _pay.SetC_Currency_ID(BlineDetailCur_ID);
+                                    //Rakesh(VA228):Set ConversionType_ID
+                                    _pay.SetC_ConversionType_ID(_ConversionType_ID);
                                     _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
                                     tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"select VA009_PAYMENTBASETYPE from VA009_PAYMENTMETHOD where VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
                                     if (tenderType == "K")          // Credit Card
@@ -1196,7 +1205,7 @@ namespace ViennaAdvantage.Process
                         AND EndChkNumber != (CurrentNext-1)
                         AND C_BankAccountDoc.VA009_PaymentMethod_ID = " + _pay.GetVA009_PaymentMethod_ID() + @"
                         AND C_BankAccountDoc.C_BankAccount_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
-            Int32 bankAcctDoc_ID = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString()));
+            Int32 bankAcctDoc_ID = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
             if (bankAcctDoc_ID > 0)
             {
                 BAcctDoc = new X_C_BankAccountDoc(GetCtx(), bankAcctDoc_ID, Get_TrxName());
