@@ -4278,7 +4278,7 @@
                         }
                     });
                 };
-                
+
                 function callbackCASHPay(result) {
                     //amit
                     Cashgrd.clear();
@@ -4996,6 +4996,11 @@
                         //by Amit - 1-12-2016
                         _batch_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
                         //end
+                        //Rakesh(VA228):Set conversion rate type on 17/Sep/2021
+                        _batch_Columns.push({ field: "ConversionTypeId", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "DiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "ConvertedDiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "DiscountDate", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
                     }
                     BatchGrd = null;
                     BatchGrd = BatchGrid.w2grid({
@@ -5008,7 +5013,7 @@
                         //    selectColumn: true
                         //}
                     }),
-                        BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate', 'TransactionType');
+                        BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
 
                 };
 
@@ -5072,6 +5077,11 @@
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
                         line["TransactionType"] = rslt[i].TransactionType;
+                        //Rakesh(VA228):Set conversion type and discount amount/date
+                        line["ConversionTypeId"] = rslt[i].ConversionTypeId;
+                        line["DiscountAmount"] = rslt[i].DiscountAmount;
+                        line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
+                        line["DiscountDate"] = rslt[i].DiscountDate;
                         popupgrddata.push(line);
                     }
                     w2utils.encodeTags(popupgrddata);
@@ -5310,6 +5320,11 @@
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
                         line["TransactionType"] = rslt[i].TransactionType;
+                        //Rakesh(VA228):Set conversion type
+                        line["ConversionTypeId"] = rslt[i].ConversionTypeId;
+                        line["DiscountAmount"] = rslt[i].DiscountAmount;
+                        line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
+                        line["DiscountDate"] = rslt[i].DiscountDate;
                         popupgrddata.push(line);
                     }
                     if (rslt[0].ERROR == "ConversionNotFound") {
@@ -5392,6 +5407,11 @@
                                                 _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
                                                 _data["C_Bank_ID"] = $POP_cmbBank.val();
                                                 _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
+                                                //Rakesh(VA228):Set converion type/discount amount and date assigned by amit done on 17/sep/2021
+                                                _data["ConversionTypeId"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConversionTypeId'];
+                                                _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'];
+                                                _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'];
+                                                _data["DiscountDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']);
 
                                                 if (_data["DueAmt"] != 0 && BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
                                                     //ConvertedAmt is zero then show the message Conversion Rate not found

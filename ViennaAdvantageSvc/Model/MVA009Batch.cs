@@ -137,12 +137,6 @@ namespace ViennaAdvantage.Model
         {
             return 0;
         }
-
-        public int GetC_Currency_ID()
-        {
-            return 0;
-        }
-
         public string GetDocBaseType()
         {
             return null;
