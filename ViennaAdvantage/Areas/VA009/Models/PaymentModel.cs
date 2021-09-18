@@ -5931,14 +5931,7 @@ namespace VA009.Models
                                     }
                                     else
                                     {
-                                        //Rakesh(VA228):Get currency detail and set in batch line detail
-                                        //CurrencyDetail currencyDetail = new CurrencyDetail();
-                                        //DataSet dsCurrency = DB.ExecuteDataset("Select C_Currency_ID,C_ConversionType_ID from C_Invoice where C_Invoice_ID=" + PaymentData[i].C_Invoice_ID, null, null);
-                                        //if (dsCurrency != null && dsCurrency.Tables.Count > 0 && dsCurrency.Tables[0].Rows.Count > 0)
-                                        //{
-                                        //    currencyDetail.CurrencyId = Util.GetValueOfInt(dsCurrency.Tables[0].Rows[0]["C_Currency_ID"]);
-                                        //    currencyDetail.ConversionTypeId = Util.GetValueOfInt(dsCurrency.Tables[0].Rows[0]["C_ConversionType_ID"]);
-                                        //}
+                                        //Rakesh(VA228):Set batch line detail
                                         if (GenerateBatchLineDetails(ct, PaymentData[i], _Bt, _BankAcct, _invpaySchdule, _doctype, convertedAmount, paymentmethdoID, Batchline_ID, isOverwrite, trx) == 0)
                                         {
                                             trx.Rollback();
