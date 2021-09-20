@@ -444,7 +444,7 @@ SetVA009_Batch_ID (0);
             if (bd == null) return Env.ZERO;
             return Convert.ToDecimal(bd);
         }
-        
+
         /** DocAction AD_Reference_ID=135 */
         public static int DOCACTION_AD_Reference_ID = 135;/** <None> = -- */
         public static String DOCACTION_None = "--";/** Approve = AP */
@@ -498,7 +498,38 @@ SetVA009_Batch_ID (0);
             Set_Value("DocStatus", DocStatus);
         }/** Get Document Status.
 @return The current status of the document */
-        public String GetDocStatus() { return (String)Get_Value("DocStatus"); }
+        public String GetDocStatus() { return (String)Get_Value("DocStatus"); }/** Set Account Date.
+@param DateAcct General Ledger Date */
+        public void SetDateAcct(DateTime? DateAcct) { Set_Value("DateAcct", (DateTime?)DateAcct); }/** Get Account Date.
+@return General Ledger Date */
+        public DateTime? GetDateAcct() { return (DateTime?)Get_Value("DateAcct"); }/** Set Currency Rate Type.
+@param C_ConversionType_ID Currency Conversion Rate Type */
+        public void SetC_ConversionType_ID(int C_ConversionType_ID)
+        {
+            if (C_ConversionType_ID <= 0) Set_Value("C_ConversionType_ID", null);
+            else
+                Set_Value("C_ConversionType_ID", C_ConversionType_ID);
+        }/** Get Currency Rate Type.
+@return Currency Conversion Rate Type */
+        public int GetC_ConversionType_ID() { Object ii = Get_Value("C_ConversionType_ID"); if (ii == null) return 0; return Convert.ToInt32(ii); }/** Set Currency.
+@param C_Currency_ID The Currency for this record */
+        public void SetC_Currency_ID(int C_Currency_ID)
+        {
+            if (C_Currency_ID <= 0) Set_Value("C_Currency_ID", null);
+            else
+                Set_Value("C_Currency_ID", C_Currency_ID);
+        }/** Get Currency.
+@return The Currency for this record */
+        public int GetC_Currency_ID() { Object ii = Get_Value("C_Currency_ID"); if (ii == null) return 0; return Convert.ToInt32(ii); }/** Set Document Type.
+@param C_DocType_ID Document type or rules */
+        public void SetC_DocType_ID(int C_DocType_ID)
+        {
+            if (C_DocType_ID <= 0) Set_Value("C_DocType_ID", null);
+            else
+                Set_Value("C_DocType_ID", C_DocType_ID);
+        }/** Get Document Type.
+@return Document type or rules */
+        public int GetC_DocType_ID() { Object ii = Get_Value("C_DocType_ID"); if (ii == null) return 0; return Convert.ToInt32(ii); }
     }
 
 }

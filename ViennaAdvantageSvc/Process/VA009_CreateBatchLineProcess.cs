@@ -176,11 +176,6 @@ namespace ViennaAdvantage.Process
             //avoid null Exception removed ds.Tables word
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
-                if (C_ConversionType_ID == 0) //to Set Default conversion Type 
-                {
-                    C_ConversionType_ID = GetDefaultConversionType(_sql);
-                }
-
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]) == 0)
@@ -330,6 +325,9 @@ namespace ViennaAdvantage.Process
                             _VA009_BatchLine_ID = 0;
                         }
                     }
+                    //Rakesh(VA228)://to Set Invoice conversion Type
+                    C_ConversionType_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]);
+
                     lineDetail = new MVA009BatchLineDetails(GetCtx(), 0, Get_TrxName());
                     lineDetail.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Client_ID"]));
                     lineDetail.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Org_ID"]));
@@ -342,22 +340,27 @@ namespace ViennaAdvantage.Process
                     Decimal DiscountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
 
                     bool issamme = true; decimal comvertedamt = 0;
-                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) == _bankacc.GetC_Currency_ID())
+                    //if batch currency not equal to invoice currency
+                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) == batch.GetC_Currency_ID())
                         issamme = true;
                     else
                         issamme = false;
                     if (!issamme)
                     {
-                        dueamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
+                        //Rakesh(VA228):Changed system date to DateAcct
+                        //Convert amount if batch currency not equal to invoice currency
+                        dueamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), batch.GetC_Currency_ID(), batch.GetDateAcct(), batch.GetC_ConversionType_ID(), batch.GetAD_Client_ID(), batch.GetAD_Org_ID());
+
                         if (DiscountAmt > 0)
                         {
-                            DiscountAmt = MConversionRate.Convert(GetCtx(), DiscountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
+                            //Convert discount amount if batch currency not equal to invoice currency
+                            DiscountAmt = MConversionRate.Convert(GetCtx(), DiscountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), batch.GetC_Currency_ID(), batch.GetDateAcct(), batch.GetC_ConversionType_ID(), batch.GetAD_Client_ID(), batch.GetAD_Org_ID());
                             if (DiscountAmt == 0)
                             {
                                 Get_TrxName().Rollback();
                                 msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                MCurrency from = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), Get_TrxName());
-                                MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(_bankacc.GetC_Currency_ID()), Get_TrxName());
+                                MCurrency from = MCurrency.Get(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
+                                MCurrency to = MCurrency.Get(GetCtx(), batch.GetC_Currency_ID()); //Replaced bank currency with batch currency
                                 return msg + from.GetISO_Code() + "," + to.GetISO_Code();
                             }
                         }
@@ -365,13 +368,13 @@ namespace ViennaAdvantage.Process
                         {
                             Get_TrxName().Rollback();
                             msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                            MCurrency from = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), Get_TrxName());
-                            MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(_bankacc.GetC_Currency_ID()), Get_TrxName());
+                            MCurrency from = MCurrency.Get(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
+                            MCurrency to = MCurrency.Get(GetCtx(), batch.GetC_Currency_ID());//Replaced bank currency with batch currency
                             return msg + from.GetISO_Code() + "," + to.GetISO_Code();
                         }
                     }
 
-                    if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) >= Util.GetValueOfDateTime(batch.GetVA009_DocumentDate()))
+                    if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) >= Util.GetValueOfDateTime(batch.GetDateAcct()))
                     {
                         //dueamt = dueamt - (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]));
                         dueamt = dueamt - DiscountAmt;
@@ -390,25 +393,21 @@ namespace ViennaAdvantage.Process
                     if (issamme == false)
                     {
                         comvertedamt = dueamt;
-                        //comvertedamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), _bankacc.GetC_Currency_ID(), DateTime.Now, C_ConversionType_ID, GetCtx().GetAD_Client_ID(), GetCtx().GetAD_Org_ID());
-                        lineDetail.SetC_Currency_ID(_bankacc.GetC_Currency_ID());
                         if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                         {
                             comvertedamt = (-1 * comvertedamt);
                         }
                     }
-                    else
-                    {
-                        lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-                    }
+                    //Replaced bank currency with invoice currency
+                    lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                     lineDetail.SetVA009_ConvertedAmt(comvertedamt);
                     lineDetail.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
-                    if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) < Util.GetValueOfDateTime(batch.GetVA009_DocumentDate()))
+                    if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) < Util.GetValueOfDateTime(batch.GetDateAcct()))
                     {
                         lineDetail.SetDiscountDate(null);
                         lineDetail.SetDiscountAmt(0);
                     }
-                    else if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) >= Util.GetValueOfDateTime(batch.GetVA009_DocumentDate()))
+                    else if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) >= Util.GetValueOfDateTime(batch.GetDateAcct()))
                     {
                         lineDetail.SetDiscountDate(Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]));
                         //lineDetail.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]));
@@ -484,7 +483,7 @@ namespace ViennaAdvantage.Process
                 }
                 batch.SetVA009_GenerateLines("Y");
                 //batch.SetProcessed(true); //Commeted by Arpit asked by Ashish Gandhi to set processed only if the Payment completion is done
-                if (!batch.Save(Get_TrxName())) 
+                if (!batch.Save(Get_TrxName()))
                 {
                     Get_TrxName().Rollback();
                     //return message
@@ -515,10 +514,10 @@ namespace ViennaAdvantage.Process
                 //}
                 #endregion
 
-                return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd"); 
+                return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd");
             }
             else
-                return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd"); 
+                return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
         }
         /// <summary>
         /// Get Default Conversion Type ID From the system

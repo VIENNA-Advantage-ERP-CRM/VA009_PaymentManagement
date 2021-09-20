@@ -10,7 +10,7 @@ using VIS.Classes;
 using System.Dynamic;
 
 namespace VA009.Controllers
-{ 
+{
     public class PaymentController : Controller
     {
         // GET: /VA009/Payment/
@@ -29,6 +29,18 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get Currency of Bank Account
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="BankAccount_ID">Bank Account</param>
+        /// <returns>C_Currency_ID</returns>
+        public JsonResult GetBankAccountCurrency(Ctx ctx, int BankAccount_ID)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            return Json(JsonConvert.SerializeObject(_payMdl.GetBankAccountCurrency(ctx, BankAccount_ID)), JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetBPName(string searchText)
         {
             Ctx ct = Session["ctx"] as Ctx;
@@ -107,10 +119,31 @@ namespace VA009.Controllers
         /// <returns>returns Payment Data to bind on grid</returns>
         public JsonResult GetConvertedAmt(string PaymentData, int BankAccount, int CurrencyType, DateTime? dateAcct, int _org_Id)
         {
+            //GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
+            //Ctx ctx = Session["ctx"] as Ctx;
+            //PaymentModel _payMdl = new PaymentModel();
+            //List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, dateAcct, _org_Id);
+            return GetConvertedAmtBatch(PaymentData, BankAccount, CurrencyType, 0, dateAcct, _org_Id);
+        }
+
+
+
+        /// <summary>
+        /// Get Updated Converted Amount with Payment Data
+        /// </summary>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="BankAccount">C_BankAccount_ID</param>
+        /// <param name="CurrencyType">C_ConversionType_ID</param>
+        /// <param name="ToCurrency">C_Currency_ID</param>
+        /// <param name="dateAcct">Account Date</param>
+        /// <param name="_org_Id">AD_Org_ID</param>
+        /// <returns>returns Payment Data to bind on grid</returns>
+        public JsonResult GetConvertedAmtBatch(string PaymentData, int BankAccount, int CurrencyType, int ToCurrency, DateTime? dateAcct, int _org_Id)
+        {
             GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
             Ctx ctx = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, dateAcct, _org_Id);
+            List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, ToCurrency, dateAcct, _org_Id);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -324,13 +357,14 @@ namespace VA009.Controllers
         /// <param name="DateAcct">Account Date</param>
         /// <param name="CurrencyType">Currency Type</param>
         ///  <param name="DateTrx">Transaction Date</param>
+        ///  <param name="docTypeId">Document Type Id</param>
         /// <returns>Message in JSON Format</returns>
         [HttpPost]
-        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID)
+        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID, int docTypeId)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, PaymentMethodID, DateAcct, CurrencyType, DateTrx, AD_Org_ID);
+            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, PaymentMethodID, DateAcct, CurrencyType, DateTrx, AD_Org_ID, docTypeId);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -489,15 +523,16 @@ namespace VA009.Controllers
         /// Get the DocumentTypes based on Batch Payments
         /// </summary>
         /// <param name="ad_org_Id">AD_Org_ID</param>
+        /// <param name="baseType">1->AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment</param>
         /// <returns>List of Document Types</returns>
-        public JsonResult LoadTargetType(string ad_org_Id)
+        public JsonResult LoadTargetType(string ad_org_Id, int baseType)
         {
             string retJSON = "";
             if (Session["ctx"] != null)
             {
                 Ctx ctx = Session["ctx"] as Ctx;
                 PaymentModel objConversionModel = new PaymentModel();
-                retJSON = JsonConvert.SerializeObject(objConversionModel.GetTargetType(ctx, Util.GetValueOfInt(ad_org_Id)));
+                retJSON = JsonConvert.SerializeObject(objConversionModel.GetTargetType(ctx, Util.GetValueOfInt(ad_org_Id), baseType));
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
