@@ -45,7 +45,7 @@ namespace ViennaAdvantage.Process
 
         X_C_BankAccountDoc BAcctDoc = null;
         //bool CurrtNxtUpdated = false;
-        Decimal discountAmt, DueAmount = 0;
+        Decimal discountAmt, DueAmount = 0, _ConvertedAmt = 0;
         MPayment _pay = null;
         Int32 currencyTo_ID = 0, BlineDetailCur_ID = 0, _ConversionType_ID;
 
@@ -396,45 +396,51 @@ namespace ViennaAdvantage.Process
                                 }
                                 discountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]);
                                 DueAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
+                                //Rakesh(VA228):Get converted amount
+                                _ConvertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
 
+                                #region Commented Not Required to Convert
+                                //Rakesh(VA228)::Not requird to convert as already converted in respective currency
                                 // Convert Amounts if currency is not same...conversion must be at the same day on which payment is generating
                                 //if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]) != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-                                if (BlineDetailCur_ID != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-                                {
-                                    if (discountAmt > 0)
-                                    {
-                                        discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                               BlineDetailCur_ID,//Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                               _batch.GetDateAcct(),//Changed to account date
-                                               Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                               GetAD_Client_ID(), GetAD_Org_ID());
-                                        if (discountAmt == 0)
-                                        {
-                                            Get_TrxName().Rollback();
-                                            msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                            MCurrency from = new MCurrency(GetCtx(),
-                                               BlineDetailCur_ID,// Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]),
-                                                Get_TrxName());
-                                            MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]), Get_TrxName());
-                                            return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                        }
-                                    }
-                                    DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                      BlineDetailCur_ID,//  Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                        _batch.GetDateAcct(),//Changed to account date
-                                        Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                        GetAD_Client_ID(), GetAD_Org_ID());
-                                    if (DueAmount == 0)
-                                    {
-                                        Get_TrxName().Rollback();
-                                        msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                        MCurrency from = new MCurrency(GetCtx(),
-                                            BlineDetailCur_ID,//Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]),
-                                            Get_TrxName());
-                                        MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]), Get_TrxName());
-                                        return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                    }
-                                }
+                                //if (BlineDetailCur_ID != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
+                                //{
+                                //    if (discountAmt > 0)
+                                //    {
+                                //        discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
+                                //               BlineDetailCur_ID,//Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
+                                //               _batch.GetDateAcct(),//Changed to account date
+                                //               Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
+                                //               GetAD_Client_ID(), GetAD_Org_ID());
+                                //        if (discountAmt == 0)
+                                //        {
+                                //            Get_TrxName().Rollback();
+                                //            msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
+                                //            MCurrency from = new MCurrency(GetCtx(),
+                                //               BlineDetailCur_ID,// Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]),
+                                //                Get_TrxName());
+                                //            MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]), Get_TrxName());
+                                //            return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
+                                //        }
+                                //    }
+                                //    DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
+                                //      BlineDetailCur_ID,//  Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
+                                //        _batch.GetDateAcct(),//Changed to account date
+                                //        Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
+                                //        GetAD_Client_ID(), GetAD_Org_ID());
+                                //    if (DueAmount == 0)
+                                //    {
+                                //        Get_TrxName().Rollback();
+                                //        msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
+                                //        MCurrency from = new MCurrency(GetCtx(),
+                                //            BlineDetailCur_ID,//Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]),
+                                //            Get_TrxName());
+                                //        MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]), Get_TrxName());
+                                //        return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
+                                //    }
+                                //}
+                                #endregion
+
                                 #region Create View Allocation Header and line when the Due Amount on Batch line = 0
                                 if (c_currency_id ==
                                     BlineDetailCur_ID
@@ -669,7 +675,8 @@ namespace ViennaAdvantage.Process
                                     if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
                                     {
                                         //to set document date of batch header on all payments and allocations
-                                        checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
+                                        //Rakesh(VA228):Replaced due amount with converted amount
+                                        checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, _ConvertedAmt, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
                                         if (checkMsg != "")
                                         {
                                             Get_TrxName().Rollback();
@@ -798,8 +805,11 @@ namespace ViennaAdvantage.Process
 
                                         MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
                                         PayAlocate.SetC_Payment_ID(C_Payment_ID);
-                                        PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                        PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]) > 0)
+                                        {
+                                            PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
+                                            PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                        }
 
                                         #region Commented Code
                                         //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
@@ -907,56 +917,64 @@ namespace ViennaAdvantage.Process
                                 }
                                 discountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]);
                                 DueAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
+                                //Rakesh(VA228):Get converted amount
+                                _ConvertedAmt= Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
                                 // Convert Amounts if currency is not same...conversion must be at the same day on which payment is generating
                                 // if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]) != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-                                if (BlineDetailCur_ID != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-                                {
-                                    if (discountAmt > 0)
-                                    {
-                                        discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                              //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                              BlineDetailCur_ID,
-                                               _batch.GetDateAcct(),//Changed to account date
-                                               Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                               GetAD_Client_ID(), GetAD_Org_ID());
-                                        if (discountAmt == 0)
-                                        {
-                                            Get_TrxName().Rollback();
-                                            msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                            MCurrency from = new MCurrency(GetCtx(),
-                                              BlineDetailCur_ID,  //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), 
-                                                Get_TrxName());
-                                            MCurrency to = new MCurrency(GetCtx(),
-                                              BlineDetailCur_ID,//  Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                                Get_TrxName());
-                                            return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                        }
-                                    }
-                                    DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                      BlineDetailCur_ID,
-                                        //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                        _batch.GetDateAcct(),//Changed to account date
-                                        Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                        GetAD_Client_ID(), GetAD_Org_ID());
-                                    if (DueAmount == 0)
-                                    {
-                                        Get_TrxName().Rollback();
-                                        msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                        MCurrency from = new MCurrency(GetCtx(),
-                                            BlineDetailCur_ID,
-                                            //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), 
-                                            Get_TrxName());
-                                        MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                            Get_TrxName());
-                                        return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                    }
-                                    DueAmount = DueAmount - discountAmt;
-                                }
+
+                                #region Commented Not Required to Convert
+                                //Rakesh(VA228):Not requird to convert as already converted in respective currency
+                                //if (BlineDetailCur_ID != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
+                                //{
+                                //    if (discountAmt > 0)
+                                //    {
+                                //        discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
+                                //              //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
+                                //              BlineDetailCur_ID,
+                                //               _batch.GetDateAcct(),//Changed to account date
+                                //               Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
+                                //               GetAD_Client_ID(), GetAD_Org_ID());
+                                //        if (discountAmt == 0)
+                                //        {
+                                //            Get_TrxName().Rollback();
+                                //            msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
+                                //            MCurrency from = new MCurrency(GetCtx(),
+                                //              BlineDetailCur_ID,  //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), 
+                                //                Get_TrxName());
+                                //            MCurrency to = new MCurrency(GetCtx(),
+                                //              BlineDetailCur_ID,//  Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
+                                //                Get_TrxName());
+                                //            return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
+                                //        }
+                                //    }
+                                //    DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
+                                //      BlineDetailCur_ID,
+                                //        //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
+                                //        _batch.GetDateAcct(),//Changed to account date
+                                //        Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
+                                //        GetAD_Client_ID(), GetAD_Org_ID());
+                                //    if (DueAmount == 0)
+                                //    {
+                                //        Get_TrxName().Rollback();
+                                //        msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
+                                //        MCurrency from = new MCurrency(GetCtx(),
+                                //            BlineDetailCur_ID,
+                                //            //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), 
+                                //            Get_TrxName());
+                                //        MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
+                                //            Get_TrxName());
+                                //        return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
+                                //    }
+                                //    DueAmount = DueAmount - discountAmt;
+                                //}
+                                #endregion
+
                                 _pay = new MPayment(GetCtx(), 0, Get_TrxName());
                                 if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
                                 {
                                     //to set document date of batch header on all payments and allocations
-                                    checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, DueAmount, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
+                                    //Rakesh(VA228):Replaced due amount with converted amount
+                                    checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, _ConvertedAmt, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
                                     if (checkMsg != "")
                                     {
                                         return checkMsg;
@@ -1000,7 +1018,7 @@ namespace ViennaAdvantage.Process
                                     #endregion
 
                                     _pay.SetDiscountAmt(discountAmt);
-                                    _pay.SetPayAmt(DueAmount);
+                                    _pay.SetPayAmt(_ConvertedAmt);
 
                                     //_pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                                     _pay.SetC_Currency_ID(BlineDetailCur_ID);
@@ -1042,11 +1060,12 @@ namespace ViennaAdvantage.Process
                                 }
                                 if (!_pay.Save(Get_TrxName()))
                                 {
-                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
                                     ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
                                     SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
                                                         GetRecord_ID(), ppE.ToString());
                                     Rollback();
+                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved")+": " + ppE.ToString();
+
                                     allocationDocumentNo = string.Empty;
                                     paymentDocumentNo = string.Empty;
                                     break;
@@ -1261,9 +1280,9 @@ namespace ViennaAdvantage.Process
                 docbasetype = "ARR";
             else if (docbasetype == "API")
                 docbasetype = "APP";
-            else if (docbasetype == "ARC") // with reverse entry
+            else if (docbasetype == "ARC" || docbasetype=="SOO") // with reverse entry //When AR Credit & sales order done by rakesh assigned by ranvir
                 docbasetype = "ARR";
-            else if (docbasetype == "APC") // with reverse entry
+            else if (docbasetype == "APC" || docbasetype == "POO") // with reverse entry //When AP Credit & purchase order done by rakesh assigned by ranvir
                 docbasetype = "APP";
             int DocType_ID = Util.GetValueOfInt(DB.ExecuteScalar("Select  min(dt.c_doctype_id)  From C_doctype DT inner join c_docbasetype DBT On dt.docbasetype=dbt.docbasetype where dbt.docbasetype='" + docbasetype + "' AND dt.IsActive = 'Y' AND (DT.ad_org_id = " + GetAD_Org_ID() + " or  DT.ad_org_id = 0) AND DT.AD_Client_ID = " + GetAD_Client_ID()));
             return DocType_ID;
@@ -1390,6 +1409,8 @@ namespace ViennaAdvantage.Process
             _pay.SetPayAmt(dueAmt);
             //_pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
             _pay.SetC_Currency_ID(BlineDetailCur_ID);
+            //Rakesh(VA228):Set ConversionType_ID
+            _pay.SetC_ConversionType_ID(_ConversionType_ID);
             _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
             tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"select VA009_PAYMENTBASETYPE from VA009_PAYMENTMETHOD where VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
             if (tenderType == "K")          // Credit Card
