@@ -328,7 +328,8 @@ namespace ViennaAdvantage.Process
                         lineDetail.SetC_ConversionType_ID(C_ConversionType_ID);
                         dueamt = (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]));
                         convertedAmt = dueamt;
-
+                        //Set discount amount
+                        discountamt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
 
                         //If Invoice currency same as bank or selected currency
                         if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) == C_Currency_ID)
