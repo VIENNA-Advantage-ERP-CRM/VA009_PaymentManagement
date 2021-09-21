@@ -433,7 +433,7 @@ namespace VA009.Models
             //Rakesh(VA228):Get convertiontype,discount amount done on date 17/Sep/2021
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             StringBuilder sql = new StringBuilder();
-            sql.Append(@"SELECT pm.VA009_PaymentMode,pm.VA009_PaymentMethod_ID,cb.c_Bpartner_id, inv.DocumentNo, cb.name AS C_Bpartner,cs.C_Invoice_ID,
+            sql.Append(@"SELECT inv.C_DocType_ID, pm.VA009_PaymentMode,pm.VA009_PaymentMethod_ID,cb.c_Bpartner_id, inv.DocumentNo, cb.name AS C_Bpartner,cs.C_Invoice_ID,
                          cs.C_InvoicePaySchedule_ID,inv.C_Currency_ID,cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2))    
                                WHEN (cd.DOCBASETYPE IN ('API','ARC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt, "); // -1 Because during payble dont show negative amount on UI
@@ -448,13 +448,13 @@ namespace VA009.Models
             //string finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             //sql.Clear();
 
-            sql.Append(@" GROUP BY pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
+            sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
                           cs.DueDate,  cs.C_InvoicePaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
                           cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate");
 
             sql.Append(" UNION ");
 
-            sql.Append(@"SELECT DISTINCT pm.VA009_PaymentMode,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
+            sql.Append(@"SELECT DISTINCT inv.C_DocType_ID, pm.VA009_PaymentMode,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
                          cs.VA009_OrderPaySchedule_ID As C_InvoicePaySchedule_ID,  inv.C_Currency_ID,  cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('SOO')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) 
                               WHEN (cd.DOCBASETYPE IN ('POO')) THEN ROUND(cs.DUEAMT, NVL(CY.StdPrecision,2)) * 1   END AS DueAmt, "); // -1 Because during payble dont show negative amount on UI
@@ -470,7 +470,7 @@ namespace VA009.Models
             //sql.Clear();
             //sql.Append(finalQuery);
 
-            sql.Append(@" GROUP BY pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_Order_ID,
+            sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_Order_ID,
                           cs.DueDate,  cs.VA009_OrderPaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
                           cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate ORDER BY C_Bpartner");           // Order By Business Partner name not on ID
 
@@ -499,18 +499,18 @@ namespace VA009.Models
                     _payData.DocumentNo = Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
                     //change by amit
                     _payData.TransactionType = Util.GetValueOfString(ds.Tables[0].Rows[i]["va009_transactiontype"]);
-                    int doctypeId = 0;
-                    if (Util.GetValueOfString(ds.Tables[0].Rows[i]["va009_transactiontype"]) == "Invoice")
-                    {
-                        MInvoice _inv = new MInvoice(ctx, Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]), null);
-                        doctypeId = _inv.GetC_DocType_ID();
-                    }
-                    else
-                    {
-                        MOrder _order = new MOrder(ctx, Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]), null);
-                        doctypeId = _order.GetC_DocType_ID();
-                    }
-                    MDocType docbasdetype = new MDocType(ctx, doctypeId, null);
+                    //int doctypeId = 0;
+                    //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["va009_transactiontype"]) == "Invoice")
+                    //{
+                    //    MInvoice _inv = new MInvoice(ctx, Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]), null);
+                    //    doctypeId = _inv.GetC_DocType_ID();
+                    //}
+                    //else
+                    //{
+                    //    MOrder _order = new MOrder(ctx, Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]), null);
+                    //    doctypeId = _order.GetC_DocType_ID();
+                    //}
+                    MDocType docbasdetype = MDocType.Get(ctx, Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_DocType_ID"]));
                     _payData.DocBaseType = docbasdetype.GetDocBaseType();
                     if (docbasdetype.GetDocBaseType() == "API" || docbasdetype.GetDocBaseType() == "APC" || docbasdetype.GetDocBaseType() == "POO")
                     {
@@ -531,14 +531,23 @@ namespace VA009.Models
                         {
                             _payData.convertedAmt = 1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]); // -1 Because during payble dont show negative amount on UI
                         }
+
+                        if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]) < 0)
+                        {
+                            _payData.DiscountAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
+                        }
+                        else
+                        {
+                            _payData.DiscountAmount = 1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
+                        }
                     }
                     else
                     {
                         _payData.convertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
+                        _payData.DiscountAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
                     }
                     //Rakesh(VA228):Set invoice/order conversion type/discount amount on date 17/Sep/2021
                     _payData.ConversionTypeId = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]);
-                    _payData.DiscountAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
                     _payData.DiscountDate = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]);
                     //end
                     _lstChqPay.Add(_payData);
@@ -3135,6 +3144,15 @@ namespace VA009.Models
                             {
                                 _payData.convertedAmt = PaymentData[i].DueAmt; // -1 Because during payble dont show negative amount on UI
                             }
+
+                            if (PaymentData[i].ConvertedDiscountAmount < 0)
+                            {
+                                _payData.ConvertedDiscountAmount = -1 * PaymentData[i].ConvertedDiscountAmount;
+                            }
+                            else
+                            {
+                                _payData.ConvertedDiscountAmount = PaymentData[i].ConvertedDiscountAmount;
+                            }
                         }
                         else
                         {
@@ -3150,6 +3168,15 @@ namespace VA009.Models
                         else
                         {
                             _payData.DueAmt = 1 * PaymentData[i].DueAmt; // -1 Because during payble dont show negative amount on UI
+                        }
+
+                        if (PaymentData[i].DiscountAmount < 0)
+                        {
+                            _payData.DiscountAmount = PaymentData[i].DiscountAmount;
+                        }
+                        else
+                        {
+                            _payData.DiscountAmount = 1 * PaymentData[i].DiscountAmount;
                         }
                     }
                     else
@@ -5190,6 +5217,20 @@ namespace VA009.Models
             if (Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
             {
                 convertedAmount = convertedAmount - PaymentData.ConvertedDiscountAmount;
+                if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
+                {
+                    if (PaymentData.ConvertedDiscountAmount > 0)
+                    {
+                        PaymentData.ConvertedDiscountAmount = -1 * PaymentData.ConvertedDiscountAmount;
+                    }
+                }
+                else
+                {
+                    if (_doctype.GetDocBaseType() == "API" && PaymentData.ConvertedDiscountAmount < 0)
+                    {
+                        PaymentData.ConvertedDiscountAmount = -1 * PaymentData.ConvertedDiscountAmount;
+                    }
+                }
                 _btDetal.SetDiscountAmt(PaymentData.ConvertedDiscountAmount);
                 _btDetal.SetDiscountDate(_invpaySchdule.GetDiscountDate());
             }

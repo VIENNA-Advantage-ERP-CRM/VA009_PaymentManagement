@@ -384,6 +384,7 @@ namespace ViennaAdvantage.Process
                     {
                         lineDetail.SetDueAmt(-1 * dueamt);
                         comvertedamt = (-1 * dueamt);
+                        DiscountAmt = Decimal.Negate(DiscountAmt);
                     }
                     else
                     {
@@ -396,6 +397,7 @@ namespace ViennaAdvantage.Process
                         if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                         {
                             comvertedamt = (-1 * comvertedamt);
+                            DiscountAmt = Decimal.Negate(DiscountAmt);
                         }
                     }
                     //Replaced bank currency with invoice currency
