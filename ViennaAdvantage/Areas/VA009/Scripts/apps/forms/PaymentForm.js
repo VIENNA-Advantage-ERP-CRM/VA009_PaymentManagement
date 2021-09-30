@@ -1324,7 +1324,8 @@
                     else {
                         ChequePayDialog.show();
                         // loadbank();
-                        loadbanks($POP_cmbBank, orgids);
+                        //populate banks based on selected organization in dialog
+                        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         $POP_cmbBank.addClass('vis-ev-col-mandatory');
                         $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_DateAcct.addClass('vis-ev-col-mandatory');
@@ -2170,6 +2171,8 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                         //populate banks based on selected organization in dialog
+                        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $POP_cmbBank.val(0).prop('selected', true);
                         $POP_cmbBank.addClass('vis-ev-col-mandatory');
@@ -2820,7 +2823,8 @@
                         ChequeReceDialog.show();
                         CHQRecGrid_Layout();
                         //loadbank();
-                        loadbanks($RPOP_cmbBank, orgids);
+                        //populate banks based on selected org in dialog
+                        loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
                         $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_DateAcct.addClass('vis-ev-col-mandatory');
@@ -2913,6 +2917,8 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                         //populate banks based on selected organization in dialog
+                        loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $RPOP_cmbBank.val(0).prop('selected', true);
                         $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
@@ -4931,7 +4937,8 @@
                 //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
                 _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
                 //loadbank();
-                loadbanks($POP_cmbBank, orgids);
+                 //populate banks based on selected organization in dialog
+                loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                 $POP_cmbBank.addClass('vis-ev-col-mandatory');
                 $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                 //set payment method mandatory assigned by ashish 28 May 2020
@@ -5166,6 +5173,8 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                         //populate banks based on selected organization in dialog
+                        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $POP_cmbBank.val(0).prop('selected', true);
                         $POP_cmbBank.addClass('vis-ev-col-mandatory');
@@ -6641,7 +6650,8 @@
                 manualDialog.setModal(true);
                 manualDialog.show();
                 loadOrg();
-                loadbanks($POP_cmbBank, orgids);
+                 //populate banks based on selected organization in dialog
+                loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                 loadPayMthd();
                 loadCurrencyType();
                 //Rakesh(VA228):10/Sep/2021 -> Load APR target base doc type
@@ -6672,6 +6682,8 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
+                         //populate banks based on selected organization in dialog
+                        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $POP_cmbBank.val(0).prop('selected', true);
                         $POP_cmbBank.addClass('vis-ev-col-mandatory');
