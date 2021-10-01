@@ -5706,6 +5706,7 @@ namespace VA009.Models
             AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("select ad_process_ID from ad_column where ad_table_id = " + Table_ID + " and lower(columnname)= 'docaction'", null, null));
             string[] result = new string[2];
             MRole role = MRole.Get(ctx, ctx.GetAD_Role_ID());
+            int ad_window_id = 0;
             if (Util.GetValueOfBool(role.GetProcessAccess(AD_Process_ID)))
             {
                 string Sql = "";
@@ -5716,6 +5717,7 @@ namespace VA009.Models
                 else if (TableName == "c_payment")
                 { //Payment
                     Sql = "UPDATE C_Payment SET DocAction = '" + DocAction + "' WHERE C_Payment_ID = " + Record_ID;
+                    ad_window_id = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Window_ID FROM AD_Window WHERE Export_ID = 'VIS_195'"));
                 }
                 else if (TableName == "c_allocationhdr")
                 {
@@ -5772,6 +5774,10 @@ namespace VA009.Models
                 pi.SetAD_PInstance_ID(pin.GetAD_PInstance_ID());
                 pi.SetRecord_ID(Record_ID);
                 pi.SetTable_ID(Table_ID);
+                if (ad_window_id > 0)
+                {
+                    pi.SetAD_Window_ID(ad_window_id);
+                }
                 ProcessCtl worker = new ProcessCtl(ctx, null, pi, null);
                 worker.Run();
 
