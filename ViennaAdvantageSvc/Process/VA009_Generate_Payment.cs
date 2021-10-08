@@ -904,7 +904,7 @@ namespace ViennaAdvantage.Process
                                     {
                                         DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = 0 WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
                                     }
-                                  return Msg.GetMsg(GetCtx(), "VA009_PaymentNotCompleted")+" "+ result;
+                                    log.Log(Level.SEVERE, "Payment Not Completed "+completePayment.GetDocumentNo()+" "+ result);
                                 }
                                 else 
                                 { 
@@ -958,9 +958,16 @@ namespace ViennaAdvantage.Process
 
                         #region Consolidate = false
                         else if (_batch.IsVA009_Consolidate() == false)
-                        {
+                        {                      
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
+                                if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) &&
+                                  Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+                                {
+                                    //Payment should not be crteated if Payment Method is check and APC Invoice
+                                    invDocNo += "," + Util.GetValueOfInt(ds.Tables[0].Rows[i]["DocumentNo"]);
+                                    continue;
+                                }
                                 BlineDetailCur_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]);
                                 if (currencyTo_ID > 0)
                                 {
@@ -1150,7 +1157,8 @@ namespace ViennaAdvantage.Process
                                     //    msg += ":" + docNo;
                                     //}
                                     #endregion
-                                    MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_Trx());
+                                    Get_TrxName().Commit();
+                                    MPayment completePayment = new MPayment(GetCtx(), batchLineDetails.GetC_Payment_ID(), Get_Trx());
                                     string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                     if (string.IsNullOrEmpty(result))
                                     {
@@ -1197,11 +1205,8 @@ namespace ViennaAdvantage.Process
                                     {
                                         Get_TrxName().Rollback();
                                         //Remove Paymenmt reference if Payment is not completed
-                                        if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = 0 WHERE VA009_BatchLineDetails_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID "])) > 0)
-                                        {
-                                            DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = 0 WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
-                                        }
-                                        return Msg.GetMsg(GetCtx(), "VA009_PaymentNotCompleted") + " " + result;
+                                        DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = null WHERE VA009_BatchLineDetails_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID"]));
+                                        log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
                                     }
                                 }
                             }
@@ -1215,6 +1220,11 @@ namespace ViennaAdvantage.Process
                     if (paymentDocumentNo != "" || allocationDocumentNo != "")
                     {
                         SaveRecordPaymentBachLog(_batch.GetAD_Client_ID(), _batch.GetAD_Org_ID(), GetRecord_ID(), paymentDocumentNo, allocationDocumentNo);
+                    }
+                    if (!string.IsNullOrEmpty(invDocNo))
+                    {
+                        //payment not generated -- APC case 
+                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck") + " " + invDocNo.TrimStart(',');
                     }
                     if (String.IsNullOrEmpty(msg))
                     {
@@ -1244,11 +1254,7 @@ namespace ViennaAdvantage.Process
             {
                 msg = Msg.GetMsg(GetCtx(), "VA009_PaymentAlreadyGenerated");
             }
-            if (!string.IsNullOrEmpty(invDocNo))
-            {
-                //payment not generated -- APC case 
-                msg += " " +  Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck") + " " + invDocNo;
-            }
+         
             return msg;
         }
 
