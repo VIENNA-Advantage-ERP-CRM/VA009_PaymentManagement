@@ -1133,9 +1133,14 @@
                 };
             },
 
-            LoadTargetDocTypeB2B: function ($control, basetype) {
+            LoadTargetDocTypeB2B: function ($control, basetype, _org_Id) {
                 $control.empty();
-                var _org_Id = $OrgCmb != null ? $OrgCmb.val() : 0;
+                if (_org_Id == 0)
+                {
+                    //if bank account is not selected
+                    _org_Id = $OrgCmb != null ? $OrgCmb.val() : 0;
+                }
+               
                 VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id, "baseType": basetype }, callbacktargettype);
                 function callbacktargettype(dr) {
                     $control.append(" <option value = 0></option>");
@@ -2171,7 +2176,7 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                         //populate banks based on selected organization in dialog
+                        //populate banks based on selected organization in dialog
                         loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $POP_cmbBank.val(0).prop('selected', true);
@@ -2917,7 +2922,7 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                         //populate banks based on selected organization in dialog
+                        //populate banks based on selected organization in dialog
                         loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $RPOP_cmbBank.val(0).prop('selected', true);
@@ -4937,7 +4942,7 @@
                 //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
                 _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
                 //loadbank();
-                 //populate banks based on selected organization in dialog
+                //populate banks based on selected organization in dialog
                 loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                 $POP_cmbBank.addClass('vis-ev-col-mandatory');
                 $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
@@ -5173,7 +5178,7 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                         //populate banks based on selected organization in dialog
+                        //populate banks based on selected organization in dialog
                         loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $POP_cmbBank.val(0).prop('selected', true);
@@ -6154,8 +6159,8 @@
                 loadBankAccount($From_cmbBank, organizationids);
                 loadToBankAccount($To_cmbBank, organizationids);
                 //Rakesh(VA228):Load Target Docuement Type APR and APP
-                _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1);
-                _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2);
+                _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1,0);
+                _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2,0);
 
                 txtAmount.addVetoableChangeListener(this);
                 b2bDialog.onOkClick = function () {
@@ -6277,6 +6282,7 @@
                 function InitializeEvents() {
 
                     $isPayment.on("click", function (e) {
+                        debugger;
                         var target = $(e.target);
                         if (e.target.type == 'checkbox') {
                             if (target.prop("checked") == true) {
@@ -6288,6 +6294,7 @@
                     });
 
                     $isReceipt.on("click", function (e) {
+                        debugger;
                         var target = $(e.target);
                         if (e.target.type == 'checkbox') {
                             if (target.prop("checked") == true) {
@@ -6327,25 +6334,35 @@
                             $OrgCmb.addClass('vis-ev-col-mandatory');
                         }
                         //Rakesh(VA228):Reset Document Type
-                        _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1);
-                        _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2);
+                        _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1,0);
+                        _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2,0);
                     });
 
                     $From_cmbBank.on("change", function () {
                         if (parseInt($From_cmbBank.val()) > 0) {
                             $From_cmbBank.removeClass('vis-ev-col-mandatory');
-                        }
+                            //get the Bank Account Org_ID
+                             _org_Id = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankOrganization", { "BankAcct_ID": $From_cmbBank.val() });
+                            _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, _org_Id);
+
+                        }                      
                         else {
                             $From_cmbBank.addClass('vis-ev-col-mandatory');
+                            _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
                         }
                     });
 
                     $To_cmbBank.on("change", function () {
                         if (parseInt($To_cmbBank.val()) > 0) {
                             $To_cmbBank.removeClass('vis-ev-col-mandatory');
+                            //get the Bank Account Org_ID
+                            _org_Id = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankOrganization", { "BankAcct_ID": $To_cmbBank.val() });
+                            _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, _org_Id);
                         }
                         else {
                             $To_cmbBank.addClass('vis-ev-col-mandatory');
+                            _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1,0);
+
                         }
                     });
 
@@ -6650,7 +6667,7 @@
                 manualDialog.setModal(true);
                 manualDialog.show();
                 loadOrg();
-                 //populate banks based on selected organization in dialog
+                //populate banks based on selected organization in dialog
                 loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                 loadPayMthd();
                 loadCurrencyType();
@@ -6682,7 +6699,7 @@
                         $POP_cmbOrg.addClass('vis-ev-col-mandatory');
                     }
                     else {
-                         //populate banks based on selected organization in dialog
+                        //populate banks based on selected organization in dialog
                         loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         //refresh the bank and BankAccount dropdowns and make it as mandatory
                         $POP_cmbBank.val(0).prop('selected', true);
@@ -7713,7 +7730,6 @@
         //Function For Split Payment
         //*************************************
         function generateLines() {
-
             try {
                 var dr = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBatchProcess", null, null);
                 if (dr != null) {

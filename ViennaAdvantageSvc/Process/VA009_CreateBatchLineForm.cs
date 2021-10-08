@@ -478,7 +478,7 @@ namespace ViennaAdvantage.Process
                         log.Log(Level.SEVERE, "Batch line detail not created: " + error);
                         return !string.IsNullOrEmpty(error) ? error : Msg.GetMsg(GetCtx(), "VA009_BatchNotCrtd");
                     }
-                    return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd" + " :" + batch.GetDocumentNo());
+                    return Msg.GetMsg(GetCtx(), "VA009_BatchCompletedWith") + " :" + batch.GetDocumentNo();
                 }
                 else
                 {

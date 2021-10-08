@@ -206,6 +206,19 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_payMdl.LoadOrganization(ct)), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get Bank Account's Organization
+        /// </summary>
+        /// <param name="BankAcct_ID">Bank Account</param>
+        ///<writer>1052</writer>
+        /// <returns>Organization</returns>
+        public ActionResult GetBankOrganization(int BankAcct_ID)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            return Json(JsonConvert.SerializeObject(_payMdl.GetBankAcctOrganization(ct, BankAcct_ID)), JsonRequestBehavior.AllowGet);
+        }
+
         //Added by Bharat on 01/June/2017
         public ActionResult LoadPaymentMethod()
         {

@@ -3521,6 +3521,19 @@ namespace VA009.Models
             return retDic;
         }
 
+        /// <summary>
+        /// Get Bank Accout Orgainzation
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="BankAcct_ID">Bank Account</param>
+        ///<Writer>1052</Writer>
+        /// <returns>Organization</returns>
+        public int GetBankAcctOrganization(Ctx ct,int BankAcct_ID)
+        {
+            return Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_BankAccount.AD_Org_ID FROM C_BankAccount WHERE C_BankAccount_ID= "+ BankAcct_ID));   
+        }
+
+
         //Added by Bharat on 01/June/2017
         public List<Dictionary<string, object>> LoadPaymentMethod(Ctx ct)
         {
@@ -3591,7 +3604,7 @@ namespace VA009.Models
         public List<Dictionary<string, object>> loadCurrencyType(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType WHERE ISACTIVE='Y' ";
+            string sql = "SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType WHERE ISACTIVE='Y' AND AD_Client_ID= "+ct.GetAD_Client_ID();
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -5304,11 +5317,42 @@ namespace VA009.Models
             _btDetal.SetAD_Org_ID(PaymentData.AD_Org_ID);
             _btDetal.Set_Value("VA009_OrderPaySchedule_ID", PaymentData.C_InvoicePaySchedule_ID); // Here OrderPaySchedule_ID is AS InvoicePaySchedule_ID
             _btDetal.Set_Value("C_Order_ID", PaymentData.C_Invoice_ID); //Here C_Order_ID is as C_Invoice_ID
-            _btDetal.SetC_Currency_ID(_BankAcct.GetC_Currency_ID());
+             //set Order Currency 
+            _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
+            //Set Order Currency Type
+            _btDetal.SetC_ConversionType_ID(PaymentData.ConversionTypeId);
             _btDetal.SetVA009_BatchLines_ID(Batchline_ID);
+          
+            //Adjust discount amount from due amount if discount date greater than account date
+            if (Util.GetValueOfDateTime(_OrdPaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
+            {
+                convertedAmount = convertedAmount - PaymentData.ConvertedDiscountAmount;
+                if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
+                {
+                    if (PaymentData.ConvertedDiscountAmount > 0)
+                    {
+                        PaymentData.ConvertedDiscountAmount = -1 * PaymentData.ConvertedDiscountAmount;
+                    }
+                }
+                else
+                {
+                    if (_doctype.GetDocBaseType() == "API" && PaymentData.ConvertedDiscountAmount < 0)
+                    {
+                        PaymentData.ConvertedDiscountAmount = -1 * PaymentData.ConvertedDiscountAmount;
+                    }
+                }
+                _btDetal.SetDiscountAmt(PaymentData.ConvertedDiscountAmount);
+                _btDetal.SetDiscountDate(_OrdPaySchdule.GetDiscountDate());
+            }
+            else
+            {
+                PaymentData.ConvertedDiscountAmount = 0;
+                PaymentData.DiscountDate = null;
+            }
+
             _btDetal.SetDueAmt(PaymentData.DueAmt);
-            _btDetal.SetC_ConversionType_ID(PaymentData.CurrencyType);
             _btDetal.SetDueDate(_OrdPaySchdule.GetDueDate());
+
             if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
             {
                 if (convertedAmount > 0)

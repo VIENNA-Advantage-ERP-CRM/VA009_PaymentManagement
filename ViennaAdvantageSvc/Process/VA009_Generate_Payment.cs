@@ -28,6 +28,7 @@ namespace ViennaAdvantage.Process
         StringBuilder docNos = new StringBuilder();
         StringBuilder sql = new StringBuilder();
         int countresponse = 0;
+        string invDocNo = "";
         MVA009BatchLineDetails batchLineDetails = null;
         MVA009BatchLines batchLines = null;
 
@@ -182,12 +183,14 @@ namespace ViennaAdvantage.Process
                                T.discountdate,
                                T.issotrx,
                                T.isreturntrx,
+                               T.DocumentNo,
                                T.c_invoicepayschedule_id,
                                T.VA009_OrderPaySchedule_ID,
                                T.ad_org_id, 
                                T.ad_client_id , 
                                T.DocBaseType ,
                                T.va009_paymentmethod_id ,
+                               T.VA009_PAYMENTBASETYPE,
                                T.VA009_DueAmount,
                                T.Currency_ID,
                                T.C_BP_BankAccount_ID,
@@ -210,12 +213,14 @@ namespace ViennaAdvantage.Process
                                bld.discountdate,
                                inv.issotrx,
                                inv.isreturntrx,
+                               inv.DocumentNo,
                                bld.c_invoicepayschedule_id,
                                NULL AS VA009_OrderPaySchedule_ID,
                                bld.ad_org_id, 
                                bld.ad_client_id , 
                                doc.DocBaseType ,
                                b.va009_paymentmethod_id ,
+                               PM.VA009_PAYMENTBASETYPE,
                                bl.VA009_DueAmount,
                                bl.C_BP_BankAccount_ID,
                                bl.RoutingNo as swiftcode, bl.AccountNo as Acctnumber, bl.A_Name as AcctName,
@@ -226,6 +231,7 @@ namespace ViennaAdvantage.Process
                                INNER JOIN c_invoice inv ON inv.c_invoice_id = bld.c_invoice_id
                                INNER JOIN C_DocType doc ON doc.C_Doctype_ID = inv.C_Doctype_ID
                                INNER JOIN C_InvoicePaySchedule IPS ON IPS.c_invoicepayschedule_id = bld.c_invoicepayschedule_id
+                               INNER JOIN VA009_PaymentMethod PM ON PM.VA009_PaymentMethod_ID = b.VA009_PaymentMethod_ID
                                WHERE  NVL(bl.c_payment_id , 0) = 0 
                                       AND NVL(bld.c_payment_id , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
@@ -249,12 +255,14 @@ namespace ViennaAdvantage.Process
                                bld.discountdate,
                                odr.issotrx,
                                odr.isreturntrx,
+                               odr.DocumentNo,
                                NULL AS C_InvoicePaySchedule_ID,
                                bld.VA009_OrderPaySchedule_ID,
                                bld.ad_org_id, 
                                bld.ad_client_id , 
                                doc.DocBaseType ,
                                b.va009_paymentmethod_id ,
+                               PM.VA009_PAYMENTBASETYPE,
                                bl.VA009_DueAmount,
                                bl.C_BP_BankAccount_ID,
                                bl.RoutingNo as swiftcode, bl.AccountNo as Acctnumber, bl.A_Name as AcctName,
@@ -265,6 +273,7 @@ namespace ViennaAdvantage.Process
                                INNER JOIN C_Order odr ON odr.C_Order_ID = bld.C_Order_ID
                                INNER JOIN C_DocType doc ON doc.C_Doctype_ID = odr.C_Doctype_ID
                                INNER JOIN VA009_OrderPaySchedule OPS on OPS.VA009_OrderPaySchedule_ID=bld.VA009_OrderPaySchedule_ID
+                               INNER JOIN VA009_PaymentMethod PM ON PM.VA009_PaymentMethod_ID = b.VA009_PaymentMethod_ID
                                WHERE  NVL(bl.c_payment_id , 0) = 0 
                                       AND NVL(bld.c_payment_id , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
@@ -388,6 +397,14 @@ namespace ViennaAdvantage.Process
 
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
+                                if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) &&
+                                   Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+                                {
+                                    //Payment should not be crteated if Payment Method is check and APC Invoice
+                                    invDocNo += ", " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["DocumentNo"]);
+                                    continue;
+                                }
+
                                 BlineDetailCur_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]);
                                 if (currencyTo_ID > 0)
                                 {
@@ -876,18 +893,53 @@ namespace ViennaAdvantage.Process
                             // Complete the Consolidate Records of payment
                             for (int i = 0; i < payment.Count(); i++)
                             {
-                                MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_Trx());
-                                if (completePayment.CompleteIt() == "CO")
+                                Get_TrxName().Commit();
+                                MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_TrxName());
+                                string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
+                                if (!String.IsNullOrEmpty(result))
                                 {
+                                    Get_TrxName().Rollback();
+                                    //Remove Payment reference if payment is not completed
+                                    if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = 0 WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"])) > 0)
+                                    {
+                                        DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = 0 WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
+                                    }
+                                  return Msg.GetMsg(GetCtx(), "VA009_PaymentNotCompleted")+" "+ result;
+                                }
+                                else 
+                                { 
                                     //to set total amount in case of consolidated payment
                                     totalPayAmt = Util.GetValueOfDecimal(DB.ExecuteScalar("SELECT SUM(amount) FROM c_paymentallocate WHERE c_payment_id=" + payment[i], null, Get_Trx()));
                                     if (totalPayAmt > 0)
+                                    {
                                         completePayment.SetPayAmt(totalPayAmt);
-
-                                    completePayment.SetDocStatus("CO");
-                                    completePayment.SetDocAction("CL");
-                                    completePayment.Save(Get_TrxName());
+                                    }                               
+                                    if (!completePayment.Save(Get_TrxName()))
+                                    {
+                                       ValueNamePair pp = VLogger.RetrieveError();
+                                        if (pp != null)
+                                        {
+                                            log.Log(Level.SEVERE,  "Payment Not Saved "+ pp.GetValue() + " - " + pp.GetName());
+                                            msg = pp.GetName();
+                                            if (msg == "")
+                                            {
+                                                msg = pp.GetValue();
+                                            }
+                                        }
+                                        else
+                                        {
+                                            log.Log(Level.SEVERE, "Payment Not Saved");
+                                            msg += "  "+ Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
+                                        }
+                                        Get_TrxName().Rollback();
+                                        return msg;
+                                    }
+                                    else
+                                    {
+                                        Get_TrxName().Commit();
+                                    }
                                 }
+                               
                             }
 
                             // Complete the Consolidate Records of View allocation 
@@ -918,7 +970,7 @@ namespace ViennaAdvantage.Process
                                 discountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]);
                                 DueAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
                                 //Rakesh(VA228):Get converted amount
-                                _ConvertedAmt= Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
+                                _ConvertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
                                 // Convert Amounts if currency is not same...conversion must be at the same day on which payment is generating
                                 // if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]) != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
 
@@ -1064,7 +1116,7 @@ namespace ViennaAdvantage.Process
                                     SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
                                                         GetRecord_ID(), ppE.ToString());
                                     Rollback();
-                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved")+": " + ppE.ToString();
+                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved") + ": " + ppE.ToString();
 
                                     allocationDocumentNo = string.Empty;
                                     paymentDocumentNo = string.Empty;
@@ -1098,17 +1150,19 @@ namespace ViennaAdvantage.Process
                                     //    msg += ":" + docNo;
                                     //}
                                     #endregion
-                                    if (_pay.CompleteIt() == "CO")
+                                    MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_Trx());
+                                    string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
+                                    if (string.IsNullOrEmpty(result))
                                     {
-                                        _pay.SetDocStatus("CO");
-                                        _pay.SetDocAction("CL");
-                                        _pay.SetProcessed(true);
-                                        if (!_pay.Save(Get_TrxName()))
-                                        {
-                                            return ErrorMessage();
-                                        }
-                                        else
-                                        {
+                                        //_pay.SetDocStatus("CO");
+                                        //_pay.SetDocAction("CL");
+                                        //_pay.SetProcessed(true);
+                                        //if (!_pay.Save(Get_TrxName()))
+                                        //{
+                                        //    return ErrorMessage();
+                                        //}
+                                        //else
+                                        //{
                                             //to Set Allocation ID on Batch Line Details
                                             sql.Clear();
                                             sql.Append(@"Select AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
@@ -1137,7 +1191,17 @@ namespace ViennaAdvantage.Process
                                                 Get_TrxName().Rollback();
                                                 return ex.Message;
                                             }
+                                        //}
+                                    }
+                                    else
+                                    {
+                                        Get_TrxName().Rollback();
+                                        //Remove Paymenmt reference if Payment is not completed
+                                        if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = 0 WHERE VA009_BatchLineDetails_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID "])) > 0)
+                                        {
+                                            DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = 0 WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
                                         }
+                                        return Msg.GetMsg(GetCtx(), "VA009_PaymentNotCompleted") + " " + result;
                                     }
                                 }
                             }
@@ -1179,6 +1243,11 @@ namespace ViennaAdvantage.Process
             else
             {
                 msg = Msg.GetMsg(GetCtx(), "VA009_PaymentAlreadyGenerated");
+            }
+            if (!string.IsNullOrEmpty(invDocNo))
+            {
+                //payment not generated -- APC case 
+                msg += " " +  Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck") + " " + invDocNo;
             }
             return msg;
         }
@@ -1232,7 +1301,7 @@ namespace ViennaAdvantage.Process
                 {
                     //not required to set checkno from here
                     //_pay.SetCheckNo(Util.GetValueOfString(BAcctDoc.GetCurrentNext()));
-                    //CurrtNxtUpdated = true;
+                   // CurrtNxtUpdated = true;
                 }
                 else
                 {
@@ -1280,7 +1349,7 @@ namespace ViennaAdvantage.Process
                 docbasetype = "ARR";
             else if (docbasetype == "API")
                 docbasetype = "APP";
-            else if (docbasetype == "ARC" || docbasetype=="SOO") // with reverse entry //When AR Credit & sales order done by rakesh assigned by ranvir
+            else if (docbasetype == "ARC" || docbasetype == "SOO") // with reverse entry //When AR Credit & sales order done by rakesh assigned by ranvir
                 docbasetype = "ARR";
             else if (docbasetype == "APC" || docbasetype == "POO") // with reverse entry //When AP Credit & purchase order done by rakesh assigned by ranvir
                 docbasetype = "APP";
@@ -1464,6 +1533,89 @@ namespace ViennaAdvantage.Process
 
         }
 
+
+        /// <summary>
+        /// Mehtod added to complete and reverse the document and execute the workflow as well
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="Record_ID">C_Payment_ID</param>
+        /// <param name="Process_ID">Process</param>
+        /// <param name="DocAction">Document Action</param>
+        /// <returns>result of completion or reversal in a string array</returns>
+        public string CompleteOrReverse(Ctx ctx, int Record_ID, int Process_ID, string DocAction)
+        {
+            string result = "";
+            MRole role = MRole.Get(ctx, ctx.GetAD_Role_ID());
+            if (Util.GetValueOfBool(role.GetProcessAccess(Process_ID)))
+            {
+                DB.ExecuteQuery("UPDATE C_Payment SET DocAction = '" + DocAction + "' WHERE C_Payment_ID = " + Record_ID);
+
+                MProcess proc = new MProcess(ctx, Process_ID, null);
+                MPInstance pin = new MPInstance(proc, Record_ID);
+                if (!pin.Save())
+                {
+                    ValueNamePair vnp = VLogger.RetrieveError();
+                    string errorMsg = "";
+                    if (vnp != null)
+                    {
+                        errorMsg = vnp.GetName();
+                        if (errorMsg == "")
+                            errorMsg = vnp.GetValue();
+                    }
+                    if (errorMsg == "")
+                        result = errorMsg = Msg.GetMsg(ctx, "DocNotCompleted");
+
+                    return result;
+                }
+
+                MPInstancePara para = new MPInstancePara(pin, 20);
+                para.setParameter("DocAction", DocAction);
+                if (!para.Save())
+                {
+                    //String msg = "No DocAction Parameter added";  //  not translated
+                }
+                VAdvantage.ProcessEngine.ProcessInfo pi = new VAdvantage.ProcessEngine.ProcessInfo("WF", Process_ID);
+                pi.SetAD_User_ID(ctx.GetAD_User_ID());
+                pi.SetAD_Client_ID(ctx.GetAD_Client_ID());
+                pi.SetAD_PInstance_ID(pin.GetAD_PInstance_ID());
+                pi.SetRecord_ID(Record_ID);
+                if (Process_ID == 149)
+                {
+                    pi.SetTable_ID(335);
+                }
+
+                ProcessCtl worker = new ProcessCtl(ctx, null, pi, Get_TrxName());
+                worker.Run();
+
+                if (pi.IsError())
+                {
+                    ValueNamePair vnp = VLogger.RetrieveError();
+                    string errorMsg = "";
+                    if (vnp != null)
+                    {
+                        errorMsg = vnp.GetName();
+                        if (errorMsg == "")
+                            errorMsg = vnp.GetValue();
+                    }
+
+                    if (errorMsg == "")
+                        errorMsg = pi.GetSummary();
+
+                    if (errorMsg == "")
+                        errorMsg = Msg.GetMsg(ctx, "DocNotCompleted");
+                    result = errorMsg;
+                    return result;
+                }
+                else
+                    result = "";
+            }
+            else
+            {
+                result = Msg.GetMsg(ctx, "NoAccess");
+                return result;
+            }
+            return result;
+        }
 
 
 
