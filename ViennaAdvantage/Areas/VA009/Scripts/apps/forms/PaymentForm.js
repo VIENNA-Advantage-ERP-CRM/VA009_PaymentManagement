@@ -1133,15 +1133,19 @@
                 };
             },
 
-            LoadTargetDocTypeB2B: function ($control, basetype, _org_Id) {
-                $control.empty();
-                if (_org_Id == 0)
+            LoadTargetDocTypeB2B: function ($control, basetype, bankAcct_ID) {
+                $control.empty(); 
+                if (bankAcct_ID == 0)
                 {
-                    //if bank account is not selected
+                    //if Bank Account is not selected
                     _org_Id = $OrgCmb != null ? $OrgCmb.val() : 0;
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id, "baseType": basetype }, callbacktargettype);
                 }
-               
-                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id, "baseType": basetype }, callbacktargettype);
+                else
+                {
+                    //Load the Document Types as per selected Bank Account's organization
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankTargetType", { "BankAcct_ID": bankAcct_ID, "BaseType": basetype }, callbacktargettype);
+                }
                 function callbacktargettype(dr) {
                     $control.append(" <option value = 0></option>");
                     if (dr != null && dr.length > 0) {
@@ -1153,7 +1157,7 @@
                     $control.addClass('vis-ev-col-mandatory');
                 };
             },
-
+           
             loadOrg: function () {
                 VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                 function callbackloadorg(dr) {
@@ -6282,7 +6286,6 @@
                 function InitializeEvents() {
 
                     $isPayment.on("click", function (e) {
-                        debugger;
                         var target = $(e.target);
                         if (e.target.type == 'checkbox') {
                             if (target.prop("checked") == true) {
@@ -6294,7 +6297,6 @@
                     });
 
                     $isReceipt.on("click", function (e) {
-                        debugger;
                         var target = $(e.target);
                         if (e.target.type == 'checkbox') {
                             if (target.prop("checked") == true) {
@@ -6341,9 +6343,8 @@
                     $From_cmbBank.on("change", function () {
                         if (parseInt($From_cmbBank.val()) > 0) {
                             $From_cmbBank.removeClass('vis-ev-col-mandatory');
-                            //get the Bank Account Org_ID
-                             _org_Id = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankOrganization", { "BankAcct_ID": $From_cmbBank.val() });
-                            _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, _org_Id);
+                            //Document Type as per Bank Account's Org
+                            _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, $From_cmbBank.val());
 
                         }                      
                         else {
@@ -6355,9 +6356,8 @@
                     $To_cmbBank.on("change", function () {
                         if (parseInt($To_cmbBank.val()) > 0) {
                             $To_cmbBank.removeClass('vis-ev-col-mandatory');
-                            //get the Bank Account Org_ID
-                            _org_Id = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankOrganization", { "BankAcct_ID": $To_cmbBank.val() });
-                            _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, _org_Id);
+                            //Document Type as per Bank Account's Org
+                            _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, $To_cmbBank.val());
                         }
                         else {
                             $To_cmbBank.addClass('vis-ev-col-mandatory');

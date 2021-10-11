@@ -206,19 +206,7 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_payMdl.LoadOrganization(ct)), JsonRequestBehavior.AllowGet);
         }
 
-        /// <summary>
-        /// Get Bank Account's Organization
-        /// </summary>
-        /// <param name="BankAcct_ID">Bank Account</param>
-        ///<writer>1052</writer>
-        /// <returns>Organization</returns>
-        public ActionResult GetBankOrganization(int BankAcct_ID)
-        {
-            Ctx ct = Session["ctx"] as Ctx;
-            PaymentModel _payMdl = new PaymentModel();
-            return Json(JsonConvert.SerializeObject(_payMdl.GetBankAcctOrganization(ct, BankAcct_ID)), JsonRequestBehavior.AllowGet);
-        }
-
+        
         //Added by Bharat on 01/June/2017
         public ActionResult LoadPaymentMethod()
         {
@@ -546,6 +534,25 @@ namespace VA009.Controllers
                 Ctx ctx = Session["ctx"] as Ctx;
                 PaymentModel objConversionModel = new PaymentModel();
                 retJSON = JsonConvert.SerializeObject(objConversionModel.GetTargetType(ctx, Util.GetValueOfInt(ad_org_Id), baseType));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get the DocumentTypes Based on Bank Account Organization 
+        /// </summary>
+        /// <param name="BankAcct_ID">Bank Account</param>
+        /// <param name="BaseType">1->AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment</param>
+        /// <writer>1052</writer>
+        /// <returns>List of Document Types</returns>
+        public JsonResult LoadBankTargetType(int BankAcct_ID, int BaseType)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                Ctx ctx = Session["ctx"] as Ctx;
+                PaymentModel objConversionModel = new PaymentModel();
+                retJSON = JsonConvert.SerializeObject(objConversionModel.GetBankTargetType(ctx, BankAcct_ID, BaseType));
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }

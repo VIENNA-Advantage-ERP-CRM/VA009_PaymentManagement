@@ -791,13 +791,7 @@ namespace ViennaAdvantage.Process
                                         break;
                                     }
                                     else
-                                    {
-                                        if (docNos.Length > 1)
-                                        {
-                                            docNos.Append(",").Append(_pay.GetDocumentNo());
-                                        }
-                                        else
-                                            docNos.Append(_pay.GetDocumentNo());
+                                    {                         
                                         //check number to generated on Payment Completion
                                         //if (CurrtNxtUpdated)
                                         //{
@@ -900,44 +894,29 @@ namespace ViennaAdvantage.Process
                                 {
                                     Get_TrxName().Rollback();
                                     //Remove Payment reference if payment is not completed
-                                    if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = 0 WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"])) > 0)
+                                    if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = NULL WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"])) > 0)
                                     {
-                                        DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = 0 WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
+                                        DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = NULL WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
                                     }
+
                                     log.Log(Level.SEVERE, "Payment Not Completed "+completePayment.GetDocumentNo()+" "+ result);
+
+                                    DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
+                                 
+                                    msg = result ;
+
                                 }
                                 else 
-                                { 
-                                    //to set total amount in case of consolidated payment
-                                    totalPayAmt = Util.GetValueOfDecimal(DB.ExecuteScalar("SELECT SUM(amount) FROM c_paymentallocate WHERE c_payment_id=" + payment[i], null, Get_Trx()));
-                                    if (totalPayAmt > 0)
+                                {
+                                    if (docNos.Length > 1)
                                     {
-                                        completePayment.SetPayAmt(totalPayAmt);
-                                    }                               
-                                    if (!completePayment.Save(Get_TrxName()))
-                                    {
-                                       ValueNamePair pp = VLogger.RetrieveError();
-                                        if (pp != null)
-                                        {
-                                            log.Log(Level.SEVERE,  "Payment Not Saved "+ pp.GetValue() + " - " + pp.GetName());
-                                            msg = pp.GetName();
-                                            if (msg == "")
-                                            {
-                                                msg = pp.GetValue();
-                                            }
-                                        }
-                                        else
-                                        {
-                                            log.Log(Level.SEVERE, "Payment Not Saved");
-                                            msg += "  "+ Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
-                                        }
-                                        Get_TrxName().Rollback();
-                                        return msg;
+                                        docNos.Append(",").Append(completePayment.GetDocumentNo());
                                     }
                                     else
                                     {
-                                        Get_TrxName().Commit();
-                                    }
+                                        docNos.Append(completePayment.GetDocumentNo());
+                                    }                           
+                                   
                                 }
                                
                             }
@@ -1131,12 +1110,7 @@ namespace ViennaAdvantage.Process
                                 }
                                 else
                                 {
-                                    if (docNos.Length > 1)
-                                    {
-                                        docNos.Append(",").Append(_pay.GetDocumentNo());
-                                    }
-                                    else
-                                        docNos.Append(_pay.GetDocumentNo());
+                                   
                                     //check number to generated on Payment Completion
                                     //if (CurrtNxtUpdated)
                                     //{
@@ -1162,51 +1136,59 @@ namespace ViennaAdvantage.Process
                                     string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                     if (string.IsNullOrEmpty(result))
                                     {
-                                        //_pay.SetDocStatus("CO");
-                                        //_pay.SetDocAction("CL");
-                                        //_pay.SetProcessed(true);
-                                        //if (!_pay.Save(Get_TrxName()))
-                                        //{
-                                        //    return ErrorMessage();
-                                        //}
-                                        //else
-                                        //{
-                                            //to Set Allocation ID on Batch Line Details
-                                            sql.Clear();
-                                            sql.Append(@"Select AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
+                                        if (docNos.Length > 1)
+                                        {
+                                            docNos.Append(",").Append(_pay.GetDocumentNo());
+                                        }
+                                        else
+                                        {
+                                            docNos.Append(_pay.GetDocumentNo());
+                                        }
+
+                                        //to Set Allocation ID on Batch Line Details
+                                        sql.Clear();
+                                        sql.Append(@"Select AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
                                                     INNER JOIN C_AllocationHdr AH ON
                                                     AH.C_AllocationHdr_ID=AL.C_AllocationHdr_ID
                                                     WHERE AH.Processed='Y'
                                                     AND AH.DocStatus   IN ('CO','CL')
                                                     AND AL.C_Payment_ID =" + _pay.GetC_Payment_ID());
-                                            try
+                                        try
+                                        {
+                                            //using (IDataReader idr = DB.ExecuteReader(sql.ToString(), null, Get_TrxName()))
+                                            //{
+                                            //    while (idr.Read())
+                                            //    {
+                                            allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
+                                            batchLineDetails.SetC_AllocationHdr_ID(allocationId);
+                                            if (!batchLineDetails.Save(Get_TrxName()))
                                             {
-                                                //using (IDataReader idr = DB.ExecuteReader(sql.ToString(), null, Get_TrxName()))
-                                                //{
-                                                //    while (idr.Read())
-                                                //    {
-                                                allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
-                                                batchLineDetails.SetC_AllocationHdr_ID(allocationId);
-                                                if (!batchLineDetails.Save(Get_TrxName()))
-                                                {
-                                                    return ErrorMessage();
-                                                }
-                                                //    }
-                                                //}
+                                                return ErrorMessage();
                                             }
-                                            catch (Exception ex)
-                                            {
-                                                Get_TrxName().Rollback();
-                                                return ex.Message;
-                                            }
+                                            //    }
+                                            //}
+                                        }
+                                        catch (Exception ex)
+                                        {
+                                            Get_TrxName().Rollback();
+                                            return ex.Message;
+                                        }
                                         //}
                                     }
                                     else
                                     {
                                         Get_TrxName().Rollback();
+
                                         //Remove Paymenmt reference if Payment is not completed
                                         DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = null WHERE VA009_BatchLineDetails_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID"]));
+
                                         log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
+                                       
+                                        //delete Payment Document in Drafetd Stage 
+                                        DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
+                                        
+                                        msg = result;
+
                                     }
                                 }
                             }
@@ -1226,7 +1208,7 @@ namespace ViennaAdvantage.Process
                         //payment not generated -- APC case 
                         msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck") + " " + invDocNo.TrimStart(',');
                     }
-                    if (String.IsNullOrEmpty(msg))
+                    if (String.IsNullOrEmpty(msg) && !String.IsNullOrEmpty(docNos.ToString()))
                     {
                         //Set batch Processed True when payment generation and complete payment Done
                         MVA009Batch batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
