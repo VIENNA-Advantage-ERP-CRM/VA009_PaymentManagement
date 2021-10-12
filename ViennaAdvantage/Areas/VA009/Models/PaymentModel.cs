@@ -3485,8 +3485,8 @@ namespace VA009.Models
         {
             Dictionary<string, object> retBank = null;
             //handled the logs
-            string sql = @"SELECT ba.CurrentBalance,  bd.CurrentNext FROM C_BankAccount ba LEFT JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)  
-                        WHERE ba.ISACTIVE='Y' AND  ba.c_bankaccount_id=" + bankAccount_ID + " AND ba.ad_client_id =" + ct.GetAD_Client_ID();
+            string sql = @"SELECT ba.CurrentBalance,  bd.CurrentNext FROM C_BankAccount ba LEFT JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
+                         WHERE ba.ISACTIVE='Y' AND  ba.c_bankaccount_id=" + bankAccount_ID + " AND ba.ad_client_id =" + ct.GetAD_Client_ID();
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "ba", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -3497,6 +3497,33 @@ namespace VA009.Models
             }
             return retBank;
         }
+
+        /// <summary>
+        /// Get CurrentNextCheckNo against selected Payment Method and Bank Account
+        /// </summary>
+        /// <param name="bankAccount_ID">Bank Account</param>
+        /// <param name="payMethod_ID">Payment Method</param>
+        /// <param name="ct">Context</param>
+        /// <writer>1052</writer>
+        /// <returns>CurrentNextCheckNo</returns>
+        public Dictionary<string, object> GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
+        {
+            Dictionary<string, object> retBank = null;
+            //handled the logs
+            string sql = @"SELECT bd.CurrentNext FROM c_bankaccountdoc bd WHERE bd.VA009_PaymentMethod_ID = "+ payMethod_ID+
+            " AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y' AND  bd.C_BankAccount_ID=" + bankAccount_ID + 
+            " AND bd.AD_Client_ID =" + ct.GetAD_Client_ID();
+
+            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "bd", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+            DataSet ds = DB.ExecuteDataset(sql);
+            if (ds != null && ds.Tables[0].Rows.Count > 0)
+            {
+                retBank = new Dictionary<string, object>();
+                retBank["CurrentNext"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["CurrentNext"]);
+            }
+            return retBank;
+        }
+
 
         //Added by Bharat on 01/June/2017
         public List<Dictionary<string, object>> LoadOrganization(Ctx ct)
@@ -3545,10 +3572,16 @@ namespace VA009.Models
         }
 
         //Added by Manjot on 12/Dec/2018
-        public List<Dictionary<string, object>> LoadChequePaymentMethod(Ctx ct)
+        public List<Dictionary<string, object>> LoadChequePaymentMethod(Ctx ct, int? Org_ID)
         {
             List<Dictionary<string, object>> retDic = null;
+            
             string sql = "SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID,VA009_PaymentMethod.VA009_Name FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' AND VA009_PaymentMethod.VA009_PaymentBaseType IN  ('S') ";
+            if(Org_ID>0) 
+            {
+                //Payable case -- get Paymenthod of selected Organization
+                sql += " AND VA009_PaymentMethod.AD_Org_ID IN (0," + Org_ID+") ";
+            }
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY VA009_PaymentMethod_ID";
             DataSet ds = DB.ExecuteDataset(sql);

@@ -1134,7 +1134,7 @@
             },
 
             LoadTargetDocTypeB2B: function ($control, basetype, bankAcct_ID) {
-                $control.empty(); 
+                $control.empty();
                 if (bankAcct_ID == 0)
                 {
                     //if Bank Account is not selected
@@ -1157,7 +1157,7 @@
                     $control.addClass('vis-ev-col-mandatory');
                 };
             },
-           
+
             loadOrg: function () {
                 VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                 function callbackloadorg(dr) {
@@ -1243,17 +1243,12 @@
                     + "</select>"
                     + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
                     + "</div></div>");
-
                 //+ "<div class='VA009-popCheck-data'>"
                 //+ "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
                 //+ "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
 
-                _chequedata1 = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' id='VA009_Chqnotxt_" + $self.windowNo + "' placeholder=' ' data-placeholder='' disabled > "
-                    + "<label>" + VIS.Msg.getMsg("VA009_Chqnolbl") + "</label>"
-                    + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                _chequedata1 = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbPaySelectn_" + $self.windowNo + "'>"
                     + ' <option value="M">' + VIS.Msg.getMsg("VA009_PayManully") + '</option>'
                     + ' <option value="P">' + VIS.Msg.getMsg("VA009_PayPrint") + '</option>'
@@ -1261,25 +1256,7 @@
                     + "<label>" + VIS.Msg.getMsg("VA009_PaymentSelection") + "</label>"
                     + "</div></div>"
 
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
-
-                    //+ "<div class='VA009-popCheck-data' style=' padding-left: 0 !important;'>"
-                    //+ '<label>&nbsp;</label><div style=" padding-left: 0; "><input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo + '"> <label>Consolidate Payment</label></div>'
-                    //+ "</div>"
-
-                    + "<div class='VA009-popCheck-data VA009-popformchkctrlwrap' id='VA009_POP_textCheckNoDiv'>"
-                    + "<div>"
-                    + '<input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo
-                    + '"> <label>' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label>'
-                    + "</div></div>"
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label>"
-                    + "</div></div> "
-
+                    //Account Date
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
@@ -1290,12 +1267,39 @@
                     + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
                     + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
                     + "</div></div>"
+                    //Currency Type
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                    + "</select>"
+                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                    + "</div></div>"
 
-                    + "<div style='display: none !important' class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    //+ "<div class='VA009-popCheck-data' style=' padding-left: 0 !important;'>"
+                    //+ '<label>&nbsp;</label><div style=" padding-left: 0; "><input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo + '"> <label>Consolidate Payment</label></div>'
+                    //+ "</div>"                  
+                   
+                    //payment Method
+                    +"<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
                     + "</select>"
                     + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
                     + "</div></div>"
+
+                    //Currenct Next CheckNo
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='text' id='VA009_Chqnotxt_" + $self.windowNo + "' placeholder=' ' data-placeholder='' disabled > "
+                    + "<label>" + VIS.Msg.getMsg("VA009_Chqnolbl") + "</label>"
+                    + "</div></div>"
+
+                    //Consolidated check no 
+                    + "<div class='VA009-popCheck-data VA009-popformchkctrlwrap' id='VA009_POP_textCheckNoDiv'>"
+                    + "<div>"
+                    + '<input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo
+                    + '"> <label>' + VIS.Msg.getMsg("VA009_ConsolidateCheck") + '</label>'
+                    + "</div></div>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label>"
+                    + "</div></div> "
 
                     //+ "<div style='width: 100%; float: left;'>"                            
 
@@ -2012,6 +2016,7 @@
                     $POp_cmbPaySelectn = $chequePayble.find("#VA009_POP_cmbPaySelectn_" + $self.windowNo);
                     $pop_cmbCurrencyType = $chequePayble.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_PayMthd = $chequePayble.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
+                    $POP_PayMthd.addClass('vis-ev-col-mandatory');
                     $POPtxtCheckNumber = $chequePayble.find("#VA009_POP_textCheckNo_" + $self.windowNo);
                     //$POPtxtCheckNumber.addClass('vis-ev-col-mandatory');
                     $POP_DateAcct = $chequePayble.find("#VA009_AccountDate_" + $self.windowNo);
@@ -2026,8 +2031,8 @@
                 };
 
                 function loadPayMthd() {
-
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadChequePaymentMethod", null, callbackloadpaymthds);
+                    $POP_PayMthd.empty();
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadChequePaymentMethod", { "Org_ID": $POP_cmbOrg.val() }, callbackloadpaymthds);
                     function callbackloadpaymthds(dr) {
                         //if (dr.length > 1)
                         //    $POP_PayMthd.append(" <option value = 0></option>");
@@ -2037,7 +2042,7 @@
                                 $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
                             }
                         }
-                        $POP_PayMthd.prop('selectedIndex', 0);
+                        $POP_PayMthd.val(0).prop('selected', true);
                     }
                 };
 
@@ -2189,6 +2194,8 @@
                         $POP_cmbBankAccount.append("<option value='0'></option>");
                         $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+                       //fetch payment method of selected org
+                        loadPayMthd();
                     }
                     //Rakesh(VA228):Reset Document type
                     _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
@@ -2245,7 +2252,7 @@
                     cheqAmount.setValue(0);
                     $POP_txtChqNo.val('');
 
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountData", { "BankAccount": $POP_cmbBankAccount.val() }, callbackloadbankAcctBal);
+                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountData", { "BankAccount": $POP_cmbBankAccount.val()}, callbackloadbankAcctBal);
 
                     function callbackloadbankAcctBal(dr) {
 
@@ -2262,7 +2269,7 @@
                             // $POP_txtAccttNo.val(Globalize.format(dr["CurrentBalance"], "N"));
                             //$POP_txtAccttNo.val(parseFloat(dr["CurrentBalance"]).toLocaleString());
                             cheqAmount.setValue(dr["CurrentBalance"]);
-                            $POP_txtChqNo.val(dr["CurrentNext"]);
+                            //$POP_txtChqNo.val(dr["CurrentNext"]); //donot display check no here
                         }
                         //}
                         //dr.dispose();                   
@@ -2271,7 +2278,7 @@
                         if (dr == null) {
                             //$POP_txtAccttNo.val("0");
                             cheqAmount.setValue();
-                            $POP_txtChqNo.val("0");
+                            //$POP_txtChqNo.val("0");// donot display check no here
                         }
                     }
 
@@ -2330,5263 +2337,5077 @@
 
                 });
 
-                $POPtxtCheckNumber.on("change", function () {
+                /*payment method change event - set current Next checkno*/
+                $POP_PayMthd.on("change", function (e) {
+                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0)
+                    {                      
+                        $POP_PayMthd.removeClass('vis-ev-col-mandatory');
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0)
+                        {
+                            //if bank account is not selected
+                            VIS.ADialog.info("VA009_PLSelectBankAccount", "");
+                            return false;
 
-                    if ($POPtxtCheckNumber.val() == "") {
-                        $POPtxtCheckNumber.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POPtxtCheckNumber.removeClass('vis-ev-col-mandatory');
-                        CheuePaybleGrid = $chequePayble.find("#VA009_btnPopupGrid");
-                        var cBPartnerIds = [];
-                        var chknumbers = [];
-                        for (var i = 0; i < chqpaygrd.records.length; i++) {
-                            if (cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"]) < 0) {
-                                cBPartnerIds.push(chqpaygrd.records[i]["C_BPartner_ID"]);
-                                //chknumbers.push($POPtxtCheckNumber.val());
-                                if (i == 0) {
-                                    chqpaygrd.records[i]['CheckNumber'] = $POPtxtCheckNumber.val();
-                                    chknumbers.push($POPtxtCheckNumber.val());
-                                }
-                                else {
-                                    chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1;
-                                    chknumbers.push(VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1);
-                                }
-                                //$POPtxtCheckNumber.val(VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1);
-                            }
-                            else if (cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"]) > -1) {
-                                chqpaygrd.records[i]['CheckNumber'] = chknumbers[cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"])];
-                            }
-                            else
-                                console.log("Skip");
-
-                            chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckNumber");
                         }
-                        console.log("BPartner IDS =  " + cBPartnerIds);
-                        //chqpaygrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountCheckNo", {
+                            "BankAccount": $POP_cmbBankAccount.val(),
+                            "PaymentMethod": $POP_PayMthd.val()
+                        }, callbackCheckNo);
+
+                        function callbackCheckNo(dr) {                          
+                            if (dr != null && dr["CurrentNext"]!=null) {
+                                $POP_txtChqNo.val(dr["CurrentNext"]);
+                            }
+                            if (dr == null) {
+                                $POP_txtChqNo.val("0");
+                                VIS.ADialog.info("VA009_NoCheckNum", "")
+                                return false;
+                            }
+                        }
                     }
-                    //end
+                    else {                       
+                        $POP_PayMthd.addClass('vis-ev-col-mandatory');                       
+                    }
+                   
+                   
                 });
 
-                $POp_cmbPaySelectn.on("change", function () {
-                    if ($POp_cmbPaySelectn.val() == "P") {
-                        //var obj;
-                        $POP_Consolidate.prop('cheched', false);
-                        $POP_Consolidate.attr('disabled', 'disabled');
-                        $POPtxtCheckNumber.val("");
-                        for (var i = 0; i < chqpaygrd.records.length; i++) {
-                            if (chqpaygrd.records[i]['TransactionType'] == "Order") {
-                                VIS.ADialog.info("VA009_CannotPrintOrder");
-                                $POp_cmbPaySelectn.val("M");
-                                return false;
-                            }
-                            chqpaygrd.records[i]['CheckNumber'] = "";
-                            //to set Current Date as checkDate
-                            //chqpaygrd.records[i]['CheckDate'] = null;
-                            chqpaygrd.records[i]['CheckDate'] = new Date();
-                            chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckNumber");
-                            chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckDate");
-                        }
-                        //Check Process_ID is bind on Bank Account Document window or not!
-                        var paramString = $("#VA009_POP_cmbBankAccount_" + $self.windowNo)[0].value > 0 ? $("#VA009_POP_cmbBankAccount_" + $self.windowNo)[0].value : 0;
-                        if (paramString) {
-                            var _process_Id = VIS.dataContext.getJSONRecord("VA009/Payment/GetProcessId", paramString);
-                            if (!_process_Id) {
-                                VIS.ADialog.info("VA009_Plz_Process_IDNotFndBnkActDoc");
-                                $POp_cmbPaySelectn.val("M");
-                                return false;
-                            }
+        $POPtxtCheckNumber.on("change", function () {
+
+            if ($POPtxtCheckNumber.val() == "") {
+                $POPtxtCheckNumber.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POPtxtCheckNumber.removeClass('vis-ev-col-mandatory');
+                CheuePaybleGrid = $chequePayble.find("#VA009_btnPopupGrid");
+                var cBPartnerIds = [];
+                var chknumbers = [];
+                for (var i = 0; i < chqpaygrd.records.length; i++) {
+                    if (cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"]) < 0) {
+                        cBPartnerIds.push(chqpaygrd.records[i]["C_BPartner_ID"]);
+                        //chknumbers.push($POPtxtCheckNumber.val());
+                        if (i == 0) {
+                            chqpaygrd.records[i]['CheckNumber'] = $POPtxtCheckNumber.val();
+                            chknumbers.push($POPtxtCheckNumber.val());
                         }
                         else {
-                            VIS.ADialog.info("VA009_PLSelectBankAccount");
-                            $POp_cmbPaySelectn.val("M");
-                            return false;
+                            chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1;
+                            chknumbers.push(VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1);
                         }
+                        //$POPtxtCheckNumber.val(VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1);
                     }
-                    else {
-                        $POP_Consolidate.removeAttr('disabled');
+                    else if (cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"]) > -1) {
+                        chqpaygrd.records[i]['CheckNumber'] = chknumbers[cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"])];
                     }
-                });
+                    else
+                        console.log("Skip");
 
-                $POP_DateAcct.on("change", function () {
-                    //to set Date acct mandatory given by ashish on 28 May 2020
-                    if ($POP_DateAcct.val() == "") {
-                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                    chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckNumber");
+                }
+                console.log("BPartner IDS =  " + cBPartnerIds);
+                //chqpaygrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+            }
+            //end
+        });
+
+        $POp_cmbPaySelectn.on("change", function () {
+            if ($POp_cmbPaySelectn.val() == "P") {
+                //var obj;
+                $POP_Consolidate.prop('cheched', false);
+                $POP_Consolidate.attr('disabled', 'disabled');
+                $POPtxtCheckNumber.val("");
+                for (var i = 0; i < chqpaygrd.records.length; i++) {
+                    if (chqpaygrd.records[i]['TransactionType'] == "Order") {
+                        VIS.ADialog.info("VA009_CannotPrintOrder");
+                        $POp_cmbPaySelectn.val("M");
+                        return false;
                     }
-                    else {
-                        $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+                    chqpaygrd.records[i]['CheckNumber'] = "";
+                    //to set Current Date as checkDate
+                    //chqpaygrd.records[i]['CheckDate'] = null;
+                    chqpaygrd.records[i]['CheckDate'] = new Date();
+                    chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckNumber");
+                    chqpaygrd.refreshCell(chqpaygrd.records[i].recid, "CheckDate");
+                }
+                //Check Process_ID is bind on Bank Account Document window or not!
+                var paramString = $("#VA009_POP_cmbBankAccount_" + $self.windowNo)[0].value > 0 ? $("#VA009_POP_cmbBankAccount_" + $self.windowNo)[0].value : 0;
+                if (paramString) {
+                    var _process_Id = VIS.dataContext.getJSONRecord("VA009/Payment/GetProcessId", paramString);
+                    if (!_process_Id) {
+                        VIS.ADialog.info("VA009_Plz_Process_IDNotFndBnkActDoc");
+                        $POp_cmbPaySelectn.val("M");
+                        return false;
                     }
-                    //used ajax call to get Converted Amount
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                });
+                }
+                else {
+                    VIS.ADialog.info("VA009_PLSelectBankAccount");
+                    $POp_cmbPaySelectn.val("M");
+                    return false;
+                }
+            }
+            else {
+                $POP_Consolidate.removeAttr('disabled');
+            }
+        });
 
-                function callbackchqReload(result) {
-                    chqpaygrd.clear();
-                    popupgrddata = [];
-                    var rslt = JSON.parse(result);
-                    reloaddata = rslt;
-                    for (var i in rslt) {
-                        var line = {};
-                        line["recid"] = rslt[i].recid;
-                        line["C_Bpartner"] = rslt[i].C_Bpartner;
-                        line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
-                        line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
-                        line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
-                        line["CurrencyCode"] = rslt[i].CurrencyCode;
-                        line["DueAmt"] = rslt[i].DueAmt;
-                        line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
-                        line["OverUnder"] = "0";
-                        line["Writeoff"] = "0";
-                        line["Discount"] = "0";
-                        line["ConvertedAmt"] = rslt[i].convertedAmt;
-                        line["C_Currency_ID"] = rslt[i].C_Currency_ID;
-                        line["AD_Org_ID"] = rslt[i].AD_Org_ID;
-                        line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
-                        line["CheckNumber"] = null;
-                        line["ValidMonths"] = null;
-                        line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
-                        line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
-                        line["TransactionType"] = rslt[i].TransactionType;
-                        line["DocBaseType"] = rslt[i].DocBaseType;
-                        popupgrddata.push(line);
-                    }
-                    if (rslt[0].ERROR == "ConversionNotFound") {
-                        VIS.ADialog.info("VA009_ConversionNotFound");
-                    }
-                    w2utils.encodeTags(popupgrddata);
-                    chqpaygrd.add(popupgrddata);
-                };
+        $POP_DateAcct.on("change", function () {
+            //to set Date acct mandatory given by ashish on 28 May 2020
+            if ($POP_DateAcct.val() == "") {
+                $POP_DateAcct.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+            }
+            //used ajax call to get Converted Amount
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                type: "POST",
+                datatype: "json",
+                // contentType: "application/json; charset=utf-8",
+                async: true,
+                data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                success: function (result) {
+                    callbackchqReload(result);
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+        });
 
-                ChequePayDialog.onOkClick = function (event) {
-                    var _CollaborateData = [];
-                    chqpaygrd.selectAll();
-                    var total = 0;
-                    if (chqpaygrd.getSelection().length > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
-                            //Rakesh(VA228):Make Document Type selection mandatory
-                            if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                        if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                            if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                                for (var i = 0; i < chqpaygrd.getSelection().length; i++) {
-                                                    var _data = {}; var updated = 0;
-                                                    _data["C_BPartner_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'];
-                                                    _data["Description"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Description'];
-                                                    _data["C_Invoice_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Invoice_ID'];
-                                                    //commented because ashish and surya said that payment will be created in selected organization
-                                                    //_data["AD_Org_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Org_ID'];
-                                                    _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
-                                                    //Rakesh(VA228):Set Document Type (13/Sep/2021)
-                                                    _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
-                                                    _data["AD_Client_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Client_ID'];
-                                                    _data["C_InvoicePaySchedule_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                                    _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val());
-                                                    _data["C_Currency_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Currency_ID'];
-                                                    _data["DueAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['DueAmt'];
-                                                    _data["ConvertedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['ConvertedAmt'];
-                                                    _data["PaymwentBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['PaymwentBaseType'];
-                                                    _data["TransactionType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'];
-                                                    //validate zero also, if the value is zero it will ask to enter the recieved amount
-                                                    //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
-                                                    if (VIS.Utility.Util.getValueOfInt(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
-                                                        _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
-                                                    }
-                                                    else {
-                                                        VIS.ADialog.info(("VA009_PLPayAmt"));
-                                                        chqpaygrd.selectNone();
-                                                        return false;
-                                                    }
+        function callbackchqReload(result) {
+            chqpaygrd.clear();
+            popupgrddata = [];
+            var rslt = JSON.parse(result);
+            reloaddata = rslt;
+            for (var i in rslt) {
+                var line = {};
+                line["recid"] = rslt[i].recid;
+                line["C_Bpartner"] = rslt[i].C_Bpartner;
+                line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
+                line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
+                line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
+                line["CurrencyCode"] = rslt[i].CurrencyCode;
+                line["DueAmt"] = rslt[i].DueAmt;
+                line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+                line["OverUnder"] = "0";
+                line["Writeoff"] = "0";
+                line["Discount"] = "0";
+                line["ConvertedAmt"] = rslt[i].convertedAmt;
+                line["C_Currency_ID"] = rslt[i].C_Currency_ID;
+                line["AD_Org_ID"] = rslt[i].AD_Org_ID;
+                line["AD_Client_ID"] = rslt[i].AD_Client_ID;
+                line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
+                line["CheckNumber"] = null;
+                line["ValidMonths"] = null;
+                line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
+                line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
+                line["TransactionType"] = rslt[i].TransactionType;
+                line["DocBaseType"] = rslt[i].DocBaseType;
+                popupgrddata.push(line);
+            }
+            if (rslt[0].ERROR == "ConversionNotFound") {
+                VIS.ADialog.info("VA009_ConversionNotFound");
+            }
+            w2utils.encodeTags(popupgrddata);
+            chqpaygrd.add(popupgrddata);
+        };
 
-                                                    _data["OverUnder"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['OverUnder'];
-                                                    _data["Writeoff"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Writeoff'];
-                                                    _data["Discount"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Discount'];
-                                                    //Transaction Date
-                                                    _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
-                                                    _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
-                                                    _data["From"] = "Pay";
-
-                                                    if ($POp_cmbPaySelectn.val() == "M") {
-                                                        if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != null) {
-                                                            var dt = new Date(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
-                                                            dt = new Date(dt.setHours(0, 0, 0, 0));
-                                                            var acctdate = new Date($POP_DateAcct.val());
-                                                            acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
-                                                            if (dt > acctdate) {
-                                                                VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
-                                                                chqpaygrd.selectNone();
-                                                                return false;
-                                                            }
-                                                            _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
-                                                        }
-                                                        else {
-                                                            VIS.ADialog.info(("VA009_PLCheckDate"));
-                                                            chqpaygrd.selectNone();
-                                                            return false;
-                                                        }
-
-                                                        if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != null)
-                                                            _data["CheckNumber"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'];
-                                                        else {
-                                                            VIS.ADialog.info(("VA009_PLCheckNumber"));
-                                                            chqpaygrd.selectNone();
-                                                            return false;
-                                                        }
-                                                    }
-
-                                                    if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] == 0) {
-                                                        VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                                        chqpaygrd.selectNone();
-                                                        return false;
-                                                    }
-                                                    _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                                    _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
-                                                    var obj;
-                                                    if (i > 0) {
-                                                        obj = $.grep(_CollaborateData, function (e) {
-                                                            return chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'] == e.C_BPartner_ID
-                                                                && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] == e.CheckNumber
-                                                                && chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'] != e.TransactionType;
-                                                        });
-                                                        if (obj) {
-                                                            if (obj.length > 0) {
-                                                                VIS.ADialog.info("VA009_SameCheckNo");
-                                                                chqpaygrd.selectNone();
-                                                                return false;
-                                                            }
-                                                        }
-                                                    }
-                                                    //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['DocBaseType'] == "APC") {
-                                                    //    total -= VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
-                                                    //}
-                                                    //else {
-                                                    //    total += VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
-                                                    //}
-                                                    _CollaborateData.push(_data);
-                                                }
+        ChequePayDialog.onOkClick = function (event) {
+            var _CollaborateData = [];
+            chqpaygrd.selectAll();
+            var total = 0;
+            if (chqpaygrd.getSelection().length > 0) {
+                if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                    //Rakesh(VA228):Make Document Type selection mandatory
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                    if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                        for (var i = 0; i < chqpaygrd.getSelection().length; i++) {
+                                            var _data = {}; var updated = 0;
+                                            _data["C_BPartner_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'];
+                                            _data["Description"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Description'];
+                                            _data["C_Invoice_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Invoice_ID'];
+                                            //commented because ashish and surya said that payment will be created in selected organization
+                                            //_data["AD_Org_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Org_ID'];
+                                            _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                            //Rakesh(VA228):Set Document Type (13/Sep/2021)
+                                            _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
+                                            _data["AD_Client_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Client_ID'];
+                                            _data["C_InvoicePaySchedule_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                            _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val());
+                                            _data["C_Currency_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Currency_ID'];
+                                            _data["DueAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['DueAmt'];
+                                            _data["ConvertedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['ConvertedAmt'];
+                                            _data["PaymwentBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['PaymwentBaseType'];
+                                            _data["TransactionType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'];
+                                            //validate zero also, if the value is zero it will ask to enter the recieved amount
+                                            //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                            if (VIS.Utility.Util.getValueOfInt(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
+                                                _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
                                             }
                                             else {
-                                                VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                                VIS.ADialog.info(("VA009_PLPayAmt"));
                                                 chqpaygrd.selectNone();
                                                 return false;
                                             }
-                                        }
-                                        else {
-                                            VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
-                                            chqpaygrd.selectNone();
-                                            return false;
+
+                                            _data["OverUnder"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['OverUnder'];
+                                            _data["Writeoff"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Writeoff'];
+                                            _data["Discount"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Discount'];
+                                            //Transaction Date
+                                            _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
+                                            _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
+                                            _data["From"] = "Pay";
+
+                                            if ($POp_cmbPaySelectn.val() == "M") {
+                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate'] != null) {
+                                                    var dt = new Date(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
+                                                    dt = new Date(dt.setHours(0, 0, 0, 0));
+                                                    var acctdate = new Date($POP_DateAcct.val());
+                                                    acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
+                                                    if (dt > acctdate) {
+                                                        VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
+                                                        chqpaygrd.selectNone();
+                                                        return false;
+                                                    }
+                                                    _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckDate']);
+                                                }
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLCheckDate"));
+                                                    chqpaygrd.selectNone();
+                                                    return false;
+                                                }
+
+                                                if (chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != "" && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] != null)
+                                                    _data["CheckNumber"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'];
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLCheckNumber"));
+                                                    chqpaygrd.selectNone();
+                                                    return false;
+                                                }
+                                            }
+
+                                            if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] == 0) {
+                                                VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                                chqpaygrd.selectNone();
+                                                return false;
+                                            }
+                                            _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                            _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                            var obj;
+                                            if (i > 0) {
+                                                obj = $.grep(_CollaborateData, function (e) {
+                                                    return chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'] == e.C_BPartner_ID
+                                                        && chqpaygrd.get(chqpaygrd.getSelection()[i])['CheckNumber'] == e.CheckNumber
+                                                        && chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'] != e.TransactionType;
+                                                });
+                                                if (obj) {
+                                                    if (obj.length > 0) {
+                                                        VIS.ADialog.info("VA009_SameCheckNo");
+                                                        chqpaygrd.selectNone();
+                                                        return false;
+                                                    }
+                                                }
+                                            }
+                                            //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['DocBaseType'] == "APC") {
+                                            //    total -= VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
+                                            //}
+                                            //else {
+                                            //    total += VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
+                                            //}
+                                            _CollaborateData.push(_data);
                                         }
                                     }
                                     else {
-                                        VIS.ADialog.info(("VA009_PLSelectBankAccount"));
+                                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
                                         chqpaygrd.selectNone();
                                         return false;
                                     }
                                 }
                                 else {
-                                    VIS.ADialog.info(("VA009_PLSelectBank"));
+                                    VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
                                     chqpaygrd.selectNone();
                                     return false;
                                 }
-                            } else {
-                                VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
+                            }
+                            else {
+                                VIS.ADialog.info(("VA009_PLSelectBankAccount"));
                                 chqpaygrd.selectNone();
                                 return false;
                             }
                         }
                         else {
-                            VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                            VIS.ADialog.info(("VA009_PLSelectBank"));
                             chqpaygrd.selectNone();
                             return false;
                         }
+                    } else {
+                        VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
+                        chqpaygrd.selectNone();
+                        return false;
                     }
-                    if ($POp_cmbPaySelectn.val() == "M") {
-                        $bsyDiv[0].style.visibility = "visible";
-                        $.ajax({
-                            url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayments",
-                            type: "POST",
-                            datatype: "json",
-                            async: true,
-                            data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                            success: function (result) {
-                                callbackPaymnt(result);
-                            },
-                            error: function (ex) {
-                                console.log(ex);
-                                $bsyDiv[0].style.visibility = "hidden";
-                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                            }
-                        });
-                    }
-                    else if ($POp_cmbPaySelectn.val() == "P") {
-                        //if (total < 0) {
-                        //    !VIS.ADialog.confirm("VA009_ContinuePrint?", true, "", "Confirm", function (result) {
-                        //        if (result) {
-                        //            $bsyDiv[0].style.visibility = "visible";
-                        //            $.ajax({
-                        //                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayments",
-                        //                type: "POST",
-                        //                datatype: "json",
-                        //                async: true,
-                        //                data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                        //                success: function (result) {
-                        //                    callbackPaymnt(result);
-                        //                    ChequePayDialog.close();
-                        //                },
-                        //                error: function (ex) {
-                        //                    console.log(ex);
-                        //                    $bsyDiv[0].style.visibility = "hidden";
-                        //                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        //                }
-                        //            });
-                        //        }
-                        //        else {
-                        //            chqpaygrd.selectNone();
-                        //            return false;
-                        //        }
-
-                        //    });
-                        //    return false;
-                        //}
-                        //else {
-                        $bsyDiv[0].style.visibility = "visible";
-                        $.ajax({
-                            url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatchOfRule",
-                            type: "POST",
-                            datatype: "json",
-                            async: true,
-                            data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                            success: function (result) {
-                                callbackPaymntonRule(result);
-                            },
-                            error: function (ex) {
-                                console.log(ex);
-                                $bsyDiv[0].style.visibility = "hidden";
-                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                            }
-                        });
-                    }
-                    //}
-                };
-
-                function callbackPaymnt(result) {
-                    result = JSON.parse(result);
-                    $divPayment.find('.VA009-payment-wrap').remove();
-                    $divBank.find('.VA009-right-data-main').remove();
-                    $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                    //after successfully created Payment selectall checkbox should be false
-                    $selectall.prop('checked', false);
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                    loadPaymetsAll();
-                    $bsyDiv[0].style.visibility = "hidden";
-                    VIS.ADialog.info("", null, result, null);
-                    //w2alert(result.toString());
-                };
-
-                function callbackPaymntonRule(result) {
-                    result = JSON.parse(result);
-                    $divPayment.find('.VA009-payment-wrap').remove();
-                    $divBank.find('.VA009-right-data-main').remove();
-                    $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                    //after successfully created Payment selectall checkbox should be false
-                    $selectall.prop('checked', false);
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                    loadPaymetsAll();
-                    $bsyDiv[0].style.visibility = "hidden";
-                    if (result != "") {
-                        VIS.ADialog.info("", null, result, null);
-                    }
-                    else {
-                        var cprint = new VIS.Apps.AForms.VPayPrint();
-                        var c = new VIS.CFrame();
-                        c.setName(VIS.Msg.getMsg("Check Print"));
-                        c.setTitle(VIS.Msg.getMsg("Check Print"));
-                        c.hideHeader(true);
-                        c.setContent(cprint);
-                        c.show();
-                        cprint.initialize();
-                    }
-                };
-
-                ChequePayDialog.onCancelCLick = function () {
-                    chqpaygrd.clear();
-                    ChequePayDispose();
-                };
-
-                ChequePayDialog.onClose = function () {
-                    chqpaygrd.clear();
-                    ChequePayDispose();
-
-                };
-                //reset for Amount Field...
-                this.vetoablechange = function (evt) {
-                    if (evt.propertyName == "VA009_AccountBalance" + $self.windowNo + "") {
-                        cheqAmount.setValue(evt.newValue);
-                    }
-                };
-                function ChequePayDispose() {
-                    _Cheque = null;
-                    $cheque = null;
-                    $chequePayble = null;
-                    STAT_cmbBank = null;
-                    STAT_cmbBankAccount = null;
-                    STAT_txtStatementNo = null;
-                    STAT_ctrlLoadFile = null;
-                    STAT_ctrlLoadFileTxt = null;
-                    chqpaygrd.destroy();
                 }
-            },
-
-            Cheque_Rec_Dialog: function () {
-                CheueRecevableGrid, _Cheque_no = "";
-                var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
+                else {
+                    VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                    chqpaygrd.selectNone();
+                    return false;
+                }
+            }
+            if ($POp_cmbPaySelectn.val() == "M") {
                 $bsyDiv[0].style.visibility = "visible";
-                $chequeRecivable = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
-                var _ChequeRecevble = "";
-                _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
-                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "</div></div> "
-
-                    //Rakesh(VA228):Create Doc type element html
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
-                    + "</div></div> "
-
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                    + "</div></div> "
-
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                    + "</div></div></div>"
-
-                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
-
-
-
-                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + " </div></div></div>"
-                    //Transaction Date
-                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "</div></div></div>"
-
-                    //+ "<div class='VA009-popfrm-wrap'>"
-                    + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
-                //+ "</div>";
-
-                $chequeRecivable.append(_ChequeRecevble);
-                CHQREC_getControls();
-                var now = new Date();
-                var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
-                $POP_DateAcct.val(_today);
-                $POP_DateTrx.val(_today);
-                ChequeReceDialog = new VIS.ChildDialog();
-                ChequeReceDialog.setContent($chequeRecivable);
-                ChequeReceDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePaymentRec"));
-                ChequeReceDialog.setWidth("80%");
-                ChequeReceDialog.setEnableResize(true);
-                ChequeReceDialog.setModal(true);
-                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
-                    // Added by Bharat on 01/May/2017
-                    callbackCashReceipt("");
-                }
-
-                function callbackCashReceipt(data) {
-                    if (data != "") {
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayments",
+                    type: "POST",
+                    datatype: "json",
+                    async: true,
+                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                    success: function (result) {
+                        callbackPaymnt(result);
+                    },
+                    error: function (ex) {
+                        console.log(ex);
                         $bsyDiv[0].style.visibility = "hidden";
-                        VIS.ADialog.info(("VA009_PleaseSelctonlyCheque"));
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
                     }
-                    else {
-                        ChequeReceDialog.show();
-                        CHQRecGrid_Layout();
-                        //loadbank();
-                        //populate banks based on selected org in dialog
-                        loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
-                        $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
-                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
-                        loadgrd(callbackchqRec);
-                        loadCurrencyType();
-                        loadPayMthd();
-                        loadOrg();
-                        //Rakesh(VA228):10/Sep/2021 -> Load APR target base doc type
-                        _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+                });
+            }
+            else if ($POp_cmbPaySelectn.val() == "P") {
+                //if (total < 0) {
+                //    !VIS.ADialog.confirm("VA009_ContinuePrint?", true, "", "Confirm", function (result) {
+                //        if (result) {
+                //            $bsyDiv[0].style.visibility = "visible";
+                //            $.ajax({
+                //                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayments",
+                //                type: "POST",
+                //                datatype: "json",
+                //                async: true,
+                //                data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                //                success: function (result) {
+                //                    callbackPaymnt(result);
+                //                    ChequePayDialog.close();
+                //                },
+                //                error: function (ex) {
+                //                    console.log(ex);
+                //                    $bsyDiv[0].style.visibility = "hidden";
+                //                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                //                }
+                //            });
+                //        }
+                //        else {
+                //            chqpaygrd.selectNone();
+                //            return false;
+                //        }
+
+                //    });
+                //    return false;
+                //}
+                //else {
+                $bsyDiv[0].style.visibility = "visible";
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatchOfRule",
+                    type: "POST",
+                    datatype: "json",
+                    async: true,
+                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                    success: function (result) {
+                        callbackPaymntonRule(result);
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                        $bsyDiv[0].style.visibility = "hidden";
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
                     }
-                };
+                });
+            }
+            //}
+        };
 
-                function CHQREC_getControls() {
-                    $RPOP_cmbBank = $chequeRecivable.find("#VA009_POP_cmbBank_" + $self.windowNo);
-                    $RPOP_cmbBankAccount = $chequeRecivable.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
-                    $POP_PayMthd = $chequeRecivable.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
-                    CheueRecevableGrid = $chequeRecivable.find("#VA009_btnPopupRecGrid");
-                    $pop_cmbCurrencyType = $chequeRecivable.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
-                    $POP_DateAcct = $chequeRecivable.find("#VA009_AccountDate_" + $self.windowNo);
-                    $POP_DateTrx = $chequeRecivable.find("#VA009_TransactionDate" + $self.windowNo);
-                    $POP_cmbOrg = $chequeRecivable.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    //Rakesh(VA228):Store Doc type element in variable
-                    $POP_targetDocType = $chequeRecivable.find("#VA009_POP_cmbDocType_" + $self.windowNo);
-                    $POP_targetDocType.addClass('vis-ev-col-mandatory');
-                };
+        function callbackPaymnt(result) {
+            result = JSON.parse(result);
+            $divPayment.find('.VA009-payment-wrap').remove();
+            $divBank.find('.VA009-right-data-main').remove();
+            $divBank.find('.VA009-accordion').remove();
+            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+            //after successfully created Payment selectall checkbox should be false
+            $selectall.prop('checked', false);
+            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+            loadPaymetsAll();
+            $bsyDiv[0].style.visibility = "hidden";
+            VIS.ADialog.info("", null, result, null);
+            //w2alert(result.toString());
+        };
 
-                function loadCurrencyType() {
+        function callbackPaymntonRule(result) {
+            result = JSON.parse(result);
+            $divPayment.find('.VA009-payment-wrap').remove();
+            $divBank.find('.VA009-right-data-main').remove();
+            $divBank.find('.VA009-accordion').remove();
+            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+            //after successfully created Payment selectall checkbox should be false
+            $selectall.prop('checked', false);
+            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+            loadPaymetsAll();
+            $bsyDiv[0].style.visibility = "hidden";
+            if (result != "") {
+                VIS.ADialog.info("", null, result, null);
+            }
+            else {
+                var cprint = new VIS.Apps.AForms.VPayPrint();
+                var c = new VIS.CFrame();
+                c.setName(VIS.Msg.getMsg("Check Print"));
+                c.setTitle(VIS.Msg.getMsg("Check Print"));
+                c.hideHeader(true);
+                c.setContent(cprint);
+                c.show();
+                cprint.initialize();
+            }
+        };
 
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
+        ChequePayDialog.onCancelCLick = function () {
+            chqpaygrd.clear();
+            ChequePayDispose();
+        };
 
-                    function callbackCurrencyType(dr) {
+        ChequePayDialog.onClose = function () {
+            chqpaygrd.clear();
+            ChequePayDispose();
 
-                        $pop_cmbCurrencyType.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                                if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
-                                    defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
-                                }
-                            }
-                            //$pop_cmbCurrencyType.prop('selectedIndex', 1);
-                            $pop_cmbCurrencyType.val(defaultCurrenyType);
-                        }
-                    }
-                };
+        };
+        //reset for Amount Field...
+        this.vetoablechange = function (evt) {
+            if (evt.propertyName == "VA009_AccountBalance" + $self.windowNo + "") {
+                cheqAmount.setValue(evt.newValue);
+            }
+        };
+        function ChequePayDispose() {
+            _Cheque = null;
+            $cheque = null;
+            $chequePayble = null;
+            STAT_cmbBank = null;
+            STAT_cmbBankAccount = null;
+            STAT_txtStatementNo = null;
+            STAT_ctrlLoadFile = null;
+            STAT_ctrlLoadFileTxt = null;
+            chqpaygrd.destroy();
+        }
+    },
 
-                function loadPayMthd() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadChequePaymentMethod", null, callbackloadpaymthds);
-                    function callbackloadpaymthds(dr) {
-                        if (dr.length > 1)
-                            $POP_PayMthd.append(" <option value = 0></option>");
+        Cheque_Rec_Dialog: function () {
+            CheueRecevableGrid, _Cheque_no = "";
+            var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
+            $bsyDiv[0].style.visibility = "visible";
+            $chequeRecivable = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
+            var _ChequeRecevble = "";
+            _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
+                + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+                + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+                + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+                + "</div></div> "
 
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
-                            }
-                        }
-                        $POP_PayMthd.prop('selectedIndex', 0);
-                    }
-                };
+                //Rakesh(VA228):Create Doc type element html
+                + "<div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+                + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
+                + "</select><label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
+                + "</div></div> "
 
-                //to load all organization 
-                function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
-                    function callbackloadorg(dr) {
-                        $POP_cmbOrg.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $POP_cmbOrg.prop('selectedIndex', 0);
-                    };
-                };
+                + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+                + "</select><label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+                + "</div></div>"
 
-                //BY Amit
-                //Set Mandatory and Non-Mandatory
-                function SetMandatory(value) {
-                    if (value)
-                        return '#FFB6C1';
-                    else
-                        return 'White';
-                };
-                //end
+                + "<div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+                + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+                + "</select><label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+                + "</div></div> "
 
-                $POP_cmbOrg.on("change", function () {
-                    //to set Org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        //populate banks based on selected organization in dialog
-                        loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
-                        //refresh the bank and BankAccount dropdowns and make it as mandatory
-                        $RPOP_cmbBank.val(0).prop('selected', true);
-                        $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
-                        $RPOP_cmbBankAccount.empty();
-                        $RPOP_cmbBankAccount.append("<option value='0'></option>");
-                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
-                    }
-                    //Rakesh(VA228):Reset Document type
+                + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+                + "</select><label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+                + "</div></div></div>"
+
+                + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+                + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+                + "</div></div>"
+
+
+
+                + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+                + " </div></div></div>"
+                //Transaction Date
+                + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+                + "</div></div></div>"
+
+                //+ "<div class='VA009-popfrm-wrap'>"
+                + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
+            //+ "</div>";
+
+            $chequeRecivable.append(_ChequeRecevble);
+            CHQREC_getControls();
+            var now = new Date();
+            var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
+            $POP_DateAcct.val(_today);
+            $POP_DateTrx.val(_today);
+            ChequeReceDialog = new VIS.ChildDialog();
+            ChequeReceDialog.setContent($chequeRecivable);
+            ChequeReceDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePaymentRec"));
+            ChequeReceDialog.setWidth("80%");
+            ChequeReceDialog.setEnableResize(true);
+            ChequeReceDialog.setModal(true);
+            if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
+                // Added by Bharat on 01/May/2017
+                callbackCashReceipt("");
+            }
+
+            function callbackCashReceipt(data) {
+                if (data != "") {
+                    $bsyDiv[0].style.visibility = "hidden";
+                    VIS.ADialog.info(("VA009_PleaseSelctonlyCheque"));
+                }
+                else {
+                    ChequeReceDialog.show();
+                    CHQRecGrid_Layout();
+                    //loadbank();
+                    //populate banks based on selected org in dialog
+                    loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
+                    $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
+                    $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                    loadgrd(callbackchqRec);
+                    loadCurrencyType();
+                    loadPayMthd();
+                    loadOrg();
+                    //Rakesh(VA228):10/Sep/2021 -> Load APR target base doc type
                     _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-                });
+                }
+            };
 
-                $RPOP_cmbBank.on("change", function () {
-                    $RPOP_cmbBankAccount.empty();
-                    //to set Org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) == 0) {
-                        $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
-                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $RPOP_cmbBank.removeClass('vis-ev-col-mandatory');
-                    }
-                    //end
-                    //to get bank account of selected organization assigned by Ashish on 28 May 2020
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $RPOP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
+            function CHQREC_getControls() {
+                $RPOP_cmbBank = $chequeRecivable.find("#VA009_POP_cmbBank_" + $self.windowNo);
+                $RPOP_cmbBankAccount = $chequeRecivable.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
+                $POP_PayMthd = $chequeRecivable.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
+                CheueRecevableGrid = $chequeRecivable.find("#VA009_btnPopupRecGrid");
+                $pop_cmbCurrencyType = $chequeRecivable.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
+                $POP_DateAcct = $chequeRecivable.find("#VA009_AccountDate_" + $self.windowNo);
+                $POP_DateTrx = $chequeRecivable.find("#VA009_TransactionDate" + $self.windowNo);
+                $POP_cmbOrg = $chequeRecivable.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+                $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                //Rakesh(VA228):Store Doc type element in variable
+                $POP_targetDocType = $chequeRecivable.find("#VA009_POP_cmbDocType_" + $self.windowNo);
+                $POP_targetDocType.addClass('vis-ev-col-mandatory');
+            };
 
-                    function callbackloadbankAcct(dr) {
+            function loadCurrencyType() {
 
-                        $RPOP_cmbBankAccount.append("<option value='0'></option>");
-                        if (dr != null) {
-                            if (dr.length > 0) {
-                                for (var i in dr) {
-                                    $RPOP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
-                                }
+                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
+
+                function callbackCurrencyType(dr) {
+
+                    $pop_cmbCurrencyType.append("<option value='0'></option>");
+                    if (dr.length > 0) {
+                        for (var i in dr) {
+                            $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                            if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
+                                defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
                             }
                         }
+                        //$pop_cmbCurrencyType.prop('selectedIndex', 1);
+                        $pop_cmbCurrencyType.val(defaultCurrenyType);
                     }
-                });
+                }
+            };
 
-                $RPOP_cmbBankAccount.on("change", function () {
-                    //to set Org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) == 0) {
-                        $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $RPOP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
-                    }
-                    //end
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+            function loadPayMthd() {
+                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadChequePaymentMethod", { "Org_ID": null }, callbackloadpaymthds);
+                function callbackloadpaymthds(dr) {
+                    if (dr.length > 1)
+                        $POP_PayMthd.append(" <option value = 0></option>");
+
+                    if (dr.length > 0) {
+                        for (var i in dr) {
+                            $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
                         }
-                    });
-                });
+                    }
+                    $POP_PayMthd.prop('selectedIndex', 0);
+                }
+            };
 
-                $pop_cmbCurrencyType.on("change", function () {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        //passed Org and DateAcct parameters to get the data according to the updated values
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+            //to load all organization 
+            function loadOrg() {
+                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                function callbackloadorg(dr) {
+                    $POP_cmbOrg.append(" <option value = 0></option>");
+                    if (dr.length > 0) {
+                        for (var i in dr) {
+                            $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
                         }
-                    });
-                });
-
-                $POP_DateAcct.on("change", function () {
-                    //to set Date acct mandatory given by ashish on 28 May 2020
-                    if ($POP_DateAcct.val() == "") {
-                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     }
-                    else {
-                        $POP_DateAcct.removeClass('vis-ev-col-mandatory');
-                    }
-                    //Used ajax Cal to get the Converted Amount when change the DateAcct
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
-                        type: "GET",
-                        datatype: "json",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                });
-
-                function callbackchqReload(result) {
-                    chqrecgrd.clear();
-                    popupgrddata = [];
-                    var rslt = JSON.parse(result);
-                    reloaddata = rslt;
-                    for (var i in rslt) {
-                        var line = {};
-                        line["recid"] = rslt[i].recid;
-                        line["C_Bpartner"] = rslt[i].C_Bpartner;
-                        line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
-                        line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
-                        line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
-                        line["CurrencyCode"] = rslt[i].CurrencyCode;
-                        line["DueAmt"] = rslt[i].DueAmt;
-                        line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
-                        line["OverUnder"] = "0";
-                        line["Writeoff"] = "0";
-                        line["Discount"] = "0";
-                        //end
-                        line["ConvertedAmt"] = rslt[i].convertedAmt;
-                        line["C_Currency_ID"] = rslt[i].C_Currency_ID;
-                        line["AD_Org_ID"] = rslt[i].AD_Org_ID;
-                        line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
-                        line["CheckNumber"] = null;
-                        line["ValidMonths"] = null;
-                        line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
-                        line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
-                        line["TransactionType"] = rslt[i].TransactionType;
-                        line["DocBaseType"] = rslt[i].DocBaseType;
-                        popupgrddata.push(line);
-                    }
-                    if (rslt[0].ERROR == "ConversionNotFound") {
-                        VIS.ADialog.info(("VA009_ConversionNotFound"));
-                    }
-                    w2utils.encodeTags(popupgrddata);
-                    chqrecgrd.add(popupgrddata);
+                    $POP_cmbOrg.prop('selectedIndex', 0);
                 };
+            };
 
-                function CHQRecGrid_Layout() {
+            //BY Amit
+            //Set Mandatory and Non-Mandatory
+            function SetMandatory(value) {
+                if (value)
+                    return '#FFB6C1';
+                else
+                    return 'White';
+            };
+            //end
 
-                    popupgrddata = [];
-                    var _CHQRec_Columns = [];
-                    if (_CHQRec_Columns.length == 0) {
-                        _CHQRec_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '12%' });
-                        //_CHQRec_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
-                        _CHQRec_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '8%' });
-                        _CHQRec_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
-                        _CHQRec_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
-                        _CHQRec_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["DueAmt"];
-                                return parseFloat(val).toLocaleString();
+            $POP_cmbOrg.on("change", function () {
+                //to set Org mandatory given by ashish on 28 May 2020
+                if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    //populate banks based on selected organization in dialog
+                    loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
+                    //refresh the bank and BankAccount dropdowns and make it as mandatory
+                    $RPOP_cmbBank.val(0).prop('selected', true);
+                    $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
+                    $RPOP_cmbBankAccount.empty();
+                    $RPOP_cmbBankAccount.append("<option value='0'></option>");
+                    $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                    $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+                }
+                //Rakesh(VA228):Reset Document type
+                _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+            });
+
+            $RPOP_cmbBank.on("change", function () {
+                $RPOP_cmbBankAccount.empty();
+                //to set Org mandatory given by ashish on 28 May 2020
+                if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) == 0) {
+                    $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
+                    $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $RPOP_cmbBank.removeClass('vis-ev-col-mandatory');
+                }
+                //end
+                //to get bank account of selected organization assigned by Ashish on 28 May 2020
+                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $RPOP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
+
+                function callbackloadbankAcct(dr) {
+
+                    $RPOP_cmbBankAccount.append("<option value='0'></option>");
+                    if (dr != null) {
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $RPOP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
                             }
-                        });
-                        _CHQRec_Columns.push({
-                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["ConvertedAmt"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        _CHQRec_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["VA009_RecivedAmt"];
-                                val = checkcommaordot(event, val, val);
-                                return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'number' }
-                        });
-                        _CHQRec_Columns.push({
-                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["OverUnder"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        _CHQRec_Columns.push({
-                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["Writeoff"];
-                                val = checkcommaordot(event, val, val);
-                                return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'number' }
-                        });
-                        _CHQRec_Columns.push({
-                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["Discount"];
-                                val = checkcommaordot(event, val, val);
-                                return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'number' }
-                        });
-                        _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
-                        _CHQRec_Columns.push({
-                            field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
-                            render: function (record, index, col_index) {
-                                var val;
-                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
-                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
-                                if (record.changes == undefined || record.changes.CheckDate == "") {
-                                    val = record["CheckDate"];
-                                }
-                                else {
-                                    val = record.changes.CheckDate;
-                                }
-                                return new Date(val).toLocaleDateString();
-                            }, editable: { type: 'date' }
-                        });
-                        //_CHQRec_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
-                        //by Amit - 19-11-2016
-                        _CHQRec_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
-                        _CHQRec_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
-                        //end
+                        }
                     }
-                    chqrecgrd = null;
-                    chqrecgrd = CheueRecevableGrid.w2grid({
-                        name: 'CheueRecevableGrid_' + $self.windowNo,
-                        recordHeight: 25,
-                        columns: _CHQRec_Columns,
-                        method: 'GET',
-                        multiSelect: true,
-                        show: {
-                            toolbarSave: true
-                        },
+                }
+            });
 
-                        onEditField: function (event) {
-                            if (event.column == 6 || event.column == 8 || event.column == 9) {
-                                if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
-                                    event.isCancelled = true;
-                                }
+            $RPOP_cmbBankAccount.on("change", function () {
+                //to set Org mandatory given by ashish on 28 May 2020
+                if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) == 0) {
+                    $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $RPOP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+                }
+                //end
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                    type: "POST",
+                    datatype: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    async: true,
+                    data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                    success: function (result) {
+                        callbackchqReload(result);
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    }
+                });
+            });
+
+            $pop_cmbCurrencyType.on("change", function () {
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                    type: "POST",
+                    datatype: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    async: true,
+                    //passed Org and DateAcct parameters to get the data according to the updated values
+                    data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                    success: function (result) {
+                        callbackchqReload(result);
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    }
+                });
+            });
+
+            $POP_DateAcct.on("change", function () {
+                //to set Date acct mandatory given by ashish on 28 May 2020
+                if ($POP_DateAcct.val() == "") {
+                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+                }
+                //Used ajax Cal to get the Converted Amount when change the DateAcct
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                    type: "GET",
+                    datatype: "json",
+                    async: true,
+                    data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                    success: function (result) {
+                        callbackchqReload(result);
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    }
+                });
+            });
+
+            function callbackchqReload(result) {
+                chqrecgrd.clear();
+                popupgrddata = [];
+                var rslt = JSON.parse(result);
+                reloaddata = rslt;
+                for (var i in rslt) {
+                    var line = {};
+                    line["recid"] = rslt[i].recid;
+                    line["C_Bpartner"] = rslt[i].C_Bpartner;
+                    line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
+                    line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
+                    line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
+                    line["CurrencyCode"] = rslt[i].CurrencyCode;
+                    line["DueAmt"] = rslt[i].DueAmt;
+                    line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+                    line["OverUnder"] = "0";
+                    line["Writeoff"] = "0";
+                    line["Discount"] = "0";
+                    //end
+                    line["ConvertedAmt"] = rslt[i].convertedAmt;
+                    line["C_Currency_ID"] = rslt[i].C_Currency_ID;
+                    line["AD_Org_ID"] = rslt[i].AD_Org_ID;
+                    line["AD_Client_ID"] = rslt[i].AD_Client_ID;
+                    line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
+                    line["CheckNumber"] = null;
+                    line["ValidMonths"] = null;
+                    line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
+                    line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
+                    line["TransactionType"] = rslt[i].TransactionType;
+                    line["DocBaseType"] = rslt[i].DocBaseType;
+                    popupgrddata.push(line);
+                }
+                if (rslt[0].ERROR == "ConversionNotFound") {
+                    VIS.ADialog.info(("VA009_ConversionNotFound"));
+                }
+                w2utils.encodeTags(popupgrddata);
+                chqrecgrd.add(popupgrddata);
+            };
+
+            function CHQRecGrid_Layout() {
+
+                popupgrddata = [];
+                var _CHQRec_Columns = [];
+                if (_CHQRec_Columns.length == 0) {
+                    _CHQRec_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '12%' });
+                    //_CHQRec_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
+                    _CHQRec_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '8%' });
+                    _CHQRec_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
+                    _CHQRec_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
+                    _CHQRec_Columns.push({
+                        field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
+                            var val = record["DueAmt"];
+                            return parseFloat(val).toLocaleString();
+                        }
+                    });
+                    _CHQRec_Columns.push({
+                        field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
+                            var val = record["ConvertedAmt"];
+                            return parseFloat(val).toLocaleString();
+                        }
+                    });
+                    _CHQRec_Columns.push({
+                        field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
+                            var val = record["VA009_RecivedAmt"];
+                            val = checkcommaordot(event, val, val);
+                            return parseFloat(val).toLocaleString();
+                        }, editable: { type: 'number' }
+                    });
+                    _CHQRec_Columns.push({
+                        field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
+                            var val = record["OverUnder"];
+                            return parseFloat(val).toLocaleString();
+                        }
+                    });
+                    _CHQRec_Columns.push({
+                        field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
+                            var val = record["Writeoff"];
+                            val = checkcommaordot(event, val, val);
+                            return parseFloat(val).toLocaleString();
+                        }, editable: { type: 'number' }
+                    });
+                    _CHQRec_Columns.push({
+                        field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '8%', style: 'text-align: right', render: function (record, index, col_index) {
+                            var val = record["Discount"];
+                            val = checkcommaordot(event, val, val);
+                            return parseFloat(val).toLocaleString();
+                        }, editable: { type: 'number' }
+                    });
+                    _CHQRec_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '8%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
+                    _CHQRec_Columns.push({
+                        field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%', style: 'text-align: left',
+                        render: function (record, index, col_index) {
+                            var val;
+                            //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                            //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                            if (record.changes == undefined || record.changes.CheckDate == "") {
+                                val = record["CheckDate"];
                             }
-                            event.onComplete = function (event) {
-                                id = event.recid;
-                                if (event.column == 8 || event.column == 9 || event.column == 6) {
-                                    chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field] = checkcommaordot(event, chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field]);
-                                    var _value = format.GetFormatAmount(chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field], "init", dotFormatter);
-                                    chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
-                                    $('#grid_CheueRecevableGrid_' + $self.windowNo + '_edit_' + id + '_' + event.column).keydown(function (event) {
-                                        var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+                            else {
+                                val = record.changes.CheckDate;
+                            }
+                            return new Date(val).toLocaleDateString();
+                        }, editable: { type: 'date' }
+                    });
+                    //_CHQRec_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
+                    //by Amit - 19-11-2016
+                    _CHQRec_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
+                    _CHQRec_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
+                    //end
+                }
+                chqrecgrd = null;
+                chqrecgrd = CheueRecevableGrid.w2grid({
+                    name: 'CheueRecevableGrid_' + $self.windowNo,
+                    recordHeight: 25,
+                    columns: _CHQRec_Columns,
+                    method: 'GET',
+                    multiSelect: true,
+                    show: {
+                        toolbarSave: true
+                    },
 
-                                        if (!isDotSeparator && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
-                                            return false;
-                                        }
-                                        else if (isDotSeparator && event.keyCode == 188) { // . separator
-                                            return false;
-                                        }
-                                        if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
-                                            this.value = this.value.replace('.', '');
-                                        }
-                                        if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
-                                            this.value = this.value.replace(',', '');
-                                        }
-                                        if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
-                                            (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
-                                            && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
-                                            && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
-                                            return false;
-                                        }
-                                    });
-                                }
-                            };
-                        },
+                    onEditField: function (event) {
+                        if (event.column == 6 || event.column == 8 || event.column == 9) {
+                            if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
+                                event.isCancelled = true;
+                            }
+                        }
+                        event.onComplete = function (event) {
+                            id = event.recid;
+                            if (event.column == 8 || event.column == 9 || event.column == 6) {
+                                chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field] = checkcommaordot(event, chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field]);
+                                var _value = format.GetFormatAmount(chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field], "init", dotFormatter);
+                                chqrecgrd.records[event.index][chqrecgrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
+                                $('#grid_CheueRecevableGrid_' + $self.windowNo + '_edit_' + id + '_' + event.column).keydown(function (event) {
+                                    var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
 
-                        onChange: function (event) {   // Added by Bharat on 02/May/2017
-                            //change by amit
-                            window.setTimeout(function () {
-                                if (chqrecgrd.getChanges(event.recid) != undefined) {
-                                    var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $RPOP_cmbBankAccount.val(), "CurrencyFrom": "B" }, null);
-                                    if (stdPrecision == null || stdPrecision == 0) {
-                                        stdPrecision = 2;
+                                    if (!isDotSeparator && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
+                                        return false;
                                     }
-                                    chqrecgrd.records[event.index]['ConvertedAmt'] = parseFloat(chqrecgrd.records[event.index]['ConvertedAmt']);
-                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']);
-                                    chqrecgrd.records[event.index]['OverUnder'] = parseFloat(chqrecgrd.records[event.index]['OverUnder']);
-                                    chqrecgrd.records[event.index]['Writeoff'] = parseFloat(chqrecgrd.records[event.index]['Writeoff']);
-                                    chqrecgrd.records[event.index]['Discount'] = parseFloat(chqrecgrd.records[event.index]['Discount']);
-                                    //Received Amount
-                                    if (event.column == 6) {
-                                        if (event.value_new == "") {
-                                            event.value_new = 0;
-                                        }
-                                        else {
-                                            //  event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
-                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
-                                        }
-                                        //else if (event.value_new.toString().contains(',')) {
-                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
-                                        //}
+                                    else if (isDotSeparator && event.keyCode == 188) { // . separator
+                                        return false;
+                                    }
+                                    if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                        this.value = this.value.replace('.', '');
+                                    }
+                                    if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                        this.value = this.value.replace(',', '');
+                                    }
+                                    if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
+                                        (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
+                                        && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
+                                        && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
+                                        return false;
+                                    }
+                                });
+                            }
+                        };
+                    },
+
+                    onChange: function (event) {   // Added by Bharat on 02/May/2017
+                        //change by amit
+                        window.setTimeout(function () {
+                            if (chqrecgrd.getChanges(event.recid) != undefined) {
+                                var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $RPOP_cmbBankAccount.val(), "CurrencyFrom": "B" }, null);
+                                if (stdPrecision == null || stdPrecision == 0) {
+                                    stdPrecision = 2;
+                                }
+                                chqrecgrd.records[event.index]['ConvertedAmt'] = parseFloat(chqrecgrd.records[event.index]['ConvertedAmt']);
+                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']);
+                                chqrecgrd.records[event.index]['OverUnder'] = parseFloat(chqrecgrd.records[event.index]['OverUnder']);
+                                chqrecgrd.records[event.index]['Writeoff'] = parseFloat(chqrecgrd.records[event.index]['Writeoff']);
+                                chqrecgrd.records[event.index]['Discount'] = parseFloat(chqrecgrd.records[event.index]['Discount']);
+                                //Received Amount
+                                if (event.column == 6) {
+                                    if (event.value_new == "") {
+                                        event.value_new = 0;
+                                    }
+                                    else {
+                                        //  event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                                        event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                                    }
+                                    //else if (event.value_new.toString().contains(',')) {
+                                    //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                    //}
+                                    if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                        VIS.ADialog.error("MoreScheduleAmount");
+                                        event.value_new = event.value_original;
+                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
+                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                        chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                        return;
+                                    }
+                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
+                                    chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+
+                                    if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                         if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                            VIS.ADialog.error("MoreScheduleAmount");
-                                            event.value_new = event.value_original;
+                                            if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                                chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                chqrecgrd.get(event.recid).changes.Writeoff = 0;
+                                            }
+                                            else {
+                                                chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                chqrecgrd.get(event.recid).changes.Writeoff = 0;
+                                                chqrecgrd.get(event.recid).Writeoff = 0;
+                                            }
+                                            chqrecgrd.get(event.recid).changes.Discount = 0;
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                            chqrecgrd.refreshCell(event.recid, "Discount");
+                                            chqrecgrd.refreshCell(event.recid, "Writeoff");
+                                        }
+                                        else if (event.value_new == chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            chqrecgrd.get(event.recid).changes.OverUnder = 0;
+                                            chqrecgrd.get(event.recid).OverUnder = 0;
+                                            chqrecgrd.get(event.recid).changes.Discount = 0;
+                                            chqrecgrd.get(event.recid).changes.Writeoff = 0;
+                                            chqrecgrd.get(event.recid).Discount = 0;
+                                            chqrecgrd.get(event.recid).Writeoff = 0;
                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
                                             chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                            chqrecgrd.refreshCell(event.recid, "Discount");
+                                            chqrecgrd.refreshCell(event.recid, "Writeoff");
                                             chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                            return;
                                         }
-                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
-                                        chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-
-                                        if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
-                                                    chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                        else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                                if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
+                                                    chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['Discount'] = chqrecgrd.get(event.recid).changes.Discount;
                                                     chqrecgrd.get(event.recid).changes.Writeoff = 0;
+                                                    chqrecgrd.get(event.recid).Writeoff = 0;
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = 0;
+                                                    chqrecgrd.get(event.recid).OverUnder = 0;
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                                     chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                     chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                     chqrecgrd.get(event.recid).Writeoff = 0;
-                                                }
-                                                chqrecgrd.get(event.recid).changes.Discount = 0;
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                                chqrecgrd.refreshCell(event.recid, "Discount");
-                                                chqrecgrd.refreshCell(event.recid, "Writeoff");
-                                            }
-                                            else if (event.value_new == chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                chqrecgrd.get(event.recid).changes.OverUnder = 0;
-                                                chqrecgrd.get(event.recid).OverUnder = 0;
-                                                chqrecgrd.get(event.recid).changes.Discount = 0;
-                                                chqrecgrd.get(event.recid).changes.Writeoff = 0;
-                                                chqrecgrd.get(event.recid).Discount = 0;
-                                                chqrecgrd.get(event.recid).Writeoff = 0;
-                                                chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
-                                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                                chqrecgrd.refreshCell(event.recid, "Discount");
-                                                chqrecgrd.refreshCell(event.recid, "Writeoff");
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                            }
-                                            else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
-                                                    if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
-                                                        chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['Discount'] = chqrecgrd.get(event.recid).changes.Discount;
-                                                        chqrecgrd.get(event.recid).changes.Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = 0;
-                                                        chqrecgrd.get(event.recid).OverUnder = 0;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                        chqrecgrd.get(event.recid).changes.Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).changes.Discount = 0;
-                                                        chqrecgrd.get(event.recid).Discount = 0;
-                                                    }
-                                                }
-                                                else {
-                                                    if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
-                                                        chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['Discount'] = chqrecgrd.get(event.recid).changes.Discount;
-                                                        chqrecgrd.get(event.recid).changes.Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = 0;
-                                                        chqrecgrd.get(event.recid).OverUnder = 0;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                        chqrecgrd.get(event.recid).changes.Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).Writeoff = 0;
-                                                        chqrecgrd.get(event.recid).changes.Discount = 0;
-                                                        chqrecgrd.get(event.recid).Discount = 0;
-                                                    }
-                                                }
-                                                //chqrecgrd.get(event.recid).changes.Discount = 0;
-                                                //chqrecgrd.get(event.recid).Discount = 0;
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                                chqrecgrd.refreshCell(event.recid, "Discount");
-                                                chqrecgrd.refreshCell(event.recid, "Writeoff");
-                                            }
-
-                                        }
-                                    }
-                                    //writeoff
-                                    if (event.column == 8) {
-                                        if (event.value_new == "") {
-                                            event.value_new = 0;
-                                        }
-                                        else {
-                                            //  event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['Writeoff'])));
-                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
-                                        }
-                                        //else if (event.value_new.toString().contains(',')) {
-                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
-                                        //}
-                                        chqrecgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
-
-                                        if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
-                                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                            }
-                                            else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                            }
-                                        }
-                                        else if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR") {
-                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] < 0) {
-                                                    //if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                    //else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                    //else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                    //else {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                }
-                                                else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                            }
-                                            else if (event.value_new <= chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])) * -1;
-                                                if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                            }
-                                        }
-                                    }
-                                    //discount
-                                    if (event.column == 9) {
-                                        if (event.value_new == "") {
-                                            event.value_new = 0;
-                                        }
-                                        else {
-                                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
-                                        }
-                                        //else if (event.value_new.toString().contains(',')) {
-                                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
-                                        //}
-
-                                        chqrecgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
-
-                                        if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
-                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
-                                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                            }
-                                            else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                            }
-                                        }
-                                        else if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR") {
-                                            if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                if (chqrecgrd.records[event.index]['ConvertedAmt'] < 0) {
-                                                    //if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                    //else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                    //else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                    //else {
-                                                    //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //    else {
-                                                    //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                    //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
-                                                    //    }
-                                                    //}
-                                                }
-                                                else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                            }
-                                            else if (event.value_new <= chqrecgrd.records[event.index]['ConvertedAmt']) {
-                                                //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])) * -1;
-                                                if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                else {
-                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
-                                                        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
-                                                    }
-                                                    else {
-                                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                                    }
-                                                }
-                                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                                chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                            }
-                                        }
-                                    }
-
-                                    chqrecgrd.refreshCell(event.recid, "OverUnder");
-                                    chqrecgrd.refreshCell(event.recid, "Discount");
-                                    chqrecgrd.refreshCell(event.recid, "Writeoff");
-                                    chqrecgrd.refreshCell(event.recid, "ConvertedAmt");
-                                    chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-
-                                }
-                                if (event.column == 10)
-                                    chqrecgrd.records[event.index]['CheckNumber'] = event.value_new;
-                                if (event.column == 11) {
-                                    //Used do double click on CheckDate field and closed without selecting the value at 
-                                    //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
-                                    if (event.value_new != "") {
-                                        chqrecgrd.records[event.index]['CheckDate'] = event.value_new;
-                                    }
-                                    else {
-                                        chqrecgrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
-                                    }
-                                }
-                                if (event.column == 2)
-                                    chqrecgrd.records[event.index]['Description'] = event.value_new;
-                            }, 100);
-                            //end
-                        }
-                    })
-                    chqrecgrd.hideColumn('recid');
-                    chqrecgrd.hideColumn('TransactionType');
-                };
-
-                function loadgrd(callback) {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                        type: "GET",
-                        datatype: "json",
-                        contentType: "application/json; charset=utf-8",
-                        //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
-                        success: function (result) {
-                            callback(result);
-                        },
-                        error: function () {
-                            $bsyDiv[0].style.visibility = "hidden";
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                };
-
-                function callbackchqRec(result) {
-                    popupgrddata = [];
-                    var rslt = JSON.parse(result);
-                    reloaddata = rslt;
-                    for (var i in rslt) {
-                        var line = {};
-                        line["recid"] = rslt[i].recid;
-                        line["C_Bpartner"] = rslt[i].C_Bpartner;
-                        line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
-                        line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
-                        line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
-                        line["CurrencyCode"] = rslt[i].CurrencyCode;
-                        line["DueAmt"] = rslt[i].DueAmt;
-                        line["VA009_RecivedAmt"] = rslt[i].DueAmt;
-                        line["OverUnder"] = "0";
-                        line["Writeoff"] = "0";
-                        line["Discount"] = "0";
-                        line["ConvertedAmt"] = rslt[i].DueAmt;
-                        //end
-                        line["C_Currency_ID"] = rslt[i].C_Currency_ID;
-                        line["AD_Org_ID"] = rslt[i].AD_Org_ID;
-                        line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
-                        line["CheckNumber"] = null;
-                        line["ValidMonths"] = null;
-                        line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
-                        line["TransactionType"] = rslt[i].TransactionType;
-                        line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
-                        popupgrddata.push(line);
-                    }
-                    w2utils.encodeTags(popupgrddata);
-                    chqrecgrd.add(popupgrddata);
-                    $bsyDiv[0].style.visibility = "hidden";
-                };
-
-                ChequeReceDialog.onOkClick = function () {
-                    var _CollaborateData = [];
-                    chqrecgrd.sort(['C_BPartner_ID', 'CheckNumber'], 'asc');
-                    chqrecgrd.selectAll();
-
-                    if (chqrecgrd.getSelection().length > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
-                            //Rakesh(VA228):Make Document Type selection mandatory
-                            if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) > 0) {
-                                    if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) > 0) {
-                                        if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                            if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                                for (var i = 0; i < chqrecgrd.getSelection().length; i++) {
-                                                    var _data = {}; var updated = 0;
-                                                    _data["C_BPartner_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_BPartner_ID'];
-                                                    _data["Description"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Description'];
-                                                    _data["C_Invoice_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Invoice_ID'];
-                                                    //commented because ashish and surya said that payment will be created in selected organization
-                                                    //_data["AD_Org_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Org_ID'];
-                                                    _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
-                                                    //Rakesh(VA228):Set Document Type (13/Sep/2021)
-                                                    _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
-                                                    _data["AD_Client_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Client_ID'];
-                                                    _data["C_Currency_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Currency_ID'];
-                                                    _data["C_InvoicePaySchedule_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                                    _data["TransactionType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['TransactionType'];
-                                                    if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'] != "") {
-                                                        var dt = new Date(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
-                                                        dt = new Date(dt.setHours(0, 0, 0, 0));
-                                                        var acctdate = new Date($POP_DateAcct.val());
-                                                        acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
-                                                        if (dt > acctdate) {
-                                                            VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
-                                                            chqrecgrd.selectNone();
-                                                            return false;
-                                                        }
-                                                        _data["CheckDate"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'];
-                                                        //_data["CheckDate"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
-                                                    }
-                                                    else {
-                                                        VIS.ADialog.info(("VA009_PLCheckDate"));
-                                                        chqrecgrd.selectNone();
-                                                        return false;
-                                                    }
-                                                    //Transaction Date
-                                                    _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
-                                                    _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
-
-                                                    _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val());
-                                                    _data["C_Bank_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val());
-                                                    _data["DueAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['DueAmt'];
-                                                    _data["ConvertedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['ConvertedAmt'];
-                                                    _data["PaymwentBaseType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['PaymwentBaseType'];
-                                                    _data["OverUnder"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['OverUnder'];
-                                                    _data["Discount"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Discount'];
-                                                    _data["Writeoff"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Writeoff'];
-
-                                                    _data["From"] = "Rec";
-                                                    if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != "")
-                                                        _data["CheckNumber"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'];
-                                                    else {
-                                                        VIS.ADialog.info(("VA009_PLCheckNumber"));
-                                                        chqrecgrd.selectNone();
-                                                        return false;
-                                                    }
-                                                    //If the VA009_RecivedAmt value is "0" then the below condition will not work
-                                                    //if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
-                                                    if (VIS.Utility.Util.getValueOfInt(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
-                                                        _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
-                                                    }
-                                                    else {
-                                                        VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                                        chqrecgrd.selectNone();
-                                                        return false;
-                                                    }
-                                                    _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                                    _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
-                                                    _CollaborateData.push(_data);
+                                                    chqrecgrd.get(event.recid).changes.Discount = 0;
+                                                    chqrecgrd.get(event.recid).Discount = 0;
                                                 }
                                             }
                                             else {
-                                                VIS.ADialog.info(("VA009_PLSelectAcctDate"));
-                                                chqrecgrd.selectNone();
-                                                return false;
+                                                if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
+                                                    chqrecgrd.get(event.recid).changes.Discount = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['Discount'] = chqrecgrd.get(event.recid).changes.Discount;
+                                                    chqrecgrd.get(event.recid).changes.Writeoff = 0;
+                                                    chqrecgrd.get(event.recid).Writeoff = 0;
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = 0;
+                                                    chqrecgrd.get(event.recid).OverUnder = 0;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                    chqrecgrd.get(event.recid).changes.Writeoff = 0;
+                                                    chqrecgrd.get(event.recid).Writeoff = 0;
+                                                    chqrecgrd.get(event.recid).changes.Discount = 0;
+                                                    chqrecgrd.get(event.recid).Discount = 0;
+                                                }
+                                            }
+                                            //chqrecgrd.get(event.recid).changes.Discount = 0;
+                                            //chqrecgrd.get(event.recid).Discount = 0;
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                            chqrecgrd.refreshCell(event.recid, "Discount");
+                                            chqrecgrd.refreshCell(event.recid, "Writeoff");
+                                        }
+
+                                    }
+                                }
+                                //writeoff
+                                if (event.column == 8) {
+                                    if (event.value_new == "") {
+                                        event.value_new = 0;
+                                    }
+                                    else {
+                                        //  event.value_new = parseFloat(checkcommaordot(event, event.value_new, parseFloat(chqrecgrd.records[event.index]['Writeoff'])));
+                                        event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                                    }
+                                    //else if (event.value_new.toString().contains(',')) {
+                                    //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                    //}
+                                    chqrecgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
+
+                                    if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                        if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
+                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                        }
+                                        else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                        }
+                                    }
+                                    else if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR") {
+                                        if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            if (chqrecgrd.records[event.index]['ConvertedAmt'] < 0) {
+                                                //if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Discount)))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                            }
+                                            else {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                        }
+                                        else if (event.value_new <= chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])) * -1;
+                                            if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                        }
+                                    }
+                                }
+                                //discount
+                                if (event.column == 9) {
+                                    if (event.value_new == "") {
+                                        event.value_new = 0;
+                                    }
+                                    else {
+                                        event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                                    }
+                                    //else if (event.value_new.toString().contains(',')) {
+                                    //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                                    //}
+
+                                    chqrecgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
+
+                                    if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                        if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
+                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                        }
+                                        else if (event.value_new < chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                        }
+                                    }
+                                    else if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR") {
+                                        if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            if (chqrecgrd.records[event.index]['ConvertedAmt'] < 0) {
+                                                //if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                                //else {
+                                                //    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                //    }
+                                                //    else {
+                                                //        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //        chqrecgrd.get(event.recid).VA009_RecivedAmt = (-1 * ((-1 * chqrecgrd.records[event.index]['ConvertedAmt']) + (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff)))).toFixed(stdPrecision);
+                                                //    }
+                                                //}
+                                            }
+                                            else {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                        }
+                                        else if (event.value_new <= chqrecgrd.records[event.index]['ConvertedAmt']) {
+                                            //chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])) * -1;
+                                            if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            else {
+                                                if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
+                                                    chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                }
+                                                else {
+                                                    chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                }
+                                            }
+                                            chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                            chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                        }
+                                    }
+                                }
+
+                                chqrecgrd.refreshCell(event.recid, "OverUnder");
+                                chqrecgrd.refreshCell(event.recid, "Discount");
+                                chqrecgrd.refreshCell(event.recid, "Writeoff");
+                                chqrecgrd.refreshCell(event.recid, "ConvertedAmt");
+                                chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+
+                            }
+                            if (event.column == 10)
+                                chqrecgrd.records[event.index]['CheckNumber'] = event.value_new;
+                            if (event.column == 11) {
+                                //Used do double click on CheckDate field and closed without selecting the value at 
+                                //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                                if (event.value_new != "") {
+                                    chqrecgrd.records[event.index]['CheckDate'] = event.value_new;
+                                }
+                                else {
+                                    chqrecgrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                                }
+                            }
+                            if (event.column == 2)
+                                chqrecgrd.records[event.index]['Description'] = event.value_new;
+                        }, 100);
+                        //end
+                    }
+                })
+                chqrecgrd.hideColumn('recid');
+                chqrecgrd.hideColumn('TransactionType');
+            };
+
+            function loadgrd(callback) {
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
+                    type: "GET",
+                    datatype: "json",
+                    contentType: "application/json; charset=utf-8",
+                    //async: false,
+                    data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                    success: function (result) {
+                        callback(result);
+                    },
+                    error: function () {
+                        $bsyDiv[0].style.visibility = "hidden";
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    }
+                });
+            };
+
+            function callbackchqRec(result) {
+                popupgrddata = [];
+                var rslt = JSON.parse(result);
+                reloaddata = rslt;
+                for (var i in rslt) {
+                    var line = {};
+                    line["recid"] = rslt[i].recid;
+                    line["C_Bpartner"] = rslt[i].C_Bpartner;
+                    line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
+                    line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
+                    line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
+                    line["CurrencyCode"] = rslt[i].CurrencyCode;
+                    line["DueAmt"] = rslt[i].DueAmt;
+                    line["VA009_RecivedAmt"] = rslt[i].DueAmt;
+                    line["OverUnder"] = "0";
+                    line["Writeoff"] = "0";
+                    line["Discount"] = "0";
+                    line["ConvertedAmt"] = rslt[i].DueAmt;
+                    //end
+                    line["C_Currency_ID"] = rslt[i].C_Currency_ID;
+                    line["AD_Org_ID"] = rslt[i].AD_Org_ID;
+                    line["AD_Client_ID"] = rslt[i].AD_Client_ID;
+                    line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
+                    line["CheckNumber"] = null;
+                    line["ValidMonths"] = null;
+                    line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
+                    line["TransactionType"] = rslt[i].TransactionType;
+                    line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
+                    popupgrddata.push(line);
+                }
+                w2utils.encodeTags(popupgrddata);
+                chqrecgrd.add(popupgrddata);
+                $bsyDiv[0].style.visibility = "hidden";
+            };
+
+            ChequeReceDialog.onOkClick = function () {
+                var _CollaborateData = [];
+                chqrecgrd.sort(['C_BPartner_ID', 'CheckNumber'], 'asc');
+                chqrecgrd.selectAll();
+
+                if (chqrecgrd.getSelection().length > 0) {
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                        //Rakesh(VA228):Make Document Type selection mandatory
+                        if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) > 0) {
+                                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                            for (var i = 0; i < chqrecgrd.getSelection().length; i++) {
+                                                var _data = {}; var updated = 0;
+                                                _data["C_BPartner_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_BPartner_ID'];
+                                                _data["Description"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Description'];
+                                                _data["C_Invoice_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Invoice_ID'];
+                                                //commented because ashish and surya said that payment will be created in selected organization
+                                                //_data["AD_Org_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Org_ID'];
+                                                _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                                //Rakesh(VA228):Set Document Type (13/Sep/2021)
+                                                _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
+                                                _data["AD_Client_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Client_ID'];
+                                                _data["C_Currency_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Currency_ID'];
+                                                _data["C_InvoicePaySchedule_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                                _data["TransactionType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['TransactionType'];
+                                                if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'] != "") {
+                                                    var dt = new Date(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
+                                                    dt = new Date(dt.setHours(0, 0, 0, 0));
+                                                    var acctdate = new Date($POP_DateAcct.val());
+                                                    acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
+                                                    if (dt > acctdate) {
+                                                        VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
+                                                        chqrecgrd.selectNone();
+                                                        return false;
+                                                    }
+                                                    _data["CheckDate"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'];
+                                                    //_data["CheckDate"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
+                                                }
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLCheckDate"));
+                                                    chqrecgrd.selectNone();
+                                                    return false;
+                                                }
+                                                //Transaction Date
+                                                _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
+                                                _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
+
+                                                _data["C_BankAccount_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val());
+                                                _data["C_Bank_ID"] = VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val());
+                                                _data["DueAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['DueAmt'];
+                                                _data["ConvertedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['ConvertedAmt'];
+                                                _data["PaymwentBaseType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['PaymwentBaseType'];
+                                                _data["OverUnder"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['OverUnder'];
+                                                _data["Discount"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Discount'];
+                                                _data["Writeoff"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Writeoff'];
+
+                                                _data["From"] = "Rec";
+                                                if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != "")
+                                                    _data["CheckNumber"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'];
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLCheckNumber"));
+                                                    chqrecgrd.selectNone();
+                                                    return false;
+                                                }
+                                                //If the VA009_RecivedAmt value is "0" then the below condition will not work
+                                                //if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
+                                                if (VIS.Utility.Util.getValueOfInt(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
+                                                    _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                                }
+                                                else {
+                                                    VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                                    chqrecgrd.selectNone();
+                                                    return false;
+                                                }
+                                                _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                                _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                                _CollaborateData.push(_data);
                                             }
                                         }
                                         else {
-                                            VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
+                                            VIS.ADialog.info(("VA009_PLSelectAcctDate"));
                                             chqrecgrd.selectNone();
                                             return false;
                                         }
                                     }
                                     else {
-                                        VIS.ADialog.info(("VA009_PLSelectBankAccount"));
+                                        VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
                                         chqrecgrd.selectNone();
                                         return false;
                                     }
                                 }
                                 else {
-                                    VIS.ADialog.info(("VA009_PLSelectBank"));
+                                    VIS.ADialog.info(("VA009_PLSelectBankAccount"));
                                     chqrecgrd.selectNone();
                                     return false;
                                 }
                             }
                             else {
-                                VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
+                                VIS.ADialog.info(("VA009_PLSelectBank"));
                                 chqrecgrd.selectNone();
                                 return false;
                             }
                         }
                         else {
-                            VIS.ADialog.info(("VA009_PlsSelectOrg"));
-                            chqrecgrd.selectNone();
-                            return false;
-                        }
-                    }
-                    $bsyDiv[0].style.visibility = "visible";
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayments",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                        success: function (result) {
-                            callbackPaymnt(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            $bsyDiv[0].style.visibility = "hidden";
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                };
-
-                function callbackPaymnt(result) {
-                    result = JSON.parse(result);
-                    $divPayment.find('.VA009-payment-wrap').remove();
-                    $divBank.find('.VA009-right-data-main').remove();
-                    $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                    //after successfully created Payment selectall checkbox should be false
-                    $selectall.prop('checked', false);
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                    loadPaymetsAll();
-                    $bsyDiv[0].style.visibility = "hidden";
-                    VIS.ADialog.info("", null, result, null);
-                    //w2alert(result.toString());
-                };
-
-                ChequeReceDialog.onCancelCLick = function () {
-                    chqrecgrd.clear();
-                    ChequeRecDispose();
-                };
-
-                ChequeReceDialog.onClose = function () {
-                    chqrecgrd.clear();
-                    ChequeRecDispose();
-
-                };
-
-                function ChequeRecDispose() {
-                    _ChequeRecevble = null;
-                    $chequeRecivable = null;
-                    STAT_cmbBank = null;
-                    STAT_cmbBankAccount = null;
-                    STAT_txtStatementNo = null;
-                    STAT_ctrlLoadFile = null;
-                    STAT_ctrlLoadFileTxt = null;
-                    chqrecgrd.destroy();
-                }
-            },
-
-            Cash_Dialog: function () {
-                var CashGrid, _Cheque_no = "";
-                var _C_Bank_ID = 0, _C_BankAccount_ID = 0, cashAmount = 0;
-                $bsyDiv[0].style.visibility = "visible";
-                var divAmount, format = null;
-                lblAmount = $("<label>");
-                cashAmount = new VIS.Controls.VAmountTextBox("VA009_POP_Txtopngbal_" + $self.windowNo + "", false, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
-                lblAmount.append(VIS.Msg.getMsg("VA009_lblopngbal"));
-                cashAmount.setValue(0);
-                format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
-                divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
-                divAmountCtrlWrap = $("<div class='vis-control-wrap'>");
-                divAmount.append(divAmountCtrlWrap);
-                divAmountCtrlWrap.append(cashAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
-                $cash = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
-                //var _Cash = "";
-                _Cash = $("<div class='VA009-popfrm-wrap'>");
-
-                cashData = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "</div></div>"
-
-                    //Rakesh(VA228):Create Doc type element html
-                    + "<div class='VA009-popform-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
-                    + "</div></div> "
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_lblcashbook") + "</label>"
-                    + "</div></div> ");
-
-                //+ "<div class='VA009-popform-data'>"
-                //+ "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
-                //+ "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
-
-                cashDataa = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
-                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "</div></div>"
-                    //Transaction Date
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
-                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "</div> </div>"
-
-                    + "<div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div>"
-                    + "</div>");
-                _Cash.append(cashData).append(divAmount).append(cashDataa);
-                $cash.append(_Cash);
-                Cash_getControls();
-
-                var now = new Date();
-                var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
-                $POP_DateAcct.val(_today);
-                //Transaction Date
-                $POP_DateTrx.val(_today);
-                var CashDialog = new VIS.ChildDialog();
-
-                CashDialog.setContent($cash);
-                CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
-                CashDialog.setWidth("60%");
-                CashDialog.setEnableResize(true);
-                CashDialog.setModal(true);
-                if (SlctdPaymentIds.toString() != "") {
-                    var cash = null;
-                    //if (cash.tables[0].rows.length == 0) {
-                    if (cash == null) {
-                        CashDialog.show();
-                        CashGrid_Layout();
-                        loadgrdCash(callbackCASHPay);
-                        //load cashbook based on selected Org_ID
-                        //loadcashbook();
-                        loadCurrencyType();
-                        loadOrg();
-                        //Rakesh(VA228):10/Sep/2021 -> Load APR target base doc type
-                        _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-                    }
-                    else {
-                        $bsyDiv[0].style.visibility = "hidden";
-                        VIS.ADialog.info(("VA009_PleaseSelctonlyCash"));
-                    }
-                }
-                cashAmount.addVetoableChangeListener(this);
-                function loadCurrencyType() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
-
-                    function callbackCurrencyType(dr) {
-                        //if (dr != null) {
-                        //    $pop_cmbCurrencyType.append("<option value='0'></option>");
-                        //    if (dr.tables[0].rows.length > 0) {
-                        //        for (var i = 0; i < dr.tables[0].rows.length; i++) {
-                        //            $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr.tables[0].rows[i].cells.c_conversiontype_id) + ">" + VIS.Utility.encodeText(dr.tables[0].rows[i].cells.name) + "</option>");
-                        //        }
-                        //    }
-                        //    $pop_cmbCurrencyType.prop('selectedIndex', 1);
-                        //}
-                        //dr.dispose();
-
-                        $pop_cmbCurrencyType.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                                if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
-                                    defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
-                                }
-                            }
-                            //$pop_cmbCurrencyType.prop('selectedIndex', 1);
-                            $pop_cmbCurrencyType.val(defaultCurrenyType)
-                        }
-                    }
-                };
-
-                //to load all organization 
-                function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
-                    function callbackloadorg(dr) {
-                        $POP_cmbOrg.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $POP_cmbOrg.prop('selectedIndex', 0);
-                    };
-                };
-
-                //Set Mandatory and Non-Mandatory
-                function SetMandatory(value) {
-                    if (value)
-                        return '#FFB6C1';
-                    else
-                        return 'White';
-                };
-
-                function CashGrid_Layout() {
-
-                    var _Cash_Columns = [];
-                    if (_Cash_Columns.length == 0) {
-                        _Cash_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '15%' });
-                        _Cash_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
-                        _Cash_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
-                        _Cash_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["DueAmt"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        _Cash_Columns.push({
-                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["ConvertedAmt"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        _Cash_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["VA009_RecivedAmt"];
-                                val = checkcommaordot(event, val, val);
-                                return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'number' }
-                        });
-                        //changeby amit
-                        _Cash_Columns.push({
-                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["OverUnder"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        _Cash_Columns.push({
-                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["Writeoff"];
-                                val = checkcommaordot(event, val, val);
-                                return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'number' }
-                        });
-                        _Cash_Columns.push({
-                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["Discount"];
-                                val = checkcommaordot(event, val, val);
-                                return parseFloat(val).toLocaleString();
-                            }, editable: { type: 'number' }
-                        });
-                        _Cash_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
-                        //end
-
-                    }
-                    Cashgrd = null;
-                    Cashgrd = CashGrid.w2grid({
-                        name: 'CashGrid',
-                        recordHeight: 25,
-                        columns: _Cash_Columns,
-                        method: 'GET',
-                        multiSelect: true,
-
-                        onEditField: function (event) {
-                            if (event.column == 6 || event.column == 8 || event.column == 9) {
-                                if (Cashgrd.get(event.recid).TransactionType == 'Order') {
-                                    event.isCancelled = true;
-                                }
-                            }
-                            event.onComplete = function (event) {
-                                id = event.recid;
-                                if (event.column == 8 || event.column == 7 || event.column == 5) {
-                                    Cashgrd.records[event.index][Cashgrd.columns[event.column].field] = checkcommaordot(event, Cashgrd.records[event.index][Cashgrd.columns[event.column].field]);
-                                    var _value = format.GetFormatAmount(Cashgrd.records[event.index][Cashgrd.columns[event.column].field], "init", dotFormatter);
-                                    Cashgrd.records[event.index][Cashgrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
-                                    $('#grid_CashGrid_edit_' + id + '_' + event.column).keydown(function (event) {
-                                        var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
-
-                                        if (!isDotSeparator && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
-                                            return false;
-                                        }
-                                        else if (isDotSeparator && event.keyCode == 188) { // . separator
-                                            return false;
-                                        }
-                                        if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
-                                            this.value = this.value.replace('.', '');
-                                        }
-                                        if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
-                                            this.value = this.value.replace(',', '');
-                                        }
-                                        if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
-                                            (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
-                                            && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
-                                            && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
-                                            return false;
-                                        }
-                                    });
-                                }
-                            };
-                        }
-                    }),
-                        Cashgrd.hideColumn('recid');
-                };
-
-                function loadcashbook() {
-                    //selected Org_Id assign to a variable & passed that variable as parameter
-                    var org_Id = $POP_cmbOrg.val();
-                    if (org_Id != null && org_Id != "")
-                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCashBook", { "Orgs": org_Id }, callbackloadcashbook);
-
-                    function callbackloadcashbook(dr) {
-                        $Cash_cmbcashbk.empty();
-                        $Cash_cmbcashbk.addClass('vis-ev-col-mandatory');
-                        $Cash_cmbcashbk.append("<option value='0'></option>");
-                        //avoid null exception used below condition 'dr != null' 
-                        if (dr != null && dr.length > 0) {
-                            for (var i in dr) {
-                                $Cash_cmbcashbk.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_CashBook_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $Cash_cmbcashbk.prop('selectedIndex', 0);
-                    }
-                };
-
-                $Cash_cmbcashbk.on("change", function () {
-                    cashAmount.setValue(0);
-                    //to set cashbook mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) == 0) {
-                        $Cash_cmbcashbk.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $Cash_cmbcashbk.removeClass('vis-ev-col-mandatory');
-                    }
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCashBookData", { "CashBook": $Cash_cmbcashbk.val() }, callbackloadcashbk);
-                    var currency = 0;
-                    function callbackloadcashbk(dr) {
-                        if (dr != null) {
-                            cashAmount.setValue(dr["CompletedBalance"]);
-                            currency = dr["C_Currency_ID"];
-                            CashCurrency = currency;
-                        }
-
-                        //change by Amit
-                        window.setTimeout(function () {
-                            $.ajax({
-                                url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
-                                type: "POST",
-                                datatype: "json",
-                                async: true,
-                                //added Org and AccDate parameters to get the result with respect to the input values
-                                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: currency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                                success: function (result) {
-                                    callbackCASHPay(result);
-                                },
-                                error: function (ex) {
-                                    console.log(ex);
-                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                }
-                            });
-                        }, 200);
-                        //end
-                    }
-                });
-
-                $pop_cmbCurrencyType.on("change", function () {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
-                        type: "POST",
-                        datatype: "json",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackCASHPay(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                });
-
-                //on change event for DateAcct it should convert the Amount accordingly
-                $POP_DateAcct.on("change", function () {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
-                        type: "POST",
-                        datatype: "json",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackCASHPay(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                });
-
-                $POP_cmbOrg.on("change", function () {
-                    //to set org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                        //clear the Options in Cashbook field
-                        $Cash_cmbcashbk.empty();
-                    }
-                    else {
-                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
-                        //based on selected org load the Cashbook
-                        loadcashbook();
-                    }
-                    //Rakesh(VA228):Reset Document type
-                    _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-                });
-
-                function Cash_getControls() {
-                    $Cash_cmbcashbk = $cash.find("#VA009_POP_Txtcashbk_" + $self.windowNo);
-                    //$Cash_OpngBal = $cash.find("#VA009_POP_Txtopngbal_" + $self.windowNo);
-                    CashGrid = $cash.find("#VA009_btnPopupGrid");
-                    $pop_cmbCurrencyType = $cash.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
-                    $POP_DateAcct = $cash.find("#VA009_AccountDate_" + $self.windowNo);
-                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
-                    //Transaction Date
-                    $POP_DateTrx = $cash.find("#VA009_TransactionDate" + $self.windowNo);
-                    $POP_cmbOrg = $cash.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    //Rakesh(VA228):Store Doc type element in variable
-                    $POP_targetDocType = $cash.find("#VA009_POP_cmbDocType_" + $self.windowNo);
-                    $POP_targetDocType.addClass('vis-ev-col-mandatory');
-                };
-
-                function loadgrdCash(callback) {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                        type: "GET",
-                        datatype: "json",
-                        contentType: "application/json; charset=utf-8",
-                        //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no) }),
-                        success: function (result) {
-                            callback(result);
-                        },
-                        error: function () {
-                            $bsyDiv[0].style.visibility = "hidden";
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                };
-
-                function callbackCASHPay(result) {
-                    //amit
-                    Cashgrd.clear();
-                    //end
-
-                    popupgrddata = [];
-                    var rslt = JSON.parse(result);
-                    reloaddata = rslt;
-                    for (var i in rslt) {
-                        var line = {};
-                        line["recid"] = rslt[i].recid;
-                        line["C_Bpartner"] = rslt[i].C_Bpartner;
-                        line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
-                        line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
-                        line["CurrencyCode"] = rslt[i].CurrencyCode;
-                        line["DueAmt"] = rslt[i].DueAmt;
-                        line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
-                        line["C_Currency_ID"] = rslt[i].C_Currency_ID;
-                        line["AD_Org_ID"] = rslt[i].AD_Org_ID;
-                        line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
-                        //amit
-                        line["ConvertedAmt"] = rslt[i].convertedAmt;
-                        line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
-                        line["OverUnder"] = "0";
-                        line["Writeoff"] = "0";
-                        line["Discount"] = "0";
-                        line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
-                        //end
-                        popupgrddata.push(line);
-                    }
-                    if (rslt[0].ERROR == "ConversionNotFound") {
-                        VIS.ADialog.info(("VA009_ConversionNotFound"));
-                    }
-                    w2utils.encodeTags(popupgrddata);
-                    Cashgrd.add(popupgrddata);
-                    $bsyDiv[0].style.visibility = "hidden";
-                };
-
-                Cashgrd.on('change', function (event) {
-                    //change by amit
-                    window.setTimeout(function () {
-                        if (w2ui.CashGrid.getChanges(event.recid) != undefined) {
-                            //var sql = "SELECT stdprecision FROM c_currency WHERE c_currency_id =   (SELECT c_currency_id FROM c_cashbook WHERE C_Cashbook_ID=" + $Cash_cmbcashbk.val() + " ) ";
-                            //var stdPrecision = VIS.DB.executeScalar(sql, null, null);
-                            var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $Cash_cmbcashbk.val(), "CurrencyFrom": "C" }, null);
-                            if (stdPrecision == null || stdPrecision == 0) {
-                                stdPrecision = 2;
-                            }
-                            // Description
-                            if (event.column == 1)
-                                Cashgrd.records[event.index]['Description'] = event.value_new;
-
-                            Cashgrd.records[event.index]['ConvertedAmt'] = parseFloat(Cashgrd.records[event.index]['ConvertedAmt']);
-                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(Cashgrd.records[event.index]['VA009_RecivedAmt']);
-                            Cashgrd.records[event.index]['OverUnder'] = parseFloat(Cashgrd.records[event.index]['OverUnder']);
-                            Cashgrd.records[event.index]['Writeoff'] = parseFloat(Cashgrd.records[event.index]['Writeoff']);
-                            Cashgrd.records[event.index]['Discount'] = parseFloat(Cashgrd.records[event.index]['Discount']);
-                            //Received Amount
-                            if (event.column == 5) {
-                                if (event.value_new == "") {
-                                    event.value_new = 0;
-                                }
-                                else {
-                                    event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
-                                }
-                                //else if (event.value_new.toString().contains(',')) {
-                                //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
-                                //}
-                                if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
-                                    VIS.ADialog.error("MoreScheduleAmount");
-                                    event.value_new = event.value_original;
-                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
-                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                    Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                    return;
-                                }
-                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
-                                Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-
-                                if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
-
-                                    if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
-                                        if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
-                                            Cashgrd.get(event.recid).changes.Writeoff = 0;
-                                        }
-                                        else {
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
-                                            Cashgrd.get(event.recid).changes.Writeoff = 0;
-                                            Cashgrd.get(event.recid).Writeoff = 0;
-                                        }
-                                        Cashgrd.get(event.recid).changes.Discount = 0;
-                                        Cashgrd.refreshCell(event.recid, "OverUnder");
-                                        Cashgrd.refreshCell(event.recid, "Discount");
-                                        Cashgrd.refreshCell(event.recid, "Writeoff");
-                                    }
-
-                                    else if (event.value_new == Cashgrd.records[event.index]['ConvertedAmt']) {
-                                        Cashgrd.get(event.recid).changes.OverUnder = 0;
-                                        Cashgrd.get(event.recid).OverUnder = 0;
-                                        Cashgrd.get(event.recid).changes.Discount = 0;
-                                        Cashgrd.get(event.recid).changes.Writeoff = 0;
-                                        Cashgrd.get(event.recid).Discount = 0;
-                                        Cashgrd.get(event.recid).Writeoff = 0;
-                                        Cashgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
-                                        Cashgrd.refreshCell(event.recid, "OverUnder");
-                                        Cashgrd.refreshCell(event.recid, "Discount");
-                                        Cashgrd.refreshCell(event.recid, "Writeoff");
-                                        Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                    }
-                                    else if (event.value_new < Cashgrd.records[event.index]['ConvertedAmt']) {
-                                        if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
-                                            Cashgrd.get(event.recid).changes.Writeoff = 0;
-                                            Cashgrd.get(event.recid).Writeoff = 0;
-                                        }
-                                        else {
-                                            Cashgrd.get(event.recid).changes.Writeoff = 0;
-                                            Cashgrd.get(event.recid).Writeoff = 0;
-                                            Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                            Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
-                                        }
-                                        Cashgrd.get(event.recid).changes.Discount = 0;
-                                        Cashgrd.get(event.recid).Discount = 0;
-                                        Cashgrd.refreshCell(event.recid, "OverUnder");
-                                        Cashgrd.refreshCell(event.recid, "Discount");
-                                        Cashgrd.refreshCell(event.recid, "Writeoff");
-                                    }
-                                }
-                            }
-
-                            //writeoff
-                            if (event.column == 7) {
-                                if (event.value_new == "") {
-                                    event.value_new = 0;
-                                }
-                                else {
-                                    event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
-                                }
-                                //else if (event.value_new.toString().contains(',')) {
-                                //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
-                                //}
-
-                                Cashgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
-
-                                if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
-                                    if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
-                                        if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
-                                            if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                            else if (Cashgrd.get(event.recid).changes.Discount == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                            else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount)))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                            else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount)))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else {
-                                            Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - Cashgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
-                                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                        }
-                                        Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                    }
-                                    else if (event.value_new <= Cashgrd.records[event.index]['ConvertedAmt']) {
-                                        if (!Cashgrd.get(event.recid).changes.Writeoff) {
-                                            Cashgrd.get(event.recid).changes.Writeoff = 0;
-                                        }
-
-                                        if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else if (Cashgrd.get(event.recid).changes.Discount == undefined) {
-
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                        Cashgrd.refreshCell(event.recid, "OverUnder");
-                                    }
-                                }
-                            }
-                            //discount
-                            if (event.column == 8) {
-                                if (event.value_new == "") {
-                                    event.value_new = 0;
-                                }
-                                else {
-                                    event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
-                                }
-                                //else if (event.value_new.toString().contains(',')) {
-                                //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
-                                //}
-
-                                Cashgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
-
-                                if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
-                                    if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
-                                        if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
-                                            if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                            else if (Cashgrd.get(event.recid).changes.Writeoff == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                            else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff)))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                            else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff)))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else {
-                                            Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)).toFixed(stdPrecision);
-                                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                        }
-                                        Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                    }
-                                    else if (event.value_new <= Cashgrd.records[event.index]['ConvertedAmt']) {
-
-                                        if (!Cashgrd.get(event.recid).changes.Writeoff) {
-                                            Cashgrd.get(event.recid).changes.Writeoff = 0;
-                                        }
-
-                                        if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else if (Cashgrd.get(event.recid).changes.Writeoff == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        else {
-                                            if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
-                                                w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
-                                            }
-                                            else {
-                                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
-                                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
-                                            }
-                                        }
-                                        Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                                        Cashgrd.refreshCell(event.recid, "OverUnder");
-                                    }
-                                }
-                            }
-
-                            Cashgrd.refreshCell(event.recid, "ConvertedAmt");
-                            Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
-                            Cashgrd.refreshCell(event.recid, "OverUnder");
-                            Cashgrd.refreshCell(event.recid, "Writeoff");
-                            Cashgrd.refreshCell(event.recid, "Discount");
-                        }
-                    }, 100);
-                    //end
-                });
-
-                CashDialog.onOkClick = function () {
-
-                    var _CollaborateData = [];
-                    Cashgrd.selectAll();
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
-                        //Rakesh(VA228):Make Document Type selection mandatory
-                        if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
-                            if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) > 0) {
-                                if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                    if (Cashgrd.getSelection().length > 0) {
-                                        for (var i = 0; i < Cashgrd.getSelection().length; i++) {
-                                            var _data = {};
-                                            _data["C_BPartner_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_BPartner_ID'];
-                                            _data["Description"] = Cashgrd.get(Cashgrd.getSelection()[i])['Description'];
-                                            _data["C_Invoice_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Invoice_ID'];
-                                            //commented because ashish and surya said that payment will be created in selected organization
-                                            // _data["AD_Org_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Org_ID'];
-                                            _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
-                                            _data["AD_Client_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Client_ID'];
-                                            _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Currency_ID'];
-                                            //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
-                                            _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_Currency_ID"];
-                                            _data["C_InvoicePaySchedule_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_InvoicePaySchedule_ID"];
-
-                                            //change amit
-                                            //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt != undefined) {
-                                            //    _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
-                                            //}
-                                            //else
-                                            if (Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] != null && Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] > 0) {
-                                                //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
-                                                _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
-                                            }
-                                            else {
-                                                VIS.ADialog.info(("VA009_PLRecivedAmt"));
-                                                Cashgrd.selectNone();
-                                                return false;
-                                            }
-                                            //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder != undefined) {
-                                            //    _data["OverUnder"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder;
-                                            //}
-                                            //else {
-                                            _data["OverUnder"] = Cashgrd.get(Cashgrd.getSelection()[i])['OverUnder'];
-                                            //}
-                                            //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff != undefined) {
-                                            //    _data["Writeoff"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff;
-                                            //}
-                                            //else {
-                                            _data["Writeoff"] = Cashgrd.get(Cashgrd.getSelection()[i])['Writeoff'];
-                                            //}
-                                            //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount != undefined) {
-                                            //    _data["Discount"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount;
-                                            //}
-                                            //else {
-                                            _data["Discount"] = Cashgrd.get(Cashgrd.getSelection()[i])['Discount'];
-                                            //}
-                                            //amit
-                                            // Added by Bharat
-                                            _data["ConvertedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['ConvertedAmt'];
-                                            _data["PaymwentBaseType"] = Cashgrd.get(Cashgrd.getSelection()[i])['PaymwentBaseType'];
-                                            _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-
-                                            _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val())
-                                            //Transaction Date
-                                            _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
-                                            //Rakesh(VA228):Set Document Type (13/Sep/2021)
-                                            _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
-                                            _CollaborateData.push(_data);
-                                        }
-                                    }
-                                    $bsyDiv[0].style.visibility = "visible";
-                                    $.ajax({
-                                        url: VIS.Application.contextUrl + "VA009/Payment/GenPaymentsCash",
-                                        type: "POST",
-                                        datatype: "json",
-                                        // contentType: "application/json; charset=utf-8",
-                                        async: true,
-                                        data: ({ PaymentData: JSON.stringify(_CollaborateData), C_CashBook_ID: parseInt($Cash_cmbcashbk.val()), BeginningBalance: cashAmount.getValue() }),
-                                        success: function (result) {
-                                            callbackCashPaymnt(result);
-                                        },
-                                        error: function (ex) {
-                                            console.log(ex);
-                                            $bsyDiv[0].style.visibility = "hidden";
-                                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                        }
-                                    });
-                                }
-                                else {
-                                    VIS.ADialog.info(("VA009_PLSelectAcctDate"));
-                                    Cashgrd.selectNone();
-                                    return false;
-                                }
-
-                            }
-                            else {
-                                VIS.ADialog.info(("VA009_PLSelectCashbook"));
-                                Cashgrd.selectNone();
-                                return false;
-                            }
-                        } else {
                             VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
-                            Cashgrd.selectNone();
+                            chqrecgrd.selectNone();
                             return false;
                         }
                     }
                     else {
                         VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                        chqrecgrd.selectNone();
+                        return false;
+                    }
+                }
+                $bsyDiv[0].style.visibility = "visible";
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayments",
+                    type: "POST",
+                    datatype: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    async: true,
+                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                    success: function (result) {
+                        callbackPaymnt(result);
+                    },
+                    error: function (ex) {
+                        console.log(ex);
+                        $bsyDiv[0].style.visibility = "hidden";
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    }
+                });
+            };
+
+            function callbackPaymnt(result) {
+                result = JSON.parse(result);
+                $divPayment.find('.VA009-payment-wrap').remove();
+                $divBank.find('.VA009-right-data-main').remove();
+                $divBank.find('.VA009-accordion').remove();
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                //after successfully created Payment selectall checkbox should be false
+                $selectall.prop('checked', false);
+                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+                loadPaymetsAll();
+                $bsyDiv[0].style.visibility = "hidden";
+                VIS.ADialog.info("", null, result, null);
+                //w2alert(result.toString());
+            };
+
+            ChequeReceDialog.onCancelCLick = function () {
+                chqrecgrd.clear();
+                ChequeRecDispose();
+            };
+
+            ChequeReceDialog.onClose = function () {
+                chqrecgrd.clear();
+                ChequeRecDispose();
+
+            };
+
+            function ChequeRecDispose() {
+                _ChequeRecevble = null;
+                $chequeRecivable = null;
+                STAT_cmbBank = null;
+                STAT_cmbBankAccount = null;
+                STAT_txtStatementNo = null;
+                STAT_ctrlLoadFile = null;
+                STAT_ctrlLoadFileTxt = null;
+                chqrecgrd.destroy();
+            }
+        },
+
+    Cash_Dialog: function () {
+        var CashGrid, _Cheque_no = "";
+        var _C_Bank_ID = 0, _C_BankAccount_ID = 0, cashAmount = 0;
+        $bsyDiv[0].style.visibility = "visible";
+        var divAmount, format = null;
+        lblAmount = $("<label>");
+        cashAmount = new VIS.Controls.VAmountTextBox("VA009_POP_Txtopngbal_" + $self.windowNo + "", false, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
+        lblAmount.append(VIS.Msg.getMsg("VA009_lblopngbal"));
+        cashAmount.setValue(0);
+        format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
+        divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
+        divAmountCtrlWrap = $("<div class='vis-control-wrap'>");
+        divAmount.append(divAmountCtrlWrap);
+        divAmountCtrlWrap.append(cashAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
+        $cash = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
+        //var _Cash = "";
+        _Cash = $("<div class='VA009-popfrm-wrap'>");
+
+        cashData = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+            + "</div></div>"
+
+            //Rakesh(VA228):Create Doc type element html
+            + "<div class='VA009-popform-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
+            + "</div></div> "
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_Txtcashbk_" + $self.windowNo + "'> </select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_lblcashbook") + "</label>"
+            + "</div></div> ");
+
+        //+ "<div class='VA009-popform-data'>"
+        //+ "<label>" + VIS.Msg.getMsg("VA009_lblopngbal") + "</label>"
+        //+ "<input type='text' id='VA009_POP_Txtopngbal_" + $self.windowNo + "' disabled/> </div>"
+
+        cashDataa = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
+            + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+            + "</div></div>"
+            //Transaction Date
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder='' >"
+            + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+            + "</div> </div>"
+
+            + "<div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div>"
+            + "</div>");
+        _Cash.append(cashData).append(divAmount).append(cashDataa);
+        $cash.append(_Cash);
+        Cash_getControls();
+
+        var now = new Date();
+        var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
+        $POP_DateAcct.val(_today);
+        //Transaction Date
+        $POP_DateTrx.val(_today);
+        var CashDialog = new VIS.ChildDialog();
+
+        CashDialog.setContent($cash);
+        CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
+        CashDialog.setWidth("60%");
+        CashDialog.setEnableResize(true);
+        CashDialog.setModal(true);
+        if (SlctdPaymentIds.toString() != "") {
+            var cash = null;
+            //if (cash.tables[0].rows.length == 0) {
+            if (cash == null) {
+                CashDialog.show();
+                CashGrid_Layout();
+                loadgrdCash(callbackCASHPay);
+                //load cashbook based on selected Org_ID
+                //loadcashbook();
+                loadCurrencyType();
+                loadOrg();
+                //Rakesh(VA228):10/Sep/2021 -> Load APR target base doc type
+                _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+            }
+            else {
+                $bsyDiv[0].style.visibility = "hidden";
+                VIS.ADialog.info(("VA009_PleaseSelctonlyCash"));
+            }
+        }
+        cashAmount.addVetoableChangeListener(this);
+        function loadCurrencyType() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
+
+            function callbackCurrencyType(dr) {
+                //if (dr != null) {
+                //    $pop_cmbCurrencyType.append("<option value='0'></option>");
+                //    if (dr.tables[0].rows.length > 0) {
+                //        for (var i = 0; i < dr.tables[0].rows.length; i++) {
+                //            $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr.tables[0].rows[i].cells.c_conversiontype_id) + ">" + VIS.Utility.encodeText(dr.tables[0].rows[i].cells.name) + "</option>");
+                //        }
+                //    }
+                //    $pop_cmbCurrencyType.prop('selectedIndex', 1);
+                //}
+                //dr.dispose();
+
+                $pop_cmbCurrencyType.append("<option value='0'></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                        if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
+                            defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
+                        }
+                    }
+                    //$pop_cmbCurrencyType.prop('selectedIndex', 1);
+                    $pop_cmbCurrencyType.val(defaultCurrenyType)
+                }
+            }
+        };
+
+        //to load all organization 
+        function loadOrg() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+            function callbackloadorg(dr) {
+                $POP_cmbOrg.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    }
+                }
+                $POP_cmbOrg.prop('selectedIndex', 0);
+            };
+        };
+
+        //Set Mandatory and Non-Mandatory
+        function SetMandatory(value) {
+            if (value)
+                return '#FFB6C1';
+            else
+                return 'White';
+        };
+
+        function CashGrid_Layout() {
+
+            var _Cash_Columns = [];
+            if (_Cash_Columns.length == 0) {
+                _Cash_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '15%' });
+                _Cash_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
+                _Cash_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
+                _Cash_Columns.push({
+                    field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["DueAmt"];
+                        return parseFloat(val).toLocaleString();
+                    }
+                });
+                _Cash_Columns.push({
+                    field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["ConvertedAmt"];
+                        return parseFloat(val).toLocaleString();
+                    }
+                });
+                _Cash_Columns.push({
+                    field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["VA009_RecivedAmt"];
+                        val = checkcommaordot(event, val, val);
+                        return parseFloat(val).toLocaleString();
+                    }, editable: { type: 'number' }
+                });
+                //changeby amit
+                _Cash_Columns.push({
+                    field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["OverUnder"];
+                        return parseFloat(val).toLocaleString();
+                    }
+                });
+                _Cash_Columns.push({
+                    field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["Writeoff"];
+                        val = checkcommaordot(event, val, val);
+                        return parseFloat(val).toLocaleString();
+                    }, editable: { type: 'number' }
+                });
+                _Cash_Columns.push({
+                    field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["Discount"];
+                        val = checkcommaordot(event, val, val);
+                        return parseFloat(val).toLocaleString();
+                    }, editable: { type: 'number' }
+                });
+                _Cash_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
+                //end
+
+            }
+            Cashgrd = null;
+            Cashgrd = CashGrid.w2grid({
+                name: 'CashGrid',
+                recordHeight: 25,
+                columns: _Cash_Columns,
+                method: 'GET',
+                multiSelect: true,
+
+                onEditField: function (event) {
+                    if (event.column == 6 || event.column == 8 || event.column == 9) {
+                        if (Cashgrd.get(event.recid).TransactionType == 'Order') {
+                            event.isCancelled = true;
+                        }
+                    }
+                    event.onComplete = function (event) {
+                        id = event.recid;
+                        if (event.column == 8 || event.column == 7 || event.column == 5) {
+                            Cashgrd.records[event.index][Cashgrd.columns[event.column].field] = checkcommaordot(event, Cashgrd.records[event.index][Cashgrd.columns[event.column].field]);
+                            var _value = format.GetFormatAmount(Cashgrd.records[event.index][Cashgrd.columns[event.column].field], "init", dotFormatter);
+                            Cashgrd.records[event.index][Cashgrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
+                            $('#grid_CashGrid_edit_' + id + '_' + event.column).keydown(function (event) {
+                                var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+
+                                if (!isDotSeparator && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
+                                    return false;
+                                }
+                                else if (isDotSeparator && event.keyCode == 188) { // . separator
+                                    return false;
+                                }
+                                if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                    this.value = this.value.replace('.', '');
+                                }
+                                if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                    this.value = this.value.replace(',', '');
+                                }
+                                if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
+                                    (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
+                                    && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
+                                    && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
+                                    return false;
+                                }
+                            });
+                        }
+                    };
+                }
+            }),
+                Cashgrd.hideColumn('recid');
+        };
+
+        function loadcashbook() {
+            //selected Org_Id assign to a variable & passed that variable as parameter
+            var org_Id = $POP_cmbOrg.val();
+            if (org_Id != null && org_Id != "")
+                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCashBook", { "Orgs": org_Id }, callbackloadcashbook);
+
+            function callbackloadcashbook(dr) {
+                $Cash_cmbcashbk.empty();
+                $Cash_cmbcashbk.addClass('vis-ev-col-mandatory');
+                $Cash_cmbcashbk.append("<option value='0'></option>");
+                //avoid null exception used below condition 'dr != null' 
+                if (dr != null && dr.length > 0) {
+                    for (var i in dr) {
+                        $Cash_cmbcashbk.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_CashBook_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    }
+                }
+                $Cash_cmbcashbk.prop('selectedIndex', 0);
+            }
+        };
+
+        $Cash_cmbcashbk.on("change", function () {
+            cashAmount.setValue(0);
+            //to set cashbook mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) == 0) {
+                $Cash_cmbcashbk.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $Cash_cmbcashbk.removeClass('vis-ev-col-mandatory');
+            }
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCashBookData", { "CashBook": $Cash_cmbcashbk.val() }, callbackloadcashbk);
+            var currency = 0;
+            function callbackloadcashbk(dr) {
+                if (dr != null) {
+                    cashAmount.setValue(dr["CompletedBalance"]);
+                    currency = dr["C_Currency_ID"];
+                    CashCurrency = currency;
+                }
+
+                //change by Amit
+                window.setTimeout(function () {
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
+                        type: "POST",
+                        datatype: "json",
+                        async: true,
+                        //added Org and AccDate parameters to get the result with respect to the input values
+                        data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: currency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackCASHPay(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+                }, 200);
+                //end
+            }
+        });
+
+        $pop_cmbCurrencyType.on("change", function () {
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
+                type: "POST",
+                datatype: "json",
+                async: true,
+                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                success: function (result) {
+                    callbackCASHPay(result);
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+        });
+
+        //on change event for DateAcct it should convert the Amount accordingly
+        $POP_DateAcct.on("change", function () {
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
+                type: "POST",
+                datatype: "json",
+                async: true,
+                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: CashCurrency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                success: function (result) {
+                    callbackCASHPay(result);
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+        });
+
+        $POP_cmbOrg.on("change", function () {
+            //to set org mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
+                $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                //clear the Options in Cashbook field
+                $Cash_cmbcashbk.empty();
+            }
+            else {
+                $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+                //based on selected org load the Cashbook
+                loadcashbook();
+            }
+            //Rakesh(VA228):Reset Document type
+            _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+        });
+
+        function Cash_getControls() {
+            $Cash_cmbcashbk = $cash.find("#VA009_POP_Txtcashbk_" + $self.windowNo);
+            //$Cash_OpngBal = $cash.find("#VA009_POP_Txtopngbal_" + $self.windowNo);
+            CashGrid = $cash.find("#VA009_btnPopupGrid");
+            $pop_cmbCurrencyType = $cash.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
+            $POP_DateAcct = $cash.find("#VA009_AccountDate_" + $self.windowNo);
+            $POP_DateAcct.addClass('vis-ev-col-mandatory');
+            //Transaction Date
+            $POP_DateTrx = $cash.find("#VA009_TransactionDate" + $self.windowNo);
+            $POP_cmbOrg = $cash.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+            $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+            //Rakesh(VA228):Store Doc type element in variable
+            $POP_targetDocType = $cash.find("#VA009_POP_cmbDocType_" + $self.windowNo);
+            $POP_targetDocType.addClass('vis-ev-col-mandatory');
+        };
+
+        function loadgrdCash(callback) {
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
+                type: "GET",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+                //async: false,
+                data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no) }),
+                success: function (result) {
+                    callback(result);
+                },
+                error: function () {
+                    $bsyDiv[0].style.visibility = "hidden";
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+        };
+
+        function callbackCASHPay(result) {
+            //amit
+            Cashgrd.clear();
+            //end
+
+            popupgrddata = [];
+            var rslt = JSON.parse(result);
+            reloaddata = rslt;
+            for (var i in rslt) {
+                var line = {};
+                line["recid"] = rslt[i].recid;
+                line["C_Bpartner"] = rslt[i].C_Bpartner;
+                line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
+                line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
+                line["CurrencyCode"] = rslt[i].CurrencyCode;
+                line["DueAmt"] = rslt[i].DueAmt;
+                line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
+                line["C_Currency_ID"] = rslt[i].C_Currency_ID;
+                line["AD_Org_ID"] = rslt[i].AD_Org_ID;
+                line["AD_Client_ID"] = rslt[i].AD_Client_ID;
+                line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
+                //amit
+                line["ConvertedAmt"] = rslt[i].convertedAmt;
+                line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
+                line["OverUnder"] = "0";
+                line["Writeoff"] = "0";
+                line["Discount"] = "0";
+                line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+                //end
+                popupgrddata.push(line);
+            }
+            if (rslt[0].ERROR == "ConversionNotFound") {
+                VIS.ADialog.info(("VA009_ConversionNotFound"));
+            }
+            w2utils.encodeTags(popupgrddata);
+            Cashgrd.add(popupgrddata);
+            $bsyDiv[0].style.visibility = "hidden";
+        };
+
+        Cashgrd.on('change', function (event) {
+            //change by amit
+            window.setTimeout(function () {
+                if (w2ui.CashGrid.getChanges(event.recid) != undefined) {
+                    //var sql = "SELECT stdprecision FROM c_currency WHERE c_currency_id =   (SELECT c_currency_id FROM c_cashbook WHERE C_Cashbook_ID=" + $Cash_cmbcashbk.val() + " ) ";
+                    //var stdPrecision = VIS.DB.executeScalar(sql, null, null);
+                    var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $Cash_cmbcashbk.val(), "CurrencyFrom": "C" }, null);
+                    if (stdPrecision == null || stdPrecision == 0) {
+                        stdPrecision = 2;
+                    }
+                    // Description
+                    if (event.column == 1)
+                        Cashgrd.records[event.index]['Description'] = event.value_new;
+
+                    Cashgrd.records[event.index]['ConvertedAmt'] = parseFloat(Cashgrd.records[event.index]['ConvertedAmt']);
+                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(Cashgrd.records[event.index]['VA009_RecivedAmt']);
+                    Cashgrd.records[event.index]['OverUnder'] = parseFloat(Cashgrd.records[event.index]['OverUnder']);
+                    Cashgrd.records[event.index]['Writeoff'] = parseFloat(Cashgrd.records[event.index]['Writeoff']);
+                    Cashgrd.records[event.index]['Discount'] = parseFloat(Cashgrd.records[event.index]['Discount']);
+                    //Received Amount
+                    if (event.column == 5) {
+                        if (event.value_new == "") {
+                            event.value_new = 0;
+                        }
+                        else {
+                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                        }
+                        //else if (event.value_new.toString().contains(',')) {
+                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                        //}
+                        if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
+                            VIS.ADialog.error("MoreScheduleAmount");
+                            event.value_new = event.value_original;
+                            Cashgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
+                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                            Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                            return;
+                        }
+                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
+                        Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+
+                        if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+
+                            if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
+                                if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                    Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                    Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                    Cashgrd.get(event.recid).changes.Writeoff = 0;
+                                }
+                                else {
+                                    Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                    Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                    Cashgrd.get(event.recid).changes.Writeoff = 0;
+                                    Cashgrd.get(event.recid).Writeoff = 0;
+                                }
+                                Cashgrd.get(event.recid).changes.Discount = 0;
+                                Cashgrd.refreshCell(event.recid, "OverUnder");
+                                Cashgrd.refreshCell(event.recid, "Discount");
+                                Cashgrd.refreshCell(event.recid, "Writeoff");
+                            }
+
+                            else if (event.value_new == Cashgrd.records[event.index]['ConvertedAmt']) {
+                                Cashgrd.get(event.recid).changes.OverUnder = 0;
+                                Cashgrd.get(event.recid).OverUnder = 0;
+                                Cashgrd.get(event.recid).changes.Discount = 0;
+                                Cashgrd.get(event.recid).changes.Writeoff = 0;
+                                Cashgrd.get(event.recid).Discount = 0;
+                                Cashgrd.get(event.recid).Writeoff = 0;
+                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = event.value_new;
+                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                Cashgrd.refreshCell(event.recid, "OverUnder");
+                                Cashgrd.refreshCell(event.recid, "Discount");
+                                Cashgrd.refreshCell(event.recid, "Writeoff");
+                                Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                            }
+                            else if (event.value_new < Cashgrd.records[event.index]['ConvertedAmt']) {
+                                if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                    Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                    Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                    Cashgrd.get(event.recid).changes.Writeoff = 0;
+                                    Cashgrd.get(event.recid).Writeoff = 0;
+                                }
+                                else {
+                                    Cashgrd.get(event.recid).changes.Writeoff = 0;
+                                    Cashgrd.get(event.recid).Writeoff = 0;
+                                    Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                    Cashgrd.records[event.index]['OverUnder'] = VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).changes.OverUnder);
+                                }
+                                Cashgrd.get(event.recid).changes.Discount = 0;
+                                Cashgrd.get(event.recid).Discount = 0;
+                                Cashgrd.refreshCell(event.recid, "OverUnder");
+                                Cashgrd.refreshCell(event.recid, "Discount");
+                                Cashgrd.refreshCell(event.recid, "Writeoff");
+                            }
+                        }
+                    }
+
+                    //writeoff
+                    if (event.column == 7) {
+                        if (event.value_new == "") {
+                            event.value_new = 0;
+                        }
+                        else {
+                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                        }
+                        //else if (event.value_new.toString().contains(',')) {
+                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                        //}
+
+                        Cashgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
+
+                        if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                            if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
+                                if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
+                                    if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                    else if (Cashgrd.get(event.recid).changes.Discount == undefined) {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Discount']))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                    else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount)))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                    else {
+                                        Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * Cashgrd.records[event.index]['ConvertedAmt']) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount)))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else {
+                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - Cashgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                }
+                                Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                            }
+                            else if (event.value_new <= Cashgrd.records[event.index]['ConvertedAmt']) {
+                                if (!Cashgrd.get(event.recid).changes.Writeoff) {
+                                    Cashgrd.get(event.recid).changes.Writeoff = 0;
+                                }
+
+                                if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else if (Cashgrd.get(event.recid).changes.Discount == undefined) {
+
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else {
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                Cashgrd.refreshCell(event.recid, "OverUnder");
+                            }
+                        }
+                    }
+                    //discount
+                    if (event.column == 8) {
+                        if (event.value_new == "") {
+                            event.value_new = 0;
+                        }
+                        else {
+                            event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
+                        }
+                        //else if (event.value_new.toString().contains(',')) {
+                        //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
+                        //}
+
+                        Cashgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
+
+                        if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                            if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
+                                if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
+                                    if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                    else if (Cashgrd.get(event.recid).changes.Writeoff == undefined) {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                    else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff)))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                    else {
+                                        Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (-1 * ((-1 * VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)) + (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff)))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else {
+                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt)).toFixed(stdPrecision);
+                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                }
+                                Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                            }
+                            else if (event.value_new <= Cashgrd.records[event.index]['ConvertedAmt']) {
+
+                                if (!Cashgrd.get(event.recid).changes.Writeoff) {
+                                    Cashgrd.get(event.recid).changes.Writeoff = 0;
+                                }
+
+                                if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else if (Cashgrd.get(event.recid).changes.Writeoff == undefined) {
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                else {
+                                    if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
+                                        w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                    }
+                                    else {
+                                        Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = Cashgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                    }
+                                }
+                                Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                                Cashgrd.refreshCell(event.recid, "OverUnder");
+                            }
+                        }
+                    }
+
+                    Cashgrd.refreshCell(event.recid, "ConvertedAmt");
+                    Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
+                    Cashgrd.refreshCell(event.recid, "OverUnder");
+                    Cashgrd.refreshCell(event.recid, "Writeoff");
+                    Cashgrd.refreshCell(event.recid, "Discount");
+                }
+            }, 100);
+            //end
+        });
+
+        CashDialog.onOkClick = function () {
+
+            var _CollaborateData = [];
+            Cashgrd.selectAll();
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                //Rakesh(VA228):Make Document Type selection mandatory
+                if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
+                    if (VIS.Utility.Util.getValueOfInt($Cash_cmbcashbk.val()) > 0) {
+                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                            if (Cashgrd.getSelection().length > 0) {
+                                for (var i = 0; i < Cashgrd.getSelection().length; i++) {
+                                    var _data = {};
+                                    _data["C_BPartner_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_BPartner_ID'];
+                                    _data["Description"] = Cashgrd.get(Cashgrd.getSelection()[i])['Description'];
+                                    _data["C_Invoice_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Invoice_ID'];
+                                    //commented because ashish and surya said that payment will be created in selected organization
+                                    // _data["AD_Org_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Org_ID'];
+                                    _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                    _data["AD_Client_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Client_ID'];
+                                    _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Currency_ID'];
+                                    //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                    _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_Currency_ID"];
+                                    _data["C_InvoicePaySchedule_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_InvoicePaySchedule_ID"];
+
+                                    //change amit
+                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt != undefined) {
+                                    //    _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
+                                    //}
+                                    //else
+                                    if (Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] != null && Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] > 0) {
+                                        //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
+                                        _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                    }
+                                    else {
+                                        VIS.ADialog.info(("VA009_PLRecivedAmt"));
+                                        Cashgrd.selectNone();
+                                        return false;
+                                    }
+                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder != undefined) {
+                                    //    _data["OverUnder"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder;
+                                    //}
+                                    //else {
+                                    _data["OverUnder"] = Cashgrd.get(Cashgrd.getSelection()[i])['OverUnder'];
+                                    //}
+                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff != undefined) {
+                                    //    _data["Writeoff"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff;
+                                    //}
+                                    //else {
+                                    _data["Writeoff"] = Cashgrd.get(Cashgrd.getSelection()[i])['Writeoff'];
+                                    //}
+                                    //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount != undefined) {
+                                    //    _data["Discount"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount;
+                                    //}
+                                    //else {
+                                    _data["Discount"] = Cashgrd.get(Cashgrd.getSelection()[i])['Discount'];
+                                    //}
+                                    //amit
+                                    // Added by Bharat
+                                    _data["ConvertedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['ConvertedAmt'];
+                                    _data["PaymwentBaseType"] = Cashgrd.get(Cashgrd.getSelection()[i])['PaymwentBaseType'];
+                                    _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+
+                                    _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val())
+                                    //Transaction Date
+                                    _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
+                                    //Rakesh(VA228):Set Document Type (13/Sep/2021)
+                                    _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
+                                    _CollaborateData.push(_data);
+                                }
+                            }
+                            $bsyDiv[0].style.visibility = "visible";
+                            $.ajax({
+                                url: VIS.Application.contextUrl + "VA009/Payment/GenPaymentsCash",
+                                type: "POST",
+                                datatype: "json",
+                                // contentType: "application/json; charset=utf-8",
+                                async: true,
+                                data: ({ PaymentData: JSON.stringify(_CollaborateData), C_CashBook_ID: parseInt($Cash_cmbcashbk.val()), BeginningBalance: cashAmount.getValue() }),
+                                success: function (result) {
+                                    callbackCashPaymnt(result);
+                                },
+                                error: function (ex) {
+                                    console.log(ex);
+                                    $bsyDiv[0].style.visibility = "hidden";
+                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                }
+                            });
+                        }
+                        else {
+                            VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                            Cashgrd.selectNone();
+                            return false;
+                        }
+
+                    }
+                    else {
+                        VIS.ADialog.info(("VA009_PLSelectCashbook"));
                         Cashgrd.selectNone();
                         return false;
                     }
-                };
-
-                function callbackCashPaymnt(result) {
-                    result = JSON.parse(result);
-                    $divPayment.find('.VA009-payment-wrap').remove();
-                    $divBank.find('.VA009-right-data-main').remove();
-                    $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                    //after successfully created Payment selectall checkbox should be false
-                    $selectall.prop('checked', false);
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                    loadPaymetsAll();
-                    $bsyDiv[0].style.visibility = "hidden";
-                    //VIS.ADialog.info("", null, result, null);
-                    // changed info message window to Error message window according to requirement
-                    VIS.ADialog.error("", null, result, null);
-                    //w2alert(result.toString());
-                };
-
-                CashDialog.onCancelCLick = function () {
-                    w2ui['CashGrid'].clear();
-                    CashDispose();
-                };
-
-                CashDialog.onClose = function () {
-                    w2ui['CashGrid'].clear();
-                    CashDispose();
-
-                };
-                this.vetoablechange = function (evt) {
-                    console.log(evt.propertyName);
-                    if (evt.propertyName == "VA009_POP_Txtopngbal_" + $self.windowNo + "") {
-                        cashAmount.setValue(evt.newValue);
-                    }
-                };
-                function CashDispose() {
-                    _Cash = null;
-                    $cash = null;
-                    STAT_cmbBank = null;
-                    STAT_cmbBankAccount = null;
-                    STAT_txtStatementNo = null;
-                    STAT_ctrlLoadFile = null;
-                    STAT_ctrlLoadFileTxt = null;
-                    w2ui['CashGrid'].destroy();
+                } else {
+                    VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
+                    Cashgrd.selectNone();
+                    return false;
                 }
-            },
+            }
+            else {
+                VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                Cashgrd.selectNone();
+                return false;
+            }
+        };
 
-            Batch_OpenDialog: function () {
+        function callbackCashPaymnt(result) {
+            result = JSON.parse(result);
+            $divPayment.find('.VA009-payment-wrap').remove();
+            $divBank.find('.VA009-right-data-main').remove();
+            $divBank.find('.VA009-accordion').remove();
+            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+            //after successfully created Payment selectall checkbox should be false
+            $selectall.prop('checked', false);
+            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+            loadPaymetsAll();
+            $bsyDiv[0].style.visibility = "hidden";
+            //VIS.ADialog.info("", null, result, null);
+            // changed info message window to Error message window according to requirement
+            VIS.ADialog.error("", null, result, null);
+            //w2alert(result.toString());
+        };
 
-                $opnbatch = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
-                var _openbatch = "";
-                _openbatch += "<div> <div class='VA009-popfrmradiowrp'>"
-                    + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BasedOnSelection") + "</label></div>"
-                    + "<div class='VA009-popfrmradiowrp'><input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'><label>" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</label></div>';
+        CashDialog.onCancelCLick = function () {
+            w2ui['CashGrid'].clear();
+            CashDispose();
+        };
 
-                $opnbatch.append(_openbatch);
-                //Batch_getControls();
+        CashDialog.onClose = function () {
+            w2ui['CashGrid'].clear();
+            CashDispose();
 
-                var BatchDialog = new VIS.ChildDialog();
-                var Selected = "";
-                BatchDialog.setContent($opnbatch);
-                BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
-                BatchDialog.setWidth("30%");
-                BatchDialog.setEnableResize(true);
-                BatchDialog.setModal(true);
-                BatchDialog.show();
+        };
+        this.vetoablechange = function (evt) {
+            console.log(evt.propertyName);
+            if (evt.propertyName == "VA009_POP_Txtopngbal_" + $self.windowNo + "") {
+                cashAmount.setValue(evt.newValue);
+            }
+        };
+        function CashDispose() {
+            _Cash = null;
+            $cash = null;
+            STAT_cmbBank = null;
+            STAT_cmbBankAccount = null;
+            STAT_txtStatementNo = null;
+            STAT_ctrlLoadFile = null;
+            STAT_ctrlLoadFileTxt = null;
+            w2ui['CashGrid'].destroy();
+        }
+    },
 
-                BatchDialog.onOkClick = function () {
-                    Selected = $opnbatch.find("input[name='VA009_Sel" + $self.windowNo + "']:checked").val();
-                    $bsyDiv[0].style.visibility = "visible";
-                    if (Selected == "S") {
-                        if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
+    Batch_OpenDialog: function () {
 
-                            _loadFunctions.Batch_Dialog();
+        $opnbatch = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
+        var _openbatch = "";
+        _openbatch += "<div> <div class='VA009-popfrmradiowrp'>"
+            + "<input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='S' checked>"
+            + "<label>" + VIS.Msg.getMsg("VA009_BasedOnSelection") + "</label></div>"
+            + "<div class='VA009-popfrmradiowrp'><input type='radio' name='VA009_Sel" + $self.windowNo + "'  value='R'><label>" + VIS.Msg.getMsg("VA009_BasedOnRule") + '</label></div>';
 
+        $opnbatch.append(_openbatch);
+        //Batch_getControls();
+
+        var BatchDialog = new VIS.ChildDialog();
+        var Selected = "";
+        BatchDialog.setContent($opnbatch);
+        BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
+        BatchDialog.setWidth("30%");
+        BatchDialog.setEnableResize(true);
+        BatchDialog.setModal(true);
+        BatchDialog.show();
+
+        BatchDialog.onOkClick = function () {
+            Selected = $opnbatch.find("input[name='VA009_Sel" + $self.windowNo + "']:checked").val();
+            $bsyDiv[0].style.visibility = "visible";
+            if (Selected == "S") {
+                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
+
+                    _loadFunctions.Batch_Dialog();
+
+                }
+                else
+                    VIS.ADialog.info(("VA009_PlzSelct1Pay"));
+            }
+            else if (Selected == "R") {
+                var _Qry = "SELECT pm.va009_paymentbasetype FROM c_invoicepayschedule cs INNER JOIN va009_paymentmethod pm " +
+                    " ON pm.va009_paymentmethod_id      =cs.va009_paymentmethod_id WHERE cs.c_invoicepayschedule_id IN (";
+                if (SlctdPaymentIds.length == 0) {
+                    _Qry += 0;
+                }
+                else {
+                    _Qry += SlctdPaymentIds.toString();
+                }
+                _Qry += " ) AND pm.va009_paymentbasetype  IN ('S','B') GROUP BY pm.va009_paymentbasetype ";
+
+                var _sql = VIS.secureEngine.encrypt(_Qry);
+                //var paystatus = VIS.DB.executeDataSet(_Qry);
+                var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
+
+                //if (paystatus != null && paystatus.tables[0].rows.length > 0) {
+                //if (paystatus != null && paystatus.length > 0) {
+                //    VIS.ADialog.info(("VA009_CantSelectCashandChque"));
+                //}
+                //else {
+                generateLines();
+                //}
+
+            }
+            $bsyDiv[0].style.visibility = "hidden";
+        };
+
+        BatchDialog.onCancelCLick = function () {
+            BatchDispose();
+        };
+
+        BatchDialog.onClose = function () {
+            BatchDispose();
+
+        };
+
+        function BatchDispose() {
+            _openbatch = null;
+            $opnbatch = null;
+        }
+    },
+
+    Batch_Dialog: function () {
+        var InvScheduleLookup = null;
+        var BatchGrid, _Cheque_no = "";
+        var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
+        $batch = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:395px !important'>");
+        var _batch = "";
+        _batch += "<div class='VA009-popfrm-wrap'>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+            + "</div></div>"
+
+            //added new field called Target Type
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_TargetType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+            + "</div></div> "
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+            + "</div></div>"
+
+            //creae new form field  currency 
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
+            + "</div></div>"
+            //creae new form field  currency type
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+            + "</div></div>"
+
+            // Payment method and overwrite payment method Suggested by Ashish and Rajni
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
+            + "</div></div>"
+            //re-arranged the place of the filed
+            + "<div class='VA009-popform-data'><div class='VA009-popFormInn'>"
+            //+ "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
+            + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</label>'
+
+            //+ "<div class='vis-control-wrap'>"
+            //+ "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
+            + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap' style='display:none !important'><div class='vis-control-wrap'>"
+            + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-table-container' style='height:300px;' id='VA009_btnPopupGrid'> </div>"
+            + "</div>";
+
+        $batch.append(_batch);
+        Batch_getControls();
+
+        var BatchDialog = new VIS.ChildDialog();
+
+        BatchDialog.setContent($batch);
+        BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
+        BatchDialog.setWidth("60%");
+        BatchDialog.setEnableResize(true);
+        BatchDialog.setModal(true);
+        BatchDialog.show();
+        BatchGrid_Layout();
+        loadgrdBatch(callbackBatch);
+        loadOrg();
+        //calling target type to load the DocTypes
+        //loadTargetType();
+        //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
+        _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+        //loadbank();
+        //populate banks based on selected organization in dialog
+        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
+        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+        //set payment method mandatory assigned by ashish 28 May 2020
+        $POP_PayMthd.addClass('vis-ev-col-mandatory');
+        loadPayMthd();
+        $POP_cmbCurrency.addClass('vis-ev-col-mandatory');
+        loadCurrency();
+        loadCurrencyType();
+        InvScheduleLookup = VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 0, VIS.DisplayType.TableDir, "C_InvoicePaySchedule_ID", 0, false, "C_InvoicePaySchedule.IsActive='Y' ");
+
+        function BatchGrid_Layout() {
+
+            var _batch_Columns = [];
+            if (_batch_Columns.length == 0) {
+                _batch_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
+                _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                //_batch_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
+                _batch_Columns.push({
+                    field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%',
+                    render: function (record, index, col_index) {
+                        var l = InvScheduleLookup;
+                        var val = record["C_InvoicePaySchedule_ID"];
+                        var d;
+                        if (l) {
+                            d = l.getDisplay(val);
                         }
-                        else
-                            VIS.ADialog.info(("VA009_PlzSelct1Pay"));
+                        return d;
                     }
-                    else if (Selected == "R") {
-                        var _Qry = "SELECT pm.va009_paymentbasetype FROM c_invoicepayschedule cs INNER JOIN va009_paymentmethod pm " +
-                            " ON pm.va009_paymentmethod_id      =cs.va009_paymentmethod_id WHERE cs.c_invoicepayschedule_id IN (";
-                        if (SlctdPaymentIds.length == 0) {
-                            _Qry += 0;
+                });
+                _batch_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
+                _batch_Columns.push({
+                    field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["DueAmt"];
+                        return parseFloat(val).toLocaleString();
+                    }
+                });
+                // _batch_Columns.push({ field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '10%', render: 'float:2',style: 'text-align: left', editable: { type: 'float' } });
+                _batch_Columns.push({
+                    field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["ConvertedAmt"];
+                        return parseFloat(val).toLocaleString();
+                    }
+                });
+                _batch_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
+                _batch_Columns.push({
+                    field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%',
+                    render: function (record, index, col_index) {
+                        var val;
+                        //when user do double click on CheckDate field then mouse over without selecting the value at that time 
+                        //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
+                        if (record.changes == undefined || record.changes.CheckDate == "") {
+                            val = record["CheckDate"];
                         }
                         else {
-                            _Qry += SlctdPaymentIds.toString();
+                            val = record.changes.CheckDate;
                         }
-                        _Qry += " ) AND pm.va009_paymentbasetype  IN ('S','B') GROUP BY pm.va009_paymentbasetype ";
+                        return new Date(val).toLocaleDateString();
+                    }, style: 'text-align: left', editable: { type: 'date' }
+                });
+                //_batch_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
+                _batch_Columns.push({ field: "Mandate", caption: VIS.Msg.getMsg("VA009_Mandate"), sortable: true, size: '10%', editable: { type: 'text' } });
+                //by Amit - 1-12-2016
+                _batch_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
+                //end
+                //Rakesh(VA228):Set conversion rate type on 17/Sep/2021
+                _batch_Columns.push({ field: "ConversionTypeId", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                _batch_Columns.push({ field: "DiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                _batch_Columns.push({ field: "ConvertedDiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                _batch_Columns.push({ field: "DiscountDate", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+            }
+            BatchGrd = null;
+            BatchGrd = BatchGrid.w2grid({
+                name: 'BatchGrid',
+                recordHeight: 25,
+                multiSelect: true,
+                columns: _batch_Columns
+                //method: 'GET',
+                //show: {
+                //    selectColumn: true
+                //}
+            }),
+                BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
 
-                        var _sql = VIS.secureEngine.encrypt(_Qry);
-                        //var paystatus = VIS.DB.executeDataSet(_Qry);
-                        var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
+        };
 
-                        //if (paystatus != null && paystatus.tables[0].rows.length > 0) {
-                        //if (paystatus != null && paystatus.length > 0) {
-                        //    VIS.ADialog.info(("VA009_CantSelectCashandChque"));
-                        //}
-                        //else {
-                        generateLines();
-                        //}
+        function Batch_getControls() {
+            $POP_cmbBank = $batch.find("#VA009_POP_cmbBank_" + $self.windowNo);
+            $POP_cmbBankAccount = $batch.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
+            $POP_cmbCurrency = $batch.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
+            $POP_PayMthd = $batch.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
+            BatchGrid = $batch.find("#VA009_btnPopupGrid");
+            $consolidate = $batch.find("#VA009_Consolidate_" + $self.windowNo);
+            $overwritepay = $batch.find("#VA009_OverwritePayMthd_" + $self.windowNo);
+            $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
+            $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+            $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+            //get the Id of Target Type field
+            $POP_targetDocType = $batch.find("#VA009_POP_TargetType_" + $self.windowNo);
+            //set Target Type as Mandatory
+            $POP_targetDocType.addClass('vis-ev-col-mandatory');
+            // Payment method and overwrite payment method Suggested by Ashish and Rajni
+            $consolidate.prop('checked', true);
+            $overwritepay.prop('checked', true);
+        };
 
-                    }
-                    $bsyDiv[0].style.visibility = "hidden";
-                };
-
-                BatchDialog.onCancelCLick = function () {
-                    BatchDispose();
-                };
-
-                BatchDialog.onClose = function () {
-                    BatchDispose();
-
-                };
-
-                function BatchDispose() {
-                    _openbatch = null;
-                    $opnbatch = null;
+        function loadgrdBatch(callback) {
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
+                type: "GET",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+                //async: false,
+                data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                success: function (result) {
+                    callback(result);
+                },
+                error: function () {
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
                 }
-            },
+            });
+        };
 
-            Batch_Dialog: function () {
-                var InvScheduleLookup = null;
-                var BatchGrid, _Cheque_no = "";
-                var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
-                $batch = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:395px !important'>");
-                var _batch = "";
-                _batch += "<div class='VA009-popfrm-wrap'>"
+        function callbackBatch(result) {
+            popupgrddata = [];
+            var rslt = JSON.parse(result);
+            reloaddata = rslt;
+            for (var i in rslt) {
+                var line = {};
+                line["recid"] = rslt[i].recid;
+                line["C_Bpartner"] = rslt[i].C_Bpartner;
+                line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
+                line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
+                line["CurrencyCode"] = rslt[i].CurrencyCode;
+                line["DueAmt"] = rslt[i].DueAmt;
+                line["ConvertedAmt"] = rslt[i].convertedAmt;
+                // line["VA009_RecivedAmt"] = Globalize.format(rslt[i].VA009_RecivedAmt, "N");
+                line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
+                line["C_Currency_ID"] = rslt[i].C_Currency_ID;
+                line["AD_Org_ID"] = rslt[i].AD_Org_ID;
+                line["AD_Client_ID"] = rslt[i].AD_Client_ID;
+                line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
+                line["CheckNumber"] = null;
+                line["ValidMonths"] = null;
+                line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
+                line["TransactionType"] = rslt[i].TransactionType;
+                //Rakesh(VA228):Set conversion type and discount amount/date
+                line["ConversionTypeId"] = rslt[i].ConversionTypeId;
+                line["DiscountAmount"] = rslt[i].DiscountAmount;
+                line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
+                line["DiscountDate"] = rslt[i].DiscountDate;
+                popupgrddata.push(line);
+            }
+            w2utils.encodeTags(popupgrddata);
+            BatchGrd.add(popupgrddata);
+        };
 
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "</div></div>"
+        function loadCurrencyType() {
 
-                    //added new field called Target Type
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_TargetType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
-                    + "</div></div>"
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                    + "</div></div> "
+            function callbackCurrencyType(dr) {
+                $pop_cmbCurrencyType.append("<option value='0'></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                        if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
+                            defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
+                        }
+                    }
+                    //$pop_cmbCurrencyType.prop('selectedIndex', 1);
+                    $pop_cmbCurrencyType.val(defaultCurrenyType)
+                }
+            }
+        };
 
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                    + "</div></div>"
+        //to load all organization 
+        function loadOrg() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+            function callbackloadorg(dr) {
+                $POP_cmbOrg.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    }
+                }
+                $POP_cmbOrg.prop('selectedIndex', 0);
+            };
+        };
 
-                    //creae new form field  currency 
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
-                    + "</div></div>"
-                    //creae new form field  currency type
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
+        //to load TargetType DocTypes
+        function loadTargetType() {
+            $POP_targetDocType.empty();
+            var _org_Id = $POP_cmbOrg != null ? $POP_cmbOrg.val() : 0;
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id, "basetype": 3 }, callbacktargettype);
+            function callbacktargettype(dr) {
+                $POP_targetDocType.append(" <option value = 0></option>");
+                if (dr != null && dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_targetDocType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_DocType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    }
+                }
+                $POP_targetDocType.prop('selectedIndex', 0);
+                $POP_targetDocType.addClass('vis-ev-col-mandatory');
+            };
+        };
 
-                    // Payment method and overwrite payment method Suggested by Ashish and Rajni
+        //Set Mandatory and Non-Mandatory
+        function SetMandatory(value) {
+            if (value)
+                return '#FFB6C1';
+            else
+                return 'White';
+        };
+        //load currencies
+        function loadCurrency() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencies", null, callbackCurrencyType);
 
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMthd") + "</label>"
-                    + "</div></div>"
-                    //re-arranged the place of the filed
-                    + "<div class='VA009-popform-data'><div class='VA009-popFormInn'>"
-                    //+ "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + "</label>"
-                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' disabled id='VA009_OverwritePayMthd_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_OverwritePayMthd") + '</label>'
-
-                    //+ "<div class='vis-control-wrap'>"
-                    //+ "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
-                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap' style='display:none !important'><div class='vis-control-wrap'>"
-                    + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label style='display:none !important'>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-table-container' style='height:300px;' id='VA009_btnPopupGrid'> </div>"
-                    + "</div>";
-
-                $batch.append(_batch);
-                Batch_getControls();
-
-                var BatchDialog = new VIS.ChildDialog();
-
-                BatchDialog.setContent($batch);
-                BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
-                BatchDialog.setWidth("60%");
-                BatchDialog.setEnableResize(true);
-                BatchDialog.setModal(true);
-                BatchDialog.show();
-                BatchGrid_Layout();
-                loadgrdBatch(callbackBatch);
-                loadOrg();
-                //calling target type to load the DocTypes
-                //loadTargetType();
-                //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
-                _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-                //loadbank();
+            function callbackCurrencyType(dr) {
+                $POP_cmbCurrency.append("<option value='0'></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_cmbCurrency.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + ">" + VIS.Utility.encodeText(dr[i].ISO_Code) + "</option>");
+                    }
+                    $POP_cmbCurrency.prop('selectedIndex', 0);
+                }
+            }
+        };
+        //end
+        $POP_cmbOrg.on("change", function () {
+            //to set org mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
+                $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+            }
+            else {
                 //populate banks based on selected organization in dialog
                 loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
+                //refresh the bank and BankAccount dropdowns and make it as mandatory
+                $POP_cmbBank.val(0).prop('selected', true);
                 $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                $POP_cmbBankAccount.empty();
+                $POP_cmbBankAccount.append("<option value='0'></option>");
                 $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                //set payment method mandatory assigned by ashish 28 May 2020
-                $POP_PayMthd.addClass('vis-ev-col-mandatory');
-                loadPayMthd();
+                $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+            }
+            //get the Target Doc Types
+            //loadTargetType();
+            //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
+            _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+        });
+
+        //on change event for Target Type field
+        $POP_targetDocType.on("change", function () {
+            //to $POP_targetDocType org mandatory
+            if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) == 0) {
+                $POP_targetDocType.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                //remove mandatory class if value > zero
+                $POP_targetDocType.removeClass('vis-ev-col-mandatory');
+            }
+        });
+
+        $POP_cmbBank.on('change', function () {
+            //to set bank mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                $POP_cmbBank.removeClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_cmbBank.addClass('vis-ev-col-mandatory');
+            }
+            $POP_cmbBankAccount.empty();
+            //added mandatory class
+            $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+            //to get bank account of selected organization assigned by Ashish on 28 May 2020
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
+
+            function callbackloadbankAcct(dr) {
+                $POP_cmbBankAccount.append("<option value='0'></option>");
+                if (dr != null) {
+                    if (dr.length > 0) {
+                        for (var i in dr) {
+                            $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                        }
+                    }
+                }
+            }
+        });
+
+        $POP_cmbBankAccount.on("change", function () {
+            //to set bank account mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
+                $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+            }
+
+            //end
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                type: "POST",
+                datatype: "json",
+                // contentType: "application/json; charset=utf-8",
+                async: true,
+                //fixed issue with null exeception
+                data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                success: function (result) {
+                    callbackchqReload(result);
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+
+            //get and set Currency of  Bank Account
+            var Currency = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountCurrency", { "BankAccount_ID": $POP_cmbBankAccount.val() });
+            if (Currency > 0) {
+                $POP_cmbCurrency.val(Currency);
+                $POP_cmbCurrency.removeClass('vis-ev-col-mandatory');
+            }
+        });
+
+        //on the change of Currency type get the  converted amount
+        $pop_cmbCurrencyType.on("change", function () {
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
+                type: "POST",
+                datatype: "json",
+                // contentType: "application/json; charset=utf-8",
+                async: true,
+                data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), ToCurrency: $POP_cmbCurrency.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                success: function (result) {
+                    callbackchqReload(result);
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+        });
+
+        //on the change of Currency get the  converted amount
+        $POP_cmbCurrency.on("change", function () {
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbCurrency.val()) == 0) {
                 $POP_cmbCurrency.addClass('vis-ev-col-mandatory');
-                loadCurrency();
-                loadCurrencyType();
-                InvScheduleLookup = VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 0, VIS.DisplayType.TableDir, "C_InvoicePaySchedule_ID", 0, false, "C_InvoicePaySchedule.IsActive='Y' ");
+            }
+            else {
+                $POP_cmbCurrency.removeClass('vis-ev-col-mandatory');
+            }
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
+                type: "POST",
+                datatype: "json",
+                // contentType: "application/json; charset=utf-8",
+                async: true,
+                data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), ToCurrency: $POP_cmbCurrency.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                success: function (result) {
+                    callbackchqReload(result);
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+        });
 
-                function BatchGrid_Layout() {
+        function callbackchqReload(result) {
+            BatchGrd.clear();
+            popupgrddata = [];
+            var rslt = JSON.parse(result);
+            reloaddata = rslt;
+            for (var i in rslt) {
+                var line = {};
+                line["recid"] = rslt[i].recid;
+                line["C_Bpartner"] = rslt[i].C_Bpartner;
+                line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
+                line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
+                line["CurrencyCode"] = rslt[i].CurrencyCode;
+                line["DueAmt"] = rslt[i].DueAmt;
+                line["ConvertedAmt"] = rslt[i].convertedAmt;
+                // line["VA009_RecivedAmt"] = Globalize.format(rslt[i].VA009_RecivedAmt, "N");
+                line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
+                line["C_Currency_ID"] = rslt[i].C_Currency_ID;
+                line["AD_Org_ID"] = rslt[i].AD_Org_ID;
+                line["AD_Client_ID"] = rslt[i].AD_Client_ID;
+                line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
+                line["CheckNumber"] = null;
+                line["ValidMonths"] = null;
+                line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
+                line["TransactionType"] = rslt[i].TransactionType;
+                //Rakesh(VA228):Set conversion type
+                line["ConversionTypeId"] = rslt[i].ConversionTypeId;
+                line["DiscountAmount"] = rslt[i].DiscountAmount;
+                line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
+                line["DiscountDate"] = rslt[i].DiscountDate;
+                popupgrddata.push(line);
+            }
+            if (rslt[0].ERROR == "ConversionNotFound") {
+                VIS.ADialog.info("VA009_ConversionNotFound");
+            }
+            w2utils.encodeTags(popupgrddata);
+            BatchGrd.add(popupgrddata);
+        };
 
-                    var _batch_Columns = [];
-                    if (_batch_Columns.length == 0) {
-                        _batch_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
-                        //_batch_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
-                        _batch_Columns.push({
-                            field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%',
-                            render: function (record, index, col_index) {
-                                var l = InvScheduleLookup;
-                                var val = record["C_InvoicePaySchedule_ID"];
-                                var d;
-                                if (l) {
-                                    d = l.getDisplay(val);
-                                }
-                                return d;
-                            }
-                        });
-                        _batch_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
-                        _batch_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["DueAmt"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        // _batch_Columns.push({ field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_PayAmt"), sortable: true, size: '10%', render: 'float:2',style: 'text-align: left', editable: { type: 'float' } });
-                        _batch_Columns.push({
-                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("VA009_ConvertedAmt"), sortable: true, size: '13%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["ConvertedAmt"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        _batch_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%', editable: { type: 'alphanumeric', autoFormat: true, groupSymbol: ' ' } });
-                        _batch_Columns.push({
-                            field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '10%',
-                            render: function (record, index, col_index) {
-                                var val;
-                                //when user do double click on CheckDate field then mouse over without selecting the value at that time 
-                                //record.changes.CheckDate is get empty string value so to avoid that used condtion is compared with empty string
-                                if (record.changes == undefined || record.changes.CheckDate == "") {
-                                    val = record["CheckDate"];
-                                }
-                                else {
-                                    val = record.changes.CheckDate;
-                                }
-                                return new Date(val).toLocaleDateString();
-                            }, style: 'text-align: left', editable: { type: 'date' }
-                        });
-                        //_batch_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
-                        _batch_Columns.push({ field: "Mandate", caption: VIS.Msg.getMsg("VA009_Mandate"), sortable: true, size: '10%', editable: { type: 'text' } });
-                        //by Amit - 1-12-2016
-                        _batch_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
-                        //end
-                        //Rakesh(VA228):Set conversion rate type on 17/Sep/2021
-                        _batch_Columns.push({ field: "ConversionTypeId", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
-                        _batch_Columns.push({ field: "DiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
-                        _batch_Columns.push({ field: "ConvertedDiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
-                        _batch_Columns.push({ field: "DiscountDate", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+        function loadPayMthd() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBatchPaymentMethod", null, callbackloadpaymthds);
+            function callbackloadpaymthds(dr) {
+                $POP_PayMthd.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
                     }
-                    BatchGrd = null;
-                    BatchGrd = BatchGrid.w2grid({
-                        name: 'BatchGrid',
-                        recordHeight: 25,
-                        multiSelect: true,
-                        columns: _batch_Columns
-                        //method: 'GET',
-                        //show: {
-                        //    selectColumn: true
-                        //}
-                    }),
-                        BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
+                }
+                $POP_PayMthd.prop('selectedIndex', 0);
+            }
+        };
 
-                };
+        BatchGrd.on('change', function (event) {
+            if (event.column == 7)
+                BatchGrd.records[event.index]['CheckNumber'] = event.value_new;
+            if (event.column == 8) {
+                //Used do double click on CheckDate field and closed without selecting the value at 
+                //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
+                if (event.value_new != "") {
+                    BatchGrd.records[event.index]['CheckDate'] = event.value_new;
+                }
+                else {
+                    BatchGrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
+                }
+            }
+            if (event.column == 9)
+                BatchGrd.records[event.index]['ValidMonths'] = event.value_new;
+        });
 
-                function Batch_getControls() {
-                    $POP_cmbBank = $batch.find("#VA009_POP_cmbBank_" + $self.windowNo);
-                    $POP_cmbBankAccount = $batch.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
-                    $POP_cmbCurrency = $batch.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
-                    $POP_PayMthd = $batch.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
-                    BatchGrid = $batch.find("#VA009_btnPopupGrid");
-                    $consolidate = $batch.find("#VA009_Consolidate_" + $self.windowNo);
-                    $overwritepay = $batch.find("#VA009_OverwritePayMthd_" + $self.windowNo);
-                    $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
-                    $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    //get the Id of Target Type field
-                    $POP_targetDocType = $batch.find("#VA009_POP_TargetType_" + $self.windowNo);
-                    //set Target Type as Mandatory
-                    $POP_targetDocType.addClass('vis-ev-col-mandatory');
-                    // Payment method and overwrite payment method Suggested by Ashish and Rajni
-                    $consolidate.prop('checked', true);
-                    $overwritepay.prop('checked', true);
-                };
+        $POP_PayMthd.on('change', function (event) {
+            //to set payment method mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                $POP_PayMthd.removeClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_PayMthd.addClass('vis-ev-col-mandatory');
+            }
+            Payrule = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentRule", { "PaymentMethod": $POP_PayMthd.val() }, null);
+            if (Payrule == "S")
+                BatchGrd.showColumn('CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate');
+            else
+                BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate');
+        });
 
-                function loadgrdBatch(callback) {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                        type: "GET",
-                        datatype: "json",
-                        contentType: "application/json; charset=utf-8",
-                        //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
-                        success: function (result) {
-                            callback(result);
-                        },
-                        error: function () {
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                };
+        BatchDialog.onOkClick = function () {
 
-                function callbackBatch(result) {
-                    popupgrddata = [];
-                    var rslt = JSON.parse(result);
-                    reloaddata = rslt;
-                    for (var i in rslt) {
-                        var line = {};
-                        line["recid"] = rslt[i].recid;
-                        line["C_Bpartner"] = rslt[i].C_Bpartner;
-                        line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
-                        line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
-                        line["CurrencyCode"] = rslt[i].CurrencyCode;
-                        line["DueAmt"] = rslt[i].DueAmt;
-                        line["ConvertedAmt"] = rslt[i].convertedAmt;
-                        // line["VA009_RecivedAmt"] = Globalize.format(rslt[i].VA009_RecivedAmt, "N");
-                        line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
-                        line["C_Currency_ID"] = rslt[i].C_Currency_ID;
-                        line["AD_Org_ID"] = rslt[i].AD_Org_ID;
-                        line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
-                        line["CheckNumber"] = null;
-                        line["ValidMonths"] = null;
-                        line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
-                        line["TransactionType"] = rslt[i].TransactionType;
-                        //Rakesh(VA228):Set conversion type and discount amount/date
-                        line["ConversionTypeId"] = rslt[i].ConversionTypeId;
-                        line["DiscountAmount"] = rslt[i].DiscountAmount;
-                        line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
-                        line["DiscountDate"] = rslt[i].DiscountDate;
-                        popupgrddata.push(line);
-                    }
-                    w2utils.encodeTags(popupgrddata);
-                    BatchGrd.add(popupgrddata);
-                };
-
-                function loadCurrencyType() {
-
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
-
-                    function callbackCurrencyType(dr) {
-                        $pop_cmbCurrencyType.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                                if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
-                                    defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
-                                }
-                            }
-                            //$pop_cmbCurrencyType.prop('selectedIndex', 1);
-                            $pop_cmbCurrencyType.val(defaultCurrenyType)
-                        }
-                    }
-                };
-
-                //to load all organization 
-                function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
-                    function callbackloadorg(dr) {
-                        $POP_cmbOrg.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $POP_cmbOrg.prop('selectedIndex', 0);
-                    };
-                };
-
-                //to load TargetType DocTypes
-                function loadTargetType() {
-                    $POP_targetDocType.empty();
-                    var _org_Id = $POP_cmbOrg != null ? $POP_cmbOrg.val() : 0;
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id, "basetype": 3 }, callbacktargettype);
-                    function callbacktargettype(dr) {
-                        $POP_targetDocType.append(" <option value = 0></option>");
-                        if (dr != null && dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_targetDocType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_DocType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $POP_targetDocType.prop('selectedIndex', 0);
-                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
-                    };
-                };
-
-                //Set Mandatory and Non-Mandatory
-                function SetMandatory(value) {
-                    if (value)
-                        return '#FFB6C1';
-                    else
-                        return 'White';
-                };
-                //load currencies
-                function loadCurrency() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencies", null, callbackCurrencyType);
-
-                    function callbackCurrencyType(dr) {
-                        $POP_cmbCurrency.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbCurrency.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + ">" + VIS.Utility.encodeText(dr[i].ISO_Code) + "</option>");
-                            }
-                            $POP_cmbCurrency.prop('selectedIndex', 0);
-                        }
-                    }
-                };
-                //end
-                $POP_cmbOrg.on("change", function () {
-                    //to set org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        //populate banks based on selected organization in dialog
-                        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
-                        //refresh the bank and BankAccount dropdowns and make it as mandatory
-                        $POP_cmbBank.val(0).prop('selected', true);
-                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
-                        $POP_cmbBankAccount.empty();
-                        $POP_cmbBankAccount.append("<option value='0'></option>");
-                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
-                    }
-                    //get the Target Doc Types
-                    //loadTargetType();
-                    //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
-                    _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-                });
-
-                //on change event for Target Type field
-                $POP_targetDocType.on("change", function () {
-                    //to $POP_targetDocType org mandatory
-                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) == 0) {
-                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        //remove mandatory class if value > zero
-                        $POP_targetDocType.removeClass('vis-ev-col-mandatory');
-                    }
-                });
-
-                $POP_cmbBank.on('change', function () {
-                    //to set bank mandatory given by ashish on 28 May 2020
+            var _CollaborateData = [];
+            BatchGrd.selectAll();
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                //Target Type is Mandatory
+                if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                        $POP_cmbBank.removeClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
-                    }
-                    $POP_cmbBankAccount.empty();
-                    //added mandatory class
-                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    //to get bank account of selected organization assigned by Ashish on 28 May 2020
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                if (BatchGrd.getSelection().length > 0) {
+                                    for (var i = 0; i < BatchGrd.getSelection().length; i++) {
+                                        var _data = {};
+                                        _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
+                                        _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
+                                        _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
+                                        //commented because ashish and surya said that payment will be created in selected organization
+                                        //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
+                                        _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
+                                        //Target Doc Type
+                                        _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
+                                        _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
+                                        _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
+                                        _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
+                                        //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
+                                        _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
+                                        _data["C_Bank_ID"] = $POP_cmbBank.val();
+                                        _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
+                                        //Rakesh(VA228):Set converion type/discount amount and date assigned by amit done on 17/sep/2021
+                                        _data["ConversionTypeId"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConversionTypeId'];
+                                        _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'];
+                                        _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'];
+                                        _data["DiscountDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']);
 
-                    function callbackloadbankAcct(dr) {
-                        $POP_cmbBankAccount.append("<option value='0'></option>");
-                        if (dr != null) {
-                            if (dr.length > 0) {
-                                for (var i in dr) {
-                                    $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
-                                }
-                            }
-                        }
-                    }
-                });
+                                        if (_data["DueAmt"] != 0 && BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
+                                            //ConvertedAmt is zero then show the message Conversion Rate not found
+                                            VIS.ADialog.info("VA009_ConversionNotFound");
+                                            return false;
+                                        }
+                                        else
+                                            _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
 
-                $POP_cmbBankAccount.on("change", function () {
-                    //to set bank account mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
-                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
-                    }
+                                        if ($overwritepay.prop('checked') == true) {
+                                            _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
+                                            _data["isOverwrite"] = "Y";
+                                        }
+                                        else {
+                                            _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
+                                            _data["isOverwrite"] = "N";
+                                        }
+                                        if ($consolidate.prop('checked') == true) {
+                                            _data["isconsolidate"] = "Y";
+                                        }
+                                        else {
+                                            _data["isconsolidate"] = "N";
+                                        }
+                                        if (Payrule == "S") {
+                                            var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
+                                            _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
 
-                    //end
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        //fixed issue with null exeception
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-
-                    //get and set Currency of  Bank Account
-                    var Currency = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountCurrency", { "BankAccount_ID": $POP_cmbBankAccount.val() });
-                    if (Currency > 0) {
-                        $POP_cmbCurrency.val(Currency);
-                        $POP_cmbCurrency.removeClass('vis-ev-col-mandatory');
-                    }
-                });
-
-                //on the change of Currency type get the  converted amount
-                $pop_cmbCurrencyType.on("change", function () {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), ToCurrency: $POP_cmbCurrency.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                });
-
-                //on the change of Currency get the  converted amount
-                $POP_cmbCurrency.on("change", function () {
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbCurrency.val()) == 0) {
-                        $POP_cmbCurrency.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_cmbCurrency.removeClass('vis-ev-col-mandatory');
-                    }
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), ToCurrency: $POP_cmbCurrency.val(), dateAcct: $POP_DateAcct != null ? $POP_DateAcct.val() : null, _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                });
-
-                function callbackchqReload(result) {
-                    BatchGrd.clear();
-                    popupgrddata = [];
-                    var rslt = JSON.parse(result);
-                    reloaddata = rslt;
-                    for (var i in rslt) {
-                        var line = {};
-                        line["recid"] = rslt[i].recid;
-                        line["C_Bpartner"] = rslt[i].C_Bpartner;
-                        line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
-                        line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
-                        line["CurrencyCode"] = rslt[i].CurrencyCode;
-                        line["DueAmt"] = rslt[i].DueAmt;
-                        line["ConvertedAmt"] = rslt[i].convertedAmt;
-                        // line["VA009_RecivedAmt"] = Globalize.format(rslt[i].VA009_RecivedAmt, "N");
-                        line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
-                        line["C_Currency_ID"] = rslt[i].C_Currency_ID;
-                        line["AD_Org_ID"] = rslt[i].AD_Org_ID;
-                        line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
-                        line["CheckNumber"] = null;
-                        line["ValidMonths"] = null;
-                        line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
-                        line["TransactionType"] = rslt[i].TransactionType;
-                        //Rakesh(VA228):Set conversion type
-                        line["ConversionTypeId"] = rslt[i].ConversionTypeId;
-                        line["DiscountAmount"] = rslt[i].DiscountAmount;
-                        line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
-                        line["DiscountDate"] = rslt[i].DiscountDate;
-                        popupgrddata.push(line);
-                    }
-                    if (rslt[0].ERROR == "ConversionNotFound") {
-                        VIS.ADialog.info("VA009_ConversionNotFound");
-                    }
-                    w2utils.encodeTags(popupgrddata);
-                    BatchGrd.add(popupgrddata);
-                };
-
-                function loadPayMthd() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBatchPaymentMethod", null, callbackloadpaymthds);
-                    function callbackloadpaymthds(dr) {
-                        $POP_PayMthd.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
-                            }
-                        }
-                        $POP_PayMthd.prop('selectedIndex', 0);
-                    }
-                };
-
-                BatchGrd.on('change', function (event) {
-                    if (event.column == 7)
-                        BatchGrd.records[event.index]['CheckNumber'] = event.value_new;
-                    if (event.column == 8) {
-                        //Used do double click on CheckDate field and closed without selecting the value at 
-                        //that time its return empty string to avoid Invalid Date used this below condition compared with empty string
-                        if (event.value_new != "") {
-                            BatchGrd.records[event.index]['CheckDate'] = event.value_new;
-                        }
-                        else {
-                            BatchGrd.records[event.index]['CheckDate'] = event.value_previous != "" ? event.value_previous : event.value_original;
-                        }
-                    }
-                    if (event.column == 9)
-                        BatchGrd.records[event.index]['ValidMonths'] = event.value_new;
-                });
-
-                $POP_PayMthd.on('change', function (event) {
-                    //to set payment method mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                        $POP_PayMthd.removeClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_PayMthd.addClass('vis-ev-col-mandatory');
-                    }
-                    Payrule = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentRule", { "PaymentMethod": $POP_PayMthd.val() }, null);
-                    if (Payrule == "S")
-                        BatchGrd.showColumn('CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate');
-                    else
-                        BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate');
-                });
-
-                BatchDialog.onOkClick = function () {
-
-                    var _CollaborateData = [];
-                    BatchGrd.selectAll();
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
-                        //Target Type is Mandatory
-                        if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
-                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                        if (BatchGrd.getSelection().length > 0) {
-                                            for (var i = 0; i < BatchGrd.getSelection().length; i++) {
-                                                var _data = {};
-                                                _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
-                                                _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
-                                                _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                                //commented because ashish and surya said that payment will be created in selected organization
-                                                //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
-                                                _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
-                                                //Target Doc Type
-                                                _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
-                                                _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
-                                                _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
-                                                _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
-                                                //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
-                                                _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
-                                                _data["C_Bank_ID"] = $POP_cmbBank.val();
-                                                _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
-                                                //Rakesh(VA228):Set converion type/discount amount and date assigned by amit done on 17/sep/2021
-                                                _data["ConversionTypeId"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConversionTypeId'];
-                                                _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'];
-                                                _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'];
-                                                _data["DiscountDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']);
-
-                                                if (_data["DueAmt"] != 0 && BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
-                                                    //ConvertedAmt is zero then show the message Conversion Rate not found
-                                                    VIS.ADialog.info("VA009_ConversionNotFound");
-                                                    return false;
-                                                }
-                                                else
-                                                    _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
-
-                                                if ($overwritepay.prop('checked') == true) {
-                                                    _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
-                                                    _data["isOverwrite"] = "Y";
-                                                }
-                                                else {
-                                                    _data["VA009_PaymentMethod_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_PaymentMethod_ID'];
-                                                    _data["isOverwrite"] = "N";
-                                                }
-                                                if ($consolidate.prop('checked') == true) {
-                                                    _data["isconsolidate"] = "Y";
-                                                }
-                                                else {
-                                                    _data["isconsolidate"] = "N";
-                                                }
-                                                if (Payrule == "S") {
-                                                    var dt = new Date(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-                                                    _data["CheckDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['CheckDate']);
-
-                                                    if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
-                                                        _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
-                                                    else {
-                                                        VIS.ADialog.info("VA009_PLCheckNumber");
-                                                        BatchGrd.selectNone();
-                                                        return false;
-                                                    }
-                                                }
-                                                else {
-                                                    _data["CheckNumber"] = null;
-                                                    _data["CheckDate"] = null;
-                                                    _data["ValidMonths"] = null;
-                                                }
-                                                _data["CurrencyType"] = $pop_cmbCurrencyType.val();
-                                                _data["HeaderCurrency"] = $POP_cmbCurrency.val();
-
-                                                _CollaborateData.push(_data);
+                                            if (BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'] != null)
+                                                _data["CheckNumber"] = BatchGrd.get(BatchGrd.getSelection()[i])['CheckNumber'];
+                                            else {
+                                                VIS.ADialog.info("VA009_PLCheckNumber");
+                                                BatchGrd.selectNone();
+                                                return false;
                                             }
                                         }
-                                        $bsyDiv[0].style.visibility = "visible";
-                                        $.ajax({
-                                            url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
-                                            type: "POST",
-                                            datatype: "json",
-                                            // contentType: "application/json; charset=utf-8",
-                                            async: true,
-                                            data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                                            success: function (result) {
-                                                callbackBatchPay(result);
-                                            },
-                                            error: function (ex) {
-                                                console.log(ex);
-                                                $bsyDiv[0].style.visibility = "hidden";
-                                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                            }
-                                        });
-                                    }
-                                    else {
-                                        VIS.ADialog.info("VA009_PlsSelectPayMethod");
-                                        BatchGrd.selectNone();
-                                        return false;
+                                        else {
+                                            _data["CheckNumber"] = null;
+                                            _data["CheckDate"] = null;
+                                            _data["ValidMonths"] = null;
+                                        }
+                                        _data["CurrencyType"] = $pop_cmbCurrencyType.val();
+                                        _data["HeaderCurrency"] = $POP_cmbCurrency.val();
+
+                                        _CollaborateData.push(_data);
                                     }
                                 }
-                                else {
-                                    VIS.ADialog.info("VA009_PLSelectBankAccount");
-                                    BatchGrd.selectNone();
-                                    return false;
-                                }
+                                $bsyDiv[0].style.visibility = "visible";
+                                $.ajax({
+                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
+                                    type: "POST",
+                                    datatype: "json",
+                                    // contentType: "application/json; charset=utf-8",
+                                    async: true,
+                                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                                    success: function (result) {
+                                        callbackBatchPay(result);
+                                    },
+                                    error: function (ex) {
+                                        console.log(ex);
+                                        $bsyDiv[0].style.visibility = "hidden";
+                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                    }
+                                });
                             }
                             else {
-                                VIS.ADialog.info("VA009_PLSelectBank");
+                                VIS.ADialog.info("VA009_PlsSelectPayMethod");
                                 BatchGrd.selectNone();
                                 return false;
                             }
                         }
                         else {
-                            //Target Type field Validation Message
-                            VIS.ADialog.info(("VA009_PLSelectTargetDocType"));
+                            VIS.ADialog.info("VA009_PLSelectBankAccount");
                             BatchGrd.selectNone();
                             return false;
                         }
                     }
                     else {
-                        VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                        VIS.ADialog.info("VA009_PLSelectBank");
                         BatchGrd.selectNone();
                         return false;
                     }
-                };
-
-                function callbackBatchPay(result) {
-                    result = JSON.parse(result);
-                    DocNumber = "";
-                    //var SpilitedData = result.split(".", result.length);
-                    //DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
-                    //console.log(DocNumber);
-                    $divPayment.find('.VA009-payment-wrap').remove();
-                    $divBank.find('.VA009-right-data-main').remove();
-                    $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                    //after successfully created Payment selectall checkbox should be false
-                    $selectall.prop('checked', false);
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                    loadPaymetsAll();
-                    $bsyDiv[0].style.visibility = "hidden";
-
-                    if (DocNumber != "") {
-                        w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
-                            .yes(function () {
-                                $selectall.prop('checked', false);
-                                $divPayment.find(':checkbox').prop('checked', false);
-                                prepareDataForPaymentFile(DocNumber, true);
-                            })
-                            .no(function () {
-                                $bsyDiv[0].style.visibility = "hidden";
-                                VIS.ADialog.info("", null, result, "");
-                            });
-                    }
-                    else {
-                        VIS.ADialog.info("", null, result, "");
-                    }
-                };
-
-                BatchDialog.onCancelCLick = function () {
-                    w2ui['BatchGrid'].clear();
-                    BatchDispose();
-                };
-
-                BatchDialog.onClose = function () {
-                    w2ui['BatchGrid'].clear();
-                    BatchDispose();
-
-                };
-
-                function BatchDispose() {
-                    _batch = null;
-                    $batch = null;
-                    STAT_cmbBank = null;
-                    STAT_cmbBankAccount = null;
-                    STAT_txtStatementNo = null;
-                    STAT_ctrlLoadFile = null;
-                    STAT_ctrlLoadFileTxt = null;
-                    w2ui['BatchGrid'].destroy();
-                }
-            },
-
-            Split_Dialog: function () {
-                var SplitGrid, _Cheque_no = "";
-                var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
-                $bsyDiv[0].style.visibility = "visible";
-                $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
-                var _split = "";
-                _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' step='any' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
-                    + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
-
-                    + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
-                    + "</div>";
-
-                $split.append(_split);
-                Split_getControls();
-
-                var SplitDialog = new VIS.ChildDialog();
-
-                SplitDialog.setContent($split);
-                SplitDialog.setTitle(VIS.Msg.getMsg("VA009_LoadSplitPayment"));
-                SplitDialog.setWidth("60%");
-                SplitDialog.setEnableResize(true);
-                SplitDialog.setModal(true);
-                SplitDialog.show();
-                SplitGrid_Layout();
-                loadgrdSplit(callbackSplitPay);
-
-                function SplitGrid_Layout() {
-
-                    var _Split_Columns = [];
-                    if (_Split_Columns.length == 0) {
-                        _Split_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _Split_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
-                        _Split_Columns.push({ field: "DocumentNo", caption: VIS.Msg.getMsg("VA009_Invoice/Order"), sortable: true, size: '10%' });
-                        _Split_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
-                        _Split_Columns.push({
-                            field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
-                                var val = record["DueAmt"];
-                                return parseFloat(val).toLocaleString();
-                            }
-                        });
-                        _Split_Columns.push({
-                            field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%',
-                            render: function (record, index, col_index) {
-                                var val;
-                                if (record.changes == undefined || record.changes.DueDate == "") {
-                                    val = record["DueDate"];
-                                }
-                                else {
-                                    //DueDate Can't be less than the DateAcct
-                                    //some times not getting proper result if use toLocaleString()
-                                    if (new Date(record.changes.DueDate) >= new Date(Splitgrd.records[index]['DateAcct'])) {
-                                        val = record.changes.DueDate;
-                                    }
-                                    else {
-                                        val = record["DueDate"];
-                                        record.changes.DueDate = record["DueDate"];
-                                    }
-                                }
-                                return new Date(val).toLocaleDateString();
-                            }, style: 'text-align: left', editable: { type: 'date' }
-                        });
-                        //_Split_Columns.push({ field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
-                        //by Amit - 1-12-2016
-                        _Split_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
-                        //end
-                    }
-                    Splitgrd = null;
-                    Splitgrd = SplitGrid.w2grid({
-                        name: 'SplitGrid',
-                        recordHeight: 25,
-                        columns: _Split_Columns,
-                        method: 'GET',
-                        multiSelect: true
-                        //show: {
-                        //    selectColumn: true
-                        //}
-                    }),
-                        Splitgrd.hideColumn('recid');
-                    Splitgrd.hideColumn('TransactionType');
-
-                };
-
-                function Split_getControls() {
-                    SplitGrid = $split.find("#VA009_btnPopupGrid");
-                    $TxtSplitAmt = $split.find("#VA009_POP_TxtSplitAmt_" + $self.windowNo);
-                    $BtnSplit = $split.find("#VA009_btnSplitAmt_" + $self.windowNo);
-                };
-
-                function loadgrdSplit(callback) {
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                        type: "GET",
-                        datatype: "json",
-                        contentType: "application/json; charset=utf-8",
-                        //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
-                        success: function (result) {
-                            callback(result);
-                        },
-                        error: function () {
-                            $bsyDiv[0].style.visibility = "hidden";
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                };
-
-                function callbackSplitPay(result) {
-                    Splitgrd.clear();
-                    popupgrddata = [];
-                    var Recid = 0;
-                    var rslt = JSON.parse(result);
-                    for (var i in rslt) {
-                        Recid = Recid + 1;
-                        var line = {};
-                        //line["recid"] = rslt[i].recid;     / done by Bharat
-                        line["recid"] = Recid;
-                        line["C_Bpartner"] = rslt[i].C_Bpartner;
-                        line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
-                        line["DocumentNo"] = rslt[i].DocumentNo;
-                        line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
-                        line["CurrencyCode"] = rslt[i].CurrencyCode;
-                        line["DueAmt"] = rslt[i].DueAmt;
-                        var date = new Date(rslt[i].DueDate);
-                        date.setMinutes(-date.getTimezoneOffset() + date.getMinutes());
-                        newValue = date.toISOString();
-                        var val = newValue.substring(0, newValue.length - 1);
-                        var indexTime = newValue.indexOf("T");
-                        line["DueDate"] = val.substring(0, indexTime);
-                        //line["DueDate"] = Globalize.format(rslt[i].DueDate);
-                        line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
-                        line["C_Currency_ID"] = rslt[i].C_Currency_ID;
-                        line["AD_Org_ID"] = rslt[i].AD_Org_ID;
-                        line["AD_Client_ID"] = rslt[i].AD_Client_ID;
-                        line["TransactionType"] = rslt[i].TransactionType;
-                        line["DateAcct"] = rslt[i].DateAcct;
-                        popupgrddata.push(line);
-                    }
-                    w2utils.encodeTags(popupgrddata);
-                    Splitgrd.add(popupgrddata);
-                    $bsyDiv[0].style.visibility = "hidden";
-                };
-
-                Splitgrd.on('change', function (event) {
-
-                    if (event.column == 5)
-                        //handled on change event as well DueDate can't less than the DateAcct
-                        if (event.value_new != "") {
-                            //some times not getting proper result if use toLocaleString()
-                            if (new Date(event.value_new) >= new Date(Splitgrd.records[event.index]['DateAcct'])) {
-                                Splitgrd.records[event.index]['DueDate'] = event.value_new;
-                            }
-                            else {
-                                Splitgrd.records[event.index]['DueDate'] = event.value_previous == "" ? event.value_original : event.value_previous;
-                                event.value_previous = event.value_previous == "" ? event.value_original : event.value_previous;
-                                //message text size not more 22 characters
-                                //hide of Date picker div before Pop-up will be displayed
-                                window.setTimeout(function () {
-                                    VIS.ADialog.info("VA009_PlsSelctDueDateGreaterThanTrxDate");
-                                }, 5);
-                                //return false;
-                            }
-                        }
-                });
-
-                $TxtSplitAmt.on('keypress', function (event) {
-                    var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
-                    if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57)) && (event.keyCode == 45) && (event.keyCode != 44)) {
-                        return false;
-                    }
-
-                    if (!isDotSeparator && event.keyCode == 46) {// , separator
-                        return false;
-                    }
-                    if (isDotSeparator && event.keyCode == 44) { // . separator
-                        return false;
-                    }
-
-                    if (event.target.value.contains(".") && (event.which == 46 || event.which == 44)) {
-                        if (event.target.value.indexOf('.') > -1) {
-                            event.target.value = event.target.value.replace('.', '');
-                        }
-                    }
-                    if (event.target.value.contains(",") && (event.which == 46 || event.which == 44)) {
-                        if (event.target.value.indexOf(',') > -1) {
-                            event.target.value = event.target.value.replace(',', '');
-                        }
-                    }
-
-                    if (event.keyCode == 13) {
-                        //Splitgrd.selectAll();
-                        if (Splitgrd.getSelection().length == 0) {
-                            VIS.ADialog.info("PlsSelectRecord");
-                            return false;
-                        }
-                        if ($TxtSplitAmt.val() != "") {
-                            if (parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']) < parseFloat($TxtSplitAmt.val())) {
-                                VIS.ADialog.info("Can't Enter Greater Than Due Amt");
-                            }
-                            else if (parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']) > 0) {
-                                if (parseFloat($TxtSplitAmt.val()) < 0)
-                                    VIS.ADialog.info("Can't Enter Negative Amt");
-                                else
-                                    SplitSchedule();
-                            }
-                            else if (parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']) < 0) {
-                                if (parseFloat($TxtSplitAmt.val()) > 0)
-                                    VIS.ADialog.info("Can't Enter Positive Amt");
-                                else
-                                    SplitSchedule();
-                            }
-                            else {
-                                SplitSchedule();
-                            }
-                        }
-                        else {
-                            VIS.ADialog.info("VA009_PLEnterSplitAmt");
-                            //Splitgrd.selectNone();
-                            return false;
-                        }
-                    }
-                });
-
-                $BtnSplit.on("click", function (e) {
-                    //Splitgrd.selectAll();
-                    // Added by Bharat
-                    if (Splitgrd.getSelection().length == 0) {
-                        VIS.ADialog.info("PlsSelectRecord");
-                        return false;
-                    }
-                    var DueAmt = parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']);
-                    var SplitAMt = $TxtSplitAmt.val();
-                    if (SplitAMt != "") {
-                        SplitAMt = parseFloat($TxtSplitAmt.val());
-                        // IF Value in Negative 
-                        if (DueAmt < 0) {
-                            DueAmt = -1 * DueAmt;
-                        }
-                        if (SplitAMt < 0) {
-                            SplitAMt = -1 * SplitAMt;
-                        }
-
-                        //if (SplitAMt != "") {   done by Bharat
-                        //JID_1932_1if dueamt = spliamt then ne need to split the schedule
-                        if (DueAmt <= SplitAMt) {
-                            VIS.ADialog.info("VA009_CantEnterGreaterAmt");
-                        }
-                        else if (DueAmt > 0) {
-                            if (SplitAMt < 0)
-                                VIS.ADialog.info("VA009_CantEnterNegtveAmt");
-                            else if (SplitAMt == 0)
-                                VIS.ADialog.info("VA009_CantEnterZeroAmt");
-                            else
-                                SplitSchedule();
-                        }
-                        else if (DueAmt < 0) {
-                            if (SplitAMt > 0)
-                                VIS.ADialog.info("VA009_CantEnterPositiveAmt");
-                            else
-                                SplitSchedule();
-                        }
-                        else {
-                            SplitSchedule();
-                        }
-                        //}
-                    }
-                    else {
-                        VIS.ADialog.info("VA009_PLEnterSplitAmt");
-                        //Splitgrd.selectNone();
-                        return false;
-                    }
-                });
-
-                function SplitSchedule() {
-                    _CollaborateData = [];  //done By Bharat
-                    //Splitgrd.selectAll();
-                    var DueAmt = parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']);
-                    var SplitAMt = checkcommaordot(event, $TxtSplitAmt.val(), $TxtSplitAmt.val());
-                    SplitAMt = parseFloat(SplitAMt);
-                    // IF Value in Negative 
-                    if (DueAmt < 0) {
-                        DueAmt = -1 * DueAmt;
-                    }
-                    if (SplitAMt < 0) {
-                        SplitAMt = -1 * SplitAMt;
-                    }
-
-                    var lines = (DueAmt / SplitAMt);
-                    var TotalLines = Math.ceil(lines);
-                    if (TotalLines > 0) {
-                        //for (var i = 0; i < TotalLines - 1; i++) {  done by Bharat
-                        var _data = {};
-                        var recid = Splitgrd.records[Splitgrd.records.length - 1].recid + 1;
-                        _data["recid"] = recid;
-                        _data["C_BPartner_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_BPartner_ID'];
-                        _data["C_Bpartner"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Bpartner'];
-                        _data["CurrencyCode"] = Splitgrd.get(Splitgrd.getSelection()[0])['CurrencyCode'];
-                        _data["DocumentNo"] = Splitgrd.get(Splitgrd.getSelection()[0])['DocumentNo'];
-                        _data["C_Invoice_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Invoice_ID'];
-                        _data["AD_Org_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['AD_Org_ID'];
-                        _data["AD_Client_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['AD_Client_ID'];
-                        _data["C_Currency_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Currency_ID'];
-                        _data["DueAmt"] = SplitAMt.toFixed(2);
-                        _data["C_InvoicePaySchedule_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_InvoicePaySchedule_ID'];
-                        _data["DueDate"] = Splitgrd.get(Splitgrd.getSelection()[0])['DueDate'];
-                        //add DateAcct to Compare the Edited DueDate with Account Date because User Can't able to select Previous Date than AcctDate
-                        _data["DateAcct"] = Splitgrd.get(Splitgrd.getSelection()[0])['DateAcct'];
-                        _data["TransactionType"] = Splitgrd.get(Splitgrd.getSelection()[0])['TransactionType'];
-                        _CollaborateData.push(_data);
-                        //}
-                        //var TotalUpdatedAmt = SplitAMt * (TotalLines - 1);   done by Bharat
-                        var TotalUpdatedAmt = SplitAMt;
-                        if (DueAmt - TotalUpdatedAmt > 0) {
-
-                            var amt = DueAmt - TotalUpdatedAmt;
-                            Splitgrd.get(Splitgrd.getSelection()[0]).DueAmt = amt.toFixed(2);
-                        }
-                    }
-                    //Splitgrd.clear();
-                    w2utils.encodeTags(_CollaborateData);
-                    Splitgrd.add(_CollaborateData);
-                    $TxtSplitAmt.val('');
-                    Splitgrd.refresh();
-                };
-
-                SplitDialog.onOkClick = function () {
-                    datasplit = [];
-                    datasplit = Splitgrd.records //no of records on grid
-                    if (Splitgrd.getSelection().length > 0 || datasplit.length > 1) {
-                        Splitgrd.selectAll();
-
-                        //JID_1932_2 check if amount is splitted 
-                        if (datasplit.length == 1) {
-                            VIS.ADialog.info("VA009_SplitRecordFirst");
-                            return false;
-                        }
-                        for (var i = 0; i < datasplit.length; i++) {
-                            if (Splitgrd.get(Splitgrd.getSelection()[i])['DueDate'] == null) {
-                                VIS.ADialog.info("VA009_PlzSelctDueDate");
-                                return false;
-                            }
-                        }
-                        //}
-                        $bsyDiv[0].style.visibility = "visible";
-                        $.ajax({
-                            url: VIS.Application.contextUrl + "VA009/Payment/CreateSplitPayments",
-                            type: "POST",
-                            datatype: "json",
-                            // contentType: "application/json; charset=utf-8",
-                            async: true,
-                            data: ({ PaymentData: JSON.stringify(datasplit), SplitAmmount: $TxtSplitAmt.val() }),
-                            success: function (result) {
-                                callbackSplit(result);
-                            },
-                            error: function (ex) {
-
-                                console.log(ex);
-                                $bsyDiv[0].style.visibility = "hidden";
-                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                            }
-                        });
-                    }
-                    else {
-                        VIS.ADialog.info("VA009_PlzSplitRecord");
-                        return false;
-                    }
-                };
-
-                function callbackSplit(result) {
-                    result = JSON.parse(result);
-                    $divPayment.find('.VA009-payment-wrap').remove();
-                    $divBank.find('.VA009-right-data-main').remove();
-                    $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                    //after successfully created Payment selectall checkbox should be false
-                    $selectall.prop('checked', false);
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                    loadPaymetsAll();
-                    $bsyDiv[0].style.visibility = "hidden";
-                    VIS.ADialog.info(result);
-                };
-
-                SplitDialog.onCancelCLick = function () {
-                    w2ui['SplitGrid'].clear();
-                    SplitDispose();
-                };
-
-                SplitDialog.onClose = function () {
-                    w2ui['SplitGrid'].clear();
-                    SplitDispose();
-
-                };
-
-                function SplitDispose() {
-                    $split = null;
-                    _split = null;
-                    w2ui['SplitGrid'].destroy();
-                }
-            },
-
-            XML_Dialog: function () {
-                if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
-                    File_Para = 'B';
-                    w2confirm('Do you want to clear the selection and proceed for SEPA XML Generation Process?')
-                        .yes(function () {
-                            SlctdPaymentIds = [];
-                            SlctdOrderPaymentIds = [];
-                            $selectall.prop('checked', false);
-                            $divPayment.find(':checkbox').prop('checked', false);
-                            generateXMLDialog(File_Para);
-                        })
-                        .no(function () {
-                            console.log("user clicked NO")
-                        });
                 }
                 else {
-                    generateXMLDialog(File_Para);
-                }
-            },
-
-            ChatWindow: function () {
-                var dr = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetChatID", { "RecordID": record_ID }, null);
-                if (dr != null) {
-                    var tableid = dr["AD_Table_ID"];
-                    var chatid = dr["CM_Chat_ID"];
-                    var chat = new VIS.Chat(record_ID, chatid, tableid, "", this.windowNo);
-                    chat.show();
-                    chat.onClose = function () {
-                        $.ajax({
-                            url: VIS.Application.contextUrl + "VA009/Payment/GetChat",
-                            type: "POST",
-                            datatype: "json",
-                            // contentType: "application/json; charset=utf-8",
-                            async: true,
-                            data: ({ RecordID: record_ID }),
-                            success: function (result) {
-                                callbackChat(result);
-                            },
-                            error: function (ex) {
-
-                                console.log(ex);
-                                $bsyDiv[0].style.visibility = "hidden";
-                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                            }
-                        });
-
-                    }
-                };
-                function callbackChat(result) {
-                    result = JSON.parse(result);
-                    $bsyDiv[0].style.visibility = "hidden";
-                    $chatDiv = $divPayment.find("#VA009-Chatcolor-gray_" + record_ID);
-                    $chatDiv.html("");
-                    $chatDiv.append('<span class=VA009-Chatcolor-gray>' + result + '</span>');
-
-                };
-            },
-
-            B2B_Dialog: function () {
-                //btn Get Next Cheqe Number $OrgCmb,
-                var $From_cmbBank, $cmbCurrencyType, $paymentMthd, $cmbCurrencies, $txtAmt, txtAmount, $txtCheckNo, $checkDate, $getNextChkno;
-                var $trnsDate, $acctDate;
-                var $isPayment, $isReceipt;
-                var organizationids = [];
-                var divAmount, format = null;
-                lblAmount = $("<label>");
-                txtAmount = new VIS.Controls.VAmountTextBox("VA009_Amount" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
-                lblAmount.append(VIS.Msg.getMsg("Amount"));
-                txtAmount.setValue(0);
-                format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
-                divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
-                var $divb2bAmountCtrlWrp = $("<div class='vis-control-wrap'>");
-                divAmount.append($divb2bAmountCtrlWrp);
-                $divb2bAmountCtrlWrp.append(txtAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
-
-                $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:325px !important'>");
-                //var _b2b = "";
-                //_b2b.append(divAmount);
-                _b2b = $("<div class='VA009-popfrm-wrap'>");
-                _b2bdata = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data VA009-popformchkctrlwrap'>"
-                    //+ "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                    + "<div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Payment_" + $self.windowNo + ">Payment</label></div><div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + ">Receipt</label></div>"
-                    + "</div> "
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
-                    + "</div></div>"
-
-                    //Rakesh(VA228):Create Doc type element html
-                    + "<div class='VA009-popform-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbAPDocType_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_APDocType") + "</label>"
-                    + "</div></div> "
-
-                    //Rakesh(VA228):Create Doc type element html
-                    + "<div class='VA009-popform-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbARDocType_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_ARDocType") + "</label>"
-                    + "</div></div> ");
-
-                //"<div class='VA009-popform-data'>"
-                //    + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
-                //    + "<input type='text' id='VA009_Amount" + $self.windowNo + "' value=0> </div>"
-
-                //+ new VIS.Controls.VAmountTextBox("Amount", true, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"))
-
-                //        + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                //        + "<input type='number' placeholder=' ' data-placeholder='' id='VA009_Amount" + $self.windowNo + "' value=0><label>" + VIS.Msg.getMsg("Amount") + "</label>"
-                //+ "</div></div>");
-
-                _b2bdata1 = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data VA009-b2b-popup input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label></div><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
-                    + "</div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_CheckDate_" + $self.windowNo + "' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' disabled><label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("Currency") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "</div></div>"
-
-                    + "<div style='float:left;'>"
-                    + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
-                    + "</div>"
-                );
-
-                _b2b.append(_b2bdata).append(divAmount).append(_b2bdata1);
-                $b2b.append(_b2b);
-                var b2bDialog = new VIS.ChildDialog();
-                b2bDialog.setContent($b2b);
-                b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
-                b2bDialog.setWidth("60%");
-                b2bDialog.setEnableResize(true);
-                b2bDialog.setModal(true);
-                b2bDialog.show();
-                b2b_getControls();
-                var now = new Date();
-                var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
-                $trnsDate.val(_today);
-                $acctDate.val(_today);
-                InitializeEvents();
-                loadOrg();
-                loadCurrency();
-                loadCurrencyType();
-                loadPaymentMthd();
-                loadBankAccount($From_cmbBank, organizationids);
-                loadToBankAccount($To_cmbBank, organizationids);
-                //Rakesh(VA228):Load Target Docuement Type APR and APP
-                _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1,0);
-                _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2,0);
-
-                txtAmount.addVetoableChangeListener(this);
-                b2bDialog.onOkClick = function () {
-                    //function reverseFormatNumber(val, locale) {
-                    //    var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
-                    //    var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
-                    //    var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
-                    //    reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
-                    //    return Number.isNaN(reversedVal) ? 0 : reversedVal;
-                    //}
-                    //var amount = reverseFormatNumber($txtAmt.val(), window.navigator.language);
-                    if (parseInt($OrgCmb.val()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectOrg"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (!$isReceipt.prop('checked') && !$isPayment.prop('checked')) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectPaymentOrReceipt"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (parseInt($From_cmbBank.val()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectBankFrom"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (parseInt($To_cmbBank.val()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectBankTo"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (parseInt($POP_APTargetDocType.val()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectAPDocType"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (parseInt($POP_ARTargetDocType.val()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectARDocType"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (parseInt($From_cmbBank.val()) == parseInt($To_cmbBank.val())) {
-                        $note.text(VIS.Msg.getMsg("VA009_Banknotbesame"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (parseFloat(txtAmount.getValue()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsEnterAmount"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    if (parseInt($paymentMthd.val()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectPayMethod"));
-                        return $note.css('visibility', 'visible');
-                    }
-                    else if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
-                        if ($txtCheckNo.val() == "") {
-                            $note.text(VIS.Msg.getMsg("VA009_PLCheckNumber"));
-                            return $note.css('visibility', 'visible');
-                        }
-
-                        if ($checkDate.val() == "" || $checkDate.val() == null) {
-                            $note.text(VIS.Msg.getMsg("VA009_PLCheckDate"));
-                            return $note.css('visibility', 'visible');
-                        }
-                        var dt = new Date($checkDate.val());
-                        dt = new Date(dt.setHours(0, 0, 0, 0));
-                        var acctdate = new Date($acctDate.val());
-                        acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
-                        if (dt > acctdate) {
-                            $note.text(VIS.Msg.getMsg("VIS_CheckDateCantbeGreaterSys"));
-                            return $note.css('visibility', 'visible');
-                        }
-                    }
-
-                    if (parseInt($cmbCurrencies.val()) == 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_PlsSelectCurrency"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    var paramString = $From_cmbBank.val() + "," + $cmbCurrencies.val() + "," + $acctDate.val().toString() +
-                        "," + $cmbCurrencyType.val() + "," + VIS.Env.getCtx().getAD_Client_ID() + "," + $OrgCmb.val();
-                    var dr = VIS.dataContext.getJSONRecord("VA009/Payment/CheckConversionRate", paramString);
-                    if (dr <= 0) {
-                        $note.text(VIS.Msg.getMsg("VA009_ConversionRateNotFound"));
-                        return $note.css('visibility', 'visible');
-                    }
-
-                    $note.css('visibility', 'hidden');
-
-                    var _data = {};
-                    console.log(parseFloat(txtAmount.getValue()));
-                    _data = {
-                        OrgID: parseInt($OrgCmb.val()), isReceipt: $isReceipt.prop('checked'), isPayment: $isPayment.prop('checked'), fromBank: parseInt($From_cmbBank.val()),
-                        toBank: parseInt($To_cmbBank.val()), amount: parseFloat(txtAmount.getValue()), paymentMethod: parseInt($paymentMthd.val()), currencyID: parseInt($cmbCurrencies.val()),
-                        currencyType: $cmbCurrencyType.val(), transDate: VIS.Utility.Util.getValueOfDate($trnsDate.val()), acctDate: VIS.Utility.Util.getValueOfDate($acctDate.val()),
-                        clientID: VIS.Env.getCtx().getAD_Client_ID(), PayBase: $('option:selected', $paymentMthd).attr('paybase'), CheckNo: $txtCheckNo.val(), CheckDate: VIS.Utility.Util.getValueOfDate($checkDate.val()),
-                        APDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_APTargetDocType.val()), ARDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_ARTargetDocType.val())
-                    };
-                    MsgReturn = "";
-                    b2bPayment(_data);
+                    //Target Type field Validation Message
+                    VIS.ADialog.info(("VA009_PLSelectTargetDocType"));
+                    BatchGrd.selectNone();
                     return false;
-                };
-
-                b2bDialog.onCancelCLick = function () {
-                    B2BDispose();
-                };
-
-                b2bDialog.onClose = function () {
-                    B2BDispose();
-
-                };
-                this.vetoablechange = function (evt) {
-                    console.log(evt.propertyName);
-                    if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
-                        txtAmount.setValue(evt.newValue);
-                    }
-                };
-                function InitializeEvents() {
-
-                    $isPayment.on("click", function (e) {
-                        var target = $(e.target);
-                        if (e.target.type == 'checkbox') {
-                            if (target.prop("checked") == true) {
-                                $isReceipt.prop('checked', false);
-                                loadBankAccount($From_cmbBank, organizationids);
-                                loadToBankAccount($To_cmbBank, []);
-                            }
-                        }
-                    });
-
-                    $isReceipt.on("click", function (e) {
-                        var target = $(e.target);
-                        if (e.target.type == 'checkbox') {
-                            if (target.prop("checked") == true) {
-                                $isPayment.prop('checked', false);
-                                loadToBankAccount($To_cmbBank, organizationids);
-                                loadBankAccount($From_cmbBank, []);
-                            }
-                        }
-                    });
-
-                    $OrgCmb.on("change", function () {
-
-                        //#Commented Code because we don't need to chnage the selected Payment or Receipt Checkbox at the time of Org Change
-
-                        //if ($isReceipt.prop('checked') || $isPayment.prop('checked')) {
-                        //    $isReceipt.prop('checked', false);
-                        //    $isPayment.prop('checked', false);
-                        //    organizationids = [];
-                        //}
-
-                        //# end Commented code  
-                        if (parseInt($OrgCmb.val()) > 0) {
-                            organizationids = [];
-                            organizationids.push($OrgCmb.val());
-                            $OrgCmb.removeClass('vis-ev-col-mandatory');
-
-                            if ($isPayment.prop("checked") == true) {
-                                loadBankAccount($From_cmbBank, organizationids);
-                                loadToBankAccount($To_cmbBank, []);
-                            }
-                            if ($isReceipt.prop("checked") == true) {
-                                loadToBankAccount($To_cmbBank, organizationids);
-                                loadBankAccount($From_cmbBank, []);
-                            }
-                        }
-                        else {
-                            $OrgCmb.addClass('vis-ev-col-mandatory');
-                        }
-                        //Rakesh(VA228):Reset Document Type
-                        _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1,0);
-                        _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2,0);
-                    });
-
-                    $From_cmbBank.on("change", function () {
-                        if (parseInt($From_cmbBank.val()) > 0) {
-                            $From_cmbBank.removeClass('vis-ev-col-mandatory');
-                            //Document Type as per Bank Account's Org
-                            _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, $From_cmbBank.val());
-
-                        }                      
-                        else {
-                            $From_cmbBank.addClass('vis-ev-col-mandatory');
-                            _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
-                        }
-                    });
-
-                    $To_cmbBank.on("change", function () {
-                        if (parseInt($To_cmbBank.val()) > 0) {
-                            $To_cmbBank.removeClass('vis-ev-col-mandatory');
-                            //Document Type as per Bank Account's Org
-                            _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, $To_cmbBank.val());
-                        }
-                        else {
-                            $To_cmbBank.addClass('vis-ev-col-mandatory');
-                            _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1,0);
-
-                        }
-                    });
-
-                    $cmbCurrencies.on("change", function () {
-                        if (parseInt($cmbCurrencies.val()) > 0) {
-                            $cmbCurrencies.removeClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $cmbCurrencies.addClass('vis-ev-col-mandatory');
-                        }
-                    });
-
-                    // change the color if the value is change other than 0
-                    txtAmount.getControl().on("change", function () {
-                        if (parseInt(txtAmount.getValue()) > 0) {
-                            txtAmount.getControl().removeClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            txtAmount.getControl().addClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $paymentMthd.on("change", function () {
-                        if (parseInt($paymentMthd.val()) > 0) {
-                            $paymentMthd.removeClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $paymentMthd.addClass('vis-ev-col-mandatory');
-                        }
-
-                        if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
-                            getCheckNo();
-                            $txtCheckNo.removeAttr("disabled");
-                            $txtCheckNo.css('background-color', 'white');
-                            $txtCheckNo.addClass('vis-ev-col-mandatory');
-                            $checkDate.removeAttr("disabled");
-                            $checkDate.css('background-color', 'white');
-                            $checkDate.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $txtCheckNo.val("");
-                            $txtCheckNo.attr('disabled', 'disabled');
-                            $txtCheckNo.removeClass('vis-ev-col-mandatory');
-                            $txtCheckNo.css('background-color', '#ededed');
-                            $checkDate.val("");
-                            $checkDate.attr('disabled', 'disabled');
-                            $checkDate.removeClass('vis-ev-col-mandatory');
-                            $checkDate.css('background-color', '#ededed');
-                        }
-                    });
-
-                    //click event of get check no button
-                    $getNextChkno.on("click", function () {
-
-                        if (parseInt($paymentMthd.val()) > 0) {
-                            if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
-                                getCheckNo();
-                            }
-                        }
-                    });
-                };
-
-                //Set Mandatory and Non-Mandatory
-                function SetMandatory(value) {
-                    if (value)
-                        return '#FFB6C1';
-                    else
-                        return 'White';
-                };
-
-                function b2b_getControls() {
-                    $OrgCmb = $b2b.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $From_cmbBank = $b2b.find("#VA009_POP_cmbFromBank_" + $self.windowNo);
-                    $To_cmbBank = $b2b.find("#VA009_POP_cmbToBank_" + $self.windowNo);
-                    $isPayment = $b2b.find("#VA009_Payment_" + $self.windowNo);
-                    $isReceipt = $b2b.find("#VA009_Receipt_" + $self.windowNo);
-                    $cmbCurrencyType = $b2b.find("#VA009_cmbCurrencyType_" + $self.windowNo);
-                    $paymentMthd = $b2b.find("#VA009_cmbPayMthd_" + $self.windowNo);
-                    $cmbCurrencies = $b2b.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
-                    $txtAmt = $b2b.find("#VA009_Amount" + $self.windowNo);
-                    $trnsDate = $b2b.find("#VA009_TransactionDate" + $self.windowNo);
-                    $acctDate = $b2b.find("#VA009_AccountDate" + $self.windowNo);
-                    $txtCheckNo = $b2b.find("#VA009_Chqnotxt_" + $self.windowNo);
-                    $checkDate = $b2b.find("#VA009_CheckDate_" + $self.windowNo);
-                    $note = $b2b.find("#VA009_Note" + $self.windowNo);
-                    $getNextChkno = $b2b.find("#VA009_getCheckNo_" + $self.windowNo);
-                    $OrgCmb.addClass('vis-ev-col-mandatory');
-                    $From_cmbBank.addClass('vis-ev-col-mandatory');
-                    $To_cmbBank.addClass('vis-ev-col-mandatory');
-                    txtAmount.getControl().addClass('vis-ev-col-mandatory');//for default color to control
-                    $cmbCurrencies.addClass('vis-ev-col-mandatory');
-                    $paymentMthd.addClass('vis-ev-col-mandatory');
-                    //Rakesh(VA228):Store Doc type element in variable
-                    $POP_APTargetDocType = $b2b.find("#VA009_POP_cmbAPDocType_" + $self.windowNo);
-                    $POP_APTargetDocType.addClass('vis-ev-col-mandatory');
-                    $POP_ARTargetDocType = $b2b.find("#VA009_POP_cmbARDocType_" + $self.windowNo);
-                    $POP_ARTargetDocType.addClass('vis-ev-col-mandatory');
-
-                };
-
-                $txtCheckNo.on('keydown keyup', function (e) {
-                    var value = String.fromCharCode(e.which) || e.key;
-                    var regExp = /[0-9\.\,]/;
-                    // Only numbers, alphabets
-                    if (!regExp.test(value)
-                        && e.which != 8   // backspace
-                        && e.which != 46  // delete
-                        && (e.which < 65 || e.which > 90)
-                        && (e.which < 37 || e.which > 40)
-                        && e.which != 39 && e.which != 37  //arrow left and right
-                        && (e.which < 96 || e.which > 105))// for NumPad
-                    {
-                        return false;
-                    }
-                    if (e.shiftKey) {
-                        e.preventDefault();
-                    }
-                });
-                function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
-                    function callbackloadorg(dr) {
-                        $OrgCmb.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $OrgCmb.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $OrgCmb.prop('selectedIndex', 0);
-                    };
-                };
-
-                function loadPaymentMthd() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
-                    function callbackloadpaymthds(dr) {
-                        $paymentMthd.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                if (("LCPB").contains(dr[i].VA009_PaymentBaseType)) {
-                                }
-                                else {
-                                    $paymentMthd.append("<option paybase = " + dr[i].VA009_PaymentBaseType + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">"
-                                        + VIS.Utility.encodeText(dr[i].VA009_Name) + " </option>");
-                                }
-                            }
-                        }
-                        $paymentMthd.prop('selectedIndex', 0);
-                    }
-                };
-
-                function loadCurrencyType() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
-
-                    function callbackCurrencyType(dr) {
-                        $cmbCurrencyType.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                                if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
-                                    defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
-                                }
-                            }
-                            //$cmbCurrencyType.prop('selectedIndex', 1);
-                            $cmbCurrencyType.val(defaultCurrenyType)
-                        }
-                    }
-                };
-
-                function loadCurrency() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencies", null, callbackCurrencyType);
-
-                    function callbackCurrencyType(dr) {
-                        $cmbCurrencies.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $cmbCurrencies.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + ">" + VIS.Utility.encodeText(dr[i].ISO_Code) + "</option>");
-                            }
-                            $cmbCurrencies.prop('selectedIndex', 0);
-                        }
-                    }
-                };
-
-                function loadBankAccount($cmbBankAccount, organizationids) {
-
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": 0, "Orgs": organizationids.toString() }, callbackloadbankAcct);
-
-                    function callbackloadbankAcct(dr) {
-                        $cmbBankAccount.find('option').remove();
-                        $cmbBankAccount.append("<option value='0'></option>");
-                        if (dr != null) {
-                            if (dr.length > 0) {
-                                for (var i in dr) {
-                                    $cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
-                                }
-                            }
-                        }
-                    }
-                };
-
-                function loadToBankAccount($cmbToBankAccount, organizationids) {
-
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": 0, "Orgs": organizationids.toString() }, callbackloadbankAcct);
-
-                    function callbackloadbankAcct(dr) {
-                        $cmbToBankAccount.find('option').remove();
-                        $cmbToBankAccount.append("<option value='0'></option>");
-                        if (dr != null) {
-                            if (dr.length > 0) {
-                                for (var i in dr) {
-                                    $cmbToBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
-                                }
-                            }
-                        }
-                    }
-                };
-
-                //To get current Next Number from seleted bank and payment method
-                function getCheckNo() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/getCheckNo", { "C_BankAccount_ID": parseInt($From_cmbBank.val()), "VA009_PaymentMethod_ID": parseInt($paymentMthd.val()) }, callbackgetCheckNo);
-
-                    function callbackgetCheckNo(dr) {
-                        $txtCheckNo.val();
-                        $note.css('visibility', 'hidden');
-                        if (dr != null) {
-                            $txtCheckNo.val(dr);
-                            $txtCheckNo.removeClass('vis-ev-col-mandatory');
-                        }
-                    }
-                };
-                //reset for Amount Field...
-                this.vetoablechange = function (evt) {
-                    if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
-                        txtAmount.setValue(evt.newValue);
-                    }
-                };
-                function B2BDispose() {
-                    $b2b = null;
-                    _b2b = null;
                 }
-            },
-
-            Pay_ManualDialog: function () {
-                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:210px !important'>");
-                var _payManual = "";
-                _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
-                    + "</div ></div > "
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + " </div></div>"
-                    //currency type list
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
-                    //trx date
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "'  placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + " </div></div>"
-
-                    + "</div>";
-                $payManual.append(_payManual);
-                payManualGetControls();
-
-                var now = new Date();
-                var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
-                $POP_DateAcct.val(_today);
-                $POP_DateTrx.val(_today);
-                var manualDialog = new VIS.ChildDialog();
-                manualDialog.setContent($payManual);
-                manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
-                manualDialog.setWidth("65%");
-                manualDialog.setEnableResize(true);
-                manualDialog.setModal(true);
-                manualDialog.show();
-                loadOrg();
-                //populate banks based on selected organization in dialog
-                loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
-                loadPayMthd();
-                loadCurrencyType();
-                //Rakesh(VA228):10/Sep/2021 -> Load APR target base doc type
-                _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-
-                function payManualGetControls() {
-                    $POP_cmbBank = $payManual.find("#VA009_POP_cmbBank_" + $self.windowNo);
-                    $POP_cmbBankAccount = $payManual.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
-                    $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
-                    $POP_DateAcct = $payManual.find("#VA009_AccountDate_" + $self.windowNo);
-                    $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
-                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
-                    $POP_DateTrx = $payManual.find("#VA009_TransactionDate" + $self.windowNo);
-                    $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    $POP_PayMthd.addClass('vis-ev-col-mandatory');
-                    $POP_CurrencyType.addClass('vis-ev-col-mandatory');
-                    $POP_cmbBank.addClass('vis-ev-col-mandatory');
-                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    //Rakesh(VA228):Store Doc type element in variable
-                    $POP_targetDocType = $payManual.find("#VA009_POP_cmbDocType_" + $self.windowNo);
-                    $POP_targetDocType.addClass('vis-ev-col-mandatory');
-                };
-
-                $POP_cmbOrg.on("change", function () {
-                    //to set org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
-                        $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        //populate banks based on selected organization in dialog
-                        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
-                        //refresh the bank and BankAccount dropdowns and make it as mandatory
-                        $POP_cmbBank.val(0).prop('selected', true);
-                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
-                        $POP_cmbBankAccount.empty();
-                        $POP_cmbBankAccount.append("<option value='0'></option>");
-                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
-                    }
-                    //Rakesh(VA228):Reset Document type
-                    _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-                });
-
-                $POP_cmbBank.on("change", function () {
-                    $POP_cmbBankAccount.empty();
-                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    //to set org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
-                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_cmbBank.removeClass('vis-ev-col-mandatory');
-                    }
-                    //to get bank account of selected organization assigned by Ashish on 28 May 2020
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
-
-                    function callbackloadbankAcct(dr) {
-                        $POP_cmbBankAccount.append("<option value='0'></option>");
-                        if (dr != null) {
-                            if (dr.length > 0) {
-                                for (var i in dr) {
-                                    $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
-                                }
-                            }
-                        }
-                    }
-                });
-
-                $POP_CurrencyType.on("change", function () {
-                    //to set org mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) == 0) {
-                        $POP_CurrencyType.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
-                    }
-                });
-
-                $POP_PayMthd.on("change", function () {
-                    //to set PAYMENT MENNDATORY mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) == 0) {
-                        $POP_PayMthd.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_PayMthd.removeClass('vis-ev-col-mandatory');
-                    }
-                });
-
-                $POP_DateAcct.on("change", function () {
-                    //to set Date acct mandatory given by ashish on 28 May 2020
-                    if ($POP_DateAcct.val() == "") {
-                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_DateAcct.removeClass('vis-ev-col-mandatory');
-                    }
-                });
-
-                $POP_cmbBankAccount.on("change", function () {
-                    //to set bank account mandatory given by ashish on 28 May 2020
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
-                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    }
-                    else {
-                        $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
-                    }
-                });
-
-                //to load all organization 
-                function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
-                    function callbackloadorg(dr) {
-                        $POP_cmbOrg.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $POP_cmbOrg.prop('selectedIndex', 0);
-                    };
-                };
-
-                function loadPayMthd() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
-                    function callbackloadpaymthds(dr) {
-                        if (dr.length > 1)
-                            $POP_PayMthd.append(" <option value = 0></option>");
-
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                if (("LCPBS").contains(dr[i].VA009_PaymentBaseType)) {
-                                }
-                                else
-                                    $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
-                            }
-                        }
-                        $POP_PayMthd.prop('selectedIndex', 0);
-                    }
-                };
-                //load currency type
-                function loadCurrencyType() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
-
-                    function callbackCurrencyType(dr) {
-                        $POP_CurrencyType.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_CurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                                if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
-                                    defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
-                                }
-                            }
-                        }
-                    }
-                };
-
-                function SetMandatory(value) {
-                    if (value)
-                        return '#FFB6C1';
-                    else
-                        return 'White';
-                };
-
-                manualDialog.onOkClick = function () {
-                    if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
-                            //Rakesh(VA228):Make Document Type selection mandatory
-                            if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                        if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                            if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                                //Check CurrencyType Selected or not
-                                                if ($POP_CurrencyType.val() > 0) {
-                                                    //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
-                                                    var isValid = true;
-                                                    if (isValid) {
-                                                        $bsyDiv[0].style.visibility = "visible";
-                                                        $.ajax({
-                                                            url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
-                                                            type: "POST",
-                                                            datatype: "json",
-                                                            // contentType: "application/json; charset=utf-8",
-                                                            async: true,
-                                                            data: ({
-                                                                InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
-                                                                BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
-                                                                DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
-                                                                , docTypeID: VIS.Utility.Util.getValueOfInt($POP_targetDocType.val())
-                                                            }),
-                                                            success: function (result) {
-                                                                result = JSON.parse(result);
-                                                                $divPayment.find('.VA009-payment-wrap').remove();
-                                                                $divBank.find('.VA009-right-data-main').remove();
-                                                                $divBank.find('.VA009-accordion').remove();
-                                                                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                                                                //after successfully created Payment selectall checkbox should be false
-                                                                $selectall.prop('checked', false);
-                                                                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                                                                loadPaymetsAll();
-                                                                $bsyDiv[0].style.visibility = "hidden";
-                                                                VIS.ADialog.info("", null, result, "");
-                                                            },
-                                                            error: function (ex) {
-                                                                console.log(ex);
-                                                                $bsyDiv[0].style.visibility = "hidden";
-                                                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                                            }
-                                                        });
-                                                    }
-                                                    else {
-                                                        VIS.ADialog.info("VA009_PlzSelctapprPM");
-                                                        return false;
-                                                    }
-                                                }
-                                                else {
-                                                    VIS.ADialog.info("VA009_SelectConversionType");
-                                                    return false;
-                                                }
-                                            }
-                                            else {
-                                                VIS.ADialog.info(("VA009_PLSelectAcctDate"));
-                                                return false;
-                                            }
-                                        }
-                                        else {
-                                            VIS.ADialog.info("VA009_PLSelectPaymentMethod");
-                                            return false;
-                                        }
-                                    }
-                                    else {
-                                        VIS.ADialog.info("VA009_PLSelectBankAccount");
-                                        return false;
-                                    }
-                                }
-                                else {
-                                    VIS.ADialog.info("VA009_PLSelectBank");
-                                    return false;
-                                }
-                            } else {
-                                VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
-                                Cashgrd.selectNone();
-                                return false;
-                            }
-                        }
-                        else {
-                            VIS.ADialog.info(("VA009_PlsSelectOrg"));
-                            return false;
-                        }
-                    }
-                    else
-                        VIS.ADialog.info("VA009_PlzSelct1Pay");
-                };
-
-                manualDialog.onCancelCLick = function () {
-                    payManualDispose();
-                };
-
-                manualDialog.onClose = function () {
-                    payManualDispose();
-
-                };
-
-                function payManualDispose() {
-                    $payManual = null;
-                    _payManual = null;
-                };
-
-            },
-
-            Pay_ManualDialogBP: function () {
-                var payAmount;
-                lblAmount = $("<label>");
-                payAmount = new VIS.Controls.VAmountTextBox("VA009_cmbAmt_" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));//for amount textbox control
-                lblAmount.append(VIS.Msg.getMsg("Amount"));
-                payAmount.setValue(0);
-                format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);//formating the value of amount into number
-                divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
-                var $DivAmtCtrlWrp = $("<div class='vis-control-wrap'>");
-                divAmount.append($DivAmtCtrlWrp);
-                $DivAmtCtrlWrp.append(payAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
-                $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:435px'>");
-                //var _payManual = "";
-                _payManual = $("<div class='VA009-popfrm-wrap' style='height:auto !important'>");
-
-                _addOrg = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                    + "</div></div>"
-
-                    //trx date
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_TransactionDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
-                    + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
-                    + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + "</div> </div>"
-
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap' id='VA009_POP_cmbBP_" + $self.windowNo + "'>"
-                    //+ "<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>"
-                    //+ "<div></div>"
-                    + "</div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbLocation_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("BPLocation") + "</label>"
-                    + "</div></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
-                    + "</div></div>"
-
-                    //currency type list
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
-                    + "</div></div>"
-
-                    //+ "<div class='VA009-popform-data'>"
-                    //+ "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
-                    //+ "<select id='VA009_cmbCharge_" + $self.windowNo + "'>"
-                    //+ "</select></div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap' id='VA009_Charge_" + $self.windowNo + "'>"
-                    //+ "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
-                    + "</div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
-                    + "</select>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
-                    + "</div></div>");
-
-                //      +"<div class='VA009-popform-data'>"
-                //      + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
-                //      + "<input type='text' id='VA009_cmbAmt_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
-
-                _addAmt = ("<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheck_" + $self.windowNo + "><div class='vis-control-wrap'>"
-                    + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_ChequeNo") + "</label>"
-                    + "</div> </div>"
-
-                    + "<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheckDate_" + $self.windowNo + "><div class='vis-control-wrap'>"
-                    + "<input type='Date' max='9999-12-31' id='VA009_chkDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
-                    + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
-                    + "</div> </div>"
-                    + "</div>"
-                    + "</div>");
-                _payManual.append(_addOrg).append(divAmount).append(_addAmt);//append the child tags to parent div
-                $payManual.append(_payManual);
-                payManualGetControls();
-                var manualDialog = new VIS.ChildDialog();
-                manualDialog.setContent($payManual);
-                manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
-                manualDialog.setHeight(window.innerHeight - 120);
-                manualDialog.setWidth("70%");
-                manualDialog.setEnableResize(true);
-                manualDialog.setModal(true);
-                manualDialog.show();
-                InitializeEvents()
-                loadAllData();
-                payAmount.addVetoableChangeListener(this);
-                function SetMandatory(value) {
-                    if (value)
-                        return '#FFB6C1';
-                    else
-                        return 'White';
-                };
-                function payManualGetControls() {
-                    $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
-                    $POP_cmbDocType = $payManual.find("#VA009_POP_cmbDocType_" + $self.windowNo);
-                    $POP_DateTrx = $payManual.find("#VA009_TransactionDate_" + $self.windowNo);
-                    $POP_DateAcct = $payManual.find("#VA009_AccountDate_" + $self.windowNo);
-                    $POP_cmbBank = $payManual.find("#VA009_POP_cmbBank_" + $self.windowNo);
-                    $POP_cmbBankAccount = $payManual.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
-                    $POP_cmbBP = $payManual.find("#VA009_POP_cmbBP_" + $self.windowNo);
-                    $POP_lookCharge = $payManual.find("#VA009_Charge_" + $self.windowNo);
-                    //BPartner look Up
-                    _BusinessPartnerLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3499, VIS.DisplayType.Search);
-                    $BpartnerControl = new VIS.Controls.VTextBoxButton("C_BPartner_ID", true, false, true, VIS.DisplayType.Search, _BusinessPartnerLookUp);
-                    var $POP_cmbBPCtrlwrp = $('<div class="vis-control-wrap">');
-                    var $POP_cmbBPBtnwrp = $('<div class="input-group-append">');
-                    $POP_cmbBP.append($POP_cmbBPCtrlwrp);
-                    $POP_cmbBP.append($POP_cmbBPBtnwrp);
-                    $POP_cmbBPCtrlwrp.append($BpartnerControl.getControl().attr('placeholder', ' ').attr('data-placeholder', '').attr('data-hasbtn', ' ')).append("<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>");
-                    $POP_cmbBPBtnwrp.append($BpartnerControl.getBtn(0));
-                    $BpartnerControl.getControl().addClass('vis-ev-col-mandatory');
-                    //end
-                    //Charge look Up
-                    //VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.TableDir, "C_Charge_ID", 0, false, null);
-                    //_charge = new VIS.Controls.VComboBox("C_Charge_ID", true, false, true, lookup, 50);
-
-                    _ChargeLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.Search);
-                    $ChargeControl = new VIS.Controls.VTextBoxButton("C_Charge_ID", true, false, true, VIS.DisplayType.Search, _ChargeLookUp);
-                    var $pop_lookchargeCtrlwrp = $('<div class="vis-control-wrap">');
-                    var $pop_lookchargeBtnwrp = $('<div class="input-group-append">');
-                    $POP_lookCharge.append($pop_lookchargeCtrlwrp);
-                    $POP_lookCharge.append($pop_lookchargeBtnwrp);
-                    $pop_lookchargeCtrlwrp.append($ChargeControl.getControl().attr('placeholder', ' ').attr('data-placeholder', '').attr('data-hasbtn', ' ')).append("<label>" + VIS.Msg.getMsg("Charge") + "</label>");
-                    $pop_lookchargeBtnwrp.append($ChargeControl.getBtn(0));
-                    //end
-
-                    $POP_cmbLocation = $payManual.find("#VA009_POP_cmbLocation_" + $self.windowNo);
-                    $POP_Currency = $payManual.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
-                    $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
-                    //$POP_Charge = $payManual.find("#VA009_cmbCharge_" + $self.windowNo);
-                    $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
-                    //$POP_Amt = $payManual.find("#VA009_cmbAmt_" + $self.windowNo);
-                    $POP_ChkNo = $payManual.find("#VA009_txtCheck_" + $self.windowNo);
-                    $POP_ChkDate = $payManual.find("#VA009_chkDate_" + $self.windowNo);
-                    $DivChkNo = $payManual.find("#VA009_DivCheck_" + $self.windowNo);
-                    $DivChkDate = $payManual.find("#VA009_DivCheckDate_" + $self.windowNo);
-                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
-                    $POP_DateTrx.addClass('vis-ev-col-mandatory');
-                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                    $POP_cmbDocType.addClass('vis-ev-col-mandatory');
-                    $POP_cmbBank.addClass('vis-ev-col-mandatory');
-                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                    $POP_Currency.addClass('vis-ev-col-mandatory');
-                    $POP_PayMthd.addClass('vis-ev-col-mandatory');
-                    payAmount.getControl().addClass('vis-ev-col-mandatory');//for default background color to control
-                    $POP_CurrencyType.addClass('vis-ev-col-mandatory');
-                    $POP_cmbLocation.addClass('vis-ev-col-mandatory');
-                };
-
-                // for restricting the special keys from the user
-                $POP_ChkNo.on('keydown keyup', function (e) {
-                    var value = String.fromCharCode(e.which) || e.key;
-                    var regExp = /[0-9\.\,]/;
-                    // Only numbers, alphabets
-                    if (!regExp.test(value)
-                        && e.which != 8   // backspace
-                        && e.which != 46  // delete
-                        && (e.which < 65 || e.which > 90)
-                        && (e.which < 37 || e.which > 40)
-                        && e.which != 39 && e.which != 37  //arrow left and right
-                        && (e.which < 96 || e.which > 105))// for NumPad
-                    {
-                        return false;
-                    }
-                    if (e.shiftKey) {
-                        e.preventDefault();
-                    }
-                });
-                function InitializeEvents() {
-                    $POP_cmbBank.on("change", function () {
-                        $POP_cmbBankAccount.empty();
-                        //to set bank account mandatory given by ashish on 28 May 2020
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
-                            $POP_cmbBank.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_cmbBank.removeClass('vis-ev-col-mandatory');
-                        }
-                        //to get bank account of selected organization assigned by Ashish on 28 May 2020
-                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
-
-                        function callbackloadbankAcct(dr) {
-                            $POP_cmbBankAccount.empty();
-                            $POP_cmbBankAccount.append("<option value='0'></option>");
-                            if (dr != null) {
-                                if (dr.length > 0) {
-                                    for (var i in dr) {
-                                        $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
-                                    }
-                                }
-                            }
-                        }
-                    });
-                    $POP_cmbBankAccount.on("change", function () {
-                        //to set bank account mandatory given by ashish on 28 May 2020
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
-                            $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $POP_cmbDocType.on("change", function () {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) == 0) {
-                            $POP_cmbDocType.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_cmbDocType.removeClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $POP_DateTrx.on("change", function () {
-                        if ($POP_DateTrx.val() == "") {
-                            $POP_DateTrx.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_DateTrx.removeClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $POP_DateAcct.on("change", function () {
-                        if ($POP_DateAcct.val() == "") {
-                            $POP_DateAcct.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_DateAcct.removeClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $POP_cmbOrg.on("change", function () {
-                        $POP_cmbBank.empty();
-                        $POP_cmbDocType.empty();
-                        $POP_cmbBankAccount.empty();
-                        $POP_cmbLocation.empty();
-                        // $POP_Charge.empty();
-                        $POP_PayMthd.empty();
-                        //change by Amit
-                        if ($POP_cmbOrg.val() == "0") {
-                            $POP_cmbOrg.addClass('vis-ev-col-mandatory');
-                            //$POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
-                        }
-                        loadDocType();
-                        loadbanks($POP_cmbBank);
-                        //loadBP();
-                        //loadCharge();
-                        loadCurrencyType();
-                        loadCurrencies();
-                        loadPaymentMthd();
-                    });
-                    $BpartnerControl.fireValueChanged = function () {
-                        if ($BpartnerControl.value != null) {
-                            $BpartnerControl.getControl().removeClass('vis-ev-col-mandatory');
-                        }
-                        loadLocation();
-                    };
-                    $POP_cmbLocation.on("change", function () {
-                        if ($POP_cmbLocation.val() == "0") {
-                            $POP_cmbLocation.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_cmbLocation.removeClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $POP_Currency.on("change", function () {
-                        if ($POP_Currency.val() == "0") {
-                            $POP_Currency.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_Currency.removeClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $POP_CurrencyType.on("change", function () {
-                        if ($POP_CurrencyType.val() == "0") {
-                            $POP_CurrencyType.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
-                        }
-                    });
-                    $POP_PayMthd.on("change", function () {
-                        if ($POP_PayMthd.val() == "0") {
-                            $POP_PayMthd.addClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            $POP_PayMthd.removeClass('vis-ev-col-mandatory');
-                        }
-                        if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
-                            $DivChkDate.show();
-                            $DivChkNo.show();
-                        }
-                        else {
-                            $DivChkDate.hide();
-                            $DivChkNo.hide();
-                        }
-                    });
-
-                    //onchange for changinng background-color if value is entered and validate
-                    payAmount.getControl().on('change', function () {
-                        if (parseFloat(payAmount.getValue()) > 0) {
-                            payAmount.getControl().removeClass('vis-ev-col-mandatory');
-                        }
-                        else {
-                            payAmount.getControl().addClass('vis-ev-col-mandatory');
-                        }
-                    });
-                };
-                function loadAllData() {
-                    loadOrg();
-                };
-                function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
-                    function callbackloadorg(dr) {
-                        $POP_cmbOrg.empty();
-                        $POP_cmbOrg.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $POP_cmbOrg.prop('selectedIndex', 0);
-                    };
-                };
-                //function loadBP() {
-                //    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBPartnerName", { "orgs": $POP_cmbOrg.val() }, callbackloadBP);
-                //    function callbackloadBP(dr) {
-                //        $POP_cmbBP.append(" <option value = 0></option>");
-                //        if (dr.length > 0) {
-                //            for (var i in dr) {
-                //                $POP_cmbBP.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_BPartner_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
-                //            }
-                //        }
-                //        $POP_cmbBP.prop('selectedIndex', 0);
-                //    }
-                //};
-                function loadLocation() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetLocation", { "BP": $BpartnerControl.value }, callbackloadLocation);
-                    function callbackloadLocation(dr) {
-                        $POP_cmbLocation.empty();
-                        $POP_cmbLocation.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbLocation.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Location_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
-                            }
-                        }
-                        $POP_cmbLocation.prop('selectedIndex', 0);
-                    }
-                };
-                function loadPaymentMthd() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
-                    function callbackloadpaymthds(dr) {
-                        $POP_PayMthd.empty();
-                        $POP_PayMthd.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                if (("LCPB").contains(dr[i].VA009_PaymentBaseType)) {
-                                }
-                                else {
-                                    $POP_PayMthd.append("<option paybase = " + dr[i].VA009_PaymentBaseType + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">"
-                                        + VIS.Utility.encodeText(dr[i].VA009_Name) + " </option>");
-                                }
-                            }
-                        }
-                        $POP_PayMthd.prop('selectedIndex', 0);
-                    }
-                };
-                function loadDocType() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetDocumentType", { "orgs": $POP_cmbOrg.val() }, callbackloadDocType);
-                    function callbackloadDocType(dr) {
-                        $POP_cmbDocType.empty();
-                        $POP_cmbDocType.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_cmbDocType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i]["C_Charge_ID"]) + ">" + VIS.Utility.Util.getValueOfString(dr[i]["Name"]) + "</option>");
-                            }
-                        }
-                        $POP_cmbDocType.prop('selectedIndex', 0);
-                    }
-                };
-                //   function loadCharge() {
-                //    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCharge", { "orgs": $POP_cmbOrg.val() }, callbackloadCharge);
-                //    function callbackloadCharge(dr) {
-                //        $POP_Charge.empty();
-                //        $POP_Charge.append(" <option value = 0></option>");
-                //        if (dr.length > 0) {
-                //            for (var i in dr) {
-                //                $POP_Charge.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Charge_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
-                //            }
-                //        }
-                //        $POP_Charge.prop('selectedIndex', 0);
-                //    }
-                //};
-                function loadbanks(bankcmbdiv) {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBank", { "Orgs": $POP_cmbOrg.val() }, callbackloadbank);
-                    function callbackloadbank(dr) {
-                        if (dr.length > 0) {
-                            bankcmbdiv.find('option').remove();
-                            bankcmbdiv.append("<option value='0'></option>");
-                            for (var i in dr) {
-                                bankcmbdiv.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Bank_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                            }
-                            bankcmbdiv.prop('selectedIndex', 0);
-                        }
-                    }
-                };
-                function loadCurrencies() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCurrencies", null, callbackloadCurrencies);
-                    function callbackloadCurrencies(dr) {
-                        $POP_Currency.empty();
-                        $POP_Currency.append(" <option value = 0></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_Currency.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Currency_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].ISO_Code) + "</option>");
-                            }
-                        }
-                        $POP_Currency.prop('selectedIndex', 0);
-                    }
-                };
-                function loadCurrencyType() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
-                    function callbackCurrencyType(dr) {
-                        $POP_CurrencyType.empty();
-                        $POP_CurrencyType.append("<option value='0'></option>");
-                        if (dr.length > 0) {
-                            for (var i in dr) {
-                                $POP_CurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
-                                if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
-                                    defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
-                                }
-                            }
-                        }
-                    }
-                };
-                payAmount.addVetoableChangeListener(this);
-                manualDialog.onOkClick = function () {
-                    if (!isValidPayment()) {
-                        return false;
-                    }
-                    else {
-                        createPayment();
-                    }
-                };
-
-                manualDialog.onCancelCLick = function () {
-                    payManualDispose();
-                };
-
-                manualDialog.onClose = function () {
-                    payManualDispose();
-
-                };
-                this.vetoablechange = function (evt) {
-                    if (evt.propertyName == "VA009_cmbAmt_" + $self.windowNo + "") {
-                        payAmount.setValue(evt.newValue);
-                    }
-                };
-                function payManualDispose() {
-                    $payManual = null;
-                    _payManual = null;
-                };
-
-                function isValidPayment() {
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) > 0) {
-                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
-                                if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
-                                    if ($POP_DateTrx.val() != "" && $POP_DateTrx.val() != null) {
-                                        if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                                            if (VIS.Utility.Util.getValueOfInt($BpartnerControl.value) > 0) {
-                                                if (VIS.Utility.Util.getValueOfInt($POP_cmbLocation.val()) > 0) {
-                                                    if (VIS.Utility.Util.getValueOfInt($POP_Currency.val()) > 0) {
-                                                        if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) > 0) {
-                                                            if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
-                                                                if (VIS.Utility.Util.getValueOfDecimal(payAmount.getValue()) > 0) {
-                                                                    if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
-                                                                        if ($POP_ChkNo.val() != "" && $POP_ChkDate.val() != "") {
-                                                                            return true;
-                                                                        }
-                                                                        else {
-                                                                            VIS.ADialog.info("VA009_PLCheckNumber&Date");
-                                                                            return false;
-                                                                        }
-                                                                    }
-                                                                    return true;
-                                                                }
-                                                                else {
-                                                                    VIS.ADialog.info("VA009_PlsEnterAmount");
-                                                                    return false;
-                                                                }
-                                                            }
-                                                            else {
-                                                                VIS.ADialog.info("VA009_PlsSelectPayMethod");
-                                                                return false;
-                                                            }
-                                                        }
-                                                        else {
-                                                            VIS.ADialog.info("VA009_PlsSelectCurrencyType");
-                                                            return false;
-                                                        }
-                                                    }
-                                                    else {
-                                                        VIS.ADialog.info("VA009_PlsSelectCurrency");
-                                                        return false;
-                                                    }
-                                                }
-                                                else {
-                                                    VIS.ADialog.info("SelectBPLocation");
-                                                    return false;
-                                                }
-                                            }
-                                            else {
-                                                VIS.ADialog.info("SelectBusinessPartnerFirst");
-                                                return false;
-                                            }
-                                        }
-                                        else {
-                                            VIS.ADialog.info("VA009_PllsSelTAcctdate");
-                                            return false;
-                                        }
-                                    }
-                                    else {
-                                        VIS.ADialog.info("PllsSelTdate");
-                                        return false;
-                                    }
-                                }
-                                else {
-                                    VIS.ADialog.info("VA009_PLSelectBankAccount");
-                                    return false;
-                                }
-                            }
-                            else {
-                                VIS.ADialog.info("VA009_PLSelectBank");
-                                return false;
-                            }
-                        }
-                        else {
-                            VIS.ADialog.info("VA009_PLSelectDocumentType");
-                            return false;
-                        }
-                    }
-                    else {
-                        VIS.ADialog.info("VA009_PlsSelectOrg");
-                        return false;
-                    }
-                };
-
-                function createPayment() {
-                    var PaymentData = [];
-                    var DocNumber = "";
-                    PaymentData.push({
-                        Org: $POP_cmbOrg.val(), DocType: $POP_cmbDocType.val(), BankID: $POP_cmbBank.val(),
-                        BankAccountID: $POP_cmbBankAccount.val(), DateTrx: $POP_DateTrx.val(), DateAcct: $POP_DateAcct.val(),
-                        BPID: $BpartnerControl.value, BPLocation: $POP_cmbLocation.val(), CurrencyID: $POP_Currency.val(),
-                        CurrencyType: $POP_CurrencyType.val(), PaymentMethod: $POP_PayMthd.val(), PaymentAmount: payAmount.getValue(),
-                        CheckNo: $POP_ChkNo.val(), CheckDate: $POP_ChkDate.val(), charge: VIS.Utility.Util.getValueOfInt($ChargeControl.value)
-                    });
-                    $bsyDiv[0].style.visibility = "visible";
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayMannual",
-                        type: "POST",
-                        datatype: "json",
-                        // contentType: "application/json; charset=utf-8",
-                        async: true,
-                        data: ({
-                            PaymentData: JSON.stringify(PaymentData)
-                        }),
-                        success: function (result) {
-                            result = JSON.parse(result);
-                            DocNumber = "";
-                            //var SpilitedData = result.split(".", result.length);
-                            //DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
-                            //console.log(DocNumber);
-                            $divPayment.find('.VA009-payment-wrap').remove();
-                            $divBank.find('.VA009-right-data-main').remove();
-                            $divBank.find('.VA009-accordion').remove();
-                            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                            loadPaymetsAll();
-                            $bsyDiv[0].style.visibility = "hidden";
-                            //VIS.ADialog.info("", null, result, "");
-                            File_Para = 'M';
-                            if (DocNumber != "") {
-                                w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
-                                    .yes(function () {
-                                        SlctdPaymentIds = [];
-                                        SlctdOrderPaymentIds = [];
-                                        $selectall.prop('checked', false);
-                                        $divPayment.find(':checkbox').prop('checked', false);
-                                        prepareDataForPaymentFile(DocNumber, false);
-                                    })
-                                    .no(function () {
-                                        $bsyDiv[0].style.visibility = "hidden";
-                                        VIS.ADialog.info("", null, result, "");
-                                        console.log("user clicked NO")
-                                    });
-                            }
-                            else {
-                                VIS.ADialog.info("", null, result, "");
-                            }
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            $bsyDiv[0].style.visibility = "hidden";
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
-                };
+            }
+            else {
+                VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                BatchGrd.selectNone();
+                return false;
             }
         };
 
-        //*******************************************
-        //Function to load Banks 
-        //Parameter: Combobox of Bank, OrgIds Array
-        //*******************************************
-        function loadbanks(bankcmbdiv, ids) {
-            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBank", { "Orgs": ids.toString() }, callbackloadbank);
+        function callbackBatchPay(result) {
+            result = JSON.parse(result);
+            DocNumber = "";
+            //var SpilitedData = result.split(".", result.length);
+            //DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
+            //console.log(DocNumber);
+            $divPayment.find('.VA009-payment-wrap').remove();
+            $divBank.find('.VA009-right-data-main').remove();
+            $divBank.find('.VA009-accordion').remove();
+            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+            //after successfully created Payment selectall checkbox should be false
+            $selectall.prop('checked', false);
+            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+            loadPaymetsAll();
+            $bsyDiv[0].style.visibility = "hidden";
+
+            if (DocNumber != "") {
+                w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
+                    .yes(function () {
+                        $selectall.prop('checked', false);
+                        $divPayment.find(':checkbox').prop('checked', false);
+                        prepareDataForPaymentFile(DocNumber, true);
+                    })
+                    .no(function () {
+                        $bsyDiv[0].style.visibility = "hidden";
+                        VIS.ADialog.info("", null, result, "");
+                    });
+            }
+            else {
+                VIS.ADialog.info("", null, result, "");
+            }
+        };
+
+        BatchDialog.onCancelCLick = function () {
+            w2ui['BatchGrid'].clear();
+            BatchDispose();
+        };
+
+        BatchDialog.onClose = function () {
+            w2ui['BatchGrid'].clear();
+            BatchDispose();
+
+        };
+
+        function BatchDispose() {
+            _batch = null;
+            $batch = null;
+            STAT_cmbBank = null;
+            STAT_cmbBankAccount = null;
+            STAT_txtStatementNo = null;
+            STAT_ctrlLoadFile = null;
+            STAT_ctrlLoadFileTxt = null;
+            w2ui['BatchGrid'].destroy();
+        }
+    },
+
+    Split_Dialog: function () {
+        var SplitGrid, _Cheque_no = "";
+        var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
+        $bsyDiv[0].style.visibility = "visible";
+        $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
+        var _split = "";
+        _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='text' step='any' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
+            + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
+            + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
+
+            + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
+            + "</div>";
+
+        $split.append(_split);
+        Split_getControls();
+
+        var SplitDialog = new VIS.ChildDialog();
+
+        SplitDialog.setContent($split);
+        SplitDialog.setTitle(VIS.Msg.getMsg("VA009_LoadSplitPayment"));
+        SplitDialog.setWidth("60%");
+        SplitDialog.setEnableResize(true);
+        SplitDialog.setModal(true);
+        SplitDialog.show();
+        SplitGrid_Layout();
+        loadgrdSplit(callbackSplitPay);
+
+        function SplitGrid_Layout() {
+
+            var _Split_Columns = [];
+            if (_Split_Columns.length == 0) {
+                _Split_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
+                _Split_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
+                _Split_Columns.push({ field: "DocumentNo", caption: VIS.Msg.getMsg("VA009_Invoice/Order"), sortable: true, size: '10%' });
+                _Split_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '10%' });
+                _Split_Columns.push({
+                    field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), sortable: true, size: '10%', style: 'text-align: right', render: function (record, index, col_index) {
+                        var val = record["DueAmt"];
+                        return parseFloat(val).toLocaleString();
+                    }
+                });
+                _Split_Columns.push({
+                    field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%',
+                    render: function (record, index, col_index) {
+                        var val;
+                        if (record.changes == undefined || record.changes.DueDate == "") {
+                            val = record["DueDate"];
+                        }
+                        else {
+                            //DueDate Can't be less than the DateAcct
+                            //some times not getting proper result if use toLocaleString()
+                            if (new Date(record.changes.DueDate) >= new Date(Splitgrd.records[index]['DateAcct'])) {
+                                val = record.changes.DueDate;
+                            }
+                            else {
+                                val = record["DueDate"];
+                                record.changes.DueDate = record["DueDate"];
+                            }
+                        }
+                        return new Date(val).toLocaleDateString();
+                    }, style: 'text-align: left', editable: { type: 'date' }
+                });
+                //_Split_Columns.push({ field: "DueDate", caption: VIS.Msg.getMsg("VA009_DueDate"), sortable: true, size: '10%', render: 'date', style: 'text-align: left', editable: { type: 'date' } });
+                //by Amit - 1-12-2016
+                _Split_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
+                //end
+            }
+            Splitgrd = null;
+            Splitgrd = SplitGrid.w2grid({
+                name: 'SplitGrid',
+                recordHeight: 25,
+                columns: _Split_Columns,
+                method: 'GET',
+                multiSelect: true
+                //show: {
+                //    selectColumn: true
+                //}
+            }),
+                Splitgrd.hideColumn('recid');
+            Splitgrd.hideColumn('TransactionType');
+
+        };
+
+        function Split_getControls() {
+            SplitGrid = $split.find("#VA009_btnPopupGrid");
+            $TxtSplitAmt = $split.find("#VA009_POP_TxtSplitAmt_" + $self.windowNo);
+            $BtnSplit = $split.find("#VA009_btnSplitAmt_" + $self.windowNo);
+        };
+
+        function loadgrdSplit(callback) {
+            $.ajax({
+                url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
+                type: "GET",
+                datatype: "json",
+                contentType: "application/json; charset=utf-8",
+                //async: false,
+                data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                success: function (result) {
+                    callback(result);
+                },
+                error: function () {
+                    $bsyDiv[0].style.visibility = "hidden";
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                }
+            });
+        };
+
+        function callbackSplitPay(result) {
+            Splitgrd.clear();
+            popupgrddata = [];
+            var Recid = 0;
+            var rslt = JSON.parse(result);
+            for (var i in rslt) {
+                Recid = Recid + 1;
+                var line = {};
+                //line["recid"] = rslt[i].recid;     / done by Bharat
+                line["recid"] = Recid;
+                line["C_Bpartner"] = rslt[i].C_Bpartner;
+                line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
+                line["DocumentNo"] = rslt[i].DocumentNo;
+                line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
+                line["CurrencyCode"] = rslt[i].CurrencyCode;
+                line["DueAmt"] = rslt[i].DueAmt;
+                var date = new Date(rslt[i].DueDate);
+                date.setMinutes(-date.getTimezoneOffset() + date.getMinutes());
+                newValue = date.toISOString();
+                var val = newValue.substring(0, newValue.length - 1);
+                var indexTime = newValue.indexOf("T");
+                line["DueDate"] = val.substring(0, indexTime);
+                //line["DueDate"] = Globalize.format(rslt[i].DueDate);
+                line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
+                line["C_Currency_ID"] = rslt[i].C_Currency_ID;
+                line["AD_Org_ID"] = rslt[i].AD_Org_ID;
+                line["AD_Client_ID"] = rslt[i].AD_Client_ID;
+                line["TransactionType"] = rslt[i].TransactionType;
+                line["DateAcct"] = rslt[i].DateAcct;
+                popupgrddata.push(line);
+            }
+            w2utils.encodeTags(popupgrddata);
+            Splitgrd.add(popupgrddata);
+            $bsyDiv[0].style.visibility = "hidden";
+        };
+
+        Splitgrd.on('change', function (event) {
+
+            if (event.column == 5)
+                //handled on change event as well DueDate can't less than the DateAcct
+                if (event.value_new != "") {
+                    //some times not getting proper result if use toLocaleString()
+                    if (new Date(event.value_new) >= new Date(Splitgrd.records[event.index]['DateAcct'])) {
+                        Splitgrd.records[event.index]['DueDate'] = event.value_new;
+                    }
+                    else {
+                        Splitgrd.records[event.index]['DueDate'] = event.value_previous == "" ? event.value_original : event.value_previous;
+                        event.value_previous = event.value_previous == "" ? event.value_original : event.value_previous;
+                        //message text size not more 22 characters
+                        //hide of Date picker div before Pop-up will be displayed
+                        window.setTimeout(function () {
+                            VIS.ADialog.info("VA009_PlsSelctDueDateGreaterThanTrxDate");
+                        }, 5);
+                        //return false;
+                    }
+                }
+        });
+
+        $TxtSplitAmt.on('keypress', function (event) {
+            var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+            if ((event.keyCode != 13) && (event.which != 46 || $(this).val().indexOf('.') != -1) && (event.which != 8 && event.which != 0 && (event.which < 48 || event.which > 57)) && (event.keyCode == 45) && (event.keyCode != 44)) {
+                return false;
+            }
+
+            if (!isDotSeparator && event.keyCode == 46) {// , separator
+                return false;
+            }
+            if (isDotSeparator && event.keyCode == 44) { // . separator
+                return false;
+            }
+
+            if (event.target.value.contains(".") && (event.which == 46 || event.which == 44)) {
+                if (event.target.value.indexOf('.') > -1) {
+                    event.target.value = event.target.value.replace('.', '');
+                }
+            }
+            if (event.target.value.contains(",") && (event.which == 46 || event.which == 44)) {
+                if (event.target.value.indexOf(',') > -1) {
+                    event.target.value = event.target.value.replace(',', '');
+                }
+            }
+
+            if (event.keyCode == 13) {
+                //Splitgrd.selectAll();
+                if (Splitgrd.getSelection().length == 0) {
+                    VIS.ADialog.info("PlsSelectRecord");
+                    return false;
+                }
+                if ($TxtSplitAmt.val() != "") {
+                    if (parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']) < parseFloat($TxtSplitAmt.val())) {
+                        VIS.ADialog.info("Can't Enter Greater Than Due Amt");
+                    }
+                    else if (parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']) > 0) {
+                        if (parseFloat($TxtSplitAmt.val()) < 0)
+                            VIS.ADialog.info("Can't Enter Negative Amt");
+                        else
+                            SplitSchedule();
+                    }
+                    else if (parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']) < 0) {
+                        if (parseFloat($TxtSplitAmt.val()) > 0)
+                            VIS.ADialog.info("Can't Enter Positive Amt");
+                        else
+                            SplitSchedule();
+                    }
+                    else {
+                        SplitSchedule();
+                    }
+                }
+                else {
+                    VIS.ADialog.info("VA009_PLEnterSplitAmt");
+                    //Splitgrd.selectNone();
+                    return false;
+                }
+            }
+        });
+
+        $BtnSplit.on("click", function (e) {
+            //Splitgrd.selectAll();
+            // Added by Bharat
+            if (Splitgrd.getSelection().length == 0) {
+                VIS.ADialog.info("PlsSelectRecord");
+                return false;
+            }
+            var DueAmt = parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']);
+            var SplitAMt = $TxtSplitAmt.val();
+            if (SplitAMt != "") {
+                SplitAMt = parseFloat($TxtSplitAmt.val());
+                // IF Value in Negative 
+                if (DueAmt < 0) {
+                    DueAmt = -1 * DueAmt;
+                }
+                if (SplitAMt < 0) {
+                    SplitAMt = -1 * SplitAMt;
+                }
+
+                //if (SplitAMt != "") {   done by Bharat
+                //JID_1932_1if dueamt = spliamt then ne need to split the schedule
+                if (DueAmt <= SplitAMt) {
+                    VIS.ADialog.info("VA009_CantEnterGreaterAmt");
+                }
+                else if (DueAmt > 0) {
+                    if (SplitAMt < 0)
+                        VIS.ADialog.info("VA009_CantEnterNegtveAmt");
+                    else if (SplitAMt == 0)
+                        VIS.ADialog.info("VA009_CantEnterZeroAmt");
+                    else
+                        SplitSchedule();
+                }
+                else if (DueAmt < 0) {
+                    if (SplitAMt > 0)
+                        VIS.ADialog.info("VA009_CantEnterPositiveAmt");
+                    else
+                        SplitSchedule();
+                }
+                else {
+                    SplitSchedule();
+                }
+                //}
+            }
+            else {
+                VIS.ADialog.info("VA009_PLEnterSplitAmt");
+                //Splitgrd.selectNone();
+                return false;
+            }
+        });
+
+        function SplitSchedule() {
+            _CollaborateData = [];  //done By Bharat
+            //Splitgrd.selectAll();
+            var DueAmt = parseFloat(Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt']);
+            var SplitAMt = checkcommaordot(event, $TxtSplitAmt.val(), $TxtSplitAmt.val());
+            SplitAMt = parseFloat(SplitAMt);
+            // IF Value in Negative 
+            if (DueAmt < 0) {
+                DueAmt = -1 * DueAmt;
+            }
+            if (SplitAMt < 0) {
+                SplitAMt = -1 * SplitAMt;
+            }
+
+            var lines = (DueAmt / SplitAMt);
+            var TotalLines = Math.ceil(lines);
+            if (TotalLines > 0) {
+                //for (var i = 0; i < TotalLines - 1; i++) {  done by Bharat
+                var _data = {};
+                var recid = Splitgrd.records[Splitgrd.records.length - 1].recid + 1;
+                _data["recid"] = recid;
+                _data["C_BPartner_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_BPartner_ID'];
+                _data["C_Bpartner"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Bpartner'];
+                _data["CurrencyCode"] = Splitgrd.get(Splitgrd.getSelection()[0])['CurrencyCode'];
+                _data["DocumentNo"] = Splitgrd.get(Splitgrd.getSelection()[0])['DocumentNo'];
+                _data["C_Invoice_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Invoice_ID'];
+                _data["AD_Org_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['AD_Org_ID'];
+                _data["AD_Client_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['AD_Client_ID'];
+                _data["C_Currency_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Currency_ID'];
+                _data["DueAmt"] = SplitAMt.toFixed(2);
+                _data["C_InvoicePaySchedule_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_InvoicePaySchedule_ID'];
+                _data["DueDate"] = Splitgrd.get(Splitgrd.getSelection()[0])['DueDate'];
+                //add DateAcct to Compare the Edited DueDate with Account Date because User Can't able to select Previous Date than AcctDate
+                _data["DateAcct"] = Splitgrd.get(Splitgrd.getSelection()[0])['DateAcct'];
+                _data["TransactionType"] = Splitgrd.get(Splitgrd.getSelection()[0])['TransactionType'];
+                _CollaborateData.push(_data);
+                //}
+                //var TotalUpdatedAmt = SplitAMt * (TotalLines - 1);   done by Bharat
+                var TotalUpdatedAmt = SplitAMt;
+                if (DueAmt - TotalUpdatedAmt > 0) {
+
+                    var amt = DueAmt - TotalUpdatedAmt;
+                    Splitgrd.get(Splitgrd.getSelection()[0]).DueAmt = amt.toFixed(2);
+                }
+            }
+            //Splitgrd.clear();
+            w2utils.encodeTags(_CollaborateData);
+            Splitgrd.add(_CollaborateData);
+            $TxtSplitAmt.val('');
+            Splitgrd.refresh();
+        };
+
+        SplitDialog.onOkClick = function () {
+            datasplit = [];
+            datasplit = Splitgrd.records //no of records on grid
+            if (Splitgrd.getSelection().length > 0 || datasplit.length > 1) {
+                Splitgrd.selectAll();
+
+                //JID_1932_2 check if amount is splitted 
+                if (datasplit.length == 1) {
+                    VIS.ADialog.info("VA009_SplitRecordFirst");
+                    return false;
+                }
+                for (var i = 0; i < datasplit.length; i++) {
+                    if (Splitgrd.get(Splitgrd.getSelection()[i])['DueDate'] == null) {
+                        VIS.ADialog.info("VA009_PlzSelctDueDate");
+                        return false;
+                    }
+                }
+                //}
+                $bsyDiv[0].style.visibility = "visible";
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/CreateSplitPayments",
+                    type: "POST",
+                    datatype: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    async: true,
+                    data: ({ PaymentData: JSON.stringify(datasplit), SplitAmmount: $TxtSplitAmt.val() }),
+                    success: function (result) {
+                        callbackSplit(result);
+                    },
+                    error: function (ex) {
+
+                        console.log(ex);
+                        $bsyDiv[0].style.visibility = "hidden";
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    }
+                });
+            }
+            else {
+                VIS.ADialog.info("VA009_PlzSplitRecord");
+                return false;
+            }
+        };
+
+        function callbackSplit(result) {
+            result = JSON.parse(result);
+            $divPayment.find('.VA009-payment-wrap').remove();
+            $divBank.find('.VA009-right-data-main').remove();
+            $divBank.find('.VA009-accordion').remove();
+            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+            //after successfully created Payment selectall checkbox should be false
+            $selectall.prop('checked', false);
+            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+            loadPaymetsAll();
+            $bsyDiv[0].style.visibility = "hidden";
+            VIS.ADialog.info(result);
+        };
+
+        SplitDialog.onCancelCLick = function () {
+            w2ui['SplitGrid'].clear();
+            SplitDispose();
+        };
+
+        SplitDialog.onClose = function () {
+            w2ui['SplitGrid'].clear();
+            SplitDispose();
+
+        };
+
+        function SplitDispose() {
+            $split = null;
+            _split = null;
+            w2ui['SplitGrid'].destroy();
+        }
+    },
+
+    XML_Dialog: function () {
+        if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+            File_Para = 'B';
+            w2confirm('Do you want to clear the selection and proceed for SEPA XML Generation Process?')
+                .yes(function () {
+                    SlctdPaymentIds = [];
+                    SlctdOrderPaymentIds = [];
+                    $selectall.prop('checked', false);
+                    $divPayment.find(':checkbox').prop('checked', false);
+                    generateXMLDialog(File_Para);
+                })
+                .no(function () {
+                    console.log("user clicked NO")
+                });
+        }
+        else {
+            generateXMLDialog(File_Para);
+        }
+    },
+
+    ChatWindow: function () {
+        var dr = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetChatID", { "RecordID": record_ID }, null);
+        if (dr != null) {
+            var tableid = dr["AD_Table_ID"];
+            var chatid = dr["CM_Chat_ID"];
+            var chat = new VIS.Chat(record_ID, chatid, tableid, "", this.windowNo);
+            chat.show();
+            chat.onClose = function () {
+                $.ajax({
+                    url: VIS.Application.contextUrl + "VA009/Payment/GetChat",
+                    type: "POST",
+                    datatype: "json",
+                    // contentType: "application/json; charset=utf-8",
+                    async: true,
+                    data: ({ RecordID: record_ID }),
+                    success: function (result) {
+                        callbackChat(result);
+                    },
+                    error: function (ex) {
+
+                        console.log(ex);
+                        $bsyDiv[0].style.visibility = "hidden";
+                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    }
+                });
+
+            }
+        };
+        function callbackChat(result) {
+            result = JSON.parse(result);
+            $bsyDiv[0].style.visibility = "hidden";
+            $chatDiv = $divPayment.find("#VA009-Chatcolor-gray_" + record_ID);
+            $chatDiv.html("");
+            $chatDiv.append('<span class=VA009-Chatcolor-gray>' + result + '</span>');
+
+        };
+    },
+
+    B2B_Dialog: function () {
+        //btn Get Next Cheqe Number $OrgCmb,
+        var $From_cmbBank, $cmbCurrencyType, $paymentMthd, $cmbCurrencies, $txtAmt, txtAmount, $txtCheckNo, $checkDate, $getNextChkno;
+        var $trnsDate, $acctDate;
+        var $isPayment, $isReceipt;
+        var organizationids = [];
+        var divAmount, format = null;
+        lblAmount = $("<label>");
+        txtAmount = new VIS.Controls.VAmountTextBox("VA009_Amount" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));
+        lblAmount.append(VIS.Msg.getMsg("Amount"));
+        txtAmount.setValue(0);
+        format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);
+        divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
+        var $divb2bAmountCtrlWrp = $("<div class='vis-control-wrap'>");
+        divAmount.append($divb2bAmountCtrlWrp);
+        $divb2bAmountCtrlWrp.append(txtAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
+
+        $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:325px !important'>");
+        //var _b2b = "";
+        //_b2b.append(divAmount);
+        _b2b = $("<div class='VA009-popfrm-wrap'>");
+        _b2bdata = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data VA009-popformchkctrlwrap'>"
+            //+ "<label style='visibility: hidden;'>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+            + "<div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Payment_" + $self.windowNo + ">Payment</label></div><div> <label class='vis-ec-col-lblchkbox'><input type='checkbox' id=VA009_Receipt_" + $self.windowNo + ">Receipt</label></div>"
+            + "</div> "
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbFromBank_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_FromBank") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbToBank_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_ToBank") + "</label>"
+            + "</div></div>"
+
+            //Rakesh(VA228):Create Doc type element html
+            + "<div class='VA009-popform-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbAPDocType_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_APDocType") + "</label>"
+            + "</div></div> "
+
+            //Rakesh(VA228):Create Doc type element html
+            + "<div class='VA009-popform-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbARDocType_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_ARDocType") + "</label>"
+            + "</div></div> ");
+
+        //"<div class='VA009-popform-data'>"
+        //    + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
+        //    + "<input type='text' id='VA009_Amount" + $self.windowNo + "' value=0> </div>"
+
+        //+ new VIS.Controls.VAmountTextBox("Amount", true, true, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"))
+
+        //        + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+        //        + "<input type='number' placeholder=' ' data-placeholder='' id='VA009_Amount" + $self.windowNo + "' value=0><label>" + VIS.Msg.getMsg("Amount") + "</label>"
+        //+ "</div></div>");
+
+        _b2bdata1 = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data VA009-b2b-popup input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='text' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label></div><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
+            + "</div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_CheckDate_" + $self.windowNo + "' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' disabled><label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("Currency") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+            + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_AccountDate" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+            + "</div></div>"
+
+            + "<div style='float:left;'>"
+            + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label></div>"
+            + "</div>"
+        );
+
+        _b2b.append(_b2bdata).append(divAmount).append(_b2bdata1);
+        $b2b.append(_b2b);
+        var b2bDialog = new VIS.ChildDialog();
+        b2bDialog.setContent($b2b);
+        b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
+        b2bDialog.setWidth("60%");
+        b2bDialog.setEnableResize(true);
+        b2bDialog.setModal(true);
+        b2bDialog.show();
+        b2b_getControls();
+        var now = new Date();
+        var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
+        $trnsDate.val(_today);
+        $acctDate.val(_today);
+        InitializeEvents();
+        loadOrg();
+        loadCurrency();
+        loadCurrencyType();
+        loadPaymentMthd();
+        loadBankAccount($From_cmbBank, organizationids);
+        loadToBankAccount($To_cmbBank, organizationids);
+        //Rakesh(VA228):Load Target Docuement Type APR and APP
+        _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, 0);
+        _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
+
+        txtAmount.addVetoableChangeListener(this);
+        b2bDialog.onOkClick = function () {
+            //function reverseFormatNumber(val, locale) {
+            //    var group = new Intl.NumberFormat(locale).format(1111).replace(/1/g, '');
+            //    var decimal = new Intl.NumberFormat(locale).format(1.1).replace(/1/g, '');
+            //    var reversedVal = val.replace(new RegExp('\\' + group, 'g'), '');
+            //    reversedVal = reversedVal.replace(new RegExp('\\' + decimal, 'g'), '.');
+            //    return Number.isNaN(reversedVal) ? 0 : reversedVal;
+            //}
+            //var amount = reverseFormatNumber($txtAmt.val(), window.navigator.language);
+            if (parseInt($OrgCmb.val()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectOrg"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (!$isReceipt.prop('checked') && !$isPayment.prop('checked')) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectPaymentOrReceipt"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (parseInt($From_cmbBank.val()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectBankFrom"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (parseInt($To_cmbBank.val()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectBankTo"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (parseInt($POP_APTargetDocType.val()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectAPDocType"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (parseInt($POP_ARTargetDocType.val()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectARDocType"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (parseInt($From_cmbBank.val()) == parseInt($To_cmbBank.val())) {
+                $note.text(VIS.Msg.getMsg("VA009_Banknotbesame"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (parseFloat(txtAmount.getValue()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsEnterAmount"));
+                return $note.css('visibility', 'visible');
+            }
+
+            if (parseInt($paymentMthd.val()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectPayMethod"));
+                return $note.css('visibility', 'visible');
+            }
+            else if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
+                if ($txtCheckNo.val() == "") {
+                    $note.text(VIS.Msg.getMsg("VA009_PLCheckNumber"));
+                    return $note.css('visibility', 'visible');
+                }
+
+                if ($checkDate.val() == "" || $checkDate.val() == null) {
+                    $note.text(VIS.Msg.getMsg("VA009_PLCheckDate"));
+                    return $note.css('visibility', 'visible');
+                }
+                var dt = new Date($checkDate.val());
+                dt = new Date(dt.setHours(0, 0, 0, 0));
+                var acctdate = new Date($acctDate.val());
+                acctdate = new Date(acctdate.setHours(0, 0, 0, 0));
+                if (dt > acctdate) {
+                    $note.text(VIS.Msg.getMsg("VIS_CheckDateCantbeGreaterSys"));
+                    return $note.css('visibility', 'visible');
+                }
+            }
+
+            if (parseInt($cmbCurrencies.val()) == 0) {
+                $note.text(VIS.Msg.getMsg("VA009_PlsSelectCurrency"));
+                return $note.css('visibility', 'visible');
+            }
+
+            var paramString = $From_cmbBank.val() + "," + $cmbCurrencies.val() + "," + $acctDate.val().toString() +
+                "," + $cmbCurrencyType.val() + "," + VIS.Env.getCtx().getAD_Client_ID() + "," + $OrgCmb.val();
+            var dr = VIS.dataContext.getJSONRecord("VA009/Payment/CheckConversionRate", paramString);
+            if (dr <= 0) {
+                $note.text(VIS.Msg.getMsg("VA009_ConversionRateNotFound"));
+                return $note.css('visibility', 'visible');
+            }
+
+            $note.css('visibility', 'hidden');
+
+            var _data = {};
+            console.log(parseFloat(txtAmount.getValue()));
+            _data = {
+                OrgID: parseInt($OrgCmb.val()), isReceipt: $isReceipt.prop('checked'), isPayment: $isPayment.prop('checked'), fromBank: parseInt($From_cmbBank.val()),
+                toBank: parseInt($To_cmbBank.val()), amount: parseFloat(txtAmount.getValue()), paymentMethod: parseInt($paymentMthd.val()), currencyID: parseInt($cmbCurrencies.val()),
+                currencyType: $cmbCurrencyType.val(), transDate: VIS.Utility.Util.getValueOfDate($trnsDate.val()), acctDate: VIS.Utility.Util.getValueOfDate($acctDate.val()),
+                clientID: VIS.Env.getCtx().getAD_Client_ID(), PayBase: $('option:selected', $paymentMthd).attr('paybase'), CheckNo: $txtCheckNo.val(), CheckDate: VIS.Utility.Util.getValueOfDate($checkDate.val()),
+                APDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_APTargetDocType.val()), ARDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_ARTargetDocType.val())
+            };
+            MsgReturn = "";
+            b2bPayment(_data);
+            return false;
+        };
+
+        b2bDialog.onCancelCLick = function () {
+            B2BDispose();
+        };
+
+        b2bDialog.onClose = function () {
+            B2BDispose();
+
+        };
+        this.vetoablechange = function (evt) {
+            console.log(evt.propertyName);
+            if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
+                txtAmount.setValue(evt.newValue);
+            }
+        };
+        function InitializeEvents() {
+
+            $isPayment.on("click", function (e) {
+                var target = $(e.target);
+                if (e.target.type == 'checkbox') {
+                    if (target.prop("checked") == true) {
+                        $isReceipt.prop('checked', false);
+                        loadBankAccount($From_cmbBank, organizationids);
+                        loadToBankAccount($To_cmbBank, []);
+                    }
+                }
+            });
+
+            $isReceipt.on("click", function (e) {
+                var target = $(e.target);
+                if (e.target.type == 'checkbox') {
+                    if (target.prop("checked") == true) {
+                        $isPayment.prop('checked', false);
+                        loadToBankAccount($To_cmbBank, organizationids);
+                        loadBankAccount($From_cmbBank, []);
+                    }
+                }
+            });
+
+            $OrgCmb.on("change", function () {
+
+                //#Commented Code because we don't need to chnage the selected Payment or Receipt Checkbox at the time of Org Change
+
+                //if ($isReceipt.prop('checked') || $isPayment.prop('checked')) {
+                //    $isReceipt.prop('checked', false);
+                //    $isPayment.prop('checked', false);
+                //    organizationids = [];
+                //}
+
+                //# end Commented code  
+                if (parseInt($OrgCmb.val()) > 0) {
+                    organizationids = [];
+                    organizationids.push($OrgCmb.val());
+                    $OrgCmb.removeClass('vis-ev-col-mandatory');
+
+                    if ($isPayment.prop("checked") == true) {
+                        loadBankAccount($From_cmbBank, organizationids);
+                        loadToBankAccount($To_cmbBank, []);
+                    }
+                    if ($isReceipt.prop("checked") == true) {
+                        loadToBankAccount($To_cmbBank, organizationids);
+                        loadBankAccount($From_cmbBank, []);
+                    }
+                }
+                else {
+                    $OrgCmb.addClass('vis-ev-col-mandatory');
+                }
+                //Rakesh(VA228):Reset Document Type
+                _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, 0);
+                _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
+            });
+
+            $From_cmbBank.on("change", function () {
+                if (parseInt($From_cmbBank.val()) > 0) {
+                    $From_cmbBank.removeClass('vis-ev-col-mandatory');
+                    //Document Type as per Bank Account's Org
+                    _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, $From_cmbBank.val());
+
+                }
+                else {
+                    $From_cmbBank.addClass('vis-ev-col-mandatory');
+                    _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
+                }
+            });
+
+            $To_cmbBank.on("change", function () {
+                if (parseInt($To_cmbBank.val()) > 0) {
+                    $To_cmbBank.removeClass('vis-ev-col-mandatory');
+                    //Document Type as per Bank Account's Org
+                    _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, $To_cmbBank.val());
+                }
+                else {
+                    $To_cmbBank.addClass('vis-ev-col-mandatory');
+                    _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, 0);
+
+                }
+            });
+
+            $cmbCurrencies.on("change", function () {
+                if (parseInt($cmbCurrencies.val()) > 0) {
+                    $cmbCurrencies.removeClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $cmbCurrencies.addClass('vis-ev-col-mandatory');
+                }
+            });
+
+            // change the color if the value is change other than 0
+            txtAmount.getControl().on("change", function () {
+                if (parseInt(txtAmount.getValue()) > 0) {
+                    txtAmount.getControl().removeClass('vis-ev-col-mandatory');
+                }
+                else {
+                    txtAmount.getControl().addClass('vis-ev-col-mandatory');
+                }
+            });
+            $paymentMthd.on("change", function () {
+                if (parseInt($paymentMthd.val()) > 0) {
+                    $paymentMthd.removeClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $paymentMthd.addClass('vis-ev-col-mandatory');
+                }
+
+                if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
+                    getCheckNo();
+                    $txtCheckNo.removeAttr("disabled");
+                    $txtCheckNo.css('background-color', 'white');
+                    $txtCheckNo.addClass('vis-ev-col-mandatory');
+                    $checkDate.removeAttr("disabled");
+                    $checkDate.css('background-color', 'white');
+                    $checkDate.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $txtCheckNo.val("");
+                    $txtCheckNo.attr('disabled', 'disabled');
+                    $txtCheckNo.removeClass('vis-ev-col-mandatory');
+                    $txtCheckNo.css('background-color', '#ededed');
+                    $checkDate.val("");
+                    $checkDate.attr('disabled', 'disabled');
+                    $checkDate.removeClass('vis-ev-col-mandatory');
+                    $checkDate.css('background-color', '#ededed');
+                }
+            });
+
+            //click event of get check no button
+            $getNextChkno.on("click", function () {
+
+                if (parseInt($paymentMthd.val()) > 0) {
+                    if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
+                        getCheckNo();
+                    }
+                }
+            });
+        };
+
+        //Set Mandatory and Non-Mandatory
+        function SetMandatory(value) {
+            if (value)
+                return '#FFB6C1';
+            else
+                return 'White';
+        };
+
+        function b2b_getControls() {
+            $OrgCmb = $b2b.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+            $From_cmbBank = $b2b.find("#VA009_POP_cmbFromBank_" + $self.windowNo);
+            $To_cmbBank = $b2b.find("#VA009_POP_cmbToBank_" + $self.windowNo);
+            $isPayment = $b2b.find("#VA009_Payment_" + $self.windowNo);
+            $isReceipt = $b2b.find("#VA009_Receipt_" + $self.windowNo);
+            $cmbCurrencyType = $b2b.find("#VA009_cmbCurrencyType_" + $self.windowNo);
+            $paymentMthd = $b2b.find("#VA009_cmbPayMthd_" + $self.windowNo);
+            $cmbCurrencies = $b2b.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
+            $txtAmt = $b2b.find("#VA009_Amount" + $self.windowNo);
+            $trnsDate = $b2b.find("#VA009_TransactionDate" + $self.windowNo);
+            $acctDate = $b2b.find("#VA009_AccountDate" + $self.windowNo);
+            $txtCheckNo = $b2b.find("#VA009_Chqnotxt_" + $self.windowNo);
+            $checkDate = $b2b.find("#VA009_CheckDate_" + $self.windowNo);
+            $note = $b2b.find("#VA009_Note" + $self.windowNo);
+            $getNextChkno = $b2b.find("#VA009_getCheckNo_" + $self.windowNo);
+            $OrgCmb.addClass('vis-ev-col-mandatory');
+            $From_cmbBank.addClass('vis-ev-col-mandatory');
+            $To_cmbBank.addClass('vis-ev-col-mandatory');
+            txtAmount.getControl().addClass('vis-ev-col-mandatory');//for default color to control
+            $cmbCurrencies.addClass('vis-ev-col-mandatory');
+            $paymentMthd.addClass('vis-ev-col-mandatory');
+            //Rakesh(VA228):Store Doc type element in variable
+            $POP_APTargetDocType = $b2b.find("#VA009_POP_cmbAPDocType_" + $self.windowNo);
+            $POP_APTargetDocType.addClass('vis-ev-col-mandatory');
+            $POP_ARTargetDocType = $b2b.find("#VA009_POP_cmbARDocType_" + $self.windowNo);
+            $POP_ARTargetDocType.addClass('vis-ev-col-mandatory');
+
+        };
+
+        $txtCheckNo.on('keydown keyup', function (e) {
+            var value = String.fromCharCode(e.which) || e.key;
+            var regExp = /[0-9\.\,]/;
+            // Only numbers, alphabets
+            if (!regExp.test(value)
+                && e.which != 8   // backspace
+                && e.which != 46  // delete
+                && (e.which < 65 || e.which > 90)
+                && (e.which < 37 || e.which > 40)
+                && e.which != 39 && e.which != 37  //arrow left and right
+                && (e.which < 96 || e.which > 105))// for NumPad
+            {
+                return false;
+            }
+            if (e.shiftKey) {
+                e.preventDefault();
+            }
+        });
+        function loadOrg() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+            function callbackloadorg(dr) {
+                $OrgCmb.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $OrgCmb.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    }
+                }
+                $OrgCmb.prop('selectedIndex', 0);
+            };
+        };
+
+        function loadPaymentMthd() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
+            function callbackloadpaymthds(dr) {
+                $paymentMthd.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        if (("LCPB").contains(dr[i].VA009_PaymentBaseType)) {
+                        }
+                        else {
+                            $paymentMthd.append("<option paybase = " + dr[i].VA009_PaymentBaseType + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">"
+                                + VIS.Utility.encodeText(dr[i].VA009_Name) + " </option>");
+                        }
+                    }
+                }
+                $paymentMthd.prop('selectedIndex', 0);
+            }
+        };
+
+        function loadCurrencyType() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
+
+            function callbackCurrencyType(dr) {
+                $cmbCurrencyType.append("<option value='0'></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                        if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
+                            defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
+                        }
+                    }
+                    //$cmbCurrencyType.prop('selectedIndex', 1);
+                    $cmbCurrencyType.val(defaultCurrenyType)
+                }
+            }
+        };
+
+        function loadCurrency() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencies", null, callbackCurrencyType);
+
+            function callbackCurrencyType(dr) {
+                $cmbCurrencies.append("<option value='0'></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $cmbCurrencies.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + ">" + VIS.Utility.encodeText(dr[i].ISO_Code) + "</option>");
+                    }
+                    $cmbCurrencies.prop('selectedIndex', 0);
+                }
+            }
+        };
+
+        function loadBankAccount($cmbBankAccount, organizationids) {
+
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": 0, "Orgs": organizationids.toString() }, callbackloadbankAcct);
+
+            function callbackloadbankAcct(dr) {
+                $cmbBankAccount.find('option').remove();
+                $cmbBankAccount.append("<option value='0'></option>");
+                if (dr != null) {
+                    if (dr.length > 0) {
+                        for (var i in dr) {
+                            $cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                        }
+                    }
+                }
+            }
+        };
+
+        function loadToBankAccount($cmbToBankAccount, organizationids) {
+
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": 0, "Orgs": organizationids.toString() }, callbackloadbankAcct);
+
+            function callbackloadbankAcct(dr) {
+                $cmbToBankAccount.find('option').remove();
+                $cmbToBankAccount.append("<option value='0'></option>");
+                if (dr != null) {
+                    if (dr.length > 0) {
+                        for (var i in dr) {
+                            $cmbToBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                        }
+                    }
+                }
+            }
+        };
+
+        //To get current Next Number from seleted bank and payment method
+        function getCheckNo() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/getCheckNo", { "C_BankAccount_ID": parseInt($From_cmbBank.val()), "VA009_PaymentMethod_ID": parseInt($paymentMthd.val()) }, callbackgetCheckNo);
+
+            function callbackgetCheckNo(dr) {
+                $txtCheckNo.val();
+                $note.css('visibility', 'hidden');
+                if (dr != null) {
+                    $txtCheckNo.val(dr);
+                    $txtCheckNo.removeClass('vis-ev-col-mandatory');
+                }
+            }
+        };
+        //reset for Amount Field...
+        this.vetoablechange = function (evt) {
+            if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
+                txtAmount.setValue(evt.newValue);
+            }
+        };
+        function B2BDispose() {
+            $b2b = null;
+            _b2b = null;
+        }
+    },
+
+    Pay_ManualDialog: function () {
+        $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:210px !important'>");
+        var _payManual = "";
+        _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+            + "</div ></div > "
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+            + " </div></div>"
+            //currency type list
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+            + "</div></div>"
+            //trx date
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "'  placeholder=' ' data-placeholder=''><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+            + " </div></div>"
+
+            + "</div>";
+        $payManual.append(_payManual);
+        payManualGetControls();
+
+        var now = new Date();
+        var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
+        $POP_DateAcct.val(_today);
+        $POP_DateTrx.val(_today);
+        var manualDialog = new VIS.ChildDialog();
+        manualDialog.setContent($payManual);
+        manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
+        manualDialog.setWidth("65%");
+        manualDialog.setEnableResize(true);
+        manualDialog.setModal(true);
+        manualDialog.show();
+        loadOrg();
+        //populate banks based on selected organization in dialog
+        loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
+        loadPayMthd();
+        loadCurrencyType();
+        //Rakesh(VA228):10/Sep/2021 -> Load APR target base doc type
+        _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+
+        function payManualGetControls() {
+            $POP_cmbBank = $payManual.find("#VA009_POP_cmbBank_" + $self.windowNo);
+            $POP_cmbBankAccount = $payManual.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
+            $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
+            $POP_DateAcct = $payManual.find("#VA009_AccountDate_" + $self.windowNo);
+            $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
+            $POP_DateAcct.addClass('vis-ev-col-mandatory');
+            $POP_DateTrx = $payManual.find("#VA009_TransactionDate" + $self.windowNo);
+            $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+            $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+            $POP_PayMthd.addClass('vis-ev-col-mandatory');
+            $POP_CurrencyType.addClass('vis-ev-col-mandatory');
+            $POP_cmbBank.addClass('vis-ev-col-mandatory');
+            $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+            //Rakesh(VA228):Store Doc type element in variable
+            $POP_targetDocType = $payManual.find("#VA009_POP_cmbDocType_" + $self.windowNo);
+            $POP_targetDocType.addClass('vis-ev-col-mandatory');
+        };
+
+        $POP_cmbOrg.on("change", function () {
+            //to set org mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) == 0) {
+                $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                //populate banks based on selected organization in dialog
+                loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
+                //refresh the bank and BankAccount dropdowns and make it as mandatory
+                $POP_cmbBank.val(0).prop('selected', true);
+                $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                $POP_cmbBankAccount.empty();
+                $POP_cmbBankAccount.append("<option value='0'></option>");
+                $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+            }
+            //Rakesh(VA228):Reset Document type
+            _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
+        });
+
+        $POP_cmbBank.on("change", function () {
+            $POP_cmbBankAccount.empty();
+            $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+            //to set org mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
+                $POP_cmbBank.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_cmbBank.removeClass('vis-ev-col-mandatory');
+            }
+            //to get bank account of selected organization assigned by Ashish on 28 May 2020
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
+
+            function callbackloadbankAcct(dr) {
+                $POP_cmbBankAccount.append("<option value='0'></option>");
+                if (dr != null) {
+                    if (dr.length > 0) {
+                        for (var i in dr) {
+                            $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                        }
+                    }
+                }
+            }
+        });
+
+        $POP_CurrencyType.on("change", function () {
+            //to set org mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) == 0) {
+                $POP_CurrencyType.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
+            }
+        });
+
+        $POP_PayMthd.on("change", function () {
+            //to set PAYMENT MENNDATORY mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) == 0) {
+                $POP_PayMthd.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_PayMthd.removeClass('vis-ev-col-mandatory');
+            }
+        });
+
+        $POP_DateAcct.on("change", function () {
+            //to set Date acct mandatory given by ashish on 28 May 2020
+            if ($POP_DateAcct.val() == "") {
+                $POP_DateAcct.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+            }
+        });
+
+        $POP_cmbBankAccount.on("change", function () {
+            //to set bank account mandatory given by ashish on 28 May 2020
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
+                $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+            }
+            else {
+                $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+            }
+        });
+
+        //to load all organization 
+        function loadOrg() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+            function callbackloadorg(dr) {
+                $POP_cmbOrg.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    }
+                }
+                $POP_cmbOrg.prop('selectedIndex', 0);
+            };
+        };
+
+        function loadPayMthd() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
+            function callbackloadpaymthds(dr) {
+                if (dr.length > 1)
+                    $POP_PayMthd.append(" <option value = 0></option>");
+
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        if (("LCPBS").contains(dr[i].VA009_PaymentBaseType)) {
+                        }
+                        else
+                            $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
+                    }
+                }
+                $POP_PayMthd.prop('selectedIndex', 0);
+            }
+        };
+        //load currency type
+        function loadCurrencyType() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
+
+            function callbackCurrencyType(dr) {
+                $POP_CurrencyType.append("<option value='0'></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_CurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                        if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
+                            defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
+                        }
+                    }
+                }
+            }
+        };
+
+        function SetMandatory(value) {
+            if (value)
+                return '#FFB6C1';
+            else
+                return 'White';
+        };
+
+        manualDialog.onOkClick = function () {
+            if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+                if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                    //Rakesh(VA228):Make Document Type selection mandatory
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                            if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                                if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                    if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                        //Check CurrencyType Selected or not
+                                        if ($POP_CurrencyType.val() > 0) {
+                                            //var isValid = validateManualPayment(); //commented by Manjot suggested by Pradeep and Puneet
+                                            var isValid = true;
+                                            if (isValid) {
+                                                $bsyDiv[0].style.visibility = "visible";
+                                                $.ajax({
+                                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsMannualy",
+                                                    type: "POST",
+                                                    datatype: "json",
+                                                    // contentType: "application/json; charset=utf-8",
+                                                    async: true,
+                                                    data: ({
+                                                        InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
+                                                        BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
+                                                        DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
+                                                        , docTypeID: VIS.Utility.Util.getValueOfInt($POP_targetDocType.val())
+                                                    }),
+                                                    success: function (result) {
+                                                        result = JSON.parse(result);
+                                                        $divPayment.find('.VA009-payment-wrap').remove();
+                                                        $divBank.find('.VA009-right-data-main').remove();
+                                                        $divBank.find('.VA009-accordion').remove();
+                                                        pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                                                        //after successfully created Payment selectall checkbox should be false
+                                                        $selectall.prop('checked', false);
+                                                        //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+                                                        loadPaymetsAll();
+                                                        $bsyDiv[0].style.visibility = "hidden";
+                                                        VIS.ADialog.info("", null, result, "");
+                                                    },
+                                                    error: function (ex) {
+                                                        console.log(ex);
+                                                        $bsyDiv[0].style.visibility = "hidden";
+                                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                                    }
+                                                });
+                                            }
+                                            else {
+                                                VIS.ADialog.info("VA009_PlzSelctapprPM");
+                                                return false;
+                                            }
+                                        }
+                                        else {
+                                            VIS.ADialog.info("VA009_SelectConversionType");
+                                            return false;
+                                        }
+                                    }
+                                    else {
+                                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                                        return false;
+                                    }
+                                }
+                                else {
+                                    VIS.ADialog.info("VA009_PLSelectPaymentMethod");
+                                    return false;
+                                }
+                            }
+                            else {
+                                VIS.ADialog.info("VA009_PLSelectBankAccount");
+                                return false;
+                            }
+                        }
+                        else {
+                            VIS.ADialog.info("VA009_PLSelectBank");
+                            return false;
+                        }
+                    } else {
+                        VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
+                        Cashgrd.selectNone();
+                        return false;
+                    }
+                }
+                else {
+                    VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                    return false;
+                }
+            }
+            else
+                VIS.ADialog.info("VA009_PlzSelct1Pay");
+        };
+
+        manualDialog.onCancelCLick = function () {
+            payManualDispose();
+        };
+
+        manualDialog.onClose = function () {
+            payManualDispose();
+
+        };
+
+        function payManualDispose() {
+            $payManual = null;
+            _payManual = null;
+        };
+
+    },
+
+    Pay_ManualDialogBP: function () {
+        var payAmount;
+        lblAmount = $("<label>");
+        payAmount = new VIS.Controls.VAmountTextBox("VA009_cmbAmt_" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));//for amount textbox control
+        lblAmount.append(VIS.Msg.getMsg("Amount"));
+        payAmount.setValue(0);
+        format = VIS.DisplayType.GetNumberFormat(VIS.DisplayType.Amount);//formating the value of amount into number
+        divAmount = $("<div class='VA009-popform-data input-group vis-input-wrap'>");
+        var $DivAmtCtrlWrp = $("<div class='vis-control-wrap'>");
+        divAmount.append($DivAmtCtrlWrp);
+        $DivAmtCtrlWrp.append(payAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
+        $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:435px'>");
+        //var _payManual = "";
+        _payManual = $("<div class='VA009-popfrm-wrap' style='height:auto !important'>");
+
+        _addOrg = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbDocType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_DocType") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbBank_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Bank") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
+            + "</div></div>"
+
+            //trx date
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_TransactionDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''> "
+            + "<label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
+            + "<label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
+            + "</div> </div>"
+
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap' id='VA009_POP_cmbBP_" + $self.windowNo + "'>"
+            //+ "<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>"
+            //+ "<div></div>"
+            + "</div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbLocation_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("BPLocation") + "</label>"
+            + "</div></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_POP_cmbCurrency_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_Currency") + "</label>"
+            + "</div></div>"
+
+            //currency type list
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_cmbCurrencyType_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
+            + "</div></div>"
+
+            //+ "<div class='VA009-popform-data'>"
+            //+ "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
+            //+ "<select id='VA009_cmbCharge_" + $self.windowNo + "'>"
+            //+ "</select></div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap' id='VA009_Charge_" + $self.windowNo + "'>"
+            //+ "<label>" + VIS.Msg.getMsg("Charge") + "</label>"
+            + "</div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+            + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
+            + "</select>"
+            + "<label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
+            + "</div></div>");
+
+        //      +"<div class='VA009-popform-data'>"
+        //      + "<label>" + VIS.Msg.getMsg("Amount") + "</label>"
+        //      + "<input type='text' id='VA009_cmbAmt_" + $self.windowNo + "' style='height: 30px;border-radius: 0;'> </div>"
+
+        _addAmt = ("<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheck_" + $self.windowNo + "><div class='vis-control-wrap'>"
+            + "<input type='text' id='VA009_txtCheck_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
+            + "<label>" + VIS.Msg.getMsg("VA009_ChequeNo") + "</label>"
+            + "</div> </div>"
+
+            + "<div class='VA009-popform-data input-group vis-input-wrap' id= VA009_DivCheckDate_" + $self.windowNo + "><div class='vis-control-wrap'>"
+            + "<input type='Date' max='9999-12-31' id='VA009_chkDate_" + $self.windowNo + "' placeholder=' ' data-placeholder=''>"
+            + "<label>" + VIS.Msg.getMsg("VA009_CheckDate") + "</label>"
+            + "</div> </div>"
+            + "</div>"
+            + "</div>");
+        _payManual.append(_addOrg).append(divAmount).append(_addAmt);//append the child tags to parent div
+        $payManual.append(_payManual);
+        payManualGetControls();
+        var manualDialog = new VIS.ChildDialog();
+        manualDialog.setContent($payManual);
+        manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
+        manualDialog.setHeight(window.innerHeight - 120);
+        manualDialog.setWidth("70%");
+        manualDialog.setEnableResize(true);
+        manualDialog.setModal(true);
+        manualDialog.show();
+        InitializeEvents()
+        loadAllData();
+        payAmount.addVetoableChangeListener(this);
+        function SetMandatory(value) {
+            if (value)
+                return '#FFB6C1';
+            else
+                return 'White';
+        };
+        function payManualGetControls() {
+            $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
+            $POP_cmbDocType = $payManual.find("#VA009_POP_cmbDocType_" + $self.windowNo);
+            $POP_DateTrx = $payManual.find("#VA009_TransactionDate_" + $self.windowNo);
+            $POP_DateAcct = $payManual.find("#VA009_AccountDate_" + $self.windowNo);
+            $POP_cmbBank = $payManual.find("#VA009_POP_cmbBank_" + $self.windowNo);
+            $POP_cmbBankAccount = $payManual.find("#VA009_POP_cmbBankAccount_" + $self.windowNo);
+            $POP_cmbBP = $payManual.find("#VA009_POP_cmbBP_" + $self.windowNo);
+            $POP_lookCharge = $payManual.find("#VA009_Charge_" + $self.windowNo);
+            //BPartner look Up
+            _BusinessPartnerLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3499, VIS.DisplayType.Search);
+            $BpartnerControl = new VIS.Controls.VTextBoxButton("C_BPartner_ID", true, false, true, VIS.DisplayType.Search, _BusinessPartnerLookUp);
+            var $POP_cmbBPCtrlwrp = $('<div class="vis-control-wrap">');
+            var $POP_cmbBPBtnwrp = $('<div class="input-group-append">');
+            $POP_cmbBP.append($POP_cmbBPCtrlwrp);
+            $POP_cmbBP.append($POP_cmbBPBtnwrp);
+            $POP_cmbBPCtrlwrp.append($BpartnerControl.getControl().attr('placeholder', ' ').attr('data-placeholder', '').attr('data-hasbtn', ' ')).append("<label>" + VIS.Msg.getMsg("VA009_BPartner") + "</label>");
+            $POP_cmbBPBtnwrp.append($BpartnerControl.getBtn(0));
+            $BpartnerControl.getControl().addClass('vis-ev-col-mandatory');
+            //end
+            //Charge look Up
+            //VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.TableDir, "C_Charge_ID", 0, false, null);
+            //_charge = new VIS.Controls.VComboBox("C_Charge_ID", true, false, true, lookup, 50);
+
+            _ChargeLookUp = VIS.MLookupFactory.getMLookUp(VIS.Env.getCtx(), $self.windowNo, 3787, VIS.DisplayType.Search);
+            $ChargeControl = new VIS.Controls.VTextBoxButton("C_Charge_ID", true, false, true, VIS.DisplayType.Search, _ChargeLookUp);
+            var $pop_lookchargeCtrlwrp = $('<div class="vis-control-wrap">');
+            var $pop_lookchargeBtnwrp = $('<div class="input-group-append">');
+            $POP_lookCharge.append($pop_lookchargeCtrlwrp);
+            $POP_lookCharge.append($pop_lookchargeBtnwrp);
+            $pop_lookchargeCtrlwrp.append($ChargeControl.getControl().attr('placeholder', ' ').attr('data-placeholder', '').attr('data-hasbtn', ' ')).append("<label>" + VIS.Msg.getMsg("Charge") + "</label>");
+            $pop_lookchargeBtnwrp.append($ChargeControl.getBtn(0));
+            //end
+
+            $POP_cmbLocation = $payManual.find("#VA009_POP_cmbLocation_" + $self.windowNo);
+            $POP_Currency = $payManual.find("#VA009_POP_cmbCurrency_" + $self.windowNo);
+            $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
+            //$POP_Charge = $payManual.find("#VA009_cmbCharge_" + $self.windowNo);
+            $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
+            //$POP_Amt = $payManual.find("#VA009_cmbAmt_" + $self.windowNo);
+            $POP_ChkNo = $payManual.find("#VA009_txtCheck_" + $self.windowNo);
+            $POP_ChkDate = $payManual.find("#VA009_chkDate_" + $self.windowNo);
+            $DivChkNo = $payManual.find("#VA009_DivCheck_" + $self.windowNo);
+            $DivChkDate = $payManual.find("#VA009_DivCheckDate_" + $self.windowNo);
+            $POP_DateAcct.addClass('vis-ev-col-mandatory');
+            $POP_DateTrx.addClass('vis-ev-col-mandatory');
+            $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+            $POP_cmbDocType.addClass('vis-ev-col-mandatory');
+            $POP_cmbBank.addClass('vis-ev-col-mandatory');
+            $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+            $POP_Currency.addClass('vis-ev-col-mandatory');
+            $POP_PayMthd.addClass('vis-ev-col-mandatory');
+            payAmount.getControl().addClass('vis-ev-col-mandatory');//for default background color to control
+            $POP_CurrencyType.addClass('vis-ev-col-mandatory');
+            $POP_cmbLocation.addClass('vis-ev-col-mandatory');
+        };
+
+        // for restricting the special keys from the user
+        $POP_ChkNo.on('keydown keyup', function (e) {
+            var value = String.fromCharCode(e.which) || e.key;
+            var regExp = /[0-9\.\,]/;
+            // Only numbers, alphabets
+            if (!regExp.test(value)
+                && e.which != 8   // backspace
+                && e.which != 46  // delete
+                && (e.which < 65 || e.which > 90)
+                && (e.which < 37 || e.which > 40)
+                && e.which != 39 && e.which != 37  //arrow left and right
+                && (e.which < 96 || e.which > 105))// for NumPad
+            {
+                return false;
+            }
+            if (e.shiftKey) {
+                e.preventDefault();
+            }
+        });
+        function InitializeEvents() {
+            $POP_cmbBank.on("change", function () {
+                $POP_cmbBankAccount.empty();
+                //to set bank account mandatory given by ashish on 28 May 2020
+                if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) == 0) {
+                    $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_cmbBank.removeClass('vis-ev-col-mandatory');
+                }
+                //to get bank account of selected organization assigned by Ashish on 28 May 2020
+                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
+
+                function callbackloadbankAcct(dr) {
+                    $POP_cmbBankAccount.empty();
+                    $POP_cmbBankAccount.append("<option value='0'></option>");
+                    if (dr != null) {
+                        if (dr.length > 0) {
+                            for (var i in dr) {
+                                $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                            }
+                        }
+                    }
+                }
+            });
+            $POP_cmbBankAccount.on("change", function () {
+                //to set bank account mandatory given by ashish on 28 May 2020
+                if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
+                    $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+                }
+            });
+            $POP_cmbDocType.on("change", function () {
+                if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) == 0) {
+                    $POP_cmbDocType.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_cmbDocType.removeClass('vis-ev-col-mandatory');
+                }
+            });
+            $POP_DateTrx.on("change", function () {
+                if ($POP_DateTrx.val() == "") {
+                    $POP_DateTrx.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_DateTrx.removeClass('vis-ev-col-mandatory');
+                }
+            });
+            $POP_DateAcct.on("change", function () {
+                if ($POP_DateAcct.val() == "") {
+                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+                }
+            });
+            $POP_cmbOrg.on("change", function () {
+                $POP_cmbBank.empty();
+                $POP_cmbDocType.empty();
+                $POP_cmbBankAccount.empty();
+                $POP_cmbLocation.empty();
+                // $POP_Charge.empty();
+                $POP_PayMthd.empty();
+                //change by Amit
+                if ($POP_cmbOrg.val() == "0") {
+                    $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                    //$POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_cmbOrg.removeClass('vis-ev-col-mandatory');
+                }
+                loadDocType();
+                loadbanks($POP_cmbBank);
+                //loadBP();
+                //loadCharge();
+                loadCurrencyType();
+                loadCurrencies();
+                loadPaymentMthd();
+            });
+            $BpartnerControl.fireValueChanged = function () {
+                if ($BpartnerControl.value != null) {
+                    $BpartnerControl.getControl().removeClass('vis-ev-col-mandatory');
+                }
+                loadLocation();
+            };
+            $POP_cmbLocation.on("change", function () {
+                if ($POP_cmbLocation.val() == "0") {
+                    $POP_cmbLocation.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_cmbLocation.removeClass('vis-ev-col-mandatory');
+                }
+            });
+            $POP_Currency.on("change", function () {
+                if ($POP_Currency.val() == "0") {
+                    $POP_Currency.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_Currency.removeClass('vis-ev-col-mandatory');
+                }
+            });
+            $POP_CurrencyType.on("change", function () {
+                if ($POP_CurrencyType.val() == "0") {
+                    $POP_CurrencyType.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
+                }
+            });
+            $POP_PayMthd.on("change", function () {
+                if ($POP_PayMthd.val() == "0") {
+                    $POP_PayMthd.addClass('vis-ev-col-mandatory');
+                }
+                else {
+                    $POP_PayMthd.removeClass('vis-ev-col-mandatory');
+                }
+                if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
+                    $DivChkDate.show();
+                    $DivChkNo.show();
+                }
+                else {
+                    $DivChkDate.hide();
+                    $DivChkNo.hide();
+                }
+            });
+
+            //onchange for changinng background-color if value is entered and validate
+            payAmount.getControl().on('change', function () {
+                if (parseFloat(payAmount.getValue()) > 0) {
+                    payAmount.getControl().removeClass('vis-ev-col-mandatory');
+                }
+                else {
+                    payAmount.getControl().addClass('vis-ev-col-mandatory');
+                }
+            });
+        };
+        function loadAllData() {
+            loadOrg();
+        };
+        function loadOrg() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+            function callbackloadorg(dr) {
+                $POP_cmbOrg.empty();
+                $POP_cmbOrg.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_cmbOrg.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].AD_Org_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                    }
+                }
+                $POP_cmbOrg.prop('selectedIndex', 0);
+            };
+        };
+        //function loadBP() {
+        //    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBPartnerName", { "orgs": $POP_cmbOrg.val() }, callbackloadBP);
+        //    function callbackloadBP(dr) {
+        //        $POP_cmbBP.append(" <option value = 0></option>");
+        //        if (dr.length > 0) {
+        //            for (var i in dr) {
+        //                $POP_cmbBP.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_BPartner_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
+        //            }
+        //        }
+        //        $POP_cmbBP.prop('selectedIndex', 0);
+        //    }
+        //};
+        function loadLocation() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetLocation", { "BP": $BpartnerControl.value }, callbackloadLocation);
+            function callbackloadLocation(dr) {
+                $POP_cmbLocation.empty();
+                $POP_cmbLocation.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_cmbLocation.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Location_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
+                    }
+                }
+                $POP_cmbLocation.prop('selectedIndex', 0);
+            }
+        };
+        function loadPaymentMthd() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
+            function callbackloadpaymthds(dr) {
+                $POP_PayMthd.empty();
+                $POP_PayMthd.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        if (("LCPB").contains(dr[i].VA009_PaymentBaseType)) {
+                        }
+                        else {
+                            $POP_PayMthd.append("<option paybase = " + dr[i].VA009_PaymentBaseType + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">"
+                                + VIS.Utility.encodeText(dr[i].VA009_Name) + " </option>");
+                        }
+                    }
+                }
+                $POP_PayMthd.prop('selectedIndex', 0);
+            }
+        };
+        function loadDocType() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetDocumentType", { "orgs": $POP_cmbOrg.val() }, callbackloadDocType);
+            function callbackloadDocType(dr) {
+                $POP_cmbDocType.empty();
+                $POP_cmbDocType.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_cmbDocType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i]["C_Charge_ID"]) + ">" + VIS.Utility.Util.getValueOfString(dr[i]["Name"]) + "</option>");
+                    }
+                }
+                $POP_cmbDocType.prop('selectedIndex', 0);
+            }
+        };
+        //   function loadCharge() {
+        //    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCharge", { "orgs": $POP_cmbOrg.val() }, callbackloadCharge);
+        //    function callbackloadCharge(dr) {
+        //        $POP_Charge.empty();
+        //        $POP_Charge.append(" <option value = 0></option>");
+        //        if (dr.length > 0) {
+        //            for (var i in dr) {
+        //                $POP_Charge.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Charge_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
+        //            }
+        //        }
+        //        $POP_Charge.prop('selectedIndex', 0);
+        //    }
+        //};
+        function loadbanks(bankcmbdiv) {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBank", { "Orgs": $POP_cmbOrg.val() }, callbackloadbank);
             function callbackloadbank(dr) {
                 if (dr.length > 0) {
                     bankcmbdiv.find('option').remove();
@@ -7598,890 +7419,1111 @@
                 }
             }
         };
-
-        function paymentScroll() {
-            if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
-                if (pgNo < noPages) {
-                    pgNo++;
-                    if (orgids.length == 1) {
-                        if (orgids.indexOf(VIS.context.getAD_Org_ID()) == -1) {
-                            _WhrOrg = "";
-                        }
-                        else {
-                            _WhrOrg = "AND cs.AD_Org_ID IN (" + VIS.context.getAD_Org_ID() + ")";
-                        }
+        function loadCurrencies() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadCurrencies", null, callbackloadCurrencies);
+            function callbackloadCurrencies(dr) {
+                $POP_Currency.empty();
+                $POP_Currency.append(" <option value = 0></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_Currency.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Currency_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].ISO_Code) + "</option>");
                     }
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                    loadPaymetsAll();
                 }
+                $POP_Currency.prop('selectedIndex', 0);
             }
         };
-
-        function b2bPayment(_data) {
-            $bsyDiv[0].style.visibility = "visible";
-            $.ajax({
-                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBtoB",
-                type: "POST",
-                datatype: "json",
-                contentType: 'application/json',
-                //async: false,
-                data: JSON.stringify({ recordData: JSON.stringify(_data) }),
-                success: function (result) {
-                    MsgReturn = JSON.parse(result);
-                    if (MsgReturn.length > 0) {
-                        $note.text(MsgReturn);
-                        $note.css('visibility', 'visible');
-                    }
-                    else {
-                        VIS.ADialog.info("VA009_SavedSuccessfully");
-                    }
-                    $bsyDiv[0].style.visibility = "hidden";
-                },
-                error: function (ex) {
-                    MsgReturn = ex;
-                    $note.text(MsgReturn);
-                    $note.css('visibility', 'visible');
-                    $bsyDiv[0].style.visibility = "hidden";
-                }
-            });
-        };
-
-        //to generate data for file creation
-        function prepareDataForPaymentFile(DocNumber, isBatch) {
-            $bsyDiv[0].style.visibility = "visible";
-            $.ajax({
-                url: VIS.Application.contextUrl + "VA009/Payment/prepareDataForPaymentFile",
-                type: "GET",
-                datatype: "json",
-                contentType: "application/json; charset=utf-8",
-                async: true,
-                data: ({ "DocNumber": DocNumber, "isBatch": isBatch }),//these parameteres are not used in controller now
-                success: function (result) {
-                    result = JSON.parse(result);
-                    for (var i in result) {
-                        if (result[i]._error != null) {
-                            var error = result[i]._error;
-                            if (isBatch)
-                                VIS.ADialog.info(error + "," + VIS.Msg.getMsg("BatchIsCompleted") + DocNumber)
-                            else
-                                VIS.ADialog.info(error + "," + VIS.Msg.getMsg("VA009_PaymentCompletedWith") + DocNumber)
-                        }
-                        else {
-                            downloadURL("\\PaymentFiles\\" + result[i]._filename, i);
+        function loadCurrencyType() {
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
+            function callbackCurrencyType(dr) {
+                $POP_CurrencyType.empty();
+                $POP_CurrencyType.append("<option value='0'></option>");
+                if (dr.length > 0) {
+                    for (var i in dr) {
+                        $POP_CurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
+                        if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
+                            defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
                         }
                     }
-                    $bsyDiv[0].style.visibility = "hidden";
-                },
-                error: function () {
-                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                    $bsyDiv[0].style.visibility = "hidden";
                 }
-            });
-        };
-
-        function generateXMLDialog(sourceBtn) {
-            $xml = $("<div class='VA009-popform-content' style='min-height:333px !important'>");
-            var _xml = "";
-            _xml += "<div class='VA009-popform-data'>"
-                + "<label>" + VIS.Msg.getMsg("VA009_GenXML_Tab") + "</label>"
-                + "</div>"
-
-                + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
-                + "</div>";
-
-            $xml.append(_xml);
-            var XmlDialog = new VIS.ChildDialog();
-
-            XmlDialog.setContent($xml);
-            XmlDialog.setTitle(VIS.Msg.getMsg("VA009_GenXML_Tab"));
-            XmlDialog.setWidth("60%");
-            XmlDialog.setEnableResize(true);
-            XmlDialog.setModal(true);
-            XmlDialog.show();
-            $xmlpopGrid = $xml.find("#VA009_btnPopupGrid");
-            if (sourceBtn == "B") { // for Batch
-                getScheduleBatchDetails();
-            }
-            else if (sourceBtn == "M") { // for Manual Payment
-
-            }
-            XmlDialog.onOkClick = function () {
-                VIS.ADialog.info("VA009_GenXML_Tab");
-
-            };
-
-            XmlDialog.onCancelCLick = function () {
-                XmlDispose();
-            };
-
-            XmlDialog.onClose = function () {
-                XmlDispose();
-
-            };
-
-            function XmlDispose() {
-                $xml = null;
-                _xml = null;
-            }
-
-        };
-
-        //*************************************
-        //Function For Split Payment
-        //*************************************
-        function generateLines() {
-            try {
-                var dr = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBatchProcess", null, null);
-                if (dr != null) {
-                    var processId = dr["AD_Process_ID"];
-                    var name = dr["Name"]
-                    var className = dr["ClassName"]
-                    var type = dr["EntityType"]
-                    if (processId > 0) {
-                        var pp = new VIS.ParameterDialog($self.windowNo, $self);
-                        pp.initDialog(processId, name, type, className, false);
-                        pp.onCloseMain = function (output) {
-                            if (!output) {
-                                //process now
-                                $bsyDiv[0].style.visibility = "hidden";
-                            }
-                            else {
-                                $bsyDiv[0].style.visibility = "visible";
-                            }
-                        }
-                        pp.showDialog();
-                        pp = null;
-                    }
-                    else {
-                        VIS.ADialog.info('ProcessNotFound', true, "", "");
-                    }
-                }
-                $divPayment.find('.VA009-payment-wrap').remove();
-                $divBank.find('.VA009-right-data-main').remove();
-                $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-                loadPaymetsAll();
-                $bsyDiv[0].style.visibility = "hidden";
-            }
-            catch (e) {
             }
         };
-        //*************************************
-        //Fill Business Partner AutoComplete
-        //*************************************
-        function fillAutoCompleteonTextBox(text, response, funName) {
-            $.ajax({
-                url: VIS.Application.contextUrl + "VA009/Payment/" + funName,
-                dataType: "json",
-                data: {
-                    searchText: text
-                },
-                success: function (data) {
-                    var result = JSON.parse(data);
-                    datasource = [];
-                    response($.map(result, function (item) {
-                        return {
-                            label: item.Name,
-                            value: item.Name,
-                            ids: item.C_BPartner_ID
-                        }
-                    }));
-                    $(self.div).autocomplete("search", "");
-                    $(self.div).trigger("focus");
-                }
-            });
-        };
-        //*****************************
-        //Fill Data in Middle Div (Payments Data)
-        //***************************************
-        function loadPaymets(_isInv, _DocBaseTyp, pgNo, pgSize, _orgwhr, _PaymWhr, _statuswhr, _BPWhr, _SearchText, DueDateSelected, _TransTypewhr, Frmdate, Todate, callback) {
-
-            $bsyDiv[0].style.visibility = "visible";
-            _whereQry = _orgwhr + _PaymWhr + _statuswhr + _BPWhr;
-            FinalWhereQry(_isInv, _DocBaseTyp, _whereQry);
-            $.ajax({
-                url: VIS.Application.contextUrl + "VA009/Payment/GetData",
-                type: "GET",
-                datatype: "json",
-                contentType: "application/json; charset=utf-8",
-                async: true,
-                data: ({ pageNo: pgNo, pageSize: pgSize, whereQry: _WhereQuery, OrgWhr: _orgwhr, SearchText: _SearchText, WhrDueDate: DueDateSelected, TransType: _TransTypewhr, FromDate: Frmdate, ToDate: Todate }),
-                success: function (result) {
-                    callback(result);
-                },
-                error: function () {
-                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                    $bsyDiv[0].style.visibility = "hidden";
-                }
-            });
-        };
-        // changed design of form requested by mukesh sir
-        function loadcallback(result) {
-            var id = 0; var imgname = ""; var dsgn = "";
-            var data = JSON.parse(result);
-            //handled no records found when filter the records from left panel 
-            if (data.paymentdata.length == 0) {
-                if ($selectall.is(":checked")) {
-                    $selectall.trigger("click");
-                }
-            }
-
-            //If payment schedule found
-            if (data.paymentdata.length > 0) {
-                if (pgNo == 1 && data.paymentdata.length > 0) {
-                    paymentCount = data.paymentdata[0].paymentCount;
-                    noPages = Math.ceil(paymentCount / PAGESIZE);
-                }
-                for (var i in data.paymentdata) {
-                    id = id + 1;
-                    if (data.paymentdata[i].TransactionType == "Invoice") {
-                        SelectallInvIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallInvIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
-                    }
-                    else {
-                        SelectallOrdIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallOrdIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
-                    }
-                    if (data.paymentdata[i].VA009_plannedduedate != null) {
-                        var Dt = new Date(data.paymentdata[i].VA009_plannedduedate);
-                        Dt = Dt.toLocaleDateString();
-                        var VA009_plannedduedate = Dt;
-                    }
-                    else {
-                        var VA009_plannedduedate = data.paymentdata[i].Systemdate;
-                    }
-                    if (data.paymentdata[i].VA009_FollowupDate != null) {
-                        var DtF = new Date(data.paymentdata[i].VA009_FollowupDate);
-                        DtF = DtF.toLocaleDateString();
-                        var VA009_FollowupDate = DtF;
-                    }
-                    else {
-                        var VA009_FollowupDate = data.paymentdata[i].Systemdate;
-                    }
-                    //var DueAmt = data.paymentdata[i].DueAmt;//not in use
-
-                    var _SameCurrency = 'N';
-                    if (data.paymentdata[i].CurrencyCode == data.paymentdata[i].BaseCurrencyCode) {
-                        _SameCurrency = 'Y';
-                    }
-                    if (data.paymentdata[i].PaymwentBaseType == "S") {
-                        imgname = "cheque-white.png";
-                    }
-                    else if (data.paymentdata[i].PaymwentBaseType == "B") {
-                        imgname = "cash-white.png";
-                    }
-                    else {
-                        imgname = "batch-white.png";
-                    }
-
-                    dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '"> <div class="row" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '">' +
-                        '<div class="col-md-4 col-sm-4 width-sm-35 VA009-padd-right-0"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID
-                        + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '" data-NAME="' + data.paymentdata[i].TransactionType + '" data-PaymentRule="' + data.paymentdata[i].PaymentRule
-                        + '" data-PaymentType="' + data.paymentdata[i].PaymentType + '" data-PaymentTriggerBy="' + data.paymentdata[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.paymentdata[i].PaymwentBaseType
-                        + '" data-DocBaseType="' + data.paymentdata[i].DocBaseType + '" data-CurrencyCode="' + data.paymentdata[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select")
-                        + '" ' + (data.paymentdata[i].IsHoldPayment == "Y" ? "disabled" : "") + '>' +
-                        '<div class="VA009-pay-left">' +
-                        '<div class="VA009-pay-img-wrap">' +
-                        "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.paymentdata[i].VA009_ExecutionStatus + "</span> </div>" +
-                        ' <div class="VA009-pay-text"><p>' + data.paymentdata[i].C_Bpartner + '</p><span>' + data.paymentdata[i].C_BP_Group + '</span> <span>' + data.paymentdata[i].DocumentNo + '</span> <span>' + data.paymentdata[i].VA009_PaymentMethod + '</span> </div>' +
-                        '</div></div>'
-                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd VA009-padd-right-0">';
-
-                    if (VA009_FollowupDate != "" && VA009_plannedduedate != "")
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + VA009_plannedduedate + '</span> <span class="glyphicon glyphicon-play play-icon"></span> <span title="Planned Due Date">' + VA009_FollowupDate + '</span> </div> ';
-                    else if ((VA009_FollowupDate == "" && VA009_plannedduedate != ""))
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + VA009_plannedduedate + '</span></div> ';
-                    else if ((VA009_FollowupDate != "" && VA009_plannedduedate == ""))
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Planned Due Date">' + VA009_FollowupDate + '</span></div> ';
-
-                    if (Globalize.format(data.paymentdata[i].VA009_RecivedAmt > 0)) {
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString()
-                            + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="' + (_DocType == "ARI" ? VIS.Msg.getMsg("VA009_TotRecAmt") : VIS.Msg.getMsg("VA009_TotPaidAmt")) + '">'
-                            + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].VA009_RecivedAmt).toLocaleString() + ' </span></div> ';
-                    }
-                    else {
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString() + ' </span> </div> ';
-                    }
-
-                    dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><i class="VA009_AddNoteimg fa fa-list-alt" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" > </i></span> </div> ' +
-                        ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
-                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd VA009-padd-right-0">'
-                        + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
-                    if (data.paymentdata[i].DocBaseType == "APC" || data.paymentdata[i].DocBaseType == "ARC") {
-                        dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
-                    }
-                    else {
-                        dsgn += ' </div></div>';
-                    }
-                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
-                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString() + '</span><br> </div> </div> ' +
-                        '</div></div></div>';
-
-
-                    $divPayment.append(dsgn);
-                    //$ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
-                    if (_SameCurrency == 'N') {
-                        $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
-                        $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString() + '</span> ');
-                    }
-                }
-
-                if ($selectall.is(":checked")) {
-                    $selectall.prop('checked', false);
-                    $selectall.trigger("click");
-                }
-            }
-
-            //if banks and accounts found
-            if (data.bankdetails.length > 0) {
-                $divBank.find('.VA009-right-data-main').remove();
-                $divBank.find('.VA009-accordion').remove();
-                var _prvbankid = 0; var _prvCurrencyCode = ""; var bnkdiv;
-                var TotalAll = 0, TotalUnreAll = 0;
-                var TotalAmtBank = [], BankCurrCode = [], UnReconsiledAmtTotal = [];
-                var $divpanel;
-                var index;
-                var $divbnknew; var colorclass = 'pull-right VA009-color-green', ULcolorclass = 'pull-right VA009-color-green', Ulcolor = 'VA009-color-green';
-                var $divaccordion = $('<div class="VA009-accordion"></div>');
-                for (var j in data.bankdetails) {
-                    if (data.bankdetails[j].CurrentBalance < 0)
-                        colorclass = 'pull-right VA009-color-red';
-                    if (data.bankdetails[j].UnreconsiledAmt < 0)
-                        ULcolorclass = 'pull-right VA009-color-red';
-                    if (_prvCurrencyCode == data.bankdetails[j].CurrencyCode1) {
-                        $divbnknew = $divBank.find("#VA009_bankdtl_" + data.bankdetails[j].CurrencyCode1);
-                        //bnkdiv = '<p class="VA009-data-top"><span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <span class="pull-left"> ' + VIS.Msg.getMsg("VA009_Reconciled") + ' </span> <span class= "' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
-                        //+ '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p>';
-                        bnkdiv = '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>';
-                        $divbnknew.append(bnkdiv);
-                        TotalAll = TotalAll + data.bankdetails[j].CurrentBalance;
-                        TotalUnreAll = TotalUnreAll + data.bankdetails[j].UnreconsiledAmt;
-                    }
-                    else {
-                        $divpanel = '<div class="panel-group" id="accordion_' + data.bankdetails[j].CurrencyCode1 + '" role="tablist" aria-multiselectable="true">'
-                            + '<div class="panel panel-default">'
-                            + '<div class="panel-heading" role="tab" id="headingOne_' + data.bankdetails[j].CurrencyCode1 + '">'
-                            + '<h4 class="panel-title">'
-                            + '<a role="button" data-toggle="collapse" data-parent="#accordion_' + data.bankdetails[j].CurrencyCode1 + '" href="#collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" aria-expanded="true" aria-controls="collapseOne" class="VA009-Accordion-head" id=VA009_TotalAmtCurr_' + data.bankdetails[j].CurrencyCode1 + '>'
-                            + '</a>'
-                            + '</h4>'
-                            + '</div>'
-                            + '<div id="collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
-                            + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
-                            + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
-                            + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>'
-                            //+ '<p class="VA009-data-top">  <span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span><span class="pull-left">' + VIS.Msg.getMsg("VA009_Reconciled") + '  </span> <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
-                            // + '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p> </div>';
-                            + ' </div></div>'
-                            + '</div> '
-                            + '</div>';
-
-                        //$divBank.append(bnkdiv);
-                        $divaccordion.append($divpanel);
-                        $divBank.append($divaccordion);
-                        TotalAll += data.bankdetails[j].CurrentBalance;
-                        TotalUnreAll += data.bankdetails[j].UnreconsiledAmt;
-                    }
-                    if (BankCurrCode.indexOf(data.bankdetails[j].CurrencyCode1) == -1) {
-                        BankCurrCode.push(data.bankdetails[j].CurrencyCode1);
-                        index = BankCurrCode.indexOf(data.bankdetails[j].CurrencyCode1);
-                        TotalAmtBank[index] = 0; UnReconsiledAmtTotal[index] = 0;
-                    }
-                    else {
-                        index = BankCurrCode.indexOf(data.bankdetails[j].CurrencyCode1);
-                    }
-                    TotalAmtBank[index] = parseFloat(TotalAmtBank[index]) + parseFloat(data.bankdetails[j].CurrentBalance);
-                    UnReconsiledAmtTotal[index] = parseFloat(UnReconsiledAmtTotal[index]) + parseFloat(data.bankdetails[j].UnreconsiledAmt);
-                    _prvbankid = data.bankdetails[j].C_Bank_ID;
-                    _prvCurrencyCode = data.bankdetails[j].CurrencyCode1;
-                    colorclass = 'pull-right VA009-color-green';
-                    ULcolorclass = 'pull-right VA009-color-green';
-                }
-                var $divttlAmtCurr;
-                for (var k in BankCurrCode) {
-                    $divttlAmtCurr = $divBank.find("#VA009_TotalAmtCurr_" + BankCurrCode[k]);
-                    if (TotalAmtBank[k] < 0) {
-                        colorclass = 'VA009-color-red';
-                    }
-                    else {
-                        colorclass = 'VA009-color-green';
-                    }
-
-                    if (UnReconsiledAmtTotal[k] < 0)
-                        Ulcolor = 'VA009-color-red';
-                    else
-                        Ulcolor = 'VA009-color-green';
-
-                    $divttlAmtCurr.append('<div class="VA009-panel-head-total"> <div><span class="VA009-head-currency-name">' + BankCurrCode[k] + '</span><span><i class="glyphicon glyphicon-chevron-down pull-right"></i></span></div><p>' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + BankCurrCode[k] + ' ' + parseFloat(TotalAmtBank[k]).toLocaleString() + ' </span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="VA009-color-green">' + BankCurrCode[k] + ' ' + parseFloat(UnReconsiledAmtTotal[k]).toLocaleString() + '</a></p></div>');
-                }
-                $divBank.append('</div></div>');
-
+        payAmount.addVetoableChangeListener(this);
+        manualDialog.onOkClick = function () {
+            if (!isValidPayment()) {
+                return false;
             }
             else {
-                $divBank.find('.VA009-right-data-main').remove();
-                $divBank.find('.VA009-accordion').remove();
+                createPayment();
             }
-            //if cashbooks found
-            if (data.Cbk.length > 0) {
-                $divBank.append(' <div class="VA009-right-data-main" style="display: none;" id=' + "VA009_cashbkdiv_" + $self.windowNo + '> </div>');
-                $divcashbk = $root.find("#VA009_cashbkdiv_" + $self.windowNo);
-                $divcashbk.append(' <h5>' + VIS.Msg.getMsg("VA009_Cashbook") + '</h5> ');
-                for (var K in data.Cbk) {
-                    if (data.Cbk[K].Csb_Amt < 0)
-                        colorclass = 'pull-right VA009-color-red';
-                    $divcashbk.append('<div class="VA009-right-data">  <p class="VA009-data-top">  <span class="pull-left"> ' + data.Cbk[K].CashBookName + '</span> <span class="' + colorclass + '">' + data.Cbk[K].CBCurrencyCode + ' ' + parseFloat(data.Cbk[K].Csb_Amt).toLocaleString() + '</span>  </p>  </div>');
-                    colorclass = 'pull-right VA009-color-green';
-                }
-            }
-            $BP.val("");
-            if (!($selectall.is(":checked"))) {
-                $totalAmt.text(0);
-                $totalAmt.data('ttlamt', parseFloat(0));
-            }
-            $bsyDiv[0].style.visibility = "hidden";
-        };
-        //End 
-        //***************************************
-
-        //****Check For Batch Payments Cases ****//
-        function validateBatchCurrency() {
-            if (SlctdPaymentIds.toString() != "") {
-                var isValid = false;
-                var obj;
-                var currency = "";
-                var count = 0;
-                if (batchObjInv) {
-                    obj = $.grep(batchObjInv, function (e) {
-                        if (count == 0) {
-                            currency = e.PM.currencycode;
-                            count = 1;
-                        }
-                        if (currency == e.PM.currencycode) {
-                            isValid = true;
-                        }
-                        else {
-                            isValid = false;
-                            return e;
-                        }
-                    });
-                }
-                if (obj) {
-                    if (obj.length == 0) { isValid = true; }
-                    else { isValid = false; }
-                }
-            }
-            return isValid;
         };
 
-        function validateBatchPayments() {
-            if (SlctdPaymentIds.toString() != "") {
-                var isValid = false;
-                var obj;
-                if (batchObjInv) {
-                    obj = $.grep(batchObjInv, function (e) {
+        manualDialog.onCancelCLick = function () {
+            payManualDispose();
+        };
 
-                        if (e.PM.paymentrule == "E") { //EFT
+        manualDialog.onClose = function () {
+            payManualDispose();
 
-                            if (("D").contains(e.PM.paymwentbasetype))// Direct Debit-D
-                            {
-                                if (e.PM.paymenttype == "B") {// Batch
-                                    if (e.PM.paymenttriggerby == "S") { // Push By Sender
-                                        if (e.PM.docbasetype == "API") {
-                                            isValid = true;
+        };
+        this.vetoablechange = function (evt) {
+            if (evt.propertyName == "VA009_cmbAmt_" + $self.windowNo + "") {
+                payAmount.setValue(evt.newValue);
+            }
+        };
+        function payManualDispose() {
+            $payManual = null;
+            _payManual = null;
+        };
+
+        function isValidPayment() {
+            if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
+                if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) > 0) {
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
+                            if ($POP_DateTrx.val() != "" && $POP_DateTrx.val() != null) {
+                                if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                                    if (VIS.Utility.Util.getValueOfInt($BpartnerControl.value) > 0) {
+                                        if (VIS.Utility.Util.getValueOfInt($POP_cmbLocation.val()) > 0) {
+                                            if (VIS.Utility.Util.getValueOfInt($POP_Currency.val()) > 0) {
+                                                if (VIS.Utility.Util.getValueOfInt($POP_CurrencyType.val()) > 0) {
+                                                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                                        if (VIS.Utility.Util.getValueOfDecimal(payAmount.getValue()) > 0) {
+                                                            if ($('option:selected', $POP_PayMthd).attr('paybase') == "S") {
+                                                                if ($POP_ChkNo.val() != "" && $POP_ChkDate.val() != "") {
+                                                                    return true;
+                                                                }
+                                                                else {
+                                                                    VIS.ADialog.info("VA009_PLCheckNumber&Date");
+                                                                    return false;
+                                                                }
+                                                            }
+                                                            return true;
+                                                        }
+                                                        else {
+                                                            VIS.ADialog.info("VA009_PlsEnterAmount");
+                                                            return false;
+                                                        }
+                                                    }
+                                                    else {
+                                                        VIS.ADialog.info("VA009_PlsSelectPayMethod");
+                                                        return false;
+                                                    }
+                                                }
+                                                else {
+                                                    VIS.ADialog.info("VA009_PlsSelectCurrencyType");
+                                                    return false;
+                                                }
+                                            }
+                                            else {
+                                                VIS.ADialog.info("VA009_PlsSelectCurrency");
+                                                return false;
+                                            }
                                         }
                                         else {
-                                            isValid = false;
-                                            return e;
+                                            VIS.ADialog.info("SelectBPLocation");
+                                            return false;
                                         }
                                     }
-                                    else { //  Pull by recipient
-                                        if (e.PM.docbasetype == "API") {
-                                            isValid = false;
-                                            return e;
-                                        }
-                                        else {
-                                            isValid = true;
-                                        }
+                                    else {
+                                        VIS.ADialog.info("SelectBusinessPartnerFirst");
+                                        return false;
                                     }
                                 }
-                                else if (e.PM.paymenttype == "S") { //Single
-                                    if (e.PM.paymenttriggerby == "S") { // Push By Sender
-                                        if (e.PM.docbasetype == "API") {
-                                            isValid = true;
-                                        }
-                                        else {
-                                            isValid = false;
-                                            return e;
-                                        }
-                                    }
-                                    else { //  Pull by recipient
-                                        if (e.PM.docbasetype == "API") {
-                                            isValid = false;
-                                            return e;
-                                        }
-                                        else {
-                                            isValid = true;
-                                        }
-                                    }
-                                }
-                            }
-                            else if (("W").contains(e.PM.paymwentbasetype))// WireTransfer-W
-                            {
-                                if (e.PM.paymenttype == "B") { // Batch
-                                    if (e.PM.paymenttriggerby == "S") { // Push By Sender
-                                        if (e.PM.docbasetype == "ARI") {
-                                            isValid = false;
-                                            return e;
-                                        }
-                                        else {
-                                            isValid = true;
-                                        }
-                                    }
-                                    else { //  Pull by recipient
-                                        if (e.PM.docbasetype == "ARI") {
-                                            isValid = true;
-                                        }
-                                        else {
-                                            isValid = false;
-                                            return e;
-                                        }
-                                    }
-                                }
-                                else if (e.PM.paymenttype == "S") {// Single
-                                    if (e.PM.paymenttriggerby == "S") { // Push By Sender
-                                        if (e.PM.docbasetype == "ARI") {
-                                            isValid = false;
-                                            return e;
-                                        }
-                                        else {
-                                            isValid = true;
-                                        }
-                                    }
-                                    else { //  Pull by recipient
-                                        if (e.PM.docbasetype == "ARI") {
-                                            isValid = true;
-                                        }
-                                        else {
-                                            isValid = false;
-                                            return e;
-                                        }
-                                    }
+                                else {
+                                    VIS.ADialog.info("VA009_PllsSelTAcctdate");
+                                    return false;
                                 }
                             }
                             else {
-                                isValid = false;
-                                return e;
+                                VIS.ADialog.info("PllsSelTdate");
+                                return false;
                             }
-
-                        }
-                        else { //Mannual
-                            isValid = false;
-                            return e;
-                        }
-                    });
-                }
-                if (obj) {
-                    if (obj.length == 0) { isValid = true; }
-                    else { isValid = false; }
-                }
-            }
-            return isValid;
-        };
-
-        function validateManualPayment() {
-
-            if (SlctdPaymentIds.toString() != "") {
-                var isValid = false;
-                var obj;
-                if (batchObjInv) {
-                    obj = $.grep(batchObjInv, function (e) {
-
-                        if (("BCS").contains(e.PM.paymwentbasetype)) {
-                            isValid = false;
-                            return e;
                         }
                         else {
-                            isValid = true;
+                            VIS.ADialog.info("VA009_PLSelectBankAccount");
+                            return false;
                         }
-                    });
+                    }
+                    else {
+                        VIS.ADialog.info("VA009_PLSelectBank");
+                        return false;
+                    }
                 }
-                if (obj) {
-                    if (obj.length == 0) { isValid = true; }
-                    else { isValid = false; }
+                else {
+                    VIS.ADialog.info("VA009_PLSelectDocumentType");
+                    return false;
                 }
             }
-            return isValid;
+            else {
+                VIS.ADialog.info("VA009_PlsSelectOrg");
+                return false;
+            }
         };
-        //*****************************************
 
-        function getScheduleBatchDetails() {
+        function createPayment() {
+            var PaymentData = [];
+            var DocNumber = "";
+            PaymentData.push({
+                Org: $POP_cmbOrg.val(), DocType: $POP_cmbDocType.val(), BankID: $POP_cmbBank.val(),
+                BankAccountID: $POP_cmbBankAccount.val(), DateTrx: $POP_DateTrx.val(), DateAcct: $POP_DateAcct.val(),
+                BPID: $BpartnerControl.value, BPLocation: $POP_cmbLocation.val(), CurrencyID: $POP_Currency.val(),
+                CurrencyType: $POP_CurrencyType.val(), PaymentMethod: $POP_PayMthd.val(), PaymentAmount: payAmount.getValue(),
+                CheckNo: $POP_ChkNo.val(), CheckDate: $POP_ChkDate.val(), charge: VIS.Utility.Util.getValueOfInt($ChargeControl.value)
+            });
             $bsyDiv[0].style.visibility = "visible";
             $.ajax({
-                url: VIS.Application.contextUrl + "VA009/Payment/GetPaymentScheduleBatch",
-                type: "GET",
+                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePayMannual",
+                type: "POST",
                 datatype: "json",
-                contentType: "application/json; charset=utf-8",
+                // contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ "FileName": "Hell", "RecordID": 1221 }),//these parameteres are not used in controller now
+                data: ({
+                    PaymentData: JSON.stringify(PaymentData)
+                }),
                 success: function (result) {
                     result = JSON.parse(result);
-                    batchcallback(result);
-                },
-                error: function () {
-                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                    DocNumber = "";
+                    //var SpilitedData = result.split(".", result.length);
+                    //DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
+                    //console.log(DocNumber);
+                    $divPayment.find('.VA009-payment-wrap').remove();
+                    $divBank.find('.VA009-right-data-main').remove();
+                    $divBank.find('.VA009-accordion').remove();
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
+                    //VIS.ADialog.info("", null, result, "");
+                    File_Para = 'M';
+                    if (DocNumber != "") {
+                        w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
+                            .yes(function () {
+                                SlctdPaymentIds = [];
+                                SlctdOrderPaymentIds = [];
+                                $selectall.prop('checked', false);
+                                $divPayment.find(':checkbox').prop('checked', false);
+                                prepareDataForPaymentFile(DocNumber, false);
+                            })
+                            .no(function () {
+                                $bsyDiv[0].style.visibility = "hidden";
+                                VIS.ADialog.info("", null, result, "");
+                                console.log("user clicked NO")
+                            });
+                    }
+                    else {
+                        VIS.ADialog.info("", null, result, "");
+                    }
+                },
+                error: function (ex) {
+                    console.log(ex);
+                    $bsyDiv[0].style.visibility = "hidden";
+                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
                 }
             });
         };
+    }
+};
 
-        function batchcallback(data) {
-            $bsyDiv[0].style.visibility = "hidden";
-            console.log(data.result);
-            console.log(data);
-            if (data.result) {
-                var dsgn, imgname = '';
-                for (var i = 0; i < data.result.length; i++) {
-                    dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.result[i].DocumentNo + '"> <div class="row" data-UID="' + data.result[i].DocumentNo + '">' +
-                        '<div class="col-md-4 col-sm-4 width-sm-35"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.result[i].DocumentNo + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '"  data-NAME="' + data.result[i].DocumentNo + '" data-PaymentRule="' + data.result[i].PaymentRule + '" data-PaymentType="' + data.result[i].PaymentType + '" data-PaymentTriggerBy="' + data.result[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.result[i].PaymwentBaseType + '" data-DocBaseType="' + data.result[i].DocBaseType + '" data-CurrencyCode="' + data.result[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select") + '">' +
-                        '<div class="VA009-pay-left">' +
-                        '<div class="VA009-pay-img-wrap">' +
-                        "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.result[i].VA009_ExecutionStatus + "</span> </div>" +
-                        ' <div class="VA009-pay-text"><p>' + data.result[i].C_Bpartner + '</p><span>' + data.result[i].C_BP_Group + '</span> <span>' + data.result[i].DocumentNo + '</span> <span>' + data.result[i].PaymentMethod + '</span> </div>' +
-                        '</div></div>'
-                        + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd VA009-padd-right-0">';
-
-                    if (data.result[i].VA009_DocumentDate != "")
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + data.result[i].VA009_DocumentDate + '</span> </div> ';
-
-                    if (Globalize.format(data.result[i].VA009_RecivedAmt > 0)) {
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="Total Recieved Amount">' + data.result[i].CurrencyCode + ' ' + Globalize.format(data.result[i].VA009_RecivedAmt, "N") + ' </span></div> ';
-                    }
-                    else {
-                        dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> </div> ';
-                    }
-
-                    dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.result[i].DocumentNo + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.result[i].DocumentNo + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
-                        ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.result[i].DocumentNo + '>' + data.result[i].LastChat + '</span> </div> ' +
-                        ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd VA009-padd-right-0">'
-                        + '<div class="VA009-transactionType"> <span>' + data.result[i].TransactionType + '</span> '
-                    if (data.result[i].DocBaseType == "APC" || data.result[i].DocBaseType == "ARC") {
-                        dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
-                    }
-                    else {
-                        dsgn += ' </div></div>';
-                    }
-                    dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
-                        '</div></div></div>';
-
-                    $xmlpopGrid.append(dsgn);
-                }
+//*******************************************
+//Function to load Banks 
+//Parameter: Combobox of Bank, OrgIds Array
+//*******************************************
+function loadbanks(bankcmbdiv, ids) {
+    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBank", { "Orgs": ids.toString() }, callbackloadbank);
+    function callbackloadbank(dr) {
+        if (dr.length > 0) {
+            bankcmbdiv.find('option').remove();
+            bankcmbdiv.append("<option value='0'></option>");
+            for (var i in dr) {
+                bankcmbdiv.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Bank_ID) + ">" + VIS.Utility.encodeText(dr[i].Name) + "</option>");
             }
-            //else
-            //    alert("bye");
-        };
+            bankcmbdiv.prop('selectedIndex', 0);
+        }
+    }
+};
 
-        //*****************
-        //Zoom On Window
-        //*****************
-        var zoomToWindow = function (record_id, windowName, colname) {
-            var ad_window_Id = 0;
-            try {
-                ad_window_Id = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetWindowID", { "WindowName": windowName }, null);
-                if (ad_window_Id > 0) {
-                    var zoomQuery = new VIS.Query();
-                    zoomQuery.addRestriction(colname, VIS.Query.prototype.EQUAL, record_id);
-                    VIS.viewManager.startWindow(ad_window_Id, zoomQuery);
-                }
-            }
-            catch (e) {
-                console.log(e);
-            }
-        };
-
-        //*****************
-        //Load BusyDiv
-        //*****************
-        function createBusyIndicator() {
-            $bsyDiv = $('<div class="vis-busyindicatorouterwrap va012-busy-bank-statement" ><div class="vis-busyindicatorinnerwrap"><i class="vis-busyindicatordiv"></i></div></div>');
-            //$bsyDiv.css({
-            //    "position": "absolute", "width": "98%", "height": "97%", 'text-align': 'center', 'z-index': '999'
-            //});
-            $bsyDiv[0].style.visibility = "visible";
-            $root.append($bsyDiv);
-        };
-        //******************
-        //Final Where Clause
-        //******************
-        var FinalWhereQry = function (_isInv, _DocBaseType, _whereQry) {
-            if (_isInv == 'Y')
-                _isInv = "IS NOT NULL";
-            else
-                _isInv = "IS NULL";
-            if (_DocBaseType == 'ARI') {
-                _WhereQuery = " WHERE cs.c_invoice_id " + _isInv + " AND cs.va009_ispaid    = 'N' AND cd.docbasetype IN  ('ARI','ARC' , 'SOO') AND inv.docstatus IN ('CO','CL')";
-                _WhereQuery += _whereQry;
-            }
-            else if (_DocBaseType == 'API') {
-                _WhereQuery = " WHERE cs.c_invoice_id " + _isInv + " AND cs.va009_ispaid    = 'N' AND cd.docbasetype IN  ('API','APC' , 'POO') AND inv.docstatus IN ('CO','CL')";
-                _WhereQuery += _whereQry;
-            }
-        };
-
-        //LoadPayments Function to load the payments
-        function loadPaymetsAll() {
-            loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
-        };
-        //end
-        function checkcommaordot(event, val, amt) {
-            var foundComma = false;
-            if (event == undefined) {
-                return val;
-            }
-            event.value_new = VIS.Utility.Util.getValueOfString(val);
-            if (event.value_new.contains(".")) {
-                foundComma = true;
-                var indices = [];
-                for (var i = 0; i < event.value_new.length; i++) {
-                    if (event.value_new[i] === ".")
-                        indices.push(i);
-                }
-                if (indices.length > 1) {
-                    event.value_new = removeAllButLast(event.value_new, '.');
-                }
-            }
-            if (event.value_new.contains(",")) {
-                if (foundComma) {
-                    event.value_new = removeAllButLast(event.value_new, ',');
+function paymentScroll() {
+    if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+        if (pgNo < noPages) {
+            pgNo++;
+            if (orgids.length == 1) {
+                if (orgids.indexOf(VIS.context.getAD_Org_ID()) == -1) {
+                    _WhrOrg = "";
                 }
                 else {
-                    var indices = [];
-                    for (var i = 0; i < event.value_new.length; i++) {
-                        if (event.value_new[i] === ",")
-                            indices.push(i);
-                    }
-                    if (indices.length > 1) {
-                        event.value_new = removeAllButLast(event.value_new, ',');
-                    }
-                    else {
-                        event.value_new = event.value_new.replace(",", ".");
-                    }
+                    _WhrOrg = "AND cs.AD_Org_ID IN (" + VIS.context.getAD_Org_ID() + ")";
                 }
             }
-            if (event.value_new == "") {
-                event.value_new = "0";
+            //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+            loadPaymetsAll();
+        }
+    }
+};
+
+function b2bPayment(_data) {
+    $bsyDiv[0].style.visibility = "visible";
+    $.ajax({
+        url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBtoB",
+        type: "POST",
+        datatype: "json",
+        contentType: 'application/json',
+        //async: false,
+        data: JSON.stringify({ recordData: JSON.stringify(_data) }),
+        success: function (result) {
+            MsgReturn = JSON.parse(result);
+            if (MsgReturn.length > 0) {
+                $note.text(MsgReturn);
+                $note.css('visibility', 'visible');
             }
-            return event.value_new;
-        };
-
-        function removeAllButLast(amt, seprator) {
-            var parts = amt.split(seprator);
-            amt = parts.slice(0, -1).join('') + '.' + parts.slice(-1);
-            if (amt.indexOf('.') == (amt.length - 1)) {
-                amt = amt.replace(".", "");
+            else {
+                VIS.ADialog.info("VA009_SavedSuccessfully");
             }
-            return amt;
-        };
-
-        var downloadURL = function (url, no) {
-            //if ($idown) {
-            //    $idown.attr('src', url);
-            //} else {
-            var $idown;  // Keep it outside of the function, so it's initialized once.
-            $idown = $('<iframe>', { id: 'idown_' + no, src: url }).hide().appendTo('body');
-            //}
-        };
-        //*******************
-        //Get Root
-        //*******************
-        this.getRoot = function () {
-            return $root;
-        };
-        //********************
-        //Dispose Component
-        //********************
-        this.disposeComponent = function () {
-            $self = null;
-            if ($root)
-                $root.remove();
-            $root = null;
-            MainRoot = null;
-            _leftBar = null; // Left Panel
-            _MiddlePanel = null, _whereQry = null; // Middle Panel
-            _RightPanel = null, $ConvertedAmt = null;
-            _iscustomer = null, _isvendor = null, _isinvoice = null;
-            $Org = null, $OrgSelected = null, $payMthd = null, $PayMSelected = null, $status = null, $statusSelected = null;
-            $togglebtn = null, $lbdata = null, $lbmain = null, $divPayment = null, $BP = null, $BPSelected = null, $divBank = null;
-            pgNo = null, pgSize = null, PAGESIZE = null, $CR_Tab = null, $CP_Tab = null, $UCR_Tab = null, $UCP_Tab = null, Pay_ID = null;
-            isloaded = null, _WhereQuery = null, $divcashbk = null;
-            orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null;
-            paymntIds = null, statusIds = null;
-            _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
-            $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
-            popupgrddata = null;
-            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null;
-        };
-        //********************
-        //Set Size OF Div's
-        //********************
-        this.setSize = function () {
-            //Set Payment Form Design, on refresh with mutiple tabs
-            //$table.height($(".VA009-main-container").height());
-            var container_h = $("#VA009-main-container_" + $self.windowNo).height();
-            var midpanel_h = $("#VA009-middle-wrap_" + $self.windowNo).height();
-            var leftpanel_h = 0;
-            if (container_h == 0) {
-                container_h = window.innerHeight - (40 + 43 + 24); // window height - (Header panel - Title Panel - Footer panel)
-                midpanel_h = container_h - 85;
-                leftpanel_h = container_h - 90;
-            }
-            $table.height(container_h);
-            //If left Panel height is > 0 then this condtion will execute
-            if (leftpanel_h <= $lbmain.height()) {
-                leftpanel_h = $lbmain.height();
-                midpanel_h = container_h;
-            }
-            //$("#VA009-content-area_" + $self.windowNo).height($("#VA009-main-container_" + $self.windowNo).height() - 20);
-            $("#VA009-content-area_" + $self.windowNo).height(container_h - 20);
-            //$("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
-            $("#VA009_Paymntlst_" + $self.windowNo).height(midpanel_h - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
-            //lbdata.height($lbmain.height() - (43 + 20));
-            lbdata.height(leftpanel_h - (43 + 20));
-        };
-
-        this.lockUI = function () {
-
-        };
-
-        this.unlockUI = function (pi) {
-        };
-
-        this.parentcall = function (output) {
+            $bsyDiv[0].style.visibility = "hidden";
+        },
+        error: function (ex) {
+            MsgReturn = ex;
+            $note.text(MsgReturn);
+            $note.css('visibility', 'visible');
             $bsyDiv[0].style.visibility = "hidden";
         }
+    });
+};
 
-        this.initial = function () {
+//to generate data for file creation
+function prepareDataForPaymentFile(DocNumber, isBatch) {
+    $bsyDiv[0].style.visibility = "visible";
+    $.ajax({
+        url: VIS.Application.contextUrl + "VA009/Payment/prepareDataForPaymentFile",
+        type: "GET",
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        async: true,
+        data: ({ "DocNumber": DocNumber, "isBatch": isBatch }),//these parameteres are not used in controller now
+        success: function (result) {
+            result = JSON.parse(result);
+            for (var i in result) {
+                if (result[i]._error != null) {
+                    var error = result[i]._error;
+                    if (isBatch)
+                        VIS.ADialog.info(error + "," + VIS.Msg.getMsg("BatchIsCompleted") + DocNumber)
+                    else
+                        VIS.ADialog.info(error + "," + VIS.Msg.getMsg("VA009_PaymentCompletedWith") + DocNumber)
+                }
+                else {
+                    downloadURL("\\PaymentFiles\\" + result[i]._filename, i);
+                }
+            }
+            $bsyDiv[0].style.visibility = "hidden";
+        },
+        error: function () {
+            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+            $bsyDiv[0].style.visibility = "hidden";
+        }
+    });
+};
 
-        };
+function generateXMLDialog(sourceBtn) {
+    $xml = $("<div class='VA009-popform-content' style='min-height:333px !important'>");
+    var _xml = "";
+    _xml += "<div class='VA009-popform-data'>"
+        + "<label>" + VIS.Msg.getMsg("VA009_GenXML_Tab") + "</label>"
+        + "</div>"
+
+        + "  <div class='VA009-table-container' id='VA009_btnPopupGrid'>  </div> "
+        + "</div>";
+
+    $xml.append(_xml);
+    var XmlDialog = new VIS.ChildDialog();
+
+    XmlDialog.setContent($xml);
+    XmlDialog.setTitle(VIS.Msg.getMsg("VA009_GenXML_Tab"));
+    XmlDialog.setWidth("60%");
+    XmlDialog.setEnableResize(true);
+    XmlDialog.setModal(true);
+    XmlDialog.show();
+    $xmlpopGrid = $xml.find("#VA009_btnPopupGrid");
+    if (sourceBtn == "B") { // for Batch
+        getScheduleBatchDetails();
+    }
+    else if (sourceBtn == "M") { // for Manual Payment
+
+    }
+    XmlDialog.onOkClick = function () {
+        VIS.ADialog.info("VA009_GenXML_Tab");
+
     };
 
-    VA009.PaymentForm.prototype.init = function (windowNo, frame) {
-        //Assign to this Varable
-        this.windowNo = windowNo;
-        this.frame = frame;
-        this.Initialize();
-        // frame.setTitle("VA009_PaymentForm");
-        this.frame.getContentGrid().append(this.getRoot());
-        this.setSize();
+    XmlDialog.onCancelCLick = function () {
+        XmlDispose();
+    };
+
+    XmlDialog.onClose = function () {
+        XmlDispose();
 
     };
 
-    VA009.PaymentForm.prototype.dispose = function () {
-        /*CleanUp Code */
-        //dispose this component
-        this.disposeComponent();
-        //call frame dispose function
-        if (this.frame)
-            this.frame.dispose();
-        this.frame = null;
+    function XmlDispose() {
+        $xml = null;
+        _xml = null;
+    }
+
+};
+
+//*************************************
+//Function For Split Payment
+//*************************************
+function generateLines() {
+    try {
+        var dr = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBatchProcess", null, null);
+        if (dr != null) {
+            var processId = dr["AD_Process_ID"];
+            var name = dr["Name"]
+            var className = dr["ClassName"]
+            var type = dr["EntityType"]
+            if (processId > 0) {
+                var pp = new VIS.ParameterDialog($self.windowNo, $self);
+                pp.initDialog(processId, name, type, className, false);
+                pp.onCloseMain = function (output) {
+                    if (!output) {
+                        //process now
+                        $bsyDiv[0].style.visibility = "hidden";
+                    }
+                    else {
+                        $bsyDiv[0].style.visibility = "visible";
+                    }
+                }
+                pp.showDialog();
+                pp = null;
+            }
+            else {
+                VIS.ADialog.info('ProcessNotFound', true, "", "");
+            }
+        }
+        $divPayment.find('.VA009-payment-wrap').remove();
+        $divBank.find('.VA009-right-data-main').remove();
+        $divBank.find('.VA009-accordion').remove();
+        pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+        //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+        loadPaymetsAll();
+        $bsyDiv[0].style.visibility = "hidden";
+    }
+    catch (e) {
+    }
+};
+//*************************************
+//Fill Business Partner AutoComplete
+//*************************************
+function fillAutoCompleteonTextBox(text, response, funName) {
+    $.ajax({
+        url: VIS.Application.contextUrl + "VA009/Payment/" + funName,
+        dataType: "json",
+        data: {
+            searchText: text
+        },
+        success: function (data) {
+            var result = JSON.parse(data);
+            datasource = [];
+            response($.map(result, function (item) {
+                return {
+                    label: item.Name,
+                    value: item.Name,
+                    ids: item.C_BPartner_ID
+                }
+            }));
+            $(self.div).autocomplete("search", "");
+            $(self.div).trigger("focus");
+        }
+    });
+};
+//*****************************
+//Fill Data in Middle Div (Payments Data)
+//***************************************
+function loadPaymets(_isInv, _DocBaseTyp, pgNo, pgSize, _orgwhr, _PaymWhr, _statuswhr, _BPWhr, _SearchText, DueDateSelected, _TransTypewhr, Frmdate, Todate, callback) {
+
+    $bsyDiv[0].style.visibility = "visible";
+    _whereQry = _orgwhr + _PaymWhr + _statuswhr + _BPWhr;
+    FinalWhereQry(_isInv, _DocBaseTyp, _whereQry);
+    $.ajax({
+        url: VIS.Application.contextUrl + "VA009/Payment/GetData",
+        type: "GET",
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        async: true,
+        data: ({ pageNo: pgNo, pageSize: pgSize, whereQry: _WhereQuery, OrgWhr: _orgwhr, SearchText: _SearchText, WhrDueDate: DueDateSelected, TransType: _TransTypewhr, FromDate: Frmdate, ToDate: Todate }),
+        success: function (result) {
+            callback(result);
+        },
+        error: function () {
+            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+            $bsyDiv[0].style.visibility = "hidden";
+        }
+    });
+};
+// changed design of form requested by mukesh sir
+function loadcallback(result) {
+    var id = 0; var imgname = ""; var dsgn = "";
+    var data = JSON.parse(result);
+    //handled no records found when filter the records from left panel 
+    if (data.paymentdata.length == 0) {
+        if ($selectall.is(":checked")) {
+            $selectall.trigger("click");
+        }
+    }
+
+    //If payment schedule found
+    if (data.paymentdata.length > 0) {
+        if (pgNo == 1 && data.paymentdata.length > 0) {
+            paymentCount = data.paymentdata[0].paymentCount;
+            noPages = Math.ceil(paymentCount / PAGESIZE);
+        }
+        for (var i in data.paymentdata) {
+            id = id + 1;
+            if (data.paymentdata[i].TransactionType == "Invoice") {
+                SelectallInvIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallInvIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
+            }
+            else {
+                SelectallOrdIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallOrdIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
+            }
+            if (data.paymentdata[i].VA009_plannedduedate != null) {
+                var Dt = new Date(data.paymentdata[i].VA009_plannedduedate);
+                Dt = Dt.toLocaleDateString();
+                var VA009_plannedduedate = Dt;
+            }
+            else {
+                var VA009_plannedduedate = data.paymentdata[i].Systemdate;
+            }
+            if (data.paymentdata[i].VA009_FollowupDate != null) {
+                var DtF = new Date(data.paymentdata[i].VA009_FollowupDate);
+                DtF = DtF.toLocaleDateString();
+                var VA009_FollowupDate = DtF;
+            }
+            else {
+                var VA009_FollowupDate = data.paymentdata[i].Systemdate;
+            }
+            //var DueAmt = data.paymentdata[i].DueAmt;//not in use
+
+            var _SameCurrency = 'N';
+            if (data.paymentdata[i].CurrencyCode == data.paymentdata[i].BaseCurrencyCode) {
+                _SameCurrency = 'Y';
+            }
+            if (data.paymentdata[i].PaymwentBaseType == "S") {
+                imgname = "cheque-white.png";
+            }
+            else if (data.paymentdata[i].PaymwentBaseType == "B") {
+                imgname = "cash-white.png";
+            }
+            else {
+                imgname = "batch-white.png";
+            }
+
+            dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '"> <div class="row" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '">' +
+                '<div class="col-md-4 col-sm-4 width-sm-35 VA009-padd-right-0"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID
+                + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '" data-NAME="' + data.paymentdata[i].TransactionType + '" data-PaymentRule="' + data.paymentdata[i].PaymentRule
+                + '" data-PaymentType="' + data.paymentdata[i].PaymentType + '" data-PaymentTriggerBy="' + data.paymentdata[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.paymentdata[i].PaymwentBaseType
+                + '" data-DocBaseType="' + data.paymentdata[i].DocBaseType + '" data-CurrencyCode="' + data.paymentdata[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select")
+                + '" ' + (data.paymentdata[i].IsHoldPayment == "Y" ? "disabled" : "") + '>' +
+                '<div class="VA009-pay-left">' +
+                '<div class="VA009-pay-img-wrap">' +
+                "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.paymentdata[i].VA009_ExecutionStatus + "</span> </div>" +
+                ' <div class="VA009-pay-text"><p>' + data.paymentdata[i].C_Bpartner + '</p><span>' + data.paymentdata[i].C_BP_Group + '</span> <span>' + data.paymentdata[i].DocumentNo + '</span> <span>' + data.paymentdata[i].VA009_PaymentMethod + '</span> </div>' +
+                '</div></div>'
+                + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd VA009-padd-right-0">';
+
+            if (VA009_FollowupDate != "" && VA009_plannedduedate != "")
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + VA009_plannedduedate + '</span> <span class="glyphicon glyphicon-play play-icon"></span> <span title="Planned Due Date">' + VA009_FollowupDate + '</span> </div> ';
+            else if ((VA009_FollowupDate == "" && VA009_plannedduedate != ""))
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + VA009_plannedduedate + '</span></div> ';
+            else if ((VA009_FollowupDate != "" && VA009_plannedduedate == ""))
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Planned Due Date">' + VA009_FollowupDate + '</span></div> ';
+
+            if (Globalize.format(data.paymentdata[i].VA009_RecivedAmt > 0)) {
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString()
+                    + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="' + (_DocType == "ARI" ? VIS.Msg.getMsg("VA009_TotRecAmt") : VIS.Msg.getMsg("VA009_TotPaidAmt")) + '">'
+                    + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].VA009_RecivedAmt).toLocaleString() + ' </span></div> ';
+            }
+            else {
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString() + ' </span> </div> ';
+            }
+
+            dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><i class="VA009_AddNoteimg fa fa-list-alt" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" > </i></span> </div> ' +
+                ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '>' + data.paymentdata[i].LastChat + '</span> </div> ' +
+                ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd VA009-padd-right-0">'
+                + '<div class="VA009-transactionType"> <span>' + data.paymentdata[i].TransactionType + (data.paymentdata[i].IsHoldPayment == "Y" ? " (" + VIS.Msg.getMsg("VA009_HoldPayment") + ")" : "") + '</span> '
+            if (data.paymentdata[i].DocBaseType == "APC" || data.paymentdata[i].DocBaseType == "ARC") {
+                dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
+            }
+            else {
+                dsgn += ' </div></div>';
+            }
+            dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
+                + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString() + '</span><br> </div> </div> ' +
+                '</div></div></div>';
+
+
+            $divPayment.append(dsgn);
+            //$ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
+            if (_SameCurrency == 'N') {
+                $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
+                $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString() + '</span> ');
+            }
+        }
+
+        if ($selectall.is(":checked")) {
+            $selectall.prop('checked', false);
+            $selectall.trigger("click");
+        }
+    }
+
+    //if banks and accounts found
+    if (data.bankdetails.length > 0) {
+        $divBank.find('.VA009-right-data-main').remove();
+        $divBank.find('.VA009-accordion').remove();
+        var _prvbankid = 0; var _prvCurrencyCode = ""; var bnkdiv;
+        var TotalAll = 0, TotalUnreAll = 0;
+        var TotalAmtBank = [], BankCurrCode = [], UnReconsiledAmtTotal = [];
+        var $divpanel;
+        var index;
+        var $divbnknew; var colorclass = 'pull-right VA009-color-green', ULcolorclass = 'pull-right VA009-color-green', Ulcolor = 'VA009-color-green';
+        var $divaccordion = $('<div class="VA009-accordion"></div>');
+        for (var j in data.bankdetails) {
+            if (data.bankdetails[j].CurrentBalance < 0)
+                colorclass = 'pull-right VA009-color-red';
+            if (data.bankdetails[j].UnreconsiledAmt < 0)
+                ULcolorclass = 'pull-right VA009-color-red';
+            if (_prvCurrencyCode == data.bankdetails[j].CurrencyCode1) {
+                $divbnknew = $divBank.find("#VA009_bankdtl_" + data.bankdetails[j].CurrencyCode1);
+                //bnkdiv = '<p class="VA009-data-top"><span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <span class="pull-left"> ' + VIS.Msg.getMsg("VA009_Reconciled") + ' </span> <span class= "' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
+                //+ '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p>';
+                bnkdiv = '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>';
+                $divbnknew.append(bnkdiv);
+                TotalAll = TotalAll + data.bankdetails[j].CurrentBalance;
+                TotalUnreAll = TotalUnreAll + data.bankdetails[j].UnreconsiledAmt;
+            }
+            else {
+                $divpanel = '<div class="panel-group" id="accordion_' + data.bankdetails[j].CurrencyCode1 + '" role="tablist" aria-multiselectable="true">'
+                    + '<div class="panel panel-default">'
+                    + '<div class="panel-heading" role="tab" id="headingOne_' + data.bankdetails[j].CurrencyCode1 + '">'
+                    + '<h4 class="panel-title">'
+                    + '<a role="button" data-toggle="collapse" data-parent="#accordion_' + data.bankdetails[j].CurrencyCode1 + '" href="#collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" aria-expanded="true" aria-controls="collapseOne" class="VA009-Accordion-head" id=VA009_TotalAmtCurr_' + data.bankdetails[j].CurrencyCode1 + '>'
+                    + '</a>'
+                    + '</h4>'
+                    + '</div>'
+                    + '<div id="collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
+                    + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
+                    + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
+                    + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>'
+                    //+ '<p class="VA009-data-top">  <span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span><span class="pull-left">' + VIS.Msg.getMsg("VA009_Reconciled") + '  </span> <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
+                    // + '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p> </div>';
+                    + ' </div></div>'
+                    + '</div> '
+                    + '</div>';
+
+                //$divBank.append(bnkdiv);
+                $divaccordion.append($divpanel);
+                $divBank.append($divaccordion);
+                TotalAll += data.bankdetails[j].CurrentBalance;
+                TotalUnreAll += data.bankdetails[j].UnreconsiledAmt;
+            }
+            if (BankCurrCode.indexOf(data.bankdetails[j].CurrencyCode1) == -1) {
+                BankCurrCode.push(data.bankdetails[j].CurrencyCode1);
+                index = BankCurrCode.indexOf(data.bankdetails[j].CurrencyCode1);
+                TotalAmtBank[index] = 0; UnReconsiledAmtTotal[index] = 0;
+            }
+            else {
+                index = BankCurrCode.indexOf(data.bankdetails[j].CurrencyCode1);
+            }
+            TotalAmtBank[index] = parseFloat(TotalAmtBank[index]) + parseFloat(data.bankdetails[j].CurrentBalance);
+            UnReconsiledAmtTotal[index] = parseFloat(UnReconsiledAmtTotal[index]) + parseFloat(data.bankdetails[j].UnreconsiledAmt);
+            _prvbankid = data.bankdetails[j].C_Bank_ID;
+            _prvCurrencyCode = data.bankdetails[j].CurrencyCode1;
+            colorclass = 'pull-right VA009-color-green';
+            ULcolorclass = 'pull-right VA009-color-green';
+        }
+        var $divttlAmtCurr;
+        for (var k in BankCurrCode) {
+            $divttlAmtCurr = $divBank.find("#VA009_TotalAmtCurr_" + BankCurrCode[k]);
+            if (TotalAmtBank[k] < 0) {
+                colorclass = 'VA009-color-red';
+            }
+            else {
+                colorclass = 'VA009-color-green';
+            }
+
+            if (UnReconsiledAmtTotal[k] < 0)
+                Ulcolor = 'VA009-color-red';
+            else
+                Ulcolor = 'VA009-color-green';
+
+            $divttlAmtCurr.append('<div class="VA009-panel-head-total"> <div><span class="VA009-head-currency-name">' + BankCurrCode[k] + '</span><span><i class="glyphicon glyphicon-chevron-down pull-right"></i></span></div><p>' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + BankCurrCode[k] + ' ' + parseFloat(TotalAmtBank[k]).toLocaleString() + ' </span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="VA009-color-green">' + BankCurrCode[k] + ' ' + parseFloat(UnReconsiledAmtTotal[k]).toLocaleString() + '</a></p></div>');
+        }
+        $divBank.append('</div></div>');
+
+    }
+    else {
+        $divBank.find('.VA009-right-data-main').remove();
+        $divBank.find('.VA009-accordion').remove();
+    }
+    //if cashbooks found
+    if (data.Cbk.length > 0) {
+        $divBank.append(' <div class="VA009-right-data-main" style="display: none;" id=' + "VA009_cashbkdiv_" + $self.windowNo + '> </div>');
+        $divcashbk = $root.find("#VA009_cashbkdiv_" + $self.windowNo);
+        $divcashbk.append(' <h5>' + VIS.Msg.getMsg("VA009_Cashbook") + '</h5> ');
+        for (var K in data.Cbk) {
+            if (data.Cbk[K].Csb_Amt < 0)
+                colorclass = 'pull-right VA009-color-red';
+            $divcashbk.append('<div class="VA009-right-data">  <p class="VA009-data-top">  <span class="pull-left"> ' + data.Cbk[K].CashBookName + '</span> <span class="' + colorclass + '">' + data.Cbk[K].CBCurrencyCode + ' ' + parseFloat(data.Cbk[K].Csb_Amt).toLocaleString() + '</span>  </p>  </div>');
+            colorclass = 'pull-right VA009-color-green';
+        }
+    }
+    $BP.val("");
+    if (!($selectall.is(":checked"))) {
+        $totalAmt.text(0);
+        $totalAmt.data('ttlamt', parseFloat(0));
+    }
+    $bsyDiv[0].style.visibility = "hidden";
+};
+//End 
+//***************************************
+
+//****Check For Batch Payments Cases ****//
+function validateBatchCurrency() {
+    if (SlctdPaymentIds.toString() != "") {
+        var isValid = false;
+        var obj;
+        var currency = "";
+        var count = 0;
+        if (batchObjInv) {
+            obj = $.grep(batchObjInv, function (e) {
+                if (count == 0) {
+                    currency = e.PM.currencycode;
+                    count = 1;
+                }
+                if (currency == e.PM.currencycode) {
+                    isValid = true;
+                }
+                else {
+                    isValid = false;
+                    return e;
+                }
+            });
+        }
+        if (obj) {
+            if (obj.length == 0) { isValid = true; }
+            else { isValid = false; }
+        }
+    }
+    return isValid;
+};
+
+function validateBatchPayments() {
+    if (SlctdPaymentIds.toString() != "") {
+        var isValid = false;
+        var obj;
+        if (batchObjInv) {
+            obj = $.grep(batchObjInv, function (e) {
+
+                if (e.PM.paymentrule == "E") { //EFT
+
+                    if (("D").contains(e.PM.paymwentbasetype))// Direct Debit-D
+                    {
+                        if (e.PM.paymenttype == "B") {// Batch
+                            if (e.PM.paymenttriggerby == "S") { // Push By Sender
+                                if (e.PM.docbasetype == "API") {
+                                    isValid = true;
+                                }
+                                else {
+                                    isValid = false;
+                                    return e;
+                                }
+                            }
+                            else { //  Pull by recipient
+                                if (e.PM.docbasetype == "API") {
+                                    isValid = false;
+                                    return e;
+                                }
+                                else {
+                                    isValid = true;
+                                }
+                            }
+                        }
+                        else if (e.PM.paymenttype == "S") { //Single
+                            if (e.PM.paymenttriggerby == "S") { // Push By Sender
+                                if (e.PM.docbasetype == "API") {
+                                    isValid = true;
+                                }
+                                else {
+                                    isValid = false;
+                                    return e;
+                                }
+                            }
+                            else { //  Pull by recipient
+                                if (e.PM.docbasetype == "API") {
+                                    isValid = false;
+                                    return e;
+                                }
+                                else {
+                                    isValid = true;
+                                }
+                            }
+                        }
+                    }
+                    else if (("W").contains(e.PM.paymwentbasetype))// WireTransfer-W
+                    {
+                        if (e.PM.paymenttype == "B") { // Batch
+                            if (e.PM.paymenttriggerby == "S") { // Push By Sender
+                                if (e.PM.docbasetype == "ARI") {
+                                    isValid = false;
+                                    return e;
+                                }
+                                else {
+                                    isValid = true;
+                                }
+                            }
+                            else { //  Pull by recipient
+                                if (e.PM.docbasetype == "ARI") {
+                                    isValid = true;
+                                }
+                                else {
+                                    isValid = false;
+                                    return e;
+                                }
+                            }
+                        }
+                        else if (e.PM.paymenttype == "S") {// Single
+                            if (e.PM.paymenttriggerby == "S") { // Push By Sender
+                                if (e.PM.docbasetype == "ARI") {
+                                    isValid = false;
+                                    return e;
+                                }
+                                else {
+                                    isValid = true;
+                                }
+                            }
+                            else { //  Pull by recipient
+                                if (e.PM.docbasetype == "ARI") {
+                                    isValid = true;
+                                }
+                                else {
+                                    isValid = false;
+                                    return e;
+                                }
+                            }
+                        }
+                    }
+                    else {
+                        isValid = false;
+                        return e;
+                    }
+
+                }
+                else { //Mannual
+                    isValid = false;
+                    return e;
+                }
+            });
+        }
+        if (obj) {
+            if (obj.length == 0) { isValid = true; }
+            else { isValid = false; }
+        }
+    }
+    return isValid;
+};
+
+function validateManualPayment() {
+
+    if (SlctdPaymentIds.toString() != "") {
+        var isValid = false;
+        var obj;
+        if (batchObjInv) {
+            obj = $.grep(batchObjInv, function (e) {
+
+                if (("BCS").contains(e.PM.paymwentbasetype)) {
+                    isValid = false;
+                    return e;
+                }
+                else {
+                    isValid = true;
+                }
+            });
+        }
+        if (obj) {
+            if (obj.length == 0) { isValid = true; }
+            else { isValid = false; }
+        }
+    }
+    return isValid;
+};
+//*****************************************
+
+function getScheduleBatchDetails() {
+    $bsyDiv[0].style.visibility = "visible";
+    $.ajax({
+        url: VIS.Application.contextUrl + "VA009/Payment/GetPaymentScheduleBatch",
+        type: "GET",
+        datatype: "json",
+        contentType: "application/json; charset=utf-8",
+        async: true,
+        data: ({ "FileName": "Hell", "RecordID": 1221 }),//these parameteres are not used in controller now
+        success: function (result) {
+            result = JSON.parse(result);
+            batchcallback(result);
+        },
+        error: function () {
+            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+            $bsyDiv[0].style.visibility = "hidden";
+        }
+    });
+};
+
+function batchcallback(data) {
+    $bsyDiv[0].style.visibility = "hidden";
+    console.log(data.result);
+    console.log(data);
+    if (data.result) {
+        var dsgn, imgname = '';
+        for (var i = 0; i < data.result.length; i++) {
+            dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.result[i].DocumentNo + '"> <div class="row" data-UID="' + data.result[i].DocumentNo + '">' +
+                '<div class="col-md-4 col-sm-4 width-sm-35"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.result[i].DocumentNo + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '"  data-NAME="' + data.result[i].DocumentNo + '" data-PaymentRule="' + data.result[i].PaymentRule + '" data-PaymentType="' + data.result[i].PaymentType + '" data-PaymentTriggerBy="' + data.result[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.result[i].PaymwentBaseType + '" data-DocBaseType="' + data.result[i].DocBaseType + '" data-CurrencyCode="' + data.result[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select") + '">' +
+                '<div class="VA009-pay-left">' +
+                '<div class="VA009-pay-img-wrap">' +
+                "<span class='VA009-pay-img'><img src='" + VIS.Application.contextUrl + "Areas/VA009/Images/" + imgname + "' alt=''></span> <span class='VA009-pay-status'>" + data.result[i].VA009_ExecutionStatus + "</span> </div>" +
+                ' <div class="VA009-pay-text"><p>' + data.result[i].C_Bpartner + '</p><span>' + data.result[i].C_BP_Group + '</span> <span>' + data.result[i].DocumentNo + '</span> <span>' + data.result[i].PaymentMethod + '</span> </div>' +
+                '</div></div>'
+                + '<div class="col-md-3 col-sm-3 width-sm-30 sm-padd VA009-padd-right-0">';
+
+            if (data.result[i].VA009_DocumentDate != "")
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + data.result[i].VA009_DocumentDate + '</span> </div> ';
+
+            if (Globalize.format(data.result[i].VA009_RecivedAmt > 0)) {
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="Total Recieved Amount">' + data.result[i].CurrencyCode + ' ' + Globalize.format(data.result[i].VA009_RecivedAmt, "N") + ' </span></div> ';
+            }
+            else {
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> </div> ';
+            }
+
+            dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.result[i].DocumentNo + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.result[i].DocumentNo + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
+                ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.result[i].DocumentNo + '>' + data.result[i].LastChat + '</span> </div> ' +
+                ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd VA009-padd-right-0">'
+                + '<div class="VA009-transactionType"> <span>' + data.result[i].TransactionType + '</span> '
+            if (data.result[i].DocBaseType == "APC" || data.result[i].DocBaseType == "ARC") {
+                dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
+            }
+            else {
+                dsgn += ' </div></div>';
+            }
+            dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
+                '</div></div></div>';
+
+            $xmlpopGrid.append(dsgn);
+        }
+    }
+    //else
+    //    alert("bye");
+};
+
+//*****************
+//Zoom On Window
+//*****************
+var zoomToWindow = function (record_id, windowName, colname) {
+    var ad_window_Id = 0;
+    try {
+        ad_window_Id = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetWindowID", { "WindowName": windowName }, null);
+        if (ad_window_Id > 0) {
+            var zoomQuery = new VIS.Query();
+            zoomQuery.addRestriction(colname, VIS.Query.prototype.EQUAL, record_id);
+            VIS.viewManager.startWindow(ad_window_Id, zoomQuery);
+        }
+    }
+    catch (e) {
+        console.log(e);
+    }
+};
+
+//*****************
+//Load BusyDiv
+//*****************
+function createBusyIndicator() {
+    $bsyDiv = $('<div class="vis-busyindicatorouterwrap va012-busy-bank-statement" ><div class="vis-busyindicatorinnerwrap"><i class="vis-busyindicatordiv"></i></div></div>');
+    //$bsyDiv.css({
+    //    "position": "absolute", "width": "98%", "height": "97%", 'text-align': 'center', 'z-index': '999'
+    //});
+    $bsyDiv[0].style.visibility = "visible";
+    $root.append($bsyDiv);
+};
+//******************
+//Final Where Clause
+//******************
+var FinalWhereQry = function (_isInv, _DocBaseType, _whereQry) {
+    if (_isInv == 'Y')
+        _isInv = "IS NOT NULL";
+    else
+        _isInv = "IS NULL";
+    if (_DocBaseType == 'ARI') {
+        _WhereQuery = " WHERE cs.c_invoice_id " + _isInv + " AND cs.va009_ispaid    = 'N' AND cd.docbasetype IN  ('ARI','ARC' , 'SOO') AND inv.docstatus IN ('CO','CL')";
+        _WhereQuery += _whereQry;
+    }
+    else if (_DocBaseType == 'API') {
+        _WhereQuery = " WHERE cs.c_invoice_id " + _isInv + " AND cs.va009_ispaid    = 'N' AND cd.docbasetype IN  ('API','APC' , 'POO') AND inv.docstatus IN ('CO','CL')";
+        _WhereQuery += _whereQry;
+    }
+};
+
+//LoadPayments Function to load the payments
+function loadPaymetsAll() {
+    loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
+};
+//end
+function checkcommaordot(event, val, amt) {
+    var foundComma = false;
+    if (event == undefined) {
+        return val;
+    }
+    event.value_new = VIS.Utility.Util.getValueOfString(val);
+    if (event.value_new.contains(".")) {
+        foundComma = true;
+        var indices = [];
+        for (var i = 0; i < event.value_new.length; i++) {
+            if (event.value_new[i] === ".")
+                indices.push(i);
+        }
+        if (indices.length > 1) {
+            event.value_new = removeAllButLast(event.value_new, '.');
+        }
+    }
+    if (event.value_new.contains(",")) {
+        if (foundComma) {
+            event.value_new = removeAllButLast(event.value_new, ',');
+        }
+        else {
+            var indices = [];
+            for (var i = 0; i < event.value_new.length; i++) {
+                if (event.value_new[i] === ",")
+                    indices.push(i);
+            }
+            if (indices.length > 1) {
+                event.value_new = removeAllButLast(event.value_new, ',');
+            }
+            else {
+                event.value_new = event.value_new.replace(",", ".");
+            }
+        }
+    }
+    if (event.value_new == "") {
+        event.value_new = "0";
+    }
+    return event.value_new;
+};
+
+function removeAllButLast(amt, seprator) {
+    var parts = amt.split(seprator);
+    amt = parts.slice(0, -1).join('') + '.' + parts.slice(-1);
+    if (amt.indexOf('.') == (amt.length - 1)) {
+        amt = amt.replace(".", "");
+    }
+    return amt;
+};
+
+var downloadURL = function (url, no) {
+    //if ($idown) {
+    //    $idown.attr('src', url);
+    //} else {
+    var $idown;  // Keep it outside of the function, so it's initialized once.
+    $idown = $('<iframe>', { id: 'idown_' + no, src: url }).hide().appendTo('body');
+    //}
+};
+//*******************
+//Get Root
+//*******************
+this.getRoot = function () {
+    return $root;
+};
+//********************
+//Dispose Component
+//********************
+this.disposeComponent = function () {
+    $self = null;
+    if ($root)
+        $root.remove();
+    $root = null;
+    MainRoot = null;
+    _leftBar = null; // Left Panel
+    _MiddlePanel = null, _whereQry = null; // Middle Panel
+    _RightPanel = null, $ConvertedAmt = null;
+    _iscustomer = null, _isvendor = null, _isinvoice = null;
+    $Org = null, $OrgSelected = null, $payMthd = null, $PayMSelected = null, $status = null, $statusSelected = null;
+    $togglebtn = null, $lbdata = null, $lbmain = null, $divPayment = null, $BP = null, $BPSelected = null, $divBank = null;
+    pgNo = null, pgSize = null, PAGESIZE = null, $CR_Tab = null, $CP_Tab = null, $UCR_Tab = null, $UCP_Tab = null, Pay_ID = null;
+    isloaded = null, _WhereQuery = null, $divcashbk = null;
+    orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null;
+    paymntIds = null, statusIds = null;
+    _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
+    $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
+    popupgrddata = null;
+    CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null;
+};
+//********************
+//Set Size OF Div's
+//********************
+this.setSize = function () {
+    //Set Payment Form Design, on refresh with mutiple tabs
+    //$table.height($(".VA009-main-container").height());
+    var container_h = $("#VA009-main-container_" + $self.windowNo).height();
+    var midpanel_h = $("#VA009-middle-wrap_" + $self.windowNo).height();
+    var leftpanel_h = 0;
+    if (container_h == 0) {
+        container_h = window.innerHeight - (40 + 43 + 24); // window height - (Header panel - Title Panel - Footer panel)
+        midpanel_h = container_h - 85;
+        leftpanel_h = container_h - 90;
+    }
+    $table.height(container_h);
+    //If left Panel height is > 0 then this condtion will execute
+    if (leftpanel_h <= $lbmain.height()) {
+        leftpanel_h = $lbmain.height();
+        midpanel_h = container_h;
+    }
+    //$("#VA009-content-area_" + $self.windowNo).height($("#VA009-main-container_" + $self.windowNo).height() - 20);
+    $("#VA009-content-area_" + $self.windowNo).height(container_h - 20);
+    //$("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
+    $("#VA009_Paymntlst_" + $self.windowNo).height(midpanel_h - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
+    //lbdata.height($lbmain.height() - (43 + 20));
+    lbdata.height(leftpanel_h - (43 + 20));
+};
+
+this.lockUI = function () {
+
+};
+
+this.unlockUI = function (pi) {
+};
+
+this.parentcall = function (output) {
+    $bsyDiv[0].style.visibility = "hidden";
+}
+
+this.initial = function () {
+
+};
     };
 
-})(VA009, jQuery);
+VA009.PaymentForm.prototype.init = function (windowNo, frame) {
+    //Assign to this Varable
+    this.windowNo = windowNo;
+    this.frame = frame;
+    this.Initialize();
+    // frame.setTitle("VA009_PaymentForm");
+    this.frame.getContentGrid().append(this.getRoot());
+    this.setSize();
+
+};
+
+VA009.PaymentForm.prototype.dispose = function () {
+    /*CleanUp Code */
+    //dispose this component
+    this.disposeComponent();
+    //call frame dispose function
+    if (this.frame)
+        this.frame.dispose();
+    this.frame = null;
+};
+
+}) (VA009, jQuery);

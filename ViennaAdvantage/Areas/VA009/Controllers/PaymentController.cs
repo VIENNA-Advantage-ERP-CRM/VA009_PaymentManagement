@@ -198,6 +198,20 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_payMdl.GetBankAccountData(BankAccount, ct)), JsonRequestBehavior.AllowGet);
         }
 
+        /// <summary>
+        /// Get CurrentNextCheckNo against selected Payment Method and Bank Account
+        /// </summary>
+        /// <param name="BankAccount">Bank Account</param>
+        /// <param name="PaymentMethod">Payment Method</param>
+        /// <writer>1052</writer>
+        /// <returns>CurrentNextCheckNoo</returns>
+        public ActionResult GetBankAccountCheckNo(int BankAccount, int PaymentMethod)
+        {
+            Ctx ct = Session["ctx"] as Ctx;
+            PaymentModel _payMdl = new PaymentModel();
+            return Json(JsonConvert.SerializeObject(_payMdl.GetBankAccountCheckNo(BankAccount, PaymentMethod, ct)), JsonRequestBehavior.AllowGet);
+        }
+
         //Added by Bharat on 01/June/2017
         public ActionResult LoadOrganization()
         {
@@ -288,12 +302,12 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_payMdl.GetPaymentRule(PaymentMethod, ct)), JsonRequestBehavior.AllowGet);
         }
 
-        //Added by Manjot on 12/Dec/2018
-        public ActionResult LoadChequePaymentMethod()
+        //Added by Manjot on 12/Dec/2018    
+        public ActionResult LoadChequePaymentMethod(int? Org_ID)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            return Json(JsonConvert.SerializeObject(_payMdl.LoadChequePaymentMethod(ct)), JsonRequestBehavior.AllowGet);
+            return Json(JsonConvert.SerializeObject(_payMdl.LoadChequePaymentMethod(ct, Org_ID)), JsonRequestBehavior.AllowGet);
         }
 
         //Added by Bharat on 05/June/2017
