@@ -302,7 +302,12 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_payMdl.GetPaymentRule(PaymentMethod, ct)), JsonRequestBehavior.AllowGet);
         }
 
-        //Added by Manjot on 12/Dec/2018    
+        /// <summary>
+        /// Fetch Payment Methods
+        /// Payable case: FilterPayment Methods as per selected Organization
+        /// </summary>
+        /// <param name="Org_ID">Orgainzation</param>
+        /// <returns>List of Payment Methods</returns>
         public ActionResult LoadChequePaymentMethod(int? Org_ID)
         {
             Ctx ct = Session["ctx"] as Ctx;

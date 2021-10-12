@@ -3480,14 +3480,19 @@ namespace VA009.Models
             return retDic;
         }
 
-        //Added by Bharat on 01/June/2017
+        /// <summary>
+        /// Fetch Bank Account Data
+        /// </summary>
+        /// <param name="bankAccount_ID">Bank Account</param>
+        /// <param name="ct">Context</param>
+        /// <returns>Bank Account Data </returns>
         public Dictionary<string, object> GetBankAccountData(int bankAccount_ID, Ctx ct)
         {
             Dictionary<string, object> retBank = null;
             //handled the logs
             string sql = @"SELECT ba.CurrentBalance,  bd.CurrentNext FROM C_BankAccount ba LEFT JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
-                         WHERE ba.ISACTIVE='Y' AND  ba.c_bankaccount_id=" + bankAccount_ID + " AND ba.ad_client_id =" + ct.GetAD_Client_ID();
-            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "ba", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                         WHERE ba.ISACTIVE='Y' AND  ba.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID();
+            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -3506,22 +3511,16 @@ namespace VA009.Models
         /// <param name="ct">Context</param>
         /// <writer>1052</writer>
         /// <returns>CurrentNextCheckNo</returns>
-        public Dictionary<string, object> GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
+        public int GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
         {
-            Dictionary<string, object> retBank = null;
             //handled the logs
-            string sql = @"SELECT bd.CurrentNext FROM c_bankaccountdoc bd WHERE bd.VA009_PaymentMethod_ID = "+ payMethod_ID+
-            " AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y' AND  bd.C_BankAccount_ID=" + bankAccount_ID + 
-            " AND bd.AD_Client_ID =" + ct.GetAD_Client_ID();
+            string sql = @"SELECT bd.CurrentNext FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
+             WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID+"AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
+             " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID();
 
-            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "bd", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
-            DataSet ds = DB.ExecuteDataset(sql);
-            if (ds != null && ds.Tables[0].Rows.Count > 0)
-            {
-                retBank = new Dictionary<string, object>();
-                retBank["CurrentNext"] = Util.GetValueOfString(ds.Tables[0].Rows[0]["CurrentNext"]);
-            }
-            return retBank;
+            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+            return Util.GetValueOfInt(DB.ExecuteScalar(sql));
+            
         }
 
 
@@ -3571,7 +3570,12 @@ namespace VA009.Models
             return retDic;
         }
 
-        //Added by Manjot on 12/Dec/2018
+        /// <summary>
+        /// Fetch Payment Methods
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="Org_ID">Organization</param>
+        /// <returns>List of Payment Methods</returns>
         public List<Dictionary<string, object>> LoadChequePaymentMethod(Ctx ct, int? Org_ID)
         {
             List<Dictionary<string, object>> retDic = null;

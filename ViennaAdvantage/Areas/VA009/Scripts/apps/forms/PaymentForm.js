@@ -2339,31 +2339,31 @@
 
                 /*payment method change event - set current Next checkno*/
                 $POP_PayMthd.on("change", function (e) {
-                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0)
-                    {                      
+                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
                         $POP_PayMthd.removeClass('vis-ev-col-mandatory');
-                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0)
-                        {
+                        if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) == 0) {
                             //if bank account is not selected
                             VIS.ADialog.info("VA009_PLSelectBankAccount", "");
                             return false;
 
                         }
-                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountCheckNo", {
+                        var checkNo = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetBankAccountCheckNo", {
                             "BankAccount": $POP_cmbBankAccount.val(),
                             "PaymentMethod": $POP_PayMthd.val()
-                        }, callbackCheckNo);
+                        });
 
-                        function callbackCheckNo(dr) {                          
-                            if (dr != null && dr["CurrentNext"]!=null) {
-                                $POP_txtChqNo.val(dr["CurrentNext"]);
-                            }
-                            if (dr == null) {
-                                $POP_txtChqNo.val("0");
-                                VIS.ADialog.info("VA009_NoCheckNum", "")
-                                return false;
-                            }
+
+                        if (checkNo != null || checkNo!=0)
+                        {
+                            $POP_txtChqNo.val(checkNo);
                         }
+                        else
+                        {                           
+                            $POP_txtChqNo.val("0");
+                            VIS.ADialog.info("VA009_NoCheckNum", "")
+                            return false;
+                        }
+                        
                     }
                     else {                       
                         $POP_PayMthd.addClass('vis-ev-col-mandatory');                       
