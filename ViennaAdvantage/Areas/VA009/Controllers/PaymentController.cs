@@ -204,7 +204,7 @@ namespace VA009.Controllers
         /// <param name="BankAccount">Bank Account</param>
         /// <param name="PaymentMethod">Payment Method</param>
         /// <writer>1052</writer>
-        /// <returns>CurrentNextCheckNoo</returns>
+        /// <returns>CurrentNextCheckNo</returns>
         public ActionResult GetBankAccountCheckNo(int BankAccount, int PaymentMethod)
         {
             Ctx ct = Session["ctx"] as Ctx;
