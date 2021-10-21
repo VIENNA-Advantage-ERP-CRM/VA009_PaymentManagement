@@ -898,7 +898,7 @@
                 Pay_ID = 0;
             }
             else if (e.target.type == 'checkbox') {
-                if (target.prop("checked") == true) {
+                if (target.prop("checked") == true) {      
                     //added css for selected record
                     target.parents(".VA009-payment-wrap").addClass("VA009-payment-wrap-selctd");
                     //Edit By Amit - 18-11-2016
@@ -1034,7 +1034,12 @@
                 }
                 else {
                     $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
-                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
+                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");    
+                    if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("disabled") == true)
+                    {
+                        //(1052)hold payment case : donot select record
+                        return;
+                    }
                     target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked", true);
                     target.parents(".VA009-payment-wrap").addClass("VA009-payment-wrap-selctd");
                     var inputTag = target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx")[0];
@@ -5139,7 +5144,7 @@
                 line["ConversionTypeId"] = rslt[i].ConversionTypeId;
                 line["DiscountAmount"] = rslt[i].DiscountAmount;
                 line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
-                line["DiscountDate"] = rslt[i].DiscountDate;
+                line["DiscountDate"] = rslt[i].DiscountDate;               
                 popupgrddata.push(line);
             }
             w2utils.encodeTags(popupgrddata);
@@ -5473,7 +5478,7 @@
                                         _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'];
                                         _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'];
                                         _data["DiscountDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']);
-
+                                       
                                         if (_data["DueAmt"] != 0 && BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
                                             //ConvertedAmt is zero then show the message Conversion Rate not found
                                             VIS.ADialog.info("VA009_ConversionNotFound");
