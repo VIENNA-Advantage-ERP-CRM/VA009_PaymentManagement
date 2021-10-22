@@ -144,11 +144,11 @@ namespace ViennaAdvantage.Process
                 _sql.Clear();
                 _sql.Append(@"Select cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, cp.duedate, 
                               cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, C_BP_BankAccount_ID
-                            ,CI.C_ConversionType_ID,BP.VA009_BPMandate_id
+                             ,CI.C_ConversionType_ID,BP.VA009_BPMandate_id
                               From C_Invoice CI inner join C_InvoicePaySchedule CP ON CI.c_invoice_id= CP.c_invoice_id
                               INNER JOIN C_DocType doc ON doc.C_DocType_ID = CI.C_DocType_ID  
                               INNER JOIN C_BPartner BP ON BP.C_Bpartner_ID=CI.C_Bpartner_ID
-                              Where ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL
+                              WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND cp.IsHoldPayment!='Y' 
                               AND CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus NOT IN ( 'Y','J') AND CI.AD_Client_ID = " + _AD_Client_ID + " AND CI.AD_Org_ID = " + _AD_Org_ID);
 
                 if (_C_BPartner_ID > 0)
@@ -484,7 +484,7 @@ namespace ViennaAdvantage.Process
                 {
                     DB.ExecuteQuery("DELETE FROM VA009_Batch WHERE VA009_Batch_ID=" + batchid, null, Get_TrxName());
 
-                    return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
+                    return Msg.GetMsg(GetCtx(), "VA009_RecordNotFound");
                 }
             }
             else
