@@ -2239,6 +2239,7 @@
                     //to set bank mandatory given by ashish on 28 May 2020
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
                         $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+                        $POP_PayMthd.val(0); //(1052)empty payment method on the selection of bank account 
                     }
                     else {
                         $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
@@ -2356,8 +2357,6 @@
                             "BankAccount": $POP_cmbBankAccount.val(),
                             "PaymentMethod": $POP_PayMthd.val()
                         });
-
-
                         if (checkNo != null || checkNo!=0)
                         {
                             $POP_txtChqNo.val(checkNo);
@@ -2372,9 +2371,7 @@
                     }
                     else {                       
                         $POP_PayMthd.addClass('vis-ev-col-mandatory');                       
-                    }
-                   
-                   
+                    }                  
                 });
 
         $POPtxtCheckNumber.on("change", function () {
