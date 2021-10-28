@@ -2068,9 +2068,9 @@
                 function loadgrdPay(callback) {
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                        type: "GET",
+                        type: "POST",
                         datatype: "json",
-                        contentType: "application/json; charset=utf-8",
+                        //contentType: "application/json; charset=utf-8",
                         //async: false,
                         data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                         success: function (result) {
@@ -3725,9 +3725,9 @@
             function loadgrd(callback) {
                 $.ajax({
                     url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                    type: "GET",
+                    type: "POST",
                     datatype: "json",
-                    contentType: "application/json; charset=utf-8",
+                    //contentType: "application/json; charset=utf-8",
                     //async: false,
                     data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                     success: function (result) {
@@ -4323,9 +4323,9 @@
         function loadgrdCash(callback) {
             $.ajax({
                 url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                type: "GET",
+                type: "POST",
                 datatype: "json",
-                contentType: "application/json; charset=utf-8",
+                //contentType: "application/json; charset=utf-8",
                 //async: false,
                 data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no) }),
                 success: function (result) {
@@ -5100,9 +5100,9 @@
         function loadgrdBatch(callback) {
             $.ajax({
                 url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                type: "GET",
+                type: "POST",
                 datatype: "json",
-                contentType: "application/json; charset=utf-8",
+                //contentType: "application/json; charset=utf-8",
                 //async: false,
                 data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                 success: function (result) {
@@ -5720,9 +5720,9 @@
         function loadgrdSplit(callback) {
             $.ajax({
                 url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                type: "GET",
+                type: "POST",
                 datatype: "json",
-                contentType: "application/json; charset=utf-8",
+                //contentType: "application/json; charset=utf-8",
                 //async: false,
                 data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                 success: function (result) {
