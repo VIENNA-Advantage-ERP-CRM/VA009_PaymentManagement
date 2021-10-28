@@ -343,9 +343,10 @@ namespace ViennaAdvantage.Process
                                         {
                                             if (Util.GetValueOfInt(dSet.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]) > 0)
                                             {
-                                                MInvoicePaySchedule IPSchedule = new MInvoicePaySchedule(GetCtx(), Util.GetValueOfInt(dSet.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]), Get_TrxName());
-                                                IPSchedule.SetVA009_ExecutionStatus("Y");
-                                                if (!IPSchedule.Save(Get_TrxName()))
+                                                //(1052)Update invoicepayschedule
+                                                int count = DB.ExecuteQuery("UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus='Y' WHERE C_InvoicePaySchedule_ID="
+                                                + Util.GetValueOfInt(dSet.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]));
+                                                if (count <= 0)
                                                 {
                                                     return ErrorMessage();
                                                 }
