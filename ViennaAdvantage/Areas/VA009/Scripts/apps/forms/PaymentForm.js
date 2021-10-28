@@ -5720,9 +5720,9 @@
         function loadgrdSplit(callback) {
             $.ajax({
                 url: VIS.Application.contextUrl + "VA009/Payment/GetPopUpData",
-                type: "POST",
+                type: "GET",
                 datatype: "json",
-                //contentType: "application/json; charset=utf-8",
+                contentType: "application/json; charset=utf-8",
                 //async: false,
                 data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                 success: function (result) {
