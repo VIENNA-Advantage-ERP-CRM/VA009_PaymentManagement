@@ -111,10 +111,10 @@ namespace ViennaAdvantage.Process
             string _baseType = null;
             _sql.Clear();
             _sql.Append(@"Select cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, cp.duedate, C_BP_BankAccount_ID,
-                          cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, CI.C_ConversionType_ID
+                          cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, CI.C_ConversionType_ID 
                           From C_Invoice CI inner join C_InvoicePaySchedule CP ON CI.c_invoice_id= CP.c_invoice_id INNER JOIN 
                           C_DocType doc ON doc.C_DocType_ID = CI.C_DocType_ID Where ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
-                          CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
+                          CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
                          + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
 
             if (_C_BPartner_ID > 0)
