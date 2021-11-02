@@ -780,10 +780,20 @@ namespace ViennaAdvantage.Process
                                     }
                                     if (!_pay.Save(Get_TrxName()))
                                     {
-                                        msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
-                                        ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
-                                        SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-                                                            GetRecord_ID(), ppE.ToString());
+                                        string val = "";
+                                        ValueNamePair ppE = VLogger.RetrieveError();
+                                        if (ppE != null)
+                                        {
+                                            val = ppE.GetValue();
+                                            if (string.IsNullOrEmpty(val))
+                                            {
+                                                val = ppE.GetName();
+                                            }
+                                        }
+                                        msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved") + ":" + val;
+
+                                        SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
+                                        Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]), GetRecord_ID(), ppE.ToString());
                                         Get_TrxName().Rollback();
                                         payment.Clear();
                                         viewAllocationId.Clear();
@@ -855,10 +865,19 @@ namespace ViennaAdvantage.Process
                                         PayAlocate.SetOverUnderAmt(0);
                                         if (!PayAlocate.Save(Get_TrxName()))
                                         {
-                                            msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved");
-                                            ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
-                                            SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-                                                                GetRecord_ID(), ppE.ToString());
+                                            string val = "";
+                                            ValueNamePair ppE = VLogger.RetrieveError();
+                                            if (ppE != null)
+                                            {
+                                                val = ppE.GetValue();
+                                                if (string.IsNullOrEmpty(val))
+                                                {
+                                                    val = ppE.GetName();
+                                                }
+                                            }
+                                            msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved") + ":" + val;
+                                            SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
+                                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),GetRecord_ID(), ppE.ToString());
                                             Get_TrxName().Rollback();
                                             payment.Clear();
                                             viewAllocationId.Clear();

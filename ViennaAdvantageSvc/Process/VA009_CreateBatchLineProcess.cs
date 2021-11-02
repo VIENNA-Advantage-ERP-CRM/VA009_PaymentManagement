@@ -519,7 +519,7 @@ namespace ViennaAdvantage.Process
                 return Msg.GetMsg(GetCtx(), "VA009_BatchLineCrtd");
             }
             else
-                return Msg.GetMsg(GetCtx(), "VA009_BatchLineNotCrtd");
+                return Msg.GetMsg(GetCtx(), "NoRecords");
         }
         /// <summary>
         /// Get Default Conversion Type ID From the system
