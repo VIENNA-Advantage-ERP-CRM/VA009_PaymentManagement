@@ -514,9 +514,14 @@
             //used blur incase of change to avoid cal the event immediatly when press change the single character
             //$FromDate.on("change", function () {
             $FromDate.on("blur", function () {
-                //if user not entered proper Date format 
-                if ($FromDate.val() == "") {
+                if (Date.parse($FromDate.val()) < 0) {
+                    //if user not entered proper Date format 
                     VIS.ADialog.info("VA009_PlzSelectProperDate");
+                    return;
+                }
+                if ($FromDate.val() == "") {
+                    //(1052)if date is empty or half entered then clear the field
+                    $FromDate.val("");
                     return;
                 }
                 $divPayment.find('.VA009-payment-wrap').remove();
@@ -530,9 +535,14 @@
             //used blur incase of change to avoid cal the event immediatly when press change the single character
             /*$ToDate.on("change", function () {*/
             $ToDate.on("blur", function () {
-                //if user not entered proper Date format 
-                if ($ToDate.val() == "") {
+                if (Date.parse($ToDate.val()) < 0) {
+                     //if user not entered proper Date format 
                     VIS.ADialog.info("VA009_PlzSelectProperDate");
+                    return;
+                }
+                if ($ToDate.val() == "") {
+                    //(1052)if date is empty or half entered then clear the field
+                    $ToDate.val("");
                     return;
                 }
                 $divPayment.find('.VA009-payment-wrap').remove();
