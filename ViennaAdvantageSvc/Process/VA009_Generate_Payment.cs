@@ -712,6 +712,8 @@ namespace ViennaAdvantage.Process
                                         _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                         _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
+                                        //set converted amount
+                                        _pay.SetPayAmt(_ConvertedAmt);
                                         #region to set bank account of business partner and name on batch line
                                         //to set value of routing number and account number of batch lines 
                                         if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) > 0)
@@ -1223,11 +1225,13 @@ namespace ViennaAdvantage.Process
                     {
                         SaveRecordPaymentBachLog(_batch.GetAD_Client_ID(), _batch.GetAD_Org_ID(), GetRecord_ID(), paymentDocumentNo, allocationDocumentNo);
                     }
+
                     if (!string.IsNullOrEmpty(invDocNo))
                     {
                         //payment not generated -- APC case 
-                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck") + " " + invDocNo.TrimStart(',');
+                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck");
                     }
+
                     if (String.IsNullOrEmpty(msg) && !String.IsNullOrEmpty(docNos.ToString()))
                     {
                         //Set batch Processed True when payment generation and complete payment Done
@@ -1242,6 +1246,12 @@ namespace ViennaAdvantage.Process
                         {
                             return ErrorMessage();
                         }
+                    }
+
+                    if (!String.IsNullOrEmpty(msg) && !String.IsNullOrEmpty(docNos.ToString()))
+                    {
+                        //if payment is generated against few schedules
+                        msg += "; " + Msg.GetMsg(GetCtx(), "VA009_PymentGenerated") + ":" + docNos.ToString();
                     }
                 }
 
@@ -1423,18 +1433,28 @@ namespace ViennaAdvantage.Process
             if (_batch.IsVA009_Consolidate())
             {
 
-                sql.Append("SELECT COUNT(C_payment_ID) AS C_payment_ID FROM VA009_BatchLines WHERE VA009_BATCH_ID=" + GetRecord_ID() + " AND C_payment_ID IS NOT NULL");
+                sql.Append("SELECT COUNT(C_payment_ID) AS C_PAYMENT_ID,COUNT(VA009_BatchLines_ID) AS VA009_BATCHLINE_ID FROM VA009_BatchLines WHERE VA009_BATCH_ID=" + GetRecord_ID());
             }
             else
             {
-                sql.Append(@"SELECT COUNT(bld.C_PAYMENT_ID) AS C_PAYMENT_ID FROM VA009_BATCHLINEDETAILS BLD INNER JOIN VA009_BATCHLINES BL ON BL.VA009_BATCHLINES_ID=BLD.VA009_BATCHLINES_ID 
-                          WHERE BL.VA009_BATCH_ID=" + GetRecord_ID() + " AND bld.C_payment_ID IS NOT NULL");
+                sql.Append(@"SELECT COUNT(bld.C_PAYMENT_ID) AS C_PAYMENT_ID,COUNT(bld.VA009_BATCHLINEDETAILS_ID) AS VA009_BATCHLINE_ID  FROM VA009_BATCHLINEDETAILS BLD INNER JOIN VA009_BATCHLINES BL ON BL.VA009_BATCHLINES_ID=BLD.VA009_BATCHLINES_ID 
+                          WHERE BL.VA009_BATCH_ID=" + GetRecord_ID());
             }
-            int result = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null));
-            if (result == 0)
-                return false;
-            else
-                return true;
+           DataSet result = DB.ExecuteDataset(sql.ToString(), null, null);
+            if (result != null && result.Tables[0].Rows.Count > 0)
+            {
+                if (Util.GetValueOfInt(result.Tables[0].Rows[0]["C_PAYMENT_ID"]) == Util.GetValueOfInt(result.Tables[0].Rows[0]["VA009_BATCHLINE_ID"]))
+                {
+                    //if count of batch line and payment is same 
+                    return true; 
+                }
+                else
+                {
+                    //if count is not same
+                    return false;
+                }
+            }
+            return false;
         }
 
         //Following method added by Arpit to create Payment For diffrent orders
