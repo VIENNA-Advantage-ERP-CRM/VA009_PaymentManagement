@@ -3480,14 +3480,19 @@ namespace VA009.Models
             return retDic;
         }
 
-        //Added by Bharat on 01/June/2017
+        /// <summary>
+        /// Fetch Bank Account Data
+        /// </summary>
+        /// <param name="bankAccount_ID">Bank Account</param>
+        /// <param name="ct">Context</param>
+        /// <returns>Bank Account Data </returns>
         public Dictionary<string, object> GetBankAccountData(int bankAccount_ID, Ctx ct)
         {
             Dictionary<string, object> retBank = null;
             //handled the logs
-            string sql = @"SELECT ba.CurrentBalance,  bd.CurrentNext FROM C_BankAccount ba LEFT JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)  
-                        WHERE ba.ISACTIVE='Y' AND  ba.c_bankaccount_id=" + bankAccount_ID + " AND ba.ad_client_id =" + ct.GetAD_Client_ID();
-            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "ba", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+            string sql = @"SELECT ba.CurrentBalance,  bd.CurrentNext FROM C_BankAccount ba LEFT JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
+                         WHERE ba.ISACTIVE='Y' AND  ba.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID();
+            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -3497,6 +3502,27 @@ namespace VA009.Models
             }
             return retBank;
         }
+
+        /// <summary>
+        /// Get CurrentNextCheckNo against selected Payment Method and Bank Account
+        /// </summary>
+        /// <param name="bankAccount_ID">Bank Account</param>
+        /// <param name="payMethod_ID">Payment Method</param>
+        /// <param name="ct">Context</param>
+        /// <writer>1052</writer>
+        /// <returns>CurrentNextCheckNo</returns>
+        public int GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
+        {
+            //handled the logs
+            string sql = @"SELECT bd.CurrentNext FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
+             WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID+"AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
+             " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID();
+
+            sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+            return Util.GetValueOfInt(DB.ExecuteScalar(sql));
+            
+        }
+
 
         //Added by Bharat on 01/June/2017
         public List<Dictionary<string, object>> LoadOrganization(Ctx ct)
@@ -3520,7 +3546,7 @@ namespace VA009.Models
             }
             return retDic;
         }
-
+      
         //Added by Bharat on 01/June/2017
         public List<Dictionary<string, object>> LoadPaymentMethod(Ctx ct)
         {
@@ -3544,11 +3570,22 @@ namespace VA009.Models
             return retDic;
         }
 
-        //Added by Manjot on 12/Dec/2018
-        public List<Dictionary<string, object>> LoadChequePaymentMethod(Ctx ct)
+        /// <summary>
+        /// Fetch Payment Methods
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="Org_ID">Organization</param>
+        /// <returns>List of Payment Methods</returns>
+        public List<Dictionary<string, object>> LoadChequePaymentMethod(Ctx ct, int? Org_ID)
         {
             List<Dictionary<string, object>> retDic = null;
+            
             string sql = "SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID,VA009_PaymentMethod.VA009_Name FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' AND VA009_PaymentMethod.VA009_PaymentBaseType IN  ('S') ";
+            if(Org_ID>0) 
+            {
+                //Payable case -- get Paymenthod of selected Organization
+                sql += " AND VA009_PaymentMethod.AD_Org_ID IN (0," + Org_ID+") ";
+            }
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY VA009_PaymentMethod_ID";
             DataSet ds = DB.ExecuteDataset(sql);
@@ -3591,7 +3628,7 @@ namespace VA009.Models
         public List<Dictionary<string, object>> loadCurrencyType(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType WHERE ISACTIVE='Y' ";
+            string sql = "SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType WHERE ISACTIVE='Y' AND AD_Client_ID IN(0, "+ct.GetAD_Client_ID()+ ") ORDER BY AD_Client_ID";
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -5304,11 +5341,42 @@ namespace VA009.Models
             _btDetal.SetAD_Org_ID(PaymentData.AD_Org_ID);
             _btDetal.Set_Value("VA009_OrderPaySchedule_ID", PaymentData.C_InvoicePaySchedule_ID); // Here OrderPaySchedule_ID is AS InvoicePaySchedule_ID
             _btDetal.Set_Value("C_Order_ID", PaymentData.C_Invoice_ID); //Here C_Order_ID is as C_Invoice_ID
-            _btDetal.SetC_Currency_ID(_BankAcct.GetC_Currency_ID());
+             //set Order Currency 
+            _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
+            //Set Order Currency Type
+            _btDetal.SetC_ConversionType_ID(PaymentData.ConversionTypeId);
             _btDetal.SetVA009_BatchLines_ID(Batchline_ID);
+          
+            //Adjust discount amount from due amount if discount date greater than account date
+            if (Util.GetValueOfDateTime(_OrdPaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
+            {
+                convertedAmount = convertedAmount - PaymentData.ConvertedDiscountAmount;
+                if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
+                {
+                    if (PaymentData.ConvertedDiscountAmount > 0)
+                    {
+                        PaymentData.ConvertedDiscountAmount = -1 * PaymentData.ConvertedDiscountAmount;
+                    }
+                }
+                else
+                {
+                    if (_doctype.GetDocBaseType() == "API" && PaymentData.ConvertedDiscountAmount < 0)
+                    {
+                        PaymentData.ConvertedDiscountAmount = -1 * PaymentData.ConvertedDiscountAmount;
+                    }
+                }
+                _btDetal.SetDiscountAmt(PaymentData.ConvertedDiscountAmount);
+                _btDetal.SetDiscountDate(_OrdPaySchdule.GetDiscountDate());
+            }
+            else
+            {
+                PaymentData.ConvertedDiscountAmount = 0;
+                PaymentData.DiscountDate = null;
+            }
+
             _btDetal.SetDueAmt(PaymentData.DueAmt);
-            _btDetal.SetC_ConversionType_ID(PaymentData.CurrencyType);
             _btDetal.SetDueDate(_OrdPaySchdule.GetDueDate());
+
             if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
             {
                 if (convertedAmount > 0)
@@ -6287,6 +6355,57 @@ namespace VA009.Models
                 sql.Append(" AND DocBaseType='CMC' ");
             }
             else if (baseType == 4)
+            {
+                sql.Append(" AND DocBaseType='BAP' ");
+            }
+            //Check Role
+            string query = MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_DocType", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+            DataSet _ds = DB.ExecuteDataset(query, null, null);
+            if (_ds != null && _ds.Tables[0].Rows.Count > 0)
+            {
+                for (int i = 0; i < _ds.Tables[0].Rows.Count; i++)
+                {
+                    docTypes = new DocTypeDetails();
+                    docTypes.C_DocType_ID = Util.GetValueOfInt(_ds.Tables[0].Rows[i]["C_DocType_ID"]);
+                    docTypes.Name = Util.GetValueOfString(_ds.Tables[0].Rows[i]["Name"]);
+                    _list.Add(docTypes);
+                }
+            }
+            return _list;
+        }
+
+        /// <summary>
+        /// Get C_DocType_ID based on Bank Account Organization
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="BankAcct_ID">Bank Account</param>
+        /// <param name="BaseType">1->AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment</param>
+        /// <writer>1052</writer>
+        /// <returns>List of Document Types</returns>
+        public List<DocTypeDetails> GetBankTargetType(Ctx ct, int BankAcct_ID, int BaseType)
+        {
+            List<DocTypeDetails> _list = new List<DocTypeDetails>();
+            DocTypeDetails docTypes = null;
+            //applied filter with Client ID
+            StringBuilder sql = new StringBuilder();
+            sql.Append("SELECT C_DocType_ID, Name FROM C_DocType C_DocType WHERE IsActive='Y' AND AD_Org_ID IN" +
+                "((SELECT AD_Org_ID FROM C_BankAccount WHERE C_BankAccount_ID= " + BankAcct_ID +"), 0) " +
+                "AND AD_Client_ID IN(" + ct.GetAD_Client_ID() + ", 0)");
+
+            //AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment
+            if (BaseType == 1)
+            {
+                sql.Append(" AND DocBaseType='ARR' ");
+            }
+            else if (BaseType == 2)
+            {
+                sql.Append(" AND DocBaseType='APP' ");
+            }
+            else if (BaseType == 3)
+            {
+                sql.Append(" AND DocBaseType='CMC' ");
+            }
+            else if (BaseType == 4)
             {
                 sql.Append(" AND DocBaseType='BAP' ");
             }
