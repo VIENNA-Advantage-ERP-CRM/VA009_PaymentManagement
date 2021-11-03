@@ -804,7 +804,7 @@ namespace ViennaAdvantage.Process
                                         break;
                                     }
                                     else
-                                    {                         
+                                    {
                                         //check number to generated on Payment Completion
                                         //if (CurrtNxtUpdated)
                                         //{
@@ -924,23 +924,23 @@ namespace ViennaAdvantage.Process
                                     log.Log(Level.SEVERE, "Payment Not Completed "+completePayment.GetDocumentNo()+" "+ result);
 
                                     DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
-                                 
+
                                     msg = result ;
 
                                 }
-                                else 
+                                else
                                 {
                                     if (docNos.Length > 1)
                                     {
-                                        docNos.Append(",").Append(completePayment.GetDocumentNo());
+                                        docNos.Append(", ").Append(completePayment.GetDocumentNo());
                                     }
                                     else
                                     {
                                         docNos.Append(completePayment.GetDocumentNo());
-                                    }                           
-                                   
+                                    }
+
                                 }
-                               
+
                             }
 
                             // Complete the Consolidate Records of View allocation 
@@ -959,7 +959,7 @@ namespace ViennaAdvantage.Process
 
                         #region Consolidate = false
                         else if (_batch.IsVA009_Consolidate() == false)
-                        {                      
+                        {
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
                                 if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) &&
@@ -1132,7 +1132,7 @@ namespace ViennaAdvantage.Process
                                 }
                                 else
                                 {
-                                   
+
                                     //check number to generated on Payment Completion
                                     //if (CurrtNxtUpdated)
                                     //{
@@ -1160,7 +1160,7 @@ namespace ViennaAdvantage.Process
                                     {
                                         if (docNos.Length > 1)
                                         {
-                                            docNos.Append(",").Append(_pay.GetDocumentNo());
+                                            docNos.Append(", ").Append(_pay.GetDocumentNo());
                                         }
                                         else
                                         {
@@ -1205,10 +1205,10 @@ namespace ViennaAdvantage.Process
                                         DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = null WHERE VA009_BatchLineDetails_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID"]));
 
                                         log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
-                                       
+
                                         //delete Payment Document in Drafetd Stage 
                                         DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
-                                        
+
                                         msg = result;
 
                                     }
@@ -1232,6 +1232,12 @@ namespace ViennaAdvantage.Process
                         msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck");
                     }
 
+                    if (!String.IsNullOrEmpty(msg) && !String.IsNullOrEmpty(docNos.ToString()))
+                    {
+                        //if payment is generated against few schedules
+                        msg += ". " + Msg.GetMsg(GetCtx(), "VA009_PymentGenerated") + ": " + docNos.ToString();
+                    }
+
                     if (String.IsNullOrEmpty(msg) && !String.IsNullOrEmpty(docNos.ToString()))
                     {
                         //Set batch Processed True when payment generation and complete payment Done
@@ -1240,21 +1246,14 @@ namespace ViennaAdvantage.Process
                         if (batch.Save(Get_TrxName()))
                         {
                             msg = Msg.GetMsg(GetCtx(), "VA009_PymentSaved");
-                            msg = msg + ":" + docNos.ToString();
+                            msg = msg + ": " + docNos.ToString();
                         }
                         else
                         {
                             return ErrorMessage();
                         }
                     }
-
-                    if (!String.IsNullOrEmpty(msg) && !String.IsNullOrEmpty(docNos.ToString()))
-                    {
-                        //if payment is generated against few schedules
-                        msg += "; " + Msg.GetMsg(GetCtx(), "VA009_PymentGenerated") + ":" + docNos.ToString();
-                    }
                 }
-
                 catch (Exception e)
                 {
                     Get_TrxName().Rollback();
@@ -1266,7 +1265,7 @@ namespace ViennaAdvantage.Process
             {
                 msg = Msg.GetMsg(GetCtx(), "VA009_PaymentAlreadyGenerated");
             }
-         
+
             return msg;
         }
 
@@ -1319,7 +1318,7 @@ namespace ViennaAdvantage.Process
                 {
                     //not required to set checkno from here
                     //_pay.SetCheckNo(Util.GetValueOfString(BAcctDoc.GetCurrentNext()));
-                   // CurrtNxtUpdated = true;
+                    // CurrtNxtUpdated = true;
                 }
                 else
                 {
@@ -1440,17 +1439,17 @@ namespace ViennaAdvantage.Process
                 sql.Append(@"SELECT COUNT(bld.C_PAYMENT_ID) AS C_PAYMENT_ID,COUNT(bld.VA009_BATCHLINEDETAILS_ID) AS VA009_BATCHLINE_ID  FROM VA009_BATCHLINEDETAILS BLD INNER JOIN VA009_BATCHLINES BL ON BL.VA009_BATCHLINES_ID=BLD.VA009_BATCHLINES_ID 
                           WHERE BL.VA009_BATCH_ID=" + GetRecord_ID());
             }
-           DataSet result = DB.ExecuteDataset(sql.ToString(), null, null);
+            DataSet result = DB.ExecuteDataset(sql.ToString(), null, null);
             if (result != null && result.Tables[0].Rows.Count > 0)
             {
                 if (Util.GetValueOfInt(result.Tables[0].Rows[0]["C_PAYMENT_ID"]) == Util.GetValueOfInt(result.Tables[0].Rows[0]["VA009_BATCHLINE_ID"]))
                 {
                     //if count of batch line and payment is same 
-                    return true; 
+                    return true;
                 }
                 else
                 {
-                    //if count is not same
+                   //if count is not same
                     return false;
                 }
             }
@@ -1644,9 +1643,6 @@ namespace ViennaAdvantage.Process
             }
             return result;
         }
-
-
-
     }
 }
 
