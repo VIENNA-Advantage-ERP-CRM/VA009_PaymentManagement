@@ -398,10 +398,11 @@ namespace ViennaAdvantage.Process
 
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
-                                if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) &&
-                                   Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+                                if ((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
+                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
+                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
                                 {
-                                    //Payment should not be crteated if Payment Method is check and APC Invoice
+                                    //Payment should not be crteated if Payment Method is check and APC/AR Invoice
                                     invDocNo += ", " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["DocumentNo"]);
                                     continue;
                                 }
@@ -879,7 +880,7 @@ namespace ViennaAdvantage.Process
                                             }
                                             msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved") + ":" + val;
                                             SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
-                                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),GetRecord_ID(), ppE.ToString());
+                                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]), GetRecord_ID(), ppE.ToString());
                                             Get_TrxName().Rollback();
                                             payment.Clear();
                                             viewAllocationId.Clear();
@@ -921,11 +922,11 @@ namespace ViennaAdvantage.Process
                                         DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = NULL WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
                                     }
 
-                                    log.Log(Level.SEVERE, "Payment Not Completed "+completePayment.GetDocumentNo()+" "+ result);
+                                    log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
 
                                     DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
 
-                                    msg = result ;
+                                    msg = result;
 
                                 }
                                 else
@@ -962,10 +963,11 @@ namespace ViennaAdvantage.Process
                         {
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
-                                if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) &&
-                                  Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+                                if ((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
+                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
+                                   Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
                                 {
-                                    //Payment should not be crteated if Payment Method is check and APC Invoice
+                                    //Payment should not be crteated if Payment Method is check and APC/AR Invoice
                                     invDocNo += "," + Util.GetValueOfInt(ds.Tables[0].Rows[i]["DocumentNo"]);
                                     continue;
                                 }
@@ -1449,7 +1451,7 @@ namespace ViennaAdvantage.Process
                 }
                 else
                 {
-                   //if count is not same
+                    //if count is not same
                     return false;
                 }
             }
