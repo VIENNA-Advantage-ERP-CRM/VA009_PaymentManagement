@@ -399,8 +399,8 @@ namespace ViennaAdvantage.Process
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
                                 if ((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
-                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
-                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
+                                   Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
                                 {
                                     //Payment should not be crteated if Payment Method is check and APC/AR Invoice
                                     invDocNo += ", " + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
@@ -806,16 +806,7 @@ namespace ViennaAdvantage.Process
                                     }
                                     else
                                     {
-                                        //check number to generated on Payment Completion
-                                        //if (CurrtNxtUpdated)
-                                        //{
-                                        //    BAcctDoc.SetCurrentNext(BAcctDoc.GetCurrentNext() + 1);
-                                        //    if (!BAcctDoc.Save(Get_TrxName()))
-                                        //    {
-                                        //        Get_TrxName().Rollback();
-                                        //    }
-                                        //    CurrtNxtUpdated = false;
-                                        //}
+
                                         if (!payment.Contains(_pay.GetC_Payment_ID()))
                                         {
                                             payment.Add(_pay.GetC_Payment_ID());
@@ -828,68 +819,86 @@ namespace ViennaAdvantage.Process
                                         batchline_id = Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]);
                                         paymentDocumentNo += _pay.GetDocumentNo() + " , ";
 
-                                        MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
-                                        PayAlocate.SetC_Payment_ID(C_Payment_ID);
-                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]) > 0)
+                                        if (_pay.GetC_Order_ID() == 0)
                                         {
-                                            PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                            PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                        }
-
-                                        #region Commented Code
-                                        //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                        //{
-                                        //    PayAlocate.SetDiscountAmt(-1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                        //    PayAlocate.SetAmount(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-                                        //    PayAlocate.SetInvoiceAmt(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-                                        //}
-                                        //else
-                                        //{
-
-                                        //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                        //{
-                                        //    PayAlocate.SetAmount(-1 * (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"])));
-                                        //}
-                                        //else
-                                        //{
-
-                                        //}
-                                        //PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-
-                                        //}
-                                        #endregion
-
-                                        PayAlocate.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                        PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                        PayAlocate.SetInvoiceAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["dueamt"]));
-                                        PayAlocate.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
-                                        PayAlocate.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                        PayAlocate.SetWriteOffAmt(0);
-                                        PayAlocate.SetOverUnderAmt(0);
-                                        if (!PayAlocate.Save(Get_TrxName()))
-                                        {
-                                            string val = "";
-                                            ValueNamePair ppE = VLogger.RetrieveError();
-                                            if (ppE != null)
+                                            //Donot create payment allocate in  case of Order.
+                                            MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
+                                            PayAlocate.SetC_Payment_ID(C_Payment_ID);
+                                            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]) > 0)
                                             {
-                                                val = ppE.GetValue();
-                                                if (string.IsNullOrEmpty(val))
+                                                PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
+                                                PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                            }
+
+                                            #region Commented Code
+                                            //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
+                                            //{
+                                            //    PayAlocate.SetDiscountAmt(-1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
+                                            //    PayAlocate.SetAmount(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
+                                            //    PayAlocate.SetInvoiceAmt(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
+                                            //}
+                                            //else
+                                            //{
+
+                                            //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
+                                            //{
+                                            //    PayAlocate.SetAmount(-1 * (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"])));
+                                            //}
+                                            //else
+                                            //{
+
+                                            //}
+                                            //PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
+
+                                            //}
+                                            #endregion
+
+                                            PayAlocate.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
+                                            PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
+                                            PayAlocate.SetInvoiceAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["dueamt"]));
+                                            PayAlocate.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
+                                            PayAlocate.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
+                                            PayAlocate.SetWriteOffAmt(0);
+                                            PayAlocate.SetOverUnderAmt(0);
+                                            if (!PayAlocate.Save(Get_TrxName()))
+                                            {
+                                                string val = "";
+                                                ValueNamePair ppE = VLogger.RetrieveError();
+                                                if (ppE != null)
                                                 {
-                                                    val = ppE.GetName();
+                                                    val = ppE.GetValue();
+                                                    if (string.IsNullOrEmpty(val))
+                                                    {
+                                                        val = ppE.GetName();
+                                                    }
+                                                }
+                                                msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved") + ":" + val;
+                                                SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
+                                                Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]), GetRecord_ID(), ppE.ToString());
+                                                Get_TrxName().Rollback();
+                                                payment.Clear();
+                                                viewAllocationId.Clear();
+                                                allocationDocumentNo = string.Empty;
+                                                paymentDocumentNo = string.Empty;
+                                                break;
+                                            }
+                                            else
+                                            {
+                                                batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
+                                                batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
+                                                batchLineDetails.Save(Get_TrxName());
+
+                                                batchLines = new MVA009BatchLines(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]), Get_Trx());
+                                                batchLines.SetC_Payment_ID(_pay.GetC_Payment_ID());
+                                                if (!batchLines.Save(Get_TrxName()))
+                                                {
+                                                    Get_TrxName().Rollback();
                                                 }
                                             }
-                                            msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved") + ":" + val;
-                                            SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
-                                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]), GetRecord_ID(), ppE.ToString());
-                                            Get_TrxName().Rollback();
-                                            payment.Clear();
-                                            viewAllocationId.Clear();
-                                            allocationDocumentNo = string.Empty;
-                                            paymentDocumentNo = string.Empty;
-                                            break;
                                         }
                                         else
                                         {
+                                            //update bacth line and batch line detail
                                             batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
                                             batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
                                             batchLineDetails.Save(Get_TrxName());
@@ -1135,13 +1144,6 @@ namespace ViennaAdvantage.Process
                                 else
                                 {
 
-                                    //check number to generated on Payment Completion
-                                    //if (CurrtNxtUpdated)
-                                    //{
-                                    //    BAcctDoc.SetCurrentNext(BAcctDoc.GetCurrentNext() + 1);
-                                    //    BAcctDoc.Save(Get_TrxName());
-                                    //    CurrtNxtUpdated = false;
-                                    //}
                                     paymentDocumentNo += _pay.GetDocumentNo() + " , ";
                                     batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_TrxName());
                                     batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
