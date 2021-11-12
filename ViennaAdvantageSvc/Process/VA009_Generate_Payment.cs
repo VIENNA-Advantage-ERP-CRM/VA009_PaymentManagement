@@ -403,7 +403,7 @@ namespace ViennaAdvantage.Process
                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
                                 {
                                     //Payment should not be crteated if Payment Method is check and APC/AR Invoice
-                                    invDocNo += ", " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["DocumentNo"]);
+                                    invDocNo += ", " + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
                                     continue;
                                 }
 
@@ -968,7 +968,7 @@ namespace ViennaAdvantage.Process
                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
                                 {
                                     //Payment should not be crteated if Payment Method is check and APC/AR Invoice
-                                    invDocNo += "," + Util.GetValueOfInt(ds.Tables[0].Rows[i]["DocumentNo"]);
+                                    invDocNo += "," + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
                                     continue;
                                 }
                                 BlineDetailCur_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]);
