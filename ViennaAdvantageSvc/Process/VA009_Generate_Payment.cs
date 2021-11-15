@@ -461,6 +461,7 @@ namespace ViennaAdvantage.Process
                                 #endregion
 
                                 #region Create View Allocation Header and line when the Due Amount on Batch line = 0
+                                //(1052) Donot create allocations in case of order
                                 if (c_currency_id ==
                                     BlineDetailCur_ID
                                     //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"])
@@ -468,7 +469,8 @@ namespace ViennaAdvantage.Process
                                    Bpartner_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) &&
                                    batchline_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]) &&
                                     Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_DueAmount"]) == 0
-                                    && VA009_PaymentMethod_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]))
+                                    && VA009_PaymentMethod_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]) &&
+                                     Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) == 0)
                                 {
                                     MAllocationLine alloclne = new MAllocationLine(GetCtx(), 0, Get_TrxName());
                                     alloclne.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
@@ -519,7 +521,8 @@ namespace ViennaAdvantage.Process
                                         }
                                     }
                                 }
-                                else if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_DueAmount"]) == 0)
+                                else if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_DueAmount"]) == 0 &&
+                                    Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) == 0)
                                 {
                                     MAllocationHdr allocHdr = new MAllocationHdr(GetCtx(), 0, Get_TrxName());
                                     allocHdr.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
@@ -569,7 +572,6 @@ namespace ViennaAdvantage.Process
                                         //}
                                         //else
                                         //{
-
                                         //}
                                         //alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
                                         //alloclne.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
@@ -620,10 +622,12 @@ namespace ViennaAdvantage.Process
 
                                 #region Create a new entry of payment Allocate against same payment and the condition
                                 //else if (c_currency_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) &&
+                                //(1052) Apply order check : do not create Allocate in case of order
                                 else if ((c_currency_id == BlineDetailCur_ID) &&
                                 Bpartner_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) &&
                                 batchline_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]) &&
-                                    VA009_PaymentMethod_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]))
+                                    VA009_PaymentMethod_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]) &&
+                                    Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) == 0)
                                 {
                                     MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
                                     PayAlocate.SetC_Payment_ID(C_Payment_ID);
@@ -901,11 +905,7 @@ namespace ViennaAdvantage.Process
                                             //update bacth line and batch line detail
                                             batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
                                             batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
-                                            batchLineDetails.Save(Get_TrxName());
-
-                                            batchLines = new MVA009BatchLines(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]), Get_Trx());
-                                            batchLines.SetC_Payment_ID(_pay.GetC_Payment_ID());
-                                            if (!batchLines.Save(Get_TrxName()))
+                                            if (!batchLineDetails.Save(Get_TrxName()))
                                             {
                                                 Get_TrxName().Rollback();
                                             }
