@@ -29,6 +29,7 @@ namespace ViennaAdvantage.Process
         StringBuilder sql = new StringBuilder();
         int countresponse = 0;
         string invDocNo = "";
+        string PaymentBaseType = "";
         MVA009BatchLineDetails batchLineDetails = null;
         MVA009BatchLines batchLines = null;
 
@@ -398,9 +399,10 @@ namespace ViennaAdvantage.Process
 
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
-                                if ((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
+                                PaymentBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]);
+                                if (((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
-                                   Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+                                   PaymentBaseType.Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check)) || PaymentBaseType.Equals("P"))
                                 {
                                     //Payment should not be crteated if Payment Method is check and APC/AR Invoice
                                     invDocNo += ", " + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
@@ -622,7 +624,6 @@ namespace ViennaAdvantage.Process
 
                                 #region Create a new entry of payment Allocate against same payment and the condition
                                 //else if (c_currency_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) &&
-                                //(1052) Apply order check : do not create Allocate in case of order
                                 else if ((c_currency_id == BlineDetailCur_ID) &&
                                 Bpartner_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) &&
                                 batchline_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]) &&
@@ -972,9 +973,10 @@ namespace ViennaAdvantage.Process
                         {
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
-                                if ((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
+                                PaymentBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]);
+                                if (((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
-                                   Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]).Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+                                    PaymentBaseType.Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check)) || PaymentBaseType.Equals("P"))
                                 {
                                     //Payment should not be crteated if Payment Method is check and APC/AR Invoice
                                     invDocNo += "," + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
@@ -1232,8 +1234,16 @@ namespace ViennaAdvantage.Process
 
                     if (!string.IsNullOrEmpty(invDocNo))
                     {
-                        //payment not generated -- APC case 
-                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck");
+                        if (PaymentBaseType.Equals("P"))
+                        {
+                            //payment not generated for payment method credit order
+                            msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCredit");
+                        }
+                        else
+                        {
+                            //payment not generated -- APC and AR case 
+                            msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck");
+                        }
                     }
 
                     if (!String.IsNullOrEmpty(msg) && !String.IsNullOrEmpty(docNos.ToString()))
