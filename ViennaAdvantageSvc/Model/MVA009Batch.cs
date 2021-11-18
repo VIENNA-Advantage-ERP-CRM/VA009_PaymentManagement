@@ -12,6 +12,7 @@ using System.IO;
 using System.Text;
 using VAdvantage.Classes;
 using VAdvantage.Logging;
+using ViennaAdvantage.Common;
 
 namespace ViennaAdvantage.Model
 {
@@ -258,7 +259,15 @@ namespace ViennaAdvantage.Model
                 _processMsg = Msg.GetMsg(GetCtx(), "VA009_PaymentGenerated");
                 return false;
             }
-            log.Info(ToString());
+
+            ///Manjot, Resolved Issue When we void the batch at time Invoice schedules were not listing in the Payment Form
+            ///because of Excution Status was Assigned to Batch. It should be Awaited.         
+            #region Execution Status update on Invoice and Order Schedules
+            sql.Clear();
+            sql.Append(DBFuncCollection.UpdateExecutionStatus(GetVA009_Batch_ID(), X_C_InvoicePaySchedule.VA009_EXECUTIONSTATUS_Awaited, Get_Trx()));
+            int cnt = DB.ExecuteQuery(sql.ToString(), null, Get_Trx());
+            #endregion
+
             SetProcessed(true);
             SetDocAction(DOCACTION_None);
             return true;

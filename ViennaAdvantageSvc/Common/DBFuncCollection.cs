@@ -370,5 +370,70 @@ namespace ViennaAdvantage.Common
                 WhrDueDate = string.Empty;
             return WhrDueDate;
         }
+
+        /// <summary>
+        /// update execution status 
+        /// </summary>
+        /// <param name="VA009_Batch_ID">Batch ID</param>
+        /// <param name="ExecutionStatus">Execution Status</param>
+        /// <param name="trx">Transaction Object</param>
+        /// <returns>query for update execution status</returns>
+        public static string UpdateExecutionStatus(int VA009_Batch_ID, string ExecutionStatus,Trx trx)
+        {
+
+            StringBuilder updateSql = new StringBuilder();
+            StringBuilder sql = new StringBuilder();
+            sql.Append(@" SELECT VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN
+                        (SELECT VA009_BatchLines_ID  FROM VA009_BatchLines  WHERE VA009_Batch_ID = " + VA009_Batch_ID + " ) GROUP BY " +
+                        " VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID ");
+            DataSet ds = DB.ExecuteDataset(sql.ToString(), null, trx);
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                if (DB.IsOracle())
+                {
+                    updateSql.Append("BEGIN ");
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        sql.Clear();
+                        sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]), 
+                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]),
+                            ExecutionStatus));
+                        updateSql.Append(" BEGIN execute immediate('" + sql.Replace("'", "''") + "'); exception when others then null; END;");
+                    }
+                    updateSql.Append(" END;");
+                }
+                else if (DB.IsPostgreSQL())
+                {
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        sql.Clear();
+                        sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]), 
+                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]), ExecutionStatus));
+                        updateSql.Append(" SELECT ExecuteImmediate('" + sql.Replace("'", "''") + "') FROM DUAL;");
+                    }
+                }
+            }
+            return updateSql.ToString();
+        }
+
+        /// <summary>
+        /// get the query for update execution status
+        /// </summary>
+        /// <param name="C_InvoicePaySchedule_ID">Invoice Pay Schedule ID</param>
+        /// <param name="VA009_OrderPaySchedule_ID">Order Pay Schedule ID</param>
+        /// <param name="ExecutionStatus">ExecutionStatus</param>
+        /// <returns>Update Query</returns>
+        public static string GetExecutionStatusQry(int C_InvoicePaySchedule_ID, int VA009_OrderPaySchedule_ID, string ExecutionStatus)
+        {
+            if (C_InvoicePaySchedule_ID > 0)
+            {
+                return @"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = '"+ ExecutionStatus + "' WHERE C_InvoicePaySchedule_ID = " + C_InvoicePaySchedule_ID;
+            }
+            else
+            {
+                return @"UPDATE VA009_OrderPaySchedule SET VA009_ExecutionStatus = '" + ExecutionStatus + "' WHERE VA009_OrderPaySchedule_ID = " + VA009_OrderPaySchedule_ID;
+            }
+        }
+
     }
 }
