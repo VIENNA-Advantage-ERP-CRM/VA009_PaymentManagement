@@ -12,6 +12,7 @@ using System.IO;
 using System.Text;
 using VAdvantage.Classes;
 using VAdvantage.Logging;
+using ViennaAdvantage.Common;
 
 namespace ViennaAdvantage.Model
 {
@@ -258,35 +259,13 @@ namespace ViennaAdvantage.Model
                 _processMsg = Msg.GetMsg(GetCtx(), "VA009_PaymentGenerated");
                 return false;
             }
-            
+
             ///Manjot, Resolved Issue When we void the batch at time Invoice schedules were not listing in the Payment Form
             ///because of Excution Status was Assigned to Batch. It should be Awaited.         
             #region Execution Status update on Invoice and Order Schedules
             sql.Clear();
-            sql.Append(@" SELECT VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN
-                        (SELECT VA009_BatchLines_ID  FROM VA009_BatchLines  WHERE VA009_Batch_ID = " + GetVA009_Batch_ID() + " ) GROUP BY " +
-                        " VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID ");
-            DataSet ds = DB.ExecuteDataset(sql.ToString(), null, Get_Trx());
-            StringBuilder updateSql = new StringBuilder();
-            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-            {
-                updateSql.Append("BEGIN ");
-                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-                {
-                    sql.Clear();
-                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]) > 0)
-                    {
-                        sql.Append(@"UPDATE VA009_OrderPaySchedule SET VA009_ExecutionStatus = 'A' WHERE VA009_OrderPaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]));
-                    }
-                    else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]) > 0)
-                    {
-                        sql.Append(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'A' WHERE C_InvoicePaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]));
-                    }
-                    updateSql.Append(" BEGIN execute immediate('" + sql.Replace("'", "''") + "'); exception when others then null; END;");
-                }
-                updateSql.Append(" END;");
-                int cnt = DB.ExecuteQuery(updateSql.ToString(), null, Get_Trx());
-            }
+            sql.Append(DBFuncCollection.UpdateExecutionStatus(GetVA009_Batch_ID(), X_C_InvoicePaySchedule.VA009_EXECUTIONSTATUS_Awaited, Get_Trx()));
+            int cnt = DB.ExecuteQuery(sql.ToString(), null, Get_Trx());
             #endregion
 
             SetProcessed(true);
