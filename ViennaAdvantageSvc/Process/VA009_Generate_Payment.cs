@@ -1066,6 +1066,33 @@ namespace ViennaAdvantage.Process
                                     _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                     _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
+                                    #region to set bank account of business partner and name on batch line
+                                    //to set value of routing number and account number of batch lines 
+                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) > 0)
+                                    {
+                                        DataSet ds1 = new DataSet();
+                                        ds1 = DB.ExecuteDataset(@" SELECT a_name, RoutingNo, AccountNo FROM 
+                                                  C_BP_BankAccount WHERE C_BP_BankAccount_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                                        if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
+                                        {
+                                            _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                                            _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
+                                            _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
+                                            _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //T.C_BP_BankAccount_ID,//T.swiftcode,//T.Acctnumber,//T.AcctName
+                                        _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
+                                        //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
+                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) == 0)
+                                            _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", null);
+                                        _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"]));
+                                        _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["swiftcode"]));
+                                        _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"]));
+                                    }
+                                    #endregion
                                     _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
 
                                     #region Commented Code
