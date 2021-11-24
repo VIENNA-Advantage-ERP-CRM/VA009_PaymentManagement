@@ -7,6 +7,7 @@ using VAdvantage.Model;
 using System.Collections.Generic;
 using VAdvantage.DataBase;
 using ViennaAdvantage.Model;
+using VAdvantage.Logging;
 
 namespace ViennaAdvantage.Model
 {
@@ -62,6 +63,31 @@ namespace ViennaAdvantage.Model
             }
             return true;
 
+        }
+
+        /// <summary>
+        /// Before Save
+        /// </summary>
+        /// <param name="newRecord">new</param>
+        /// <returns>true if success</returns>
+        protected override bool BeforeSave(bool newRecord)
+        {
+            #region If Bank Account is changed on Batch Line then set same bank account on batch line details tab
+            string detailIds = string.Empty;
+            if (!newRecord && (Is_ValueChanged("C_BP_BankAccount_ID")))
+            {
+                string sql = @" UPDATE VA009_BatchLineDetails SET C_BP_BankAccount_ID = " + Util.GetValueOfInt(Get_Value("C_BP_BankAccount_ID")) + " WHERE" +
+                              " VA009_BatchLineDetails_ID IN ( SELECT VA009_BatchLineDetails_ID FROM VA009_BatchLineDetails WHERE " +
+                              " VA009_BatchLines_ID IN (" + GetVA009_BatchLines_ID() + " )) ";
+                if (DB.ExecuteQuery(sql, null, Get_Trx()) < 0)
+                {
+                    log.SaveError("VA009_DetailsNotUpdated", "");
+                    return false;
+                }
+            }
+            #endregion
+
+            return true;
         }
     }
 }
