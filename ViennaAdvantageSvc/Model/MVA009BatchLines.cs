@@ -7,6 +7,7 @@ using VAdvantage.Model;
 using System.Collections.Generic;
 using VAdvantage.DataBase;
 using ViennaAdvantage.Model;
+using VAdvantage.Logging;
 
 namespace ViennaAdvantage.Model
 {
@@ -62,6 +63,52 @@ namespace ViennaAdvantage.Model
             }
             return true;
 
+        }
+
+        /// <summary>
+        /// Before Save
+        /// </summary>
+        /// <param name="newRecord">new</param>
+        /// <returns>true if success</returns>
+        protected override bool BeforeSave(bool newRecord)
+        {
+            #region If Bank Account is changed on Batch Line then set same bank account on batch line details tab
+            string detailIds = string.Empty;
+            if (!newRecord && (Is_ValueChanged("C_BP_BankAccount_ID")))
+            {
+                DataSet ds = DB.ExecuteDataset(@"SELECT VA009_BatchLineDetails_ID FROM VA009_BatchLineDetails WHERE va009_batchlines_id IN (" + GetVA009_BatchLines_ID() + ")");
+                //update the bank acccount on batch line details if any batch line detail exists
+                if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+                {
+                    for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                    {
+                        detailIds += Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID"]);
+                        if (i + 1 != ds.Tables[0].Rows.Count)
+                            detailIds += " ,";
+                    }
+                    string sql = @"UPDATE VA009_BatchLineDetails SET C_BP_BankAccount_ID = " + Util.GetValueOfInt(Get_Value("C_BP_BankAccount_ID")) + " WHERE VA009_BatchLineDetails_ID IN ( " + detailIds + ")";
+                    if (DB.ExecuteQuery(sql, null, Get_Trx()) < 0)
+                    {
+                        ValueNamePair vnp = VLogger.RetrieveError();
+                        string errorMsg = "";
+                        if (vnp != null)
+                        {
+                            errorMsg = vnp.GetName();
+                            if (errorMsg == "")
+                                errorMsg = vnp.GetValue();
+                        }
+                        if (errorMsg == "")
+                            errorMsg = Msg.GetMsg(GetCtx(), "Batch Line Detaisl Not Updated");
+                        log.SaveError(errorMsg, "");
+                        Get_Trx().Rollback();
+                        return false;
+                    }
+                    return true;
+                }
+            }
+            #endregion
+
+            return true;
         }
     }
 }
