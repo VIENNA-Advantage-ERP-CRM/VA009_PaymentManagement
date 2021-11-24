@@ -81,10 +81,9 @@ namespace ViennaAdvantage.Model
                               " VA009_BatchLines_ID IN (" + GetVA009_BatchLines_ID() + " )) ";
                 if (DB.ExecuteQuery(sql, null, Get_Trx()) < 0)
                 {
-                    log.SaveError(Msg.GetMsg(GetCtx(), "VA009_DetailsNotUpdated"), "");
+                    log.SaveError("VA009_DetailsNotUpdated", "");
                     return false;
                 }
-                return true;
             }
             #endregion
 
