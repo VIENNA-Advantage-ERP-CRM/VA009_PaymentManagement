@@ -6113,7 +6113,7 @@
         divAmount.append($divb2bAmountCtrlWrp);
         $divb2bAmountCtrlWrp.append(txtAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
 
-        $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:325px !important'>");
+        $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:395px !important'>");
         //var _b2b = "";
         //_b2b.append(divAmount);
         _b2b = $("<div class='VA009-popfrm-wrap'>");
@@ -6200,6 +6200,8 @@
         var b2bDialog = new VIS.ChildDialog();
         b2bDialog.setContent($b2b);
         b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
+        //1052--set height to remove scroll bar
+        b2bDialog.setHeight(window.innerHeight - 130)
         b2bDialog.setWidth("60%");
         b2bDialog.setEnableResize(true);
         b2bDialog.setModal(true);
@@ -6262,6 +6264,7 @@
 
             if (parseInt($From_cmbBank.val()) == parseInt($To_cmbBank.val())) {
                 $note.text(VIS.Msg.getMsg("VA009_Banknotbesame"));
+                VIS.ADialog.error("VA009_Banknotbesame");
                 return $note.css('visibility', 'visible');
             }
 
