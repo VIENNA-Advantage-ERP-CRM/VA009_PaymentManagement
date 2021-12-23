@@ -6692,6 +6692,7 @@
                                 b2bDialog.hidebuttons();
                                 $createNew.css({ 'visibility': 'visible', 'display': 'block' });
                                 $closeb2b.css({ 'visibility': 'visible', 'display': 'block' });
+                                $note.css('display', 'none');
                                 b2bEventIntialization();
                             }
                             else {
@@ -6737,8 +6738,9 @@
                         b2bDialog.setEnableResize(true);
                         b2bDialog.setModal(true);
                         b2bDialog.show();
-                        $createNew.css('visibility','hidden');
-                        $closeb2b.css('visibility', 'hidden');
+                        $note.css('display', 'block');
+                        $createNew.css({ 'visibility': 'hidden', 'display': 'none' });
+                        $closeb2b.css({ 'visibility': 'hidden', 'display': 'none' });
                     });
 
                    
