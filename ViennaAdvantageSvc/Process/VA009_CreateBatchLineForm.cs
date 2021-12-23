@@ -419,10 +419,11 @@ namespace ViennaAdvantage.Process
                         else
                         {
                             lineDetail.SetProcessed(true);
-                            //MInvoicePaySchedule _invpay = new MInvoicePaySchedule(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), Get_TrxName());
-                            //_invpay.SetVA009_ExecutionStatus("Y");
-                            //_invpay.Save();
                             lineDetail.Save();
+
+                            // Update Invoice Schedule with Status as "Assigned To Batch"
+                            DB.ExecuteQuery(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'Y' 
+                         WHERE C_InvoicePaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), null, Get_Trx());
                         }
                     }
 
