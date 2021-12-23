@@ -394,8 +394,7 @@ namespace VA009.Controllers
             dynamic OData = JsonConvert.DeserializeObject<ExpandoObject>(recordData);
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            string _Paydata = _payMdl.CreatePaymentsBtoB(ct, OData);
-            return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
+            return Json(JsonConvert.SerializeObject(_payMdl.CreatePaymentsBtoB(ct, OData)), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult loadCurrencies()

@@ -6680,8 +6680,8 @@
                         data: JSON.stringify({ recordData: JSON.stringify(_data) }),
                         success: function (result) {
                             MsgReturn = JSON.parse(result);
-                            if (MsgReturn.length > 0) {
-                                $successNote.text(MsgReturn);
+                            if (MsgReturn.success != null ) {
+                                $successNote.text(MsgReturn.success);
                                 $successNote.css('visibility', 'visible');
                                 b2bDialog.setContent($resultb2b);
                                 b2bDialog.setHeight(window.innerHeight - 385)
@@ -6692,6 +6692,11 @@
                                 $closeb2b.css({ 'visibility': 'visible', 'display': 'block' });
                                 $note.css('display', 'none');
                                 b2bEventIntialization();
+                            }
+                            else if (MsgReturn.error != null) {
+                                $note.text(MsgReturn.error);
+                                $note.css('visibility', 'visible');
+                                $bsyDiv[0].style.visibility = "hidden";
                             }
                             else {
                                 VIS.ADialog.info("VA009_SavedSuccessfully");
@@ -6713,6 +6718,7 @@
                 function b2bEventIntialization() {
 
                     $createNew.on("click", function () {
+                        InitializeEvents();
                        //clear the controls and overwrite the dialog with old content.
                         $OrgCmb.val(0);
                         $isReceipt.prop('checked', false);
@@ -6739,12 +6745,14 @@
                         $note.css('display', 'block');
                         $createNew.css({ 'visibility': 'hidden', 'display': 'none' });
                         $closeb2b.css({ 'visibility': 'hidden', 'display': 'none' });
+                        $root.dialog('widget').find('.ui-dialog-buttonpane').css('padding', '');
+                        $root.dialog('widget').find('.ui-dialog-buttonpane').css('margin-top', '');
                     });
 
                    
                     $closeb2b.on("click", function () {
-                       //close the dialog
-                        b2bDialog.B2BDispose();
+                        //close the dialog
+                        b2bDialog.close();
                     });
                 }
 

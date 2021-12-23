@@ -4947,9 +4947,11 @@ namespace VA009.Models
         /// <param name="ct">Context</param>
         /// <param name="PaymentData">Payment Data</param>
         /// <returns>String, Message</returns>
-        public string CreatePaymentsBtoB(Ctx ct, dynamic PaymentData)
+        public Dictionary<string, object> CreatePaymentsBtoB(Ctx ct, dynamic PaymentData)
         {
             Trx trx = Trx.GetTrx("PaymentB2B_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            //1052 - to store custom success and error message  
+            Dictionary<string, object>  retDic = new Dictionary<string, object> ();
             StringBuilder ex = new StringBuilder();
             bool isReceipt = Util.GetValueOfBool(PaymentData.isReceipt);
             bool isPayment = Util.GetValueOfBool(PaymentData.isPayment);
@@ -5018,6 +5020,7 @@ namespace VA009.Models
                             if (pp != null)
                                 ex.Append(Msg.GetMsg(ct, "VA009_PymentNotSaved") + ", " + pp.GetName());
                             _log.Info(ex.ToString());
+                            retDic["error"] = ex.ToString();
                             break;
                         }
                         else
@@ -5081,6 +5084,8 @@ namespace VA009.Models
                                     //1052--mention doctype before document no 
                                     ex.Append(Msg.GetMsg(ct, "VA009_SavedSuccessfully") + ":-" + 
                                         (isPayment?Msg.GetMsg(ct, "VA009_APPayment"): Msg.GetMsg(ct, "VA009_ARPayment")) + _pay.GetDocumentNo());
+                                    retDic["success"] = ex.ToString();
+
                                 }
                                 else
                                 {
@@ -5112,17 +5117,20 @@ namespace VA009.Models
 
                                     //1052--mention doctype before document no 
                                     ex.Append(", " + (isPayment ? Msg.GetMsg(ct, "VA009_ARPayment") : Msg.GetMsg(ct, "VA009_APPayment"))+ _pay.GetDocumentNo());
+                                    retDic["success"] = ex.ToString();
                                 }
 
                                 // JID_1340: Set Allocated True of AP Payment and AR receipt in case of Bank to Bank transfer
                                 //if (isAllocationSaved)
                                 //{
-                                if ((DB.ExecuteQuery(" UPDATE C_Payment SET IsAllocated='Y' WHERE C_payment_ID = " + _pay.GetC_Payment_ID(), null, trx)) <= 0)
+                                if (DB.ExecuteQuery(" UPDATE C_Payment SET IsAllocated='Y' WHERE C_payment_ID = " + _pay.GetC_Payment_ID(), null, trx) <= 0)
                                 {
                                     trx.Rollback();
+                                    DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + _pay.GetC_Payment_ID());
                                     ex.Clear();
                                     ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ":-" + _pay.GetProcessMsg());
                                     _log.Info(ex.ToString());
+                                    retDic["error"] = ex.ToString();
                                     break;
                                 }
                                 //}
@@ -5136,11 +5144,14 @@ namespace VA009.Models
                                 //End
                             }
                             else
-                            {
+                            {                               
                                 trx.Rollback();
+                                //1052-- delete Payment Document in Drafetd Stage 
+                                DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + _pay.GetC_Payment_ID());
                                 ex.Clear();
                                 ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ":-" + _pay.GetProcessMsg());
                                 _log.Info(ex.ToString());
+                                retDic["error"] = ex.ToString();
                                 break;
                             }
                         }
@@ -5168,7 +5179,7 @@ namespace VA009.Models
                 trx.Commit();
                 trx.Close();
             }
-            return ex.ToString();
+            return retDic;
         }
 
         /// <summary>
