@@ -2814,7 +2814,7 @@
                 $chequeRecivable = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
                 var _ChequeRecevble = "";
                 _ChequeRecevble += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
-                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap' > <div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
                     + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
                     + "</div></div> "
@@ -2838,22 +2838,20 @@
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbBankAccount_" + $self.windowNo + "'>"
                     + "</select><label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
-                    + "</div></div></div>"
+                    + "</div></div>"
 
-                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
                     + "</select><label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
                     + "</div></div>"
 
-
-
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<input type='date' max='9999-12-31' id='VA009_AccountDate_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("AccountDate") + "</label>"
-                    + " </div></div></div>"
+                    + " </div></div>"
                     //Transaction Date
-                    + "<div class='VA009-popfrmrow'><div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                    + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<input type='date' max='9999-12-31' id='VA009_TransactionDate" + $self.windowNo + "' ><label>" + VIS.Msg.getMsg("TransactionDate") + "</label>"
-                    + "</div></div></div>"
+                    + "</div></div>"
 
                     //+ "<div class='VA009-popfrm-wrap'>"
                     + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupRecGrid'></div></div>"
