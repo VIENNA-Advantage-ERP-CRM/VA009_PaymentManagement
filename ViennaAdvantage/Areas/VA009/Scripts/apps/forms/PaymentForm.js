@@ -6153,7 +6153,7 @@
                     + "</div></div>"
 
                     + "<div class='VA009-popform-data VA009-b2b-popup input-group vis-input-wrap'><div class='vis-control-wrap'>"
-                    + "<input type='text' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label></div><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "'>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
+                    + "<input type='text' placeholder=' ' data-placeholder='' class='vis-ev-col-readonly' id='VA009_Chqnotxt_" + $self.windowNo + "' disabled/><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label></div><a href='javascript:void(0)' id='VA009_getCheckNo_" + $self.windowNo + "' style=margin-left:4px;>" + VIS.Msg.getMsg("GetNextCheckNo") + "</a>"
                     + "</div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
@@ -6190,15 +6190,15 @@
                 $resultb2b = $("<div>"
                     + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label>"
                     + "</div>");
-                $resltbtns = $("<button class='ui-button' id='VA009_CreateNew_" + $self.windowNo + "'style = 'float: right; margin-right: 12px; margin-bottom:12px; visibility:hidden;'>" + VIS.Msg.getMsg("CreateNew") + "</button>"
-                    + "<button class= 'ui-button' id = 'VA009_Close_" + $self.windowNo + "'style = 'float: right; margin-right: 12px;margin-bottom:12px; visibility:hidden;'>" + VIS.Msg.getMsg("close") + "</button>");
+                $resltbtns = $("<button class='ui-button' id='VA009_CreateNew_" + $self.windowNo + "'style = 'float: right; margin-right: 12px; margin-bottom:12px; visibility:hidden;display:none;'>" + VIS.Msg.getMsg("CreateNew") + "</button>"
+                    + "<button class= 'ui-button' id = 'VA009_Close_" + $self.windowNo + "'style = 'float: right; margin-right: 12px;margin-bottom:12px; visibility:hidden;display:none;'>" + VIS.Msg.getMsg("close") + "</button>");
 
                 var b2bDialog = new VIS.ChildDialog();
                 $root = b2bDialog.getRoot();
                 b2bDialog.setContent($b2b);
                 b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
                 //1052--set height to remove scroll bar
-                b2bDialog.setHeight(window.innerHeight - 150)
+                b2bDialog.setHeight(window.innerHeight - 180)
                 b2bDialog.setWidth("60%");
                 b2bDialog.setEnableResize(true);
                 b2bDialog.setModal(true);
@@ -6268,7 +6268,6 @@
 
                     if (parseInt($From_cmbBank.val()) == parseInt($To_cmbBank.val())) {
                         $note.text(VIS.Msg.getMsg("VA009_Banknotbesame"));
-                        VIS.ADialog.error("VA009_Banknotbesame");
                         return $note.css('visibility', 'visible');
                     }
 
@@ -6687,8 +6686,8 @@
                                 $successNote.text(MsgReturn);
                                 $successNote.css('visibility', 'visible');
                                 b2bDialog.setContent($resultb2b);
-                                b2bDialog.setHeight(window.innerHeight - 300)
-                                b2bDialog.setWidth("50%");
+                                b2bDialog.setHeight(window.innerHeight - 385)
+                                b2bDialog.setWidth("47%");
                                 b2bDialog.show();
                                 b2bDialog.hidebuttons();
                                 $createNew.css({ 'visibility': 'visible', 'display': 'block' });
@@ -6733,7 +6732,7 @@
                         $POP_ARTargetDocType.val("");
                       
                         b2bDialog.setContent($b2b);
-                        b2bDialog.setHeight(window.innerHeight - 150)
+                        b2bDialog.setHeight(window.innerHeight - 180)
                         b2bDialog.setWidth("60%");
                         b2bDialog.setEnableResize(true);
                         b2bDialog.setModal(true);
