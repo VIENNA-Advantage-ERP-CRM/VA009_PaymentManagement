@@ -5077,7 +5077,10 @@ namespace VA009.Models
                                     //    else
                                     //        isAllocationSaved = true;
                                     //}
-                                    ex.Append(Msg.GetMsg(ct, "VA009_SavedSuccessfully") + ":-" + _pay.GetDocumentNo());
+
+                                    //1052--mention doctype before document no 
+                                    ex.Append(Msg.GetMsg(ct, "VA009_SavedSuccessfully") + ":-" + 
+                                        (isPayment?Msg.GetMsg(ct, "VA009_APPayment"): Msg.GetMsg(ct, "VA009_ARPayment")) + _pay.GetDocumentNo());
                                 }
                                 else
                                 {
@@ -5106,7 +5109,9 @@ namespace VA009.Models
                                     //    else
                                     //        isAllocationSaved = true;
                                     //}
-                                    ex.Append(", " + _pay.GetDocumentNo());
+
+                                    //1052--mention doctype before document no 
+                                    ex.Append(", " + (isPayment ? Msg.GetMsg(ct, "VA009_ARPayment") : Msg.GetMsg(ct, "VA009_APPayment"))+ _pay.GetDocumentNo());
                                 }
 
                                 // JID_1340: Set Allocated True of AP Payment and AR receipt in case of Bank to Bank transfer
