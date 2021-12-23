@@ -171,12 +171,6 @@ namespace ViennaAdvantage.Process
                 {
                     _sql.Append(" ANd doc.DocBaseType IN ('API' , 'ARI' , 'APC' , 'ARC') ");
                 }
-                //commented Payment Method because payment method is selected on Batch Header
-                //if (_paymentMethod > 0)
-                //{
-                //    _sql.Append(" And CP.VA009_PaymentMethod_ID=" + _paymentMethod);
-                //}
-
                 if (_DateDoc_From != null && _DateDoc_To != null)
                 {
                     _sql.Append(" and cp.duedate BETWEEN  ");
@@ -208,50 +202,22 @@ namespace ViennaAdvantage.Process
                         }
                         issamme = true;
                         convertedAmt = 0; discountamt = 0;
-                        // if invoice is of AP Invoice and AP Credit Memo then make a single Batch line
-                        if (docBaseType == "API" || docBaseType == "APC")
-                        {
-                            if (_BPartner == Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) &&
-                                ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) || "APC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"])))
-                            {
-                                line = new MVA009BatchLines(GetCtx(), _VA009_BatchLine_ID, Get_TrxName());
-                            }
-                            else
-                            {
-                                line = null;
-                            }
-                        }
-                        // if invoice is of AR Invoice and AR Credit Memo then make a single Batch line
-                        else if (docBaseType == "ARI" || docBaseType == "ARC")
-                        {
-                            if (_BPartner == Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) &&
-                                ("ARI" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) || "ARC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"])))
-                            {
-                                line = new MVA009BatchLines(GetCtx(), _VA009_BatchLine_ID, Get_TrxName());
-                            }
-                            else
-                            {
-                                line = null;
-                            }
-                        }
 
                         //to set value of routing number and account number of batch lines 
                         DataSet _ds = new DataSet();
-                        if (Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]) > 0)
+                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) > 0)
                         {
-                            //line.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
                             //to set value of routing number and account number of batch lines 
                             _ds = DB.ExecuteDataset(@" SELECT C_BP_BankAccount_ID, a_name,RoutingNo,AccountNo FROM C_BP_BankAccount WHERE IsActive='Y' AND 
-                                            C_BP_BankAccount_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]), null, Get_TrxName());
+                                            C_BP_BankAccount_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]), null, Get_TrxName());
                         }
                         else
                         {
-                            _BPartner = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
-                            if (_BPartner > 0)
+                            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) > 0)
                             {
                                 //to set value of routing number and account number of batch lines 
                                 _ds = DB.ExecuteDataset(@" SELECT MAX(C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
-                                  a_name,RoutingNo,AccountNo,AD_Org_ID  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + _BPartner + " AND IsActive='Y' AND "
+                                  a_name,RoutingNo,AccountNo,AD_Org_ID  FROM C_BP_BankAccount WHERE C_BPartner_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) + " AND IsActive='Y' AND "
                                    + " AD_Org_ID IN (0, " + batch.GetAD_Org_ID() + ") GROUP BY C_BP_BankAccount_ID, A_Name, RoutingNo, AccountNo, AD_Org_ID ORDER BY AD_Org_ID DESC", null, Get_TrxName());
                             }
                             else
@@ -266,6 +232,36 @@ namespace ViennaAdvantage.Process
                             }
                         }
 
+
+                        // if invoice is of AP Invoice, AP Credit Memo, AR Invoice and AR Credit Memo then make a single Batch line
+                        if (_BPartner == Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]))
+                        {
+                            _sql.Clear();
+                            _sql.Append(@"SELECT * FROM VA009_BatchLines WHERE C_BPartner_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) +
+                                 @" AND VA009_Batch_ID = " + batch.GetVA009_Batch_ID());
+                            if (_ds != null && _ds.Tables[0].Rows.Count > 0 &&
+                                !_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check)
+                                && !_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash))
+                            {
+                                _sql.Append(" AND NVL(C_BP_BankAccount_ID, 0) = " + Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
+                            }
+                            DataSet dsBatchLine = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
+                            if (dsBatchLine != null && dsBatchLine.Tables[0].Rows.Count > 0)
+                            {
+                                DataRow dr = dsBatchLine.Tables[0].Rows[0];
+                                line = new MVA009BatchLines(GetCtx(), dr, Get_TrxName());
+                            }
+                            else
+                            {
+                                line = null;
+                            }
+                        }
+                        else
+                        {
+                            line = null;
+                        }
+
+                        // Create Batch Line
                         if (line == null)
                         {
                             line = new MVA009BatchLines(GetCtx(), 0, Get_TrxName());
@@ -306,10 +302,9 @@ namespace ViennaAdvantage.Process
                                 //Rakesh(VA228):Removed dataset direct fetch from main ds
                                 line.SetVA009_BPMandate_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BPMandate_id"]));
                             }
+                            line.SetProcessed(true);
                             if (line.Save())
                             {
-                                line.SetProcessed(true);
-                                line.Save();
                                 _VA009_BatchLine_ID = line.GetVA009_BatchLines_ID();
                             }
                             else
@@ -318,6 +313,8 @@ namespace ViennaAdvantage.Process
                                 _VA009_BatchLine_ID = 0;
                             }
                         }
+
+                        // Create Batch Line Detail
                         lineDetail = new MVA009BatchLineDetails(GetCtx(), 0, Get_TrxName());
                         lineDetail.SetAD_Client_ID(_AD_Client_ID);
                         lineDetail.SetAD_Org_ID(_AD_Org_ID);
@@ -403,7 +400,7 @@ namespace ViennaAdvantage.Process
                         {
                             lineDetail.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
                         }
-
+                        lineDetail.SetProcessed(true);
                         if (!lineDetail.Save())
                         {
                             ValueNamePair pp = VLogger.RetrieveError();
@@ -418,9 +415,6 @@ namespace ViennaAdvantage.Process
                         }
                         else
                         {
-                            lineDetail.SetProcessed(true);
-                            lineDetail.Save();
-
                             // Update Invoice Schedule with Status as "Assigned To Batch"
                             DB.ExecuteQuery(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'Y' 
                          WHERE C_InvoicePaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), null, Get_Trx());
@@ -496,6 +490,10 @@ namespace ViennaAdvantage.Process
             }
         }
 
+        /// <summary>
+        /// Create Payment Schedule Batch Header
+        /// </summary>
+        /// <returns>Payment Schedule Batch ID</returns>
         public int GetBatchId()
         {
             MVA009PaymentMethod paym = new MVA009PaymentMethod(GetCtx(), _paymentMethod, Get_TrxName());
