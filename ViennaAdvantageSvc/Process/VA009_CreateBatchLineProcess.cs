@@ -37,7 +37,7 @@ namespace ViennaAdvantage.Process
         int C_ConversionType_ID = 0;
         //int _VA009_BatchDetail_ID = 0;
         String msg = String.Empty;
-        bool deleteBatchLine = true;
+        bool deleteBatchLine = false;
 
         protected override void Prepare()
         {
