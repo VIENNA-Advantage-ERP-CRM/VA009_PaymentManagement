@@ -1072,6 +1072,21 @@
                 mTab.setValue("TenderType", "A");
             }
         }
+        //Reset checkno/checkdate if tendertype other than check
+        if (Util.getValueOfString(mTab.getValue("TenderType")) != "K") {
+            mTab.setValue("CheckNo", "");
+            mTab.setValue("CheckDate", "");
+        }
+        //VA230:Get autocheckcontrol and set override autocheck funcationlity based on below condition
+        var bankaccountId = Util.getValueOfInt(mTab.getValue("C_BankAccount_ID"));
+        var paymentMethodId = Util.getValueOfInt(mTab.getValue("VA009_PaymentMethod_ID"));
+        var checkNo = Util.getValueOfString(mTab.getValue("CheckNo"));
+        var autoCheck = false;
+        if (bankaccountId > 0 && paymentMethodId > 0 && checkNo != "" && Util.getValueOfString(mTab.getValue("TenderType")) == "K") {
+            var paramString = bankaccountId.toString() + "," + paymentMethodId.toString();
+            autoCheck = Util.getValueOfBoolean(VIS.dataContext.getJSONRecord("VIS/MPayment/GetAutoCheckControl", paramString.toString()));
+        }
+        mTab.setValue("IsOverrideAutoCheck", autoCheck);
         this.setCalloutActive(false);
         ctx = windowNo = mTab = mField = value = oldValue = null;
         return "";
