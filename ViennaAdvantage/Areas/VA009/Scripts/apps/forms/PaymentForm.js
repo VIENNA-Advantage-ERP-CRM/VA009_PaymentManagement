@@ -1048,8 +1048,7 @@
                 else {
                     $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
                     $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
-                    if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("disabled") == true)
-                    {
+                    if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("disabled") == true) {
                         //(1052)hold payment case : donot select record
                         return;
                     }
@@ -6144,7 +6143,7 @@
                     + "<select id='VA009_POP_cmbARDocType_" + $self.windowNo + "'>"
                     + "</select><label>" + VIS.Msg.getMsg("VA009_ARDocType") + "</label>"
                     + "</div></div> ");
-               
+
                 _b2bdata1 = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_cmbPayMthd_" + $self.windowNo + "'>"
                     + "</select><label>" + VIS.Msg.getMsg("VA009_PayMethodlbl") + "</label>"
@@ -6312,7 +6311,13 @@
                     }
 
                     $note.css('visibility', 'hidden');
-
+                    /** 
+                        VA230:If checkno textfield value is not equal to currentNextChequeNo and docbasetype is AP Payment then override autocheck marked as true
+                   */
+                    isOverrideAutoCheck = false;
+                    if (($isPayment.prop('checked') && $txtCheckNo.val() != currentNextChequeNo && currentNextChequeNo != "")) {
+                        isOverrideAutoCheck = true;
+                    }
                     var _data = {};
                     console.log(parseFloat(txtAmount.getValue()));
                     _data = {
@@ -6320,9 +6325,10 @@
                         toBank: parseInt($To_cmbBank.val()), amount: parseFloat(txtAmount.getValue()), paymentMethod: parseInt($paymentMthd.val()), currencyID: parseInt($cmbCurrencies.val()),
                         currencyType: $cmbCurrencyType.val(), transDate: VIS.Utility.Util.getValueOfDate($trnsDate.val()), acctDate: VIS.Utility.Util.getValueOfDate($acctDate.val()),
                         clientID: VIS.Env.getCtx().getAD_Client_ID(), PayBase: $('option:selected', $paymentMthd).attr('paybase'), CheckNo: $txtCheckNo.val(), CheckDate: VIS.Utility.Util.getValueOfDate($checkDate.val()),
-                        APDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_APTargetDocType.val()), ARDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_ARTargetDocType.val())
+                        APDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_APTargetDocType.val()), ARDocumentTypeId: VIS.Utility.Util.getValueOfInt($POP_ARTargetDocType.val()),
+                        IsOverrideAutoCheck: isOverrideAutoCheck
                     };
-                    MsgReturn = "";             
+                    MsgReturn = "";
                     b2bPayment(_data);
                     return false;
                 };
@@ -6334,16 +6340,16 @@
                 b2bDialog.onClose = function () {
                     B2BDispose();
                 };
-               
+
                 this.vetoablechange = function (evt) {
                     console.log(evt.propertyName);
                     if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
                         txtAmount.setValue(evt.newValue);
                     }
                 };
-                
+
                 function InitializeEvents() {
-                   
+
                     $isPayment.on("click", function (e) {
                         var target = $(e.target);
                         if (e.target.type == 'checkbox') {
@@ -6352,6 +6358,8 @@
                                 loadBankAccount($From_cmbBank, organizationids);
                                 loadToBankAccount($To_cmbBank, []);
                             }
+                            $txtCheckNo.val("");
+                            currentNextChequeNo = "";
                         }
                     });
 
@@ -6363,6 +6371,8 @@
                                 loadToBankAccount($To_cmbBank, organizationids);
                                 loadBankAccount($From_cmbBank, []);
                             }
+                            $txtCheckNo.val("");
+                            currentNextChequeNo = "";
                         }
                     });
 
@@ -6397,6 +6407,8 @@
                         //Rakesh(VA228):Reset Document Type
                         _loadFunctions.LoadTargetDocTypeB2B($POP_ARTargetDocType, 1, 0);
                         _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
+                        $txtCheckNo.val("");
+                        currentNextChequeNo = "";
                     });
 
                     $From_cmbBank.on("change", function () {
@@ -6410,6 +6422,8 @@
                             $From_cmbBank.addClass('vis-ev-col-mandatory');
                             _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
                         }
+                        //VA230:Get checkno
+                        getCheckNo();
                     });
 
                     $To_cmbBank.on("change", function () {
@@ -6452,7 +6466,6 @@
                         }
 
                         if ($('option:selected', $paymentMthd).attr('paybase') == "S") {
-                            getCheckNo();
                             $txtCheckNo.removeAttr("disabled");
                             $txtCheckNo.css('background-color', 'white');
                             $txtCheckNo.addClass('vis-ev-col-mandatory');
@@ -6469,7 +6482,9 @@
                             $checkDate.attr('disabled', 'disabled');
                             $checkDate.removeClass('vis-ev-col-mandatory');
                             $checkDate.css('background-color', '#ededed');
+                            currentNextChequeNo = "";
                         }
+                        getCheckNo();
                     });
 
                     //click event of get check no button
@@ -6637,18 +6652,26 @@
                         }
                     }
                 };
-
-                //To get current Next Number from seleted bank and payment method
+                var currentNextChequeNo = "";
+                /**VA230:To get current Next Cheque Number based seleted bank, payment method document base type is AP Payment */
                 function getCheckNo() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/getCheckNo", { "C_BankAccount_ID": parseInt($From_cmbBank.val()), "VA009_PaymentMethod_ID": parseInt($paymentMthd.val()) }, callbackgetCheckNo);
+                    if (VIS.Utility.Util.getValueOfInt($From_cmbBank.val()) > 0 && VIS.Utility.Util.getValueOfInt($paymentMthd.val()) && $('option:selected', $paymentMthd).attr('paybase') == "S") {
 
-                    function callbackgetCheckNo(dr) {
-                        $txtCheckNo.val();
-                        $note.css('visibility', 'hidden');
-                        if (dr != null) {
-                            $txtCheckNo.val(dr);
-                            $txtCheckNo.removeClass('vis-ev-col-mandatory');
+                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/getCheckNo", { "C_BankAccount_ID": parseInt($From_cmbBank.val()), "VA009_PaymentMethod_ID": parseInt($paymentMthd.val()) }, callbackgetCheckNo);
+
+                        function callbackgetCheckNo(dr) {
+                            $txtCheckNo.val();
+                            $note.css('visibility', 'hidden');
+                            if (dr != null) {
+                                $txtCheckNo.val(dr);
+                                $txtCheckNo.removeClass('vis-ev-col-mandatory');
+                                //store current next cheque number and compare it before payment creation
+                                currentNextChequeNo = dr;
+                            }
                         }
+                    } else {
+                        $txtCheckNo.val("");
+                        currentNextChequeNo = "";
                     }
                 };
 
@@ -6680,7 +6703,7 @@
                         data: JSON.stringify({ recordData: JSON.stringify(_data) }),
                         success: function (result) {
                             MsgReturn = JSON.parse(result);
-                            if (MsgReturn.success != null ) {
+                            if (MsgReturn.success != null) {
                                 $successNote.text(MsgReturn.success);
                                 $successNote.css('visibility', 'visible');
                                 b2bDialog.setContent($resultb2b);
@@ -6719,7 +6742,7 @@
 
                     $createNew.on("click", function () {
                         InitializeEvents();
-                       //clear the controls and overwrite the dialog with old content.
+                        //clear the controls and overwrite the dialog with old content.
                         $OrgCmb.val(0);
                         $isReceipt.prop('checked', false);
                         $isPayment.prop('checked', false);
@@ -6735,7 +6758,7 @@
                         $checkDate.val("");
                         $POP_APTargetDocType.val("");
                         $POP_ARTargetDocType.val("");
-                      
+
                         b2bDialog.setContent($b2b);
                         b2bDialog.setHeight(window.innerHeight - 180)
                         b2bDialog.setWidth("60%");
@@ -6749,7 +6772,7 @@
                         $root.dialog('widget').find('.ui-dialog-buttonpane').css('margin-top', '');
                     });
 
-                   
+
                     $closeb2b.on("click", function () {
                         //close the dialog
                         b2bDialog.close();
@@ -7330,6 +7353,7 @@
                         else {
                             $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
                         }
+                        getCheckNo();
                     });
                     $POP_cmbDocType.on("change", function () {
                         if (VIS.Utility.Util.getValueOfInt($POP_cmbDocType.val()) == 0) {
@@ -7338,6 +7362,7 @@
                         else {
                             $POP_cmbDocType.removeClass('vis-ev-col-mandatory');
                         }
+                        getCheckNo();
                     });
                     $POP_DateTrx.on("change", function () {
                         if ($POP_DateTrx.val() == "") {
@@ -7423,6 +7448,7 @@
                             $DivChkDate.hide();
                             $DivChkNo.hide();
                         }
+                        getCheckNo();
                     });
 
                     //onchange for changinng background-color if value is entered and validate
@@ -7434,6 +7460,27 @@
                             payAmount.getControl().addClass('vis-ev-col-mandatory');
                         }
                     });
+                };
+                var currentNextChequeNo = "";
+                /**VA230:To get current Next Cheque Number based seleted bank, payment method document base type is AP Payment */
+                function getCheckNo() {
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0 && VIS.Utility.Util.getValueOfInt($POP_PayMthd.val())
+                        && $('option:selected', $POP_PayMthd).attr('paybase') == "S" && $('option:selected', $POP_cmbDocType).attr('docbasetype') == "APP") {
+
+                        VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/getCheckNo", { "C_BankAccount_ID": parseInt($POP_cmbBankAccount.val()), "VA009_PaymentMethod_ID": parseInt($POP_PayMthd.val()) }, callbackgetCheckNo);
+
+                        function callbackgetCheckNo(dr) {
+                            $POP_ChkNo.val('');
+                            if (dr != null) {
+                                $POP_ChkNo.val(dr);
+                                //store current next cheque number and compare it before payment creation
+                                currentNextChequeNo = dr;
+                            }
+                        }
+                    } else {
+                        $POP_ChkNo.val('');
+                        currentNextChequeNo = "";
+                    }
                 };
                 function loadAllData() {
                     loadOrg();
@@ -7501,7 +7548,8 @@
                         $POP_cmbDocType.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
-                                $POP_cmbDocType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i]["C_Charge_ID"]) + ">" + VIS.Utility.Util.getValueOfString(dr[i]["Name"]) + "</option>");
+                                //VA230:get docbasetype to check payment type
+                                $POP_cmbDocType.append("<option docbasetype=" + VIS.Utility.Util.getValueOfString(dr[i]["DocBaseType"]) + " value=" + VIS.Utility.Util.getValueOfInt(dr[i]["C_DocType_ID"]) + ">" + VIS.Utility.Util.getValueOfString(dr[i]["Name"]) + "</option>");
                             }
                         }
                         $POP_cmbDocType.prop('selectedIndex', 0);
@@ -7677,12 +7725,19 @@
                 function createPayment() {
                     var PaymentData = [];
                     var DocNumber = "";
+                    var isOverrideAutoCheck = false;
+                    /** 
+                    VA230:If checkno textfield value is not equal to currentNextChequeNo and docbasetype is AP Payment then override autocheck marked as true
+                    */
+                    if (($('option:selected', $POP_cmbDocType).attr('docbasetype') == "APP" && $POP_ChkNo.val() != currentNextChequeNo && currentNextChequeNo != "")) {
+                        isOverrideAutoCheck = true;
+                    }
                     PaymentData.push({
                         Org: $POP_cmbOrg.val(), DocType: $POP_cmbDocType.val(), BankID: $POP_cmbBank.val(),
                         BankAccountID: $POP_cmbBankAccount.val(), DateTrx: $POP_DateTrx.val(), DateAcct: $POP_DateAcct.val(),
                         BPID: $BpartnerControl.value, BPLocation: $POP_cmbLocation.val(), CurrencyID: $POP_Currency.val(),
                         CurrencyType: $POP_CurrencyType.val(), PaymentMethod: $POP_PayMthd.val(), PaymentAmount: payAmount.getValue(),
-                        CheckNo: $POP_ChkNo.val(), CheckDate: $POP_ChkDate.val(), charge: VIS.Utility.Util.getValueOfInt($ChargeControl.value)
+                        CheckNo: $POP_ChkNo.val(), CheckDate: $POP_ChkDate.val(), charge: VIS.Utility.Util.getValueOfInt($ChargeControl.value), IsOverrideAutoCheck: isOverrideAutoCheck
                     });
                     $bsyDiv[0].style.visibility = "visible";
                     $.ajax({
@@ -7734,6 +7789,7 @@
                         }
                     });
                 };
+
             }
         };
 
@@ -7773,7 +7829,7 @@
             }
         };
 
-       
+
 
 
         //to generate data for file creation

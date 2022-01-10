@@ -3515,12 +3515,12 @@ namespace VA009.Models
         {
             //handled the logs
             string sql = @"SELECT bd.CurrentNext FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
-             WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID+"AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
+             WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID + "AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
              " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID();
 
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             return Util.GetValueOfInt(DB.ExecuteScalar(sql));
-            
+
         }
 
 
@@ -3546,7 +3546,7 @@ namespace VA009.Models
             }
             return retDic;
         }
-      
+
         //Added by Bharat on 01/June/2017
         public List<Dictionary<string, object>> LoadPaymentMethod(Ctx ct)
         {
@@ -3579,12 +3579,12 @@ namespace VA009.Models
         public List<Dictionary<string, object>> LoadChequePaymentMethod(Ctx ct, int? Org_ID)
         {
             List<Dictionary<string, object>> retDic = null;
-            
+
             string sql = "SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID,VA009_PaymentMethod.VA009_Name FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' AND VA009_PaymentMethod.VA009_PaymentBaseType IN  ('S') ";
-            if(Org_ID>0) 
+            if (Org_ID > 0)
             {
                 //Payable case -- get Paymenthod of selected Organization
-                sql += " AND VA009_PaymentMethod.AD_Org_ID IN (0," + Org_ID+") ";
+                sql += " AND VA009_PaymentMethod.AD_Org_ID IN (0," + Org_ID + ") ";
             }
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY VA009_PaymentMethod_ID";
@@ -3628,7 +3628,7 @@ namespace VA009.Models
         public List<Dictionary<string, object>> loadCurrencyType(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType WHERE ISACTIVE='Y' AND AD_Client_ID IN(0, "+ct.GetAD_Client_ID()+ ") ORDER BY AD_Client_ID";
+            string sql = "SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType WHERE ISACTIVE='Y' AND AD_Client_ID IN(0, " + ct.GetAD_Client_ID() + ") ORDER BY AD_Client_ID";
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -4951,7 +4951,7 @@ namespace VA009.Models
         {
             Trx trx = Trx.GetTrx("PaymentB2B_" + DateTime.Now.ToString("yyMMddHHmmssff"));
             //1052 - to store custom success and error message  
-            Dictionary<string, object>  retDic = new Dictionary<string, object> ();
+            Dictionary<string, object> retDic = new Dictionary<string, object>();
             StringBuilder ex = new StringBuilder();
             bool isReceipt = Util.GetValueOfBool(PaymentData.isReceipt);
             bool isPayment = Util.GetValueOfBool(PaymentData.isPayment);
@@ -5004,6 +5004,8 @@ namespace VA009.Models
                         {
                             _pay.SetCheckNo(PaymentData.CheckNo);
                             _pay.SetCheckDate(Util.GetValueOfDateTime(PaymentData.CheckDate));
+                            //VA230:Set overrideautocheck
+                            _pay.SetIsOverrideAutoCheck(Util.GetValueOfBool(PaymentData.IsOverrideAutoCheck));
                         }
                         _pay.SetPayAmt(Util.GetValueOfDecimal(PaymentData.amount));
                         _pay.SetDocStatus("DR");
@@ -5040,18 +5042,19 @@ namespace VA009.Models
                                 // no need to create allocation in case of bank to bank transfer as discussed with ashish and gagan
                                 if (i == 0)
                                 {
+                                    //VA230:Commented not required as CurrentNext get updated while completing payment in MClass MPayment
                                     // Updated checkno as discussed with ashish and gagan we need to update the series from Bank to bank transfer
-                                    if (Util.GetValueOfInt(PaymentData.paymentMethod) > 0)
-                                    {
-                                        //string checkno = getCheckNo(Util.GetValueOfInt(PaymentData.fromBank), Util.GetValueOfInt(PaymentData.paymentMethod));
-                                        if (DB.ExecuteScalar("SELECT va009_paymentbasetype FROM VA009_PaymentMethod WHERE VA009_PaymentMethod_ID = " + Util.GetValueOfInt(PaymentData.paymentMethod)) == "S")
-                                        {
-                                            if (DB.ExecuteScalar(" UPDATE C_BankAccountDoc SET CurrentNext = " + (Util.GetValueOfInt(PaymentData.CheckNo) + 1) + " WHERE C_BankAccount_ID = " + Util.GetValueOfInt(PaymentData.fromBank) + " AND IsActive='Y' AND VA009_PaymentMethod_ID = " + Util.GetValueOfInt(PaymentData.paymentMethod), null, trx) <= 0)
-                                            {
-                                                _log.Info("Checkno Not Updated.");
-                                            }
-                                        }
-                                    }
+                                    //if (Util.GetValueOfInt(PaymentData.paymentMethod) > 0)
+                                    //{
+                                    //    //string checkno = getCheckNo(Util.GetValueOfInt(PaymentData.fromBank), Util.GetValueOfInt(PaymentData.paymentMethod));
+                                    //    if (DB.ExecuteScalar("SELECT va009_paymentbasetype FROM VA009_PaymentMethod WHERE VA009_PaymentMethod_ID = " + Util.GetValueOfInt(PaymentData.paymentMethod)) == "S")
+                                    //    {
+                                    //        if (DB.ExecuteScalar(" UPDATE C_BankAccountDoc SET CurrentNext = " + (Util.GetValueOfInt(PaymentData.CheckNo) + 1) + " WHERE C_BankAccount_ID = " + Util.GetValueOfInt(PaymentData.fromBank) + " AND IsActive='Y' AND VA009_PaymentMethod_ID = " + Util.GetValueOfInt(PaymentData.paymentMethod), null, trx) <= 0)
+                                    //        {
+                                    //            _log.Info("Checkno Not Updated.");
+                                    //        }
+                                    //    }
+                                    //}
 
                                     //alloc = new MAllocationHdr(ct, true, _pay.GetDateTrx(), _pay.GetC_Currency_ID(), ct.GetContext("#AD_User_Name"), trx);
                                     //alloc.SetAD_Org_ID(ct.GetAD_Org_ID());
@@ -5082,8 +5085,8 @@ namespace VA009.Models
                                     //}
 
                                     //1052--mention doctype before document no 
-                                    ex.Append(Msg.GetMsg(ct, "VA009_SavedSuccessfully") + ":-" + 
-                                        (isPayment?Msg.GetMsg(ct, "VA009_APPayment"): Msg.GetMsg(ct, "VA009_ARPayment")) + _pay.GetDocumentNo());
+                                    ex.Append(Msg.GetMsg(ct, "VA009_SavedSuccessfully") + ":-" +
+                                        (isPayment ? Msg.GetMsg(ct, "VA009_APPayment") : Msg.GetMsg(ct, "VA009_ARPayment")) + _pay.GetDocumentNo());
                                     retDic["success"] = ex.ToString();
 
                                 }
@@ -5116,7 +5119,7 @@ namespace VA009.Models
                                     //}
 
                                     //1052--mention doctype before document no 
-                                    ex.Append(", " + (isPayment ? Msg.GetMsg(ct, "VA009_ARPayment") : Msg.GetMsg(ct, "VA009_APPayment"))+ _pay.GetDocumentNo());
+                                    ex.Append(", " + (isPayment ? Msg.GetMsg(ct, "VA009_ARPayment") : Msg.GetMsg(ct, "VA009_APPayment")) + _pay.GetDocumentNo());
                                     retDic["success"] = ex.ToString();
                                 }
 
@@ -5144,7 +5147,7 @@ namespace VA009.Models
                                 //End
                             }
                             else
-                            {                               
+                            {
                                 trx.Rollback();
                                 //1052-- delete Payment Document in Drafetd Stage 
                                 DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + _pay.GetC_Payment_ID());
@@ -5357,12 +5360,12 @@ namespace VA009.Models
             _btDetal.SetAD_Org_ID(PaymentData.AD_Org_ID);
             _btDetal.Set_Value("VA009_OrderPaySchedule_ID", PaymentData.C_InvoicePaySchedule_ID); // Here OrderPaySchedule_ID is AS InvoicePaySchedule_ID
             _btDetal.Set_Value("C_Order_ID", PaymentData.C_Invoice_ID); //Here C_Order_ID is as C_Invoice_ID
-             //set Order Currency 
+                                                                        //set Order Currency 
             _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
             //Set Order Currency Type
             _btDetal.SetC_ConversionType_ID(PaymentData.ConversionTypeId);
             _btDetal.SetVA009_BatchLines_ID(Batchline_ID);
-          
+
             //Adjust discount amount from due amount if discount date greater than account date
             if (Util.GetValueOfDateTime(_OrdPaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
             {
@@ -5443,24 +5446,26 @@ namespace VA009.Models
         /// <summary>
         /// Get Document Type according to selected organization
         /// </summary>
-        /// <param name="organization"></param>
-        /// <param name="ct"></param>
+        /// <param name="orgs">organization id</param>
+        /// <param name="ctx">session</param>
         /// <returns>List of Document types</returns>
-        public List<ChargeDetails> GetDocumentType(string orgs, Ctx ctx)
+        public List<DocTypeDetails> GetDocumentType(string orgs, Ctx ctx)
         {
-            List<ChargeDetails> retDic = null;
+            List<DocTypeDetails> retDic = null;
             //Table name must Camel format because Table name is case sensitive
-            string sql = @"SELECT Name,C_DocType_ID FROM C_DocType WHERE C_DocType.DOCBASETYPE IN ('ARR', 'APP') AND C_DocType.AD_ORG_ID IN (0, " + orgs + ")";
+            //VA230:Get DocBaseType to check document type
+            string sql = @"SELECT Name,C_DocType_ID,DocBaseType FROM C_DocType WHERE C_DocType.DOCBASETYPE IN ('ARR', 'APP') AND C_DocType.AD_ORG_ID IN (0, " + orgs + ")";
             sql = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "C_DocType", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
-                retDic = new List<ChargeDetails>();
+                retDic = new List<DocTypeDetails>();
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
-                    ChargeDetails obj = new ChargeDetails();//
-                    obj.C_Charge_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_DocType_ID"]);
+                    DocTypeDetails obj = new DocTypeDetails();//
+                    obj.C_DocType_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_DocType_ID"]);
                     obj.Name = Util.GetValueOfString(ds.Tables[0].Rows[i]["Name"]);
+                    obj.DocBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]);
                     retDic.Add(obj);
                 }
             }
@@ -5594,6 +5599,8 @@ namespace VA009.Models
                 _pay.SetCheckNo(Util.GetValueOfString(paymentData[0]["CheckNo"]));
                 if (paymentData[0]["CheckDate"] != null)
                     _pay.SetCheckDate(Util.GetValueOfDateTime(paymentData[0]["CheckDate"]));
+                //VA230:Set overrideautocheck
+                _pay.SetIsOverrideAutoCheck(Util.GetValueOfBool(paymentData[0]["IsOverrideAutoCheck"]));
                 if (!_pay.Save())
                 {
                     ex.Append(Msg.GetMsg(ct, "VA009_PNotSaved"));
@@ -6405,7 +6412,7 @@ namespace VA009.Models
             //applied filter with Client ID
             StringBuilder sql = new StringBuilder();
             sql.Append("SELECT C_DocType_ID, Name FROM C_DocType C_DocType WHERE IsActive='Y' AND AD_Org_ID IN" +
-                "((SELECT AD_Org_ID FROM C_BankAccount WHERE C_BankAccount_ID= " + BankAcct_ID +"), 0) " +
+                "((SELECT AD_Org_ID FROM C_BankAccount WHERE C_BankAccount_ID= " + BankAcct_ID + "), 0) " +
                 "AND AD_Client_ID IN(" + ct.GetAD_Client_ID() + ", 0)");
 
             //AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment
@@ -6569,6 +6576,7 @@ public class GeneratePaymt
     public decimal DiscountAmount { get; set; }
     public decimal ConvertedDiscountAmount { get; set; }
     public DateTime? DiscountDate { get; set; }
+    public bool IsOverrideAutoCheck { get; set; }
 
     //end
 }
@@ -6601,4 +6609,5 @@ public class DocTypeDetails
 {
     public int C_DocType_ID { get; set; }
     public string Name { get; set; }
+    public string DocBaseType { get; set; }
 }
