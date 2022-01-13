@@ -6655,7 +6655,7 @@
                 var currentNextChequeNo = "";
                 /**VA230:To get current Next Cheque Number based seleted bank, payment method document base type is AP Payment */
                 function getCheckNo() {
-                    if (VIS.Utility.Util.getValueOfInt($From_cmbBank.val()) > 0 && VIS.Utility.Util.getValueOfInt($paymentMthd.val()) && $('option:selected', $paymentMthd).attr('paybase') == "S") {
+                    if (VIS.Utility.Util.getValueOfInt($From_cmbBank.val()) > 0 && VIS.Utility.Util.getValueOfInt($paymentMthd.val()) > 0 && $('option:selected', $paymentMthd).attr('paybase') == "S") {
 
                         VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/getCheckNo", { "C_BankAccount_ID": parseInt($From_cmbBank.val()), "VA009_PaymentMethod_ID": parseInt($paymentMthd.val()) }, callbackgetCheckNo);
 
@@ -7464,7 +7464,7 @@
                 var currentNextChequeNo = "";
                 /**VA230:To get current Next Cheque Number based seleted bank, payment method document base type is AP Payment */
                 function getCheckNo() {
-                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0 && VIS.Utility.Util.getValueOfInt($POP_PayMthd.val())
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0 && VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0
                         && $('option:selected', $POP_PayMthd).attr('paybase') == "S" && $('option:selected', $POP_cmbDocType).attr('docbasetype') == "APP") {
 
                         VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/getCheckNo", { "C_BankAccount_ID": parseInt($POP_cmbBankAccount.val()), "VA009_PaymentMethod_ID": parseInt($POP_PayMthd.val()) }, callbackgetCheckNo);
