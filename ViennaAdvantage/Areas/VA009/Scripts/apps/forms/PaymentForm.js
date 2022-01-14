@@ -1337,6 +1337,8 @@
                 ChequePayDialog.setContent($chequePayble);
                 ChequePayDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePayment"));
                 ChequePayDialog.setWidth("80%");
+                //VA230:Remove outer scroll bar
+                ChequePayDialog.setHeight(window.innerHeight - 90);
                 ChequePayDialog.setEnableResize(true);
                 ChequePayDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
@@ -2866,6 +2868,8 @@
                 ChequeReceDialog.setContent($chequeRecivable);
                 ChequeReceDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePaymentRec"));
                 ChequeReceDialog.setWidth("80%");
+                //VA230:Remove outer scroll bar
+                ChequeReceDialog.setHeight(window.innerHeight - 180);
                 ChequeReceDialog.setEnableResize(true);
                 ChequeReceDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
@@ -4024,8 +4028,14 @@
                 var CashDialog = new VIS.ChildDialog();
 
                 CashDialog.setContent($cash);
-                CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
+                //VA230:Set Cash dialog header based on ARR and APP
+                if ($CR_Tab.hasClass('VA009-active-tab')) //ARR
+                    CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashReceipts"));
+                else
+                    CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
                 CashDialog.setWidth("60%");
+                //VA230:Remove outer scroll bar
+                CashDialog.setHeight(window.innerHeight - 145);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "") {
@@ -4985,6 +4995,8 @@
                 BatchDialog.setContent($batch);
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
+                //VA230:Remove outer scroll bar
+                BatchDialog.setHeight(window.innerHeight - 110);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
                 BatchDialog.show();
@@ -6195,7 +6207,7 @@
                 b2bDialog.setContent($b2b);
                 b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
                 //1052--set height to remove scroll bar
-                b2bDialog.setHeight(window.innerHeight - 180)
+                b2bDialog.setHeight(window.innerHeight - 220)
                 b2bDialog.setWidth("60%");
                 b2bDialog.setEnableResize(true);
                 b2bDialog.setModal(true);
