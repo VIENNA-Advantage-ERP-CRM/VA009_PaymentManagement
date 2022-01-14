@@ -4028,7 +4028,11 @@
                 var CashDialog = new VIS.ChildDialog();
 
                 CashDialog.setContent($cash);
-                CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
+                //VA230:Set Cash dialog header based on ARR and APP
+                if ($CR_Tab.hasClass('VA009-active-tab')) //ARR
+                    CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashReceipts"));
+                else
+                    CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
                 CashDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
                 CashDialog.setHeight(window.innerHeight - 145);
