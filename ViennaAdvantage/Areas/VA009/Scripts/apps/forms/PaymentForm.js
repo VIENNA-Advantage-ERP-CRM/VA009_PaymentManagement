@@ -1338,7 +1338,7 @@
                 ChequePayDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePayment"));
                 ChequePayDialog.setWidth("80%");
                 //VA230:Remove outer scroll bar
-                ChequePayDialog.setHeight(window.innerHeight - 90);
+                ChequePayDialog.setHeight(window.innerHeight - 75);
                 ChequePayDialog.setEnableResize(true);
                 ChequePayDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
@@ -2868,8 +2868,6 @@
                 ChequeReceDialog.setContent($chequeRecivable);
                 ChequeReceDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePaymentRec"));
                 ChequeReceDialog.setWidth("80%");
-                //VA230:Remove outer scroll bar
-                ChequeReceDialog.setHeight(window.innerHeight - 180);
                 ChequeReceDialog.setEnableResize(true);
                 ChequeReceDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
@@ -4035,7 +4033,7 @@
                     CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
                 CashDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                CashDialog.setHeight(window.innerHeight - 145);
+                CashDialog.setHeight(window.innerHeight - 140);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "") {
@@ -4996,7 +4994,7 @@
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                BatchDialog.setHeight(window.innerHeight - 110);
+                BatchDialog.setHeight(window.innerHeight - 98);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
                 BatchDialog.show();
