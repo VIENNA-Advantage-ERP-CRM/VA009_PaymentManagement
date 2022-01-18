@@ -729,6 +729,7 @@
 
             $SrchTxtBox.on("keypress", function (e) {
                 if (e.keyCode == 13) {
+                    convertSearchAmountToDotFormat();
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
@@ -740,6 +741,7 @@
             });
 
             $SrchBtn.on("click", function () {
+                convertSearchAmountToDotFormat();
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
@@ -856,6 +858,22 @@
                 $divcashbk.hide();
             });
         };
+        /**VA230:Convert search amount to dot format */
+        function convertSearchAmountToDotFormat() {
+            //Get decimal seperator
+            var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+            var txtValue = $SrchTxtBox.val();
+
+            if (txtValue != '') {
+                //search text should not contains multisearh = operator and format should not be dot format
+                if (!txtValue.contains("=") && !isDotSeparator) {
+                    if (txtValue.contains(",")) {
+                        //replace , with . to search value on server side
+                        $SrchTxtBox.val(txtValue.replace(',', '.'));
+                    }
+                }
+            }
+        }
         //******************************
         //Change Tab Active Stage
         //******************************
