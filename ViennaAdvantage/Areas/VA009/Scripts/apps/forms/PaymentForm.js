@@ -729,7 +729,6 @@
 
             $SrchTxtBox.on("keypress", function (e) {
                 if (e.keyCode == 13) {
-                    convertSearchAmountToDotFormat();
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
@@ -741,7 +740,6 @@
             });
 
             $SrchBtn.on("click", function () {
-                convertSearchAmountToDotFormat();
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
@@ -858,22 +856,6 @@
                 $divcashbk.hide();
             });
         };
-        /**VA230:Convert search amount to dot format */
-        function convertSearchAmountToDotFormat() {
-            //Get decimal seperator
-            var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
-            var txtValue = $SrchTxtBox.val();
-
-            if (txtValue != '') {
-                //search text should not contains multisearh = operator and format should not be dot format
-                if (!txtValue.contains("=") && !isDotSeparator) {
-                    if (txtValue.contains(",")) {
-                        //replace , with . to search value on server side
-                        $SrchTxtBox.val(txtValue.replace(',', '.'));
-                    }
-                }
-            }
-        }
         //******************************
         //Change Tab Active Stage
         //******************************
@@ -8010,7 +7992,8 @@
         //Fill Data in Middle Div (Payments Data)
         //***************************************
         function loadPaymets(_isInv, _DocBaseTyp, pgNo, pgSize, _orgwhr, _PaymWhr, _statuswhr, _BPWhr, _SearchText, DueDateSelected, _TransTypewhr, Frmdate, Todate, callback) {
-
+            //VA230:Handle amount search according to culture in searchtext field
+            var txtSearchText = convertSearchAmountToDotFormat();
             $bsyDiv[0].style.visibility = "visible";
             _whereQry = _orgwhr + _PaymWhr + _statuswhr + _BPWhr;
             FinalWhereQry(_isInv, _DocBaseTyp, _whereQry);
@@ -8020,7 +8003,7 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ pageNo: pgNo, pageSize: pgSize, whereQry: _WhereQuery, OrgWhr: _orgwhr, SearchText: _SearchText, WhrDueDate: DueDateSelected, TransType: _TransTypewhr, FromDate: Frmdate, ToDate: Todate }),
+                data: ({ pageNo: pgNo, pageSize: pgSize, whereQry: _WhereQuery, OrgWhr: _orgwhr, SearchText: txtSearchText, WhrDueDate: DueDateSelected, TransType: _TransTypewhr, FromDate: Frmdate, ToDate: Todate }),
                 success: function (result) {
                     callback(result);
                 },
@@ -8254,6 +8237,25 @@
             $bsyDiv[0].style.visibility = "hidden";
         };
         //End 
+
+        /**VA230:Convert search amount to dot format */
+        function convertSearchAmountToDotFormat() {
+            //Get decimal seperator
+            var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+            var txtValue = $SrchTxtBox.val();
+
+            //format should not be dot format
+            if (txtValue != '' && !isDotSeparator) {
+                //search text should not contains multisearh (= operator) 
+                if (!txtValue.contains("=")) {
+                    if (txtValue.contains(",")) {
+                        //replace , with . to search value on server side
+                        txtValue = txtValue.replace(',', '.');
+                    }
+                }
+            }
+            return txtValue;
+        }
         //***************************************
 
         //****Check For Batch Payments Cases ****//
