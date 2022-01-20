@@ -8660,7 +8660,8 @@
             //$("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
             $("#VA009_Paymntlst_" + $self.windowNo).height(midpanel_h - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
             //lbdata.height($lbmain.height() - (43 + 20));
-            lbdata.height(leftpanel_h - (43 + 20));
+            //VA230:Fixed scroll issue on left search panel
+            lbdata.height(container_h - 54);
         };
 
         this.lockUI = function () {
