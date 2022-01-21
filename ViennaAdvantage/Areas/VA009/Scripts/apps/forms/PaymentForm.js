@@ -7822,7 +7822,8 @@
         };
 
         function paymentScroll() {
-            if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+            //VA230:Added 5 into scrolltop and innerHeight to solve somtimes condition not matched issue
+            if ($(this).scrollTop() + $(this).innerHeight() + 5 >= this.scrollHeight) {
                 if (pgNo < noPages) {
                     pgNo++;
                     if (orgids.length == 1) {
