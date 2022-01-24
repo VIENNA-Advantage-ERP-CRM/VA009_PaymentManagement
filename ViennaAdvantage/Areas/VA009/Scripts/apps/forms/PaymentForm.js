@@ -1337,6 +1337,8 @@
                 ChequePayDialog.setContent($chequePayble);
                 ChequePayDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePayment"));
                 ChequePayDialog.setWidth("80%");
+                //VA230:Remove outer scroll bar
+                ChequePayDialog.setHeight(window.innerHeight - 75);
                 ChequePayDialog.setEnableResize(true);
                 ChequePayDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
@@ -4024,8 +4026,14 @@
                 var CashDialog = new VIS.ChildDialog();
 
                 CashDialog.setContent($cash);
-                CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
+                //VA230:Set Cash dialog header based on ARR and APP
+                if ($CR_Tab.hasClass('VA009-active-tab')) //ARR
+                    CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashReceipts"));
+                else
+                    CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
                 CashDialog.setWidth("60%");
+                //VA230:Remove outer scroll bar
+                CashDialog.setHeight(window.innerHeight - 120);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "") {
@@ -4985,6 +4993,8 @@
                 BatchDialog.setContent($batch);
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
+                //VA230:Remove outer scroll bar
+                BatchDialog.setHeight(window.innerHeight - 80);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
                 BatchDialog.show();
@@ -6195,7 +6205,7 @@
                 b2bDialog.setContent($b2b);
                 b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
                 //1052--set height to remove scroll bar
-                b2bDialog.setHeight(window.innerHeight - 180)
+                b2bDialog.setHeight(window.innerHeight - 220)
                 b2bDialog.setWidth("60%");
                 b2bDialog.setEnableResize(true);
                 b2bDialog.setModal(true);
@@ -7812,7 +7822,8 @@
         };
 
         function paymentScroll() {
-            if ($(this).scrollTop() + $(this).innerHeight() >= this.scrollHeight) {
+            //VA230:Added 5 into scrolltop and innerHeight to solve somtimes condition not matched issue
+            if ($(this).scrollTop() + $(this).innerHeight() + 5 >= this.scrollHeight) {
                 if (pgNo < noPages) {
                     pgNo++;
                     if (orgids.length == 1) {
@@ -7982,7 +7993,8 @@
         //Fill Data in Middle Div (Payments Data)
         //***************************************
         function loadPaymets(_isInv, _DocBaseTyp, pgNo, pgSize, _orgwhr, _PaymWhr, _statuswhr, _BPWhr, _SearchText, DueDateSelected, _TransTypewhr, Frmdate, Todate, callback) {
-
+            //VA230:Handle amount search according to culture in searchtext field
+            var txtSearchText = convertSearchAmountToDotFormat();
             $bsyDiv[0].style.visibility = "visible";
             _whereQry = _orgwhr + _PaymWhr + _statuswhr + _BPWhr;
             FinalWhereQry(_isInv, _DocBaseTyp, _whereQry);
@@ -7992,7 +8004,7 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ pageNo: pgNo, pageSize: pgSize, whereQry: _WhereQuery, OrgWhr: _orgwhr, SearchText: _SearchText, WhrDueDate: DueDateSelected, TransType: _TransTypewhr, FromDate: Frmdate, ToDate: Todate }),
+                data: ({ pageNo: pgNo, pageSize: pgSize, whereQry: _WhereQuery, OrgWhr: _orgwhr, SearchText: txtSearchText, WhrDueDate: DueDateSelected, TransType: _TransTypewhr, FromDate: Frmdate, ToDate: Todate }),
                 success: function (result) {
                     callback(result);
                 },
@@ -8226,6 +8238,25 @@
             $bsyDiv[0].style.visibility = "hidden";
         };
         //End 
+
+        /**VA230:Convert search amount to dot format */
+        function convertSearchAmountToDotFormat() {
+            //Get decimal seperator
+            var isDotSeparator = culture.isDecimalSeparatorDot(window.navigator.language);
+            var txtValue = $SrchTxtBox.val();
+
+            //format should not be dot format
+            if (txtValue != '' && !isDotSeparator) {
+                //search text should not contains multisearh (= operator) 
+                if (!txtValue.contains("=")) {
+                    if (txtValue.contains(",")) {
+                        //replace , with . to search value on server side
+                        txtValue = txtValue.replace(',', '.');
+                    }
+                }
+            }
+            return txtValue;
+        }
         //***************************************
 
         //****Check For Batch Payments Cases ****//
@@ -8630,7 +8661,8 @@
             //$("#VA009_Paymntlst_" + $self.windowNo).height($("#VA009-middle-wrap_" + $self.windowNo).height() - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
             $("#VA009_Paymntlst_" + $self.windowNo).height(midpanel_h - $("#VA009-mid-top-wrap_" + $self.windowNo).height() - $("#VA009-mid-search_" + $self.windowNo).height() - 42);
             //lbdata.height($lbmain.height() - (43 + 20));
-            lbdata.height(leftpanel_h - (43 + 20));
+            //VA230:Fixed scroll issue on left search panel
+            lbdata.height(container_h - 54);
         };
 
         this.lockUI = function () {
