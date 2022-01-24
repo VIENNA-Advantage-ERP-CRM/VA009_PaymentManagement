@@ -4033,7 +4033,7 @@
                     CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
                 CashDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                CashDialog.setHeight(window.innerHeight - 140);
+                CashDialog.setHeight(window.innerHeight - 120);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "") {
@@ -4994,7 +4994,7 @@
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                BatchDialog.setHeight(window.innerHeight - 98);
+                BatchDialog.setHeight(window.innerHeight - 80);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
                 BatchDialog.show();
