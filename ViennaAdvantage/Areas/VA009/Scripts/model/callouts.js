@@ -98,6 +98,13 @@
             mTab.setValue("WriteOffAmt", VIS.Env.ZERO);
             mTab.setValue("IsOverUnderPayment", false);//Boolean.FALSE);
             mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
+            //VA230:Set due amount when VA009_OrderPaySchedule_ID not found
+            var dr = VIS.dataContext.getJSONRecord("Pay/GetDueAmt", ctx.getContextAsInt(windowNo, "C_Order_ID"));
+            if (dr != null) {
+                dueAmount = dr["DueAmt"];
+                mTab.setValue("PayAmt", dueAmount);
+                mTab.setValue("PaymentAmount", dueAmount);
+            }
             return "";
         }
         this.setCalloutActive(true);
