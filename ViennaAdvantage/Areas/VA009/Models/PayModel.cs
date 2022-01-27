@@ -100,14 +100,26 @@ namespace VA009.Models
                 //Assign parameter value
                 int C_Order_ID = Util.GetValueOfInt(paramValue[0].ToString());
                 //End Assign parameter
+
                 string _sql = "SELECT * FROM   (SELECT ips.VA009_OrderPaySchedule_ID, "
-                            + " ips.DueAmt  FROM C_Order i  INNER JOIN VA009_OrderPaySchedule  ips "
-                            + " ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' "
-                            + " AND i.C_Order_ID    = " + C_Order_ID
-                            + "  AND ips.VA009_OrderPaySchedule_ID NOT IN"
-                            + "(SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0) "
-                            + " ORDER BY ips.duedate ASC) t WHERE rownum=1";
+                           + " ips.DueAmt  FROM C_Order i  INNER JOIN VA009_OrderPaySchedule  ips "
+                           + " ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' "
+                           + " AND i.C_Order_ID    = " + C_Order_ID
+                           + "  AND ips.VA009_OrderPaySchedule_ID NOT IN"
+                           + "(SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0) "
+                           + " ORDER BY ips.duedate ASC) t WHERE rownum=1";
                 DataSet ds = DB.ExecuteDataset(_sql);
+
+                //VA230:Check if no OrderPaySchedule data found
+                if (ds != null && ds.Tables[0].Rows.Count == 0)
+                {
+                    //Get Due amount (GrandTotal-DueAmt) based on orderid when no VA009_OrderPaySchedule_ID found
+                    //GrandTotal-Get sum of DueAmt of OrderPaySchedule which are paid
+                    _sql = @"SELECT 0 as VA009_OrderPaySchedule_ID, O.GrandTotal - NVL(SUM(S.DueAmt),0) AS DueAmt FROM C_Order O
+                                LEFT JOIN VA009_OrderPaySchedule S ON O.C_Order_ID = S.C_Order_ID AND S.IsActive = 'Y' AND S.VA009_IsPaid='Y'
+                                WHERE O.C_Order_ID=" + C_Order_ID + " GROUP BY O.GrandTotal";
+                    ds = DB.ExecuteDataset(_sql);
+                }
 
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
