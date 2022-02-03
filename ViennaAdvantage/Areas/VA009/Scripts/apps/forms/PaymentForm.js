@@ -130,11 +130,17 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove(); // to remove accordion div 
                     pgNo = 1;
+                    //Reset no of pages
+                    resetPaging();
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
             });
         };
+        /**VA230: Reset paging like no of pages */
+        function resetPaging() {
+            noPages = 1;
+        }
 
         //******************
         //Custom Design of Paymnet Form
@@ -303,6 +309,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 // loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
@@ -328,6 +335,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
@@ -353,6 +361,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
@@ -379,6 +388,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
@@ -404,6 +414,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
@@ -430,6 +441,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
@@ -452,6 +464,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
@@ -479,6 +492,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 for (var i in transtypes) {
                     if (i != 0) {
                         _WhrTransType += ",";
@@ -508,6 +522,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
@@ -531,6 +546,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
@@ -552,6 +568,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
@@ -697,6 +714,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
@@ -723,6 +741,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1;
+                    resetPaging();
                     loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 }
             });
@@ -733,6 +752,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1;
+                    resetPaging();
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $SrchTxtBox.val('');
@@ -744,6 +764,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1;
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 $SrchTxtBox.val('');
@@ -755,6 +776,7 @@
                 $divBank.find('.VA009-accordion').remove();
                 _DocType = 'ARI'; _isinvoice = 'Y';
                 pgNo = 1;
+                resetPaging();
                 // loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 changeTabactive($CR_Tab);
@@ -768,6 +790,7 @@
                 pgNo = 1;
                 _DocType = 'API'; _isinvoice = 'Y';
                 pgNo = 1;
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 changeTabactive($CP_Tab);
@@ -830,6 +853,7 @@
                 $tabFunds.addClass("VA009-active-tab");
                 _DocType = 'ARI'; _isinvoice = 'Y';
                 pgNo = 1;
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 changeTabactive($CR_Tab);
@@ -2744,6 +2768,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -2759,6 +2784,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -3925,6 +3951,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -4800,6 +4827,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -5597,6 +5625,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -6018,6 +6047,7 @@
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -7055,6 +7085,7 @@
                                                                 $divBank.find('.VA009-right-data-main').remove();
                                                                 $divBank.find('.VA009-accordion').remove();
                                                                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                                                                resetPaging();
                                                                 //after successfully created Payment selectall checkbox should be false
                                                                 $selectall.prop('checked', false);
                                                                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -7769,6 +7800,7 @@
                             $divBank.find('.VA009-right-data-main').remove();
                             $divBank.find('.VA009-accordion').remove();
                             pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                            resetPaging();
                             loadPaymetsAll();
                             $bsyDiv[0].style.visibility = "hidden";
                             //VIS.ADialog.info("", null, result, "");
@@ -7957,6 +7989,7 @@
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 $bsyDiv[0].style.visibility = "hidden";
