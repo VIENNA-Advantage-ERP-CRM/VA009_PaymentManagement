@@ -5102,9 +5102,10 @@
                         //end
                         //Rakesh(VA228):Set conversion rate type on 17/Sep/2021
                         _batch_Columns.push({ field: "ConversionTypeId", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
-                        _batch_Columns.push({ field: "DiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
-                        _batch_Columns.push({ field: "ConvertedDiscountAmount", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
-                        _batch_Columns.push({ field: "DiscountDate", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "DiscountAmount", caption: VIS.Msg.getMsg("DiscountAmount"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "ConvertedDiscountAmount", caption: VIS.Msg.getMsg("ConvertedDiscountAmount"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "DiscountDate", caption: VIS.Msg.getMsg("DiscountDate"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("C_BPartner_Location_ID"), hidden: true, sortable: true, size: '0%' });
                     }
                     BatchGrd = null;
                     BatchGrd = BatchGrid.w2grid({
@@ -5166,6 +5167,7 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
                         line["CurrencyCode"] = rslt[i].CurrencyCode;
@@ -5412,6 +5414,7 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
                         line["CurrencyCode"] = rslt[i].CurrencyCode;
@@ -5500,6 +5503,7 @@
                                             for (var i = 0; i < BatchGrd.getSelection().length; i++) {
                                                 var _data = {};
                                                 _data["C_BPartner_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_ID'];
+                                                _data["C_BPartner_Location_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_Location_ID'];
                                                 _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
                                                 _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
                                                 //commented because ashish and surya said that payment will be created in selected organization
