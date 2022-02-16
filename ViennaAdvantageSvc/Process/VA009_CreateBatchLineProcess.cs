@@ -117,11 +117,21 @@ namespace ViennaAdvantage.Process
             string _baseType = null;
 
             _sql.Clear();
-            _sql.Append(@"Select cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, cp.duedate, C_BP_BankAccount_ID,
-                          cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, CI.C_ConversionType_ID 
-                          From C_Invoice CI inner join C_InvoicePaySchedule CP ON CI.c_invoice_id= CP.c_invoice_id INNER JOIN 
-                          C_DocType doc ON doc.C_DocType_ID = CI.C_DocType_ID Where ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
-                          CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
+            _sql.Append(@"SELECT cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, 
+                          cp.duedate, C_BP_BankAccount_ID, cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,
+                          ci.c_currency_id , doc.DocBaseType, CI.C_ConversionType_ID, 
+                          CASE WHEN (bpLoc.IsPayFrom = 'Y' AND doc.DocBaseType IN ('ARI' , 'ARC')) THEN  CI.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsRemitTo = 'Y' AND doc.DocBaseType IN ('API' , 'APC')) THEN  CI.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsPayFrom = 'N' AND doc.DocBaseType IN ('ARI' , 'ARC')) THEN  bpLoc.VA009_ReceiptLocation_ID
+                               WHEN (bpLoc.IsRemitTo = 'N' AND doc.DocBaseType IN ('API' , 'APC')) THEN  bpLoc.VA009_PaymentLocation_ID 
+                          END AS C_BPartner_Location_ID 
+                          From C_Invoice CI 
+                          INNER JOIN C_InvoicePaySchedule CP ON (CI.c_invoice_id= CP.C_Invoice_ID) 
+                          INNER JOIN C_BPartner_Location bpLoc ON (bpLoc.C_BPartner_Location_ID = CI.C_BPartner_Location_ID)
+                          INNER JOIN C_DocType doc ON (doc.C_DocType_ID = CI.C_DocType_ID) 
+                          WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
+                          CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' 
+                          AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
                          + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
 
             if (_C_BPartner_ID > 0)
@@ -220,12 +230,26 @@ namespace ViennaAdvantage.Process
                         _sql.Clear();
                         _sql.Append(@"SELECT * FROM VA009_BatchLines WHERE C_BPartner_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) +
                              @" AND VA009_Batch_ID = " + batch.GetVA009_Batch_ID());
+
                         if (_ds != null && _ds.Tables[0].Rows.Count > 0 &&
-                            !_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check)
-                            && !_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash))
+                            !_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check) &&
+                            !_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash))
                         {
                             _sql.Append(" AND NVL(C_BP_BankAccount_ID, 0) = " + Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
                         }
+
+                        // BP Location
+                        if ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                           "APC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                        {
+                            _sql.Append(" AND NVL(VA009_PaymentLocation_ID, 0) = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                        }
+                        else if ("ARI" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                                 "ARC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                        {
+                            _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                        }
+
                         DataSet dsBatchLine = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
                         if (dsBatchLine != null && dsBatchLine.Tables[0].Rows.Count > 0)
                         {
@@ -250,6 +274,17 @@ namespace ViennaAdvantage.Process
                         line.SetVA009_Batch_ID(batch.GetVA009_Batch_ID());
                         docBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]);
                         line.SetC_BPartner_ID(_BPartner);
+                        // Set BP Location 
+                        if ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                            "APC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                        {
+                            line.SetVA009_PaymentLocation_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                        }
+                        else if ("ARI" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                                 "ARC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                        {
+                            line.SetVA009_ReceiptLocation_ID(Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BPartner_Location_ID"]));
+                        }
 
                         #region to set bank account of business partner and name on batch line
                         if (_BPartner > 0)
