@@ -250,8 +250,8 @@ namespace ViennaAdvantage.Process
                     sql.Append(@" UNION SELECT bld.C_ConversionType_ID,b.c_bankaccount_id, 
                                bl.c_bpartner_id, 
                                odr.C_BPartner_Location_ID AS DocBPLocation, 
-                               CASE WHEN (doc.DocBaseType IN ('ARI' , 'ARC')) THEN  bl.VA009_ReceiptLocation_ID
-                                    WHEN (doc.DocBaseType IN ('API' , 'APC')) THEN  bl.VA009_PaymentLocation_ID 
+                               CASE WHEN (doc.DocBaseType IN ('SOO')) THEN  bl.VA009_ReceiptLocation_ID
+                                    WHEN (doc.DocBaseType IN ('POO')) THEN  bl.VA009_PaymentLocation_ID 
                                END AS C_BPartner_Location_ID, 
                                bld.c_currency_id, 
                                NULL AS C_Invoice_ID,
