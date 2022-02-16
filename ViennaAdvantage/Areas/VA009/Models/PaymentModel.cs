@@ -479,10 +479,10 @@ namespace VA009.Models
             /* VIS0045 : Date - 15-Feb-2022*/
             /* This Enhancement will create Batch Line with Business Partner Location*/
             /* System will BP location where "Pay From Address" and "Remit To Address" is True*/
-            sql.Append(@" CASE WHEN (bpLoc.IsPayFrom = 'Y' AND cd.DocBaseType IN ('ARI' , 'ARC')) THEN  inv.C_BPartner_Location_ID
-                               WHEN (bpLoc.IsRemitTo = 'Y' AND cd.DocBaseType IN ('API' , 'APC')) THEN  inv.C_BPartner_Location_ID
-                               WHEN (bpLoc.IsPayFrom = 'N' AND cd.DocBaseType IN ('ARI' , 'ARC')) THEN  bpLoc.VA009_ReceiptLocation_ID
-                               WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('API' , 'APC')) THEN  bpLoc.VA009_PaymentLocation_ID 
+            sql.Append(@" CASE WHEN (bpLoc.IsPayFrom = 'Y' AND cd.DocBaseType IN ('SOO')) THEN  inv.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsRemitTo = 'Y' AND cd.DocBaseType IN ('POO')) THEN  inv.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsPayFrom = 'N' AND cd.DocBaseType IN ('SOO')) THEN  bpLoc.VA009_ReceiptLocation_ID
+                               WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('POO')) THEN  bpLoc.VA009_PaymentLocation_ID 
                           END AS C_BPartner_Location_ID, ");
             sql.Append(@" cs.DueDate ,  0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID,  'Order' AS VA009_TransactionType, 
                           inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate
@@ -5253,11 +5253,11 @@ namespace VA009.Models
             // Set BP Location 
             if (!String.IsNullOrEmpty(DocumentBaseType))
             {
-                if ("API".Equals(DocumentBaseType) || "APC".Equals(DocumentBaseType))
+                if ("API".Equals(DocumentBaseType) || "APC".Equals(DocumentBaseType) || "POO".Equals(DocumentBaseType))
                 {
                     _BtLines.SetVA009_PaymentLocation_ID(PaymentData.C_BPartner_Location_ID);
                 }
-                else if ("ARI".Equals(DocumentBaseType) || "ARC".Equals(DocumentBaseType))
+                else if ("ARI".Equals(DocumentBaseType) || "ARC".Equals(DocumentBaseType) || "SOO".Equals(DocumentBaseType))
                 {
                     _BtLines.SetVA009_ReceiptLocation_ID(PaymentData.C_BPartner_Location_ID);
                 }
@@ -5991,6 +5991,7 @@ namespace VA009.Models
             decimal convertedAmount = 0;
             String _TransactionType = String.Empty; //Arpit
             StringBuilder _sql = new StringBuilder();
+            int C_Doctype_ID = 0;
             try
             {
                 if (PaymentData.Length > 0)
@@ -6068,8 +6069,6 @@ namespace VA009.Models
                         }
                         #endregion
 
-
-
                         #region Create Batch Lines and Details
                         if (batchid > 0)
                         {
@@ -6081,7 +6080,6 @@ namespace VA009.Models
                                 // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
                                 if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)))
                                 {
-
                                     #region BatchLine and Batch Line Details
                                     _sql.Clear();
                                     _sql.Append(@"SELECT VA009_BatchLines_ID FROM VA009_BatchLines WHERE 
@@ -6160,12 +6158,18 @@ namespace VA009.Models
                                     }
                                 }
                             }
+
                             if (_TransactionType.Equals("Order"))
                             {
                                 MVA009OrderPaySchedule _OrdPaySchdule = new MVA009OrderPaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
-                                MDocType _doctype = new MDocType(ct, _OrdPaySchdule.GetC_DocType_ID(), trx);
-                                //removed condition of Cheque Payment method Suggested by Ashish and Rajni
-                                // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
+                                MDocType _doctype = MDocType.Get(ct, _OrdPaySchdule.GetC_DocType_ID());
+                                if (_doctype.Get_ID() <= 0)
+                                {
+                                    C_Doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocTypeTarget_ID FROM C_Order
+                                    WHERE C_Order_ID = " + _OrdPaySchdule.GetC_Order_ID()));
+                                    _doctype = MDocType.Get(ct, C_Doctype_ID);
+                                }
+
                                 if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)))
                                 {
 
@@ -6175,11 +6179,11 @@ namespace VA009.Models
                                                   VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() +
                                                   " AND C_BPartner_ID=" + PaymentData[i].C_BPartner_ID);
                                     //VIS0045 : check Batch line created with selected BP Location
-                                    if ("API".Equals(_doctype.GetDocBaseType()) || "APC".Equals(_doctype.GetDocBaseType()))
+                                    if ("POO".Equals(_doctype.GetDocBaseType()))
                                     {
                                         _sql.Append(" AND NVL(VA009_PaymentLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
                                     }
-                                    else if ("ARI".Equals(_doctype.GetDocBaseType()) || "ARC".Equals(_doctype.GetDocBaseType()))
+                                    else if ("SOO".Equals(_doctype.GetDocBaseType()))
                                     {
                                         _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
                                     }
