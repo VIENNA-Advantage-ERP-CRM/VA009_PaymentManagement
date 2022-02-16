@@ -120,7 +120,10 @@ namespace ViennaAdvantage.Process
             schedule.SetAD_Org_ID(order.GetAD_Org_ID());
             schedule.SetC_Order_ID(order.GetC_Order_ID());
             schedule.SetC_PaymentTerm_ID(order.GetC_PaymentTerm_ID());
-
+            if (schedule.Get_ColumnIndex("C_DocType_ID") >= 0)
+            {
+                schedule.SetC_DocType_ID(order.GetC_DocType_ID());
+            }
             schedule.SetVA009_PaymentMethod_ID(order.GetVA009_PaymentMethod_ID());
 
             //schedule.SetDueDate(GetDueDate(order));           
