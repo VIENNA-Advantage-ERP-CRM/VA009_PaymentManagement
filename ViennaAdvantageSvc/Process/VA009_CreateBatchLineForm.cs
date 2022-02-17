@@ -323,7 +323,7 @@ namespace ViennaAdvantage.Process
                             else if ("ARI" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
                                      "ARC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
                             {
-                                line.SetVA009_ReceiptLocation_ID(Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BPartner_Location_ID"]));
+                                line.SetVA009_ReceiptLocation_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
                             }
                             if (_trigger == true)
                             {
