@@ -433,17 +433,33 @@ namespace VA009.Models
             //Rakesh(VA228):Get convertiontype,discount amount done on date 17/Sep/2021
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             StringBuilder sql = new StringBuilder();
-            sql.Append(@"SELECT inv.C_DocType_ID, pm.VA009_PaymentMode,pm.VA009_PaymentMethod_ID,cb.c_Bpartner_id, inv.DocumentNo, cb.name AS C_Bpartner,cs.C_Invoice_ID,
-                         cs.C_InvoicePaySchedule_ID,inv.C_Currency_ID,cc.ISO_CODE, ");
+            sql.Append(@"SELECT inv.C_DocType_ID, pm.VA009_PaymentMode,pm.VA009_PaymentMethod_ID,cb.c_Bpartner_id, 
+                                inv.DocumentNo, cb.name AS C_Bpartner,cs.C_Invoice_ID,
+                                cs.C_InvoicePaySchedule_ID,inv.C_Currency_ID,cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2))    
                                WHEN (cd.DOCBASETYPE IN ('API','ARC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt, "); // -1 Because during payble dont show negative amount on UI
-            sql.Append(@" cs.DueDate , 0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID , 'Invoice' AS va009_transactiontype, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate
-                        FROM C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID LEFT JOIN 
-                         C_invoice inv ON inv.C_Invoice_ID=cs.C_invoice_ID LEFT JOIN C_BPartner cb ON cb.c_bpartner_id=inv.c_bpartner_id INNER JOIN 
-                         C_Currency cc ON inv.C_Currency_ID=cc.C_Currency_ID INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID =cs.AD_Client_ID 
-                         INNER JOIN C_acctschema ac ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID LEFT JOIN c_conversion_rate ccr ON ccr.C_Currency_ID=
-                         ac.C_Currency_ID INNER JOIN C_Currency cy ON ac.C_Currency_ID=cy.C_Currency_ID INNER JOIN C_Doctype cd ON cs.C_Doctype_ID=
-                         cd.C_Doctype_ID WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID() + " AND cs.C_InvoicePaySchedule_ID IN (" + InvPayids + ")");
+            /* VIS0045 : Date - 15-Feb-2022*/
+            /* This Enhancement will create Batch Line with Business Partner Location*/
+            /* System will BP location where "Pay From Address" and "Remit To Address" is True*/
+            sql.Append(@" CASE WHEN (bpLoc.IsPayFrom = 'Y' AND cd.DocBaseType IN ('ARI' , 'ARC')) THEN  inv.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsRemitTo = 'Y' AND cd.DocBaseType IN ('API' , 'APC')) THEN  inv.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsPayFrom = 'N' AND cd.DocBaseType IN ('ARI' , 'ARC')) THEN  bpLoc.VA009_ReceiptLocation_ID
+                               WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('API' , 'APC')) THEN  bpLoc.VA009_PaymentLocation_ID 
+                          END AS C_BPartner_Location_ID, ");
+            sql.Append(@" cs.DueDate , 0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID , 'Invoice' AS va009_transactiontype, 
+                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate
+                        FROM C_InvoicePaySchedule cs 
+                        INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID = cs.VA009_PaymentMethod_ID 
+                        LEFT JOIN C_invoice inv ON inv.C_Invoice_ID = cs.C_invoice_ID 
+                        LEFT JOIN C_BPartner cb ON cb.c_bpartner_id = inv.c_bpartner_id 
+                        LEFT JOIN C_BPartner_Location bpLoc ON (bpLoc.C_BPartner_Location_ID = inv.C_BPartner_Location_ID)
+                        INNER JOIN C_Currency cc ON inv.C_Currency_ID = cc.C_Currency_ID 
+                        INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID = cs.AD_Client_ID 
+                        INNER JOIN C_acctschema ac ON ac.C_AcctSchema_ID = aclnt.C_AcctSchema1_ID 
+                        LEFT JOIN c_conversion_rate ccr ON ccr.C_Currency_ID = ac.C_Currency_ID
+                        INNER JOIN C_Currency cy ON ac.C_Currency_ID=cy.C_Currency_ID 
+                        INNER JOIN C_Doctype cd ON cs.C_Doctype_ID = cd.C_Doctype_ID 
+                        WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID() + " AND cs.C_InvoicePaySchedule_ID IN (" + InvPayids + ")");
 
             //string finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             //sql.Clear();
@@ -451,19 +467,36 @@ namespace VA009.Models
             sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
                           cs.DueDate,  cs.C_InvoicePaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
                           cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate");
+            sql.Append(" ,bpLoc.IsPayFrom, inv.C_BPartner_Location_ID, bpLoc.IsRemitTo, bpLoc.VA009_ReceiptLocation_ID, bpLoc.VA009_PaymentLocation_ID");
 
             sql.Append(" UNION ");
 
-            sql.Append(@"SELECT DISTINCT inv.C_DocType_ID, pm.VA009_PaymentMode,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
-                         cs.VA009_OrderPaySchedule_ID As C_InvoicePaySchedule_ID,  inv.C_Currency_ID,  cc.ISO_CODE, ");
+            sql.Append(@"SELECT DISTINCT inv.C_DocType_ID, pm.VA009_PaymentMode,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  
+                                inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
+                                cs.VA009_OrderPaySchedule_ID As C_InvoicePaySchedule_ID,  inv.C_Currency_ID,  cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('SOO')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) 
                               WHEN (cd.DOCBASETYPE IN ('POO')) THEN ROUND(cs.DUEAMT, NVL(CY.StdPrecision,2)) * 1   END AS DueAmt, "); // -1 Because during payble dont show negative amount on UI
-            sql.Append(@" cs.DueDate ,  0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID,  'Order' AS VA009_TransactionType, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate
-                        FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
-                        INNER JOIN C_Order inv ON inv.C_Order_ID=cs.C_Order_ID INNER JOIN C_Doctype cd ON inv.C_Doctype_ID= cd.C_Doctype_ID 
-                        INNER JOIN C_BPartner cb ON cb.c_bpartner_id=inv.c_bpartner_id INNER JOIN C_Currency cc ON inv.C_Currency_ID=cc.C_Currency_ID
-                        INNER JOIN AD_ClientInfo aclnt ON aclnt.AD_Client_ID =cs.AD_Client_ID INNER JOIN C_acctschema ac ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID
-                        LEFT JOIN c_conversion_rate ccr ON ccr.C_Currency_ID= ac.C_Currency_ID INNER JOIN C_Currency cy ON ac.C_Currency_ID=cy.C_Currency_ID
+            /* VIS0045 : Date - 15-Feb-2022*/
+            /* This Enhancement will create Batch Line with Business Partner Location*/
+            /* System will BP location where "Pay From Address" and "Remit To Address" is True*/
+            sql.Append(@" CASE WHEN (bpLoc.IsPayFrom = 'Y' AND cd.DocBaseType IN ('SOO')) THEN  inv.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsRemitTo = 'Y' AND cd.DocBaseType IN ('POO')) THEN  inv.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsPayFrom = 'N' AND cd.DocBaseType IN ('SOO')) THEN  bpLoc.VA009_ReceiptLocation_ID
+                               WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('POO')) THEN  bpLoc.VA009_PaymentLocation_ID 
+                          END AS C_BPartner_Location_ID, ");
+            sql.Append(@" cs.DueDate ,  0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID,  'Order' AS VA009_TransactionType, 
+                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate
+                        FROM VA009_OrderPaySchedule cs 
+                        INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
+                        INNER JOIN C_Order inv ON inv.C_Order_ID=cs.C_Order_ID 
+                        INNER JOIN C_Doctype cd ON inv.C_Doctype_ID= cd.C_Doctype_ID 
+                        INNER JOIN C_BPartner cb ON cb.c_bpartner_id=inv.c_bpartner_id 
+                        INNER JOIN C_BPartner_Location bpLoc ON (bpLoc.C_BPartner_Location_ID = inv.C_BPartner_Location_ID)
+                        INNER JOIN C_Currency cc ON inv.C_Currency_ID=cc.C_Currency_ID
+                        INNER JOIN AD_ClientInfo aclnt ON aclnt.AD_Client_ID =cs.AD_Client_ID 
+                        INNER JOIN C_acctschema ac ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID
+                        LEFT JOIN c_conversion_rate ccr ON ccr.C_Currency_ID= ac.C_Currency_ID 
+                        INNER JOIN C_Currency cy ON ac.C_Currency_ID=cy.C_Currency_ID
                         WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID() + " AND cs.VA009_OrderPaySchedule_ID IN (" + OrderPayids + ")");
 
             //finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
@@ -472,7 +505,9 @@ namespace VA009.Models
 
             sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_Order_ID,
                           cs.DueDate,  cs.VA009_OrderPaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
-                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate ORDER BY C_Bpartner");           // Order By Business Partner name not on ID
+                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate ");           // Order By Business Partner name not on ID
+            sql.Append(@" ,bpLoc.IsPayFrom, inv.C_BPartner_Location_ID, bpLoc.IsRemitTo, bpLoc.VA009_ReceiptLocation_ID,
+                           bpLoc.VA009_PaymentLocation_ID ORDER BY C_Bpartner");
 
             DataSet ds = DB.ExecuteDataset(sql.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -481,6 +516,7 @@ namespace VA009.Models
                 {
                     PaymentData _payData = new PaymentData();
                     _payData.C_BPartner_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
+                    _payData.C_BPartner_Location_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]);
                     _payData.C_Bpartner = Util.GetValueOfString(ds.Tables[0].Rows[i]["C_Bpartner"]);
                     _payData.C_Invoice_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]);
                     _payData.C_InvoicePaySchedule_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]);
@@ -3040,6 +3076,7 @@ namespace VA009.Models
                 {
                     PaymentData _payData = new PaymentData();
                     _payData.C_BPartner_ID = PaymentData[i].C_BPartner_ID;
+                    _payData.C_BPartner_Location_ID = PaymentData[i].C_BPartner_Location_ID;
                     _payData.C_Bpartner = PaymentData[i].C_Bpartner;
                     _payData.C_Invoice_ID = PaymentData[i].C_Invoice_ID;
                     _payData.C_InvoicePaySchedule_ID = PaymentData[i].C_InvoicePaySchedule_ID;
@@ -5186,6 +5223,20 @@ namespace VA009.Models
         }
 
         /// <summary>
+        /// Generate Batch Lines
+        /// </summary>
+        /// <param name="ct">Context</param>
+        /// <param name="PaymentData">Payment Data</param>
+        /// <param name="_Bt">MVA009Batch Object</param>
+        /// <param name="trx">Transaction</param>
+        /// <writer>VIS_0045</writer>
+        /// <returns>Batch Line ID</returns>
+        public int GenerateBatchLine(Ctx ct, GeneratePaymt PaymentData, MVA009Batch _Bt, Trx trx)
+        {
+            return GenerateBatchLine(ct, PaymentData, _Bt, trx, null);
+        }
+
+        /// <summary>
         /// added by Manjot 19/Feb/2019
         /// Generate Batch Lines
         /// </summary>
@@ -5194,11 +5245,23 @@ namespace VA009.Models
         /// <param name="_Bt">MVA009Batch Object</param>
         /// <param name="trx">Transaction</param>
         /// <returns>VA009_BatchLine_ID</returns>
-        public int GenerateBatchLine(Ctx ct, GeneratePaymt PaymentData, MVA009Batch _Bt, Trx trx)
+        public int GenerateBatchLine(Ctx ct, GeneratePaymt PaymentData, MVA009Batch _Bt, Trx trx, String DocumentBaseType)
         {
             MVA009BatchLines _BtLines = new MVA009BatchLines(ct, 0, trx);
             _BtLines.SetVA009_Batch_ID(_Bt.GetVA009_Batch_ID());
             _BtLines.SetC_BPartner_ID(PaymentData.C_BPartner_ID);
+            // Set BP Location 
+            if (!String.IsNullOrEmpty(DocumentBaseType))
+            {
+                if ("API".Equals(DocumentBaseType) || "APC".Equals(DocumentBaseType) || "POO".Equals(DocumentBaseType))
+                {
+                    _BtLines.SetVA009_PaymentLocation_ID(PaymentData.C_BPartner_Location_ID);
+                }
+                else if ("ARI".Equals(DocumentBaseType) || "ARC".Equals(DocumentBaseType) || "SOO".Equals(DocumentBaseType))
+                {
+                    _BtLines.SetVA009_ReceiptLocation_ID(PaymentData.C_BPartner_Location_ID);
+                }
+            }
             #region to set bank account of business partner and name on batch line
             if (PaymentData.C_BPartner_ID > 0)
             {
@@ -5927,6 +5990,8 @@ namespace VA009.Models
             int batchid = 0; MVA009Batch _Bt = null;
             decimal convertedAmount = 0;
             String _TransactionType = String.Empty; //Arpit
+            StringBuilder _sql = new StringBuilder();
+            int C_Doctype_ID = 0;
             try
             {
                 if (PaymentData.Length > 0)
@@ -6004,8 +6069,6 @@ namespace VA009.Models
                         }
                         #endregion
 
-
-
                         #region Create Batch Lines and Details
                         if (batchid > 0)
                         {
@@ -6017,14 +6080,25 @@ namespace VA009.Models
                                 // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
                                 if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)))
                                 {
-
                                     #region BatchLine and Batch Line Details
-                                    int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"select VA009_BatchLines_ID from VA009_BatchLines where 
-                                    VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, trx));
+                                    _sql.Clear();
+                                    _sql.Append(@"SELECT VA009_BatchLines_ID FROM VA009_BatchLines WHERE 
+                                                  VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() +
+                                                  " AND C_BPartner_ID=" + PaymentData[i].C_BPartner_ID);
+                                    //VIS0045 : check Batch line created with selected BP Location
+                                    if ("API".Equals(_doctype.GetDocBaseType()) || "APC".Equals(_doctype.GetDocBaseType()))
+                                    {
+                                        _sql.Append(" AND NVL(VA009_PaymentLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
+                                    }
+                                    else if ("ARI".Equals(_doctype.GetDocBaseType()) || "ARC".Equals(_doctype.GetDocBaseType()))
+                                    {
+                                        _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
+                                    }
+                                    int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(_sql.ToString(), null, trx));
 
                                     if (Batchline_ID == 0)
                                     {
-                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, _doctype.GetDocBaseType());
                                         if (Batchline_ID == 0)
                                         {
                                             trx.Rollback();
@@ -6055,7 +6129,7 @@ namespace VA009.Models
                                 else
                                 {
                                     BpList.Add(PaymentData[i].C_BPartner_ID);
-                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, _doctype.GetDocBaseType());
                                     if (Batchline_ID == 0)
                                     {
                                         trx.Rollback();
@@ -6084,22 +6158,40 @@ namespace VA009.Models
                                     }
                                 }
                             }
+
                             if (_TransactionType.Equals("Order"))
                             {
                                 MVA009OrderPaySchedule _OrdPaySchdule = new MVA009OrderPaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
-                                MDocType _doctype = new MDocType(ct, _OrdPaySchdule.GetC_DocType_ID(), trx);
-                                //removed condition of Cheque Payment method Suggested by Ashish and Rajni
-                                // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
+                                MDocType _doctype = MDocType.Get(ct, _OrdPaySchdule.GetC_DocType_ID());
+                                if (_doctype.Get_ID() <= 0)
+                                {
+                                    C_Doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_DocTypeTarget_ID FROM C_Order
+                                    WHERE C_Order_ID = " + _OrdPaySchdule.GetC_Order_ID()));
+                                    _doctype = MDocType.Get(ct, C_Doctype_ID);
+                                }
+
                                 if (BpList.Contains(PaymentData[i].C_BPartner_ID) && (PaymentMethodIDS.Contains(paymentmethdoID)))
                                 {
 
                                     #region BatchLine and Batch Line Details
-                                    int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"select VA009_BatchLines_ID from VA009_BatchLines where 
-                                     VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() + " and C_BPartner_ID=" + PaymentData[i].C_BPartner_ID, null, trx));
+                                    _sql.Clear();
+                                    _sql.Append(@"SELECT VA009_BatchLines_ID FROM VA009_BatchLines WHERE 
+                                                  VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() +
+                                                  " AND C_BPartner_ID=" + PaymentData[i].C_BPartner_ID);
+                                    //VIS0045 : check Batch line created with selected BP Location
+                                    if ("POO".Equals(_doctype.GetDocBaseType()))
+                                    {
+                                        _sql.Append(" AND NVL(VA009_PaymentLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
+                                    }
+                                    else if ("SOO".Equals(_doctype.GetDocBaseType()))
+                                    {
+                                        _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
+                                    }
+                                    int Batchline_ID = Util.GetValueOfInt(DB.ExecuteScalar(_sql.ToString(), null, trx));
 
                                     if (Batchline_ID == 0)
                                     {
-                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, _doctype.GetDocBaseType());
                                         if (Batchline_ID == 0)
                                         {
                                             trx.Rollback();
@@ -6131,7 +6223,7 @@ namespace VA009.Models
                                 {
                                     #region BatchLine AND Batch Line Details
                                     BpList.Add(PaymentData[i].C_BPartner_ID);
-                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx);
+                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, _doctype.GetDocBaseType());
                                     if (Batchline_ID == 0)
                                     {
                                         trx.Rollback();
@@ -6462,6 +6554,7 @@ public class PaymentResponse
 public class PaymentData
 {
     public int C_BPartner_ID { get; set; }
+    public int C_BPartner_Location_ID { get; set; }
     public int C_BP_Group_ID { get; set; }
     public int C_InvoicePaySchedule_ID { get; set; }
     public int C_Currency_ID { get; set; }
@@ -6537,6 +6630,7 @@ public class CashBook
 public class GeneratePaymt
 {
     public int C_BPartner_ID { get; set; }
+    public int C_BPartner_Location_ID { get; set; }
     public string Description { get; set; }
     public int C_Invoice_ID { get; set; }
     public string ValidMonths { get; set; }

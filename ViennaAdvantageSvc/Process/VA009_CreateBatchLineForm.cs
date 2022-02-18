@@ -144,10 +144,16 @@ namespace ViennaAdvantage.Process
                 _sql.Clear();
                 _sql.Append(@"Select cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, cp.duedate, 
                               cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, C_BP_BankAccount_ID
-                             ,CI.C_ConversionType_ID,BP.VA009_BPMandate_id
-                              From C_Invoice CI inner join C_InvoicePaySchedule CP ON CI.c_invoice_id= CP.c_invoice_id
+                             ,CI.C_ConversionType_ID,BP.VA009_BPMandate_id, 
+                              CASE WHEN (bpLoc.IsPayFrom = 'Y' AND doc.DocBaseType IN ('ARI' , 'ARC')) THEN  CI.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsRemitTo = 'Y' AND doc.DocBaseType IN ('API' , 'APC')) THEN  CI.C_BPartner_Location_ID
+                               WHEN (bpLoc.IsPayFrom = 'N' AND doc.DocBaseType IN ('ARI' , 'ARC')) THEN  bpLoc.VA009_ReceiptLocation_ID
+                               WHEN (bpLoc.IsRemitTo = 'N' AND doc.DocBaseType IN ('API' , 'APC')) THEN  bpLoc.VA009_PaymentLocation_ID 
+                              END AS C_BPartner_Location_ID 
+                              From C_Invoice CI INNER JOIN C_InvoicePaySchedule CP ON CI.c_invoice_id= CP.c_invoice_id
                               INNER JOIN C_DocType doc ON doc.C_DocType_ID = CI.C_DocType_ID  
                               INNER JOIN C_BPartner BP ON BP.C_Bpartner_ID=CI.C_Bpartner_ID
+                              INNER JOIN C_BPartner_Location bpLoc ON (bpLoc.C_BPartner_Location_ID = CI.C_BPartner_Location_ID)
                               WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND cp.IsHoldPayment!='Y' 
                               AND CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus NOT IN ( 'Y','J') AND CI.AD_Client_ID = " + _AD_Client_ID + " AND CI.AD_Org_ID = " + _AD_Org_ID);
 
@@ -245,6 +251,17 @@ namespace ViennaAdvantage.Process
                             {
                                 _sql.Append(" AND NVL(C_BP_BankAccount_ID, 0) = " + Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
                             }
+                            // BP Location
+                            if ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                               "APC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                            {
+                                _sql.Append(" AND NVL(VA009_PaymentLocation_ID, 0) = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                            }
+                            else if ("ARI" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                                     "ARC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                            {
+                                _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                            }
                             DataSet dsBatchLine = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
                             if (dsBatchLine != null && dsBatchLine.Tables[0].Rows.Count > 0)
                             {
@@ -297,6 +314,17 @@ namespace ViennaAdvantage.Process
                             }
                             #endregion
                             line.SetC_BPartner_ID(_BPartner);
+                            // Set BP Location 
+                            if ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                                "APC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                            {
+                                line.SetVA009_PaymentLocation_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                            }
+                            else if ("ARI" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                                     "ARC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                            {
+                                line.SetVA009_ReceiptLocation_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                            }
                             if (_trigger == true)
                             {
                                 //Rakesh(VA228):Removed dataset direct fetch from main ds

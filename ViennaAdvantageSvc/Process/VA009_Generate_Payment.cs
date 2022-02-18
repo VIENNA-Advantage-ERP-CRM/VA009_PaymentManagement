@@ -172,7 +172,9 @@ namespace ViennaAdvantage.Process
                     sql.Append(@"SELECT T.C_ConversionType_ID,
                                T.c_bankaccount_id, 
                                T.c_bpartner_id,
-                               T.C_BPartner_Location_ID, 
+                               CASE WHEN NVL(T.C_BPartner_Location_ID, 0) != 0 THEN T.C_BPartner_Location_ID 
+                                    ELSE T.DocBPLocation
+                               END AS C_BPartner_Location_ID, 
                                T.c_currency_id, 
                                T.c_invoice_id,
                                T.C_order_ID,  
@@ -202,7 +204,10 @@ namespace ViennaAdvantage.Process
                     sql.Append(@"SELECT bld.C_ConversionType_ID,
                                b.c_bankaccount_id, 
                                bl.c_bpartner_id, 
-                               inv.C_BPartner_Location_ID, 
+                               inv.C_BPartner_Location_ID AS DocBPLocation, 
+                               CASE WHEN (doc.DocBaseType IN ('ARI' , 'ARC')) THEN  bl.VA009_ReceiptLocation_ID
+                                    WHEN (doc.DocBaseType IN ('API' , 'APC')) THEN  bl.VA009_PaymentLocation_ID 
+                               END AS C_BPartner_Location_ID, 
                                bld.c_currency_id, 
                                bld.c_invoice_id,
                                NULL AS C_order_ID,  
@@ -244,7 +249,10 @@ namespace ViennaAdvantage.Process
                     //Added by Arpit TO Create Payment against Order as well as Invoice on 14the Dec,2016
                     sql.Append(@" UNION SELECT bld.C_ConversionType_ID,b.c_bankaccount_id, 
                                bl.c_bpartner_id, 
-                               odr.C_BPartner_Location_ID, 
+                               odr.C_BPartner_Location_ID AS DocBPLocation, 
+                               CASE WHEN (doc.DocBaseType IN ('SOO')) THEN  bl.VA009_ReceiptLocation_ID
+                                    WHEN (doc.DocBaseType IN ('POO')) THEN  bl.VA009_PaymentLocation_ID 
+                               END AS C_BPartner_Location_ID, 
                                bld.c_currency_id, 
                                NULL AS C_Invoice_ID,
                                bld.C_order_ID,  
