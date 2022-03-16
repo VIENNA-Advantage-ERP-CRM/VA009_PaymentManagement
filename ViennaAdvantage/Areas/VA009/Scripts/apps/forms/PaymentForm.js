@@ -632,13 +632,11 @@
             });
 
             $cashicon.on("click", function (e) {
+                //VA230:Select either Invoice or Order schedule only
                 if (SlctdPaymentIds.length > 0 && SlctdOrderPaymentIds.length > 0) {
-                    VIS.ADialog.info("VA009_AdvPaymentCantTaken");
+                    VIS.ADialog.info("VA009_SelectEitherInvoiceOrOrderSchedule");
                 }
-                else if (SlctdOrderPaymentIds.length > 0) {
-                    VIS.ADialog.info("VA009_AdvPaymentCantTaken");
-                }
-                else if (SlctdPaymentIds.length > 0) {
+                else if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
                     //Cash Journal(CMC)
                     _TargetBaseType = 3;
                     _loadFunctions.Cash_Dialog();
@@ -4063,7 +4061,7 @@
                 CashDialog.setHeight(window.innerHeight - 120);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
-                if (SlctdPaymentIds.toString() != "") {
+                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
                     var cash = null;
                     //if (cash.tables[0].rows.length == 0) {
                     if (cash == null) {
@@ -4135,7 +4133,11 @@
                 };
 
                 function CashGrid_Layout() {
-
+                    var hideColumn = false;
+                    //VA230:If order selected then hide columns Received Amount/OverUnder/Writeoff/Discount
+                    if (SlctdOrderPaymentIds.length > 0 && SlctdPaymentIds.length == 0) {
+                        hideColumn = true;
+                    }
                     var _Cash_Columns = [];
                     if (_Cash_Columns.length == 0) {
                         _Cash_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '15%' });
@@ -4154,7 +4156,7 @@
                             }
                         });
                         _Cash_Columns.push({
-                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', render: function (record, index, col_index) {
+                            field: "VA009_RecivedAmt", caption: VIS.Msg.getMsg("VA009_ReceivedAmt"), sortable: true, size: '12%', style: 'text-align: right', hidden: hideColumn, render: function (record, index, col_index) {
                                 var val = record["VA009_RecivedAmt"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
@@ -4162,20 +4164,20 @@
                         });
                         //changeby amit
                         _Cash_Columns.push({
-                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
+                            field: "OverUnder", caption: VIS.Msg.getMsg("VA009_OverUnder"), sortable: true, size: '9%', style: 'text-align: right', hidden: hideColumn, render: function (record, index, col_index) {
                                 var val = record["OverUnder"];
                                 return parseFloat(val).toLocaleString();
                             }
                         });
                         _Cash_Columns.push({
-                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
+                            field: "Writeoff", caption: VIS.Msg.getMsg("VA009_Writeoff"), sortable: true, size: '9%', style: 'text-align: right', hidden: hideColumn, render: function (record, index, col_index) {
                                 var val = record["Writeoff"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
                             }, editable: { type: 'number' }
                         });
                         _Cash_Columns.push({
-                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', style: 'text-align: right', render: function (record, index, col_index) {
+                            field: "Discount", caption: VIS.Msg.getMsg("VA009_Discount"), sortable: true, size: '9%', style: 'text-align: right', hidden: hideColumn, render: function (record, index, col_index) {
                                 var val = record["Discount"];
                                 val = checkcommaordot(event, val, val);
                                 return parseFloat(val).toLocaleString();
@@ -4368,7 +4370,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no) }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                         success: function (result) {
                             callback(result);
                         },
@@ -4407,11 +4409,16 @@
                         line["Writeoff"] = "0";
                         line["Discount"] = "0";
                         line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+                        //VA230:Set TransactionType
+                        line["TransactionType"] = rslt[i].TransactionType;
                         //end
                         popupgrddata.push(line);
                     }
                     if (rslt[0].ERROR == "ConversionNotFound") {
                         VIS.ADialog.info(("VA009_ConversionNotFound"));
+                    }
+                    else if (rslt[0].ERROR == "VA009_DocTypeNotFound") {
+                        VIS.ADialog.info(("VA009_DocTypeNotFound"));
                     }
                     w2utils.encodeTags(popupgrddata);
                     Cashgrd.add(popupgrddata);
@@ -4775,6 +4782,8 @@
                                             _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
                                             //Rakesh(VA228):Set Document Type (13/Sep/2021)
                                             _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
+                                            //VA230:Set TransactionType
+                                            _data["TransactionType"] = Cashgrd.get(Cashgrd.getSelection()[i])['TransactionType'];
                                             _CollaborateData.push(_data);
                                         }
                                     }
