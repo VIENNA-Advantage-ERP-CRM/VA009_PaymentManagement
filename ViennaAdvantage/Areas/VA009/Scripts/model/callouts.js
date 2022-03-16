@@ -1388,7 +1388,7 @@
         var OrderPaySchedule_ID = 0;
         var data = null;
         try {
-            data = VIS.dataContext.getJSONRecord("CashJournal/GetOrderPaySchedDetail", C_Order_ID.toString());
+            data = VIS.dataContext.getJSONRecord("VA009/CashJournal/GetOrderPaySchedDetail", C_Order_ID.toString());
             if (data != null) {
                 OrderPaySchedule_ID = Util.getValueOfInt(data["VA009_OrderPaySchedule_ID"]);
                 mTab.setValue("VA009_OrderPaySchedule_ID", OrderPaySchedule_ID);
@@ -1420,7 +1420,8 @@
             if (data != null) {
                 data = null;
             }
-            this.log.log(Level.SEVERE, "CalloutCashJournal.GetOrderPaySchedule -" + C_Order_ID, err.message);
+            this.log.log(Level.SEVERE, "VA009_CalloutCashJournal.GetOrderPaySchedule -" + C_Order_ID, err.message);
+            this.setCalloutActive(false);
             return err.toString();
         }
         if (C_Order_ID == null || C_Order_ID == 0) {
@@ -1455,7 +1456,7 @@
         this.setCalloutActive(true);
 
         if (Util.getValueOfInt(mTab.getValue("VA009_OrderPaySchedule_ID")) > 0) {
-            var Amount = Util.getValueOfDecimal(VIS.dataContext.getJSONRecord("CashJournal/GetPaySheduleAmt", mTab.getValue("VA009_OrderPaySchedule_ID").toString()));
+            var Amount = Util.getValueOfDecimal(VIS.dataContext.getJSONRecord("VA009/CashJournal/GetPaySheduleAmt", mTab.getValue("VA009_OrderPaySchedule_ID").toString()));
             ctx.setContext(windowNo, "InvTotalAmt", Amount.toString());
             //Get IsSOTrx type from context
             var isSOTrx = "Y" == ctx.getContext(windowNo, "VA009_IsSOTrx");
@@ -1467,6 +1468,7 @@
             return "";
         }
         else {
+            this.setCalloutActive(false);
             return "";
         }
         this.setCalloutActive(false);
