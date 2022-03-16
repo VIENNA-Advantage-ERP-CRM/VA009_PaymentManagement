@@ -1343,5 +1343,140 @@
     VA009.Model = VA009.Model || {};
     VA009.Model.VA009_CalloutPaymentTerm = VA009_CalloutPaymentTerm;
 
+    function VA009_CalloutCashJournal() {
+        VIS.CalloutEngine.call(this, "VA009.VA009_CalloutCashJournal"); // must call base class (CalloutEngine)
+    };
+    VIS.Utility.inheritPrototype(VA009_CalloutCashJournal, VIS.CalloutEngine);//must inheirt Base class CalloutEngine
+
+    /// <summary>
+    ///  Cash Journal Line Order. when Order selected - set C_Currency,Amount
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <param name="windowNo"></param>
+    /// <param name="mTab"></param>
+    /// <param name="mField"></param>
+    /// <param name="value"></param>
+    /// <returns></returns>
+    VA009_CalloutCashJournal.prototype.GetOrderPaySchedule = function (ctx, windowNo, mTab, mField, value, oldValue) {
+        //  
+        if (this.isCalloutActive()) // assuming it is resetting value
+        {
+            return "";
+        }
+        if (value == null || value.toString() == "") {
+            /*Clear references and amounts when we clear invoice*/
+            if (mField.getColumnName() == "C_Order_ID") {
+                this.setCalloutActive(true);
+                mTab.setValue("C_BPartner_ID", null);
+                mTab.setValue("C_BPartner_Location_ID", null);
+                mTab.setValue("VA009_OrderPaySchedule_ID", null);
+
+                mTab.setValue("ConvertedAmt", VIS.Env.ZERO);
+                mTab.setValue("Amount", VIS.Env.ZERO);
+                mTab.setValue("DiscountAmt", VIS.Env.ZERO);
+                mTab.setValue("WriteOffAmt", VIS.Env.ZERO);
+                mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
+                this.setCalloutActive(false);
+            }
+            return "";
+        }
+        this.setCalloutActive(true);
+
+        var C_Order_ID = Util.getValueOfInt(value);
+
+        var dueAmount = 0;
+        var OrderPaySchedule_ID = 0;
+        var data = null;
+        try {
+            data = VIS.dataContext.getJSONRecord("VA009/CashJournal/GetOrderPaySchedDetail", C_Order_ID.toString());
+            if (data != null) {
+                OrderPaySchedule_ID = Util.getValueOfInt(data["VA009_OrderPaySchedule_ID"]);
+                mTab.setValue("VA009_OrderPaySchedule_ID", OrderPaySchedule_ID);
+                mTab.setValue("C_BPartner_ID", Util.getValueOfInt(data["C_BPartner_ID"]));
+                mTab.setValue("C_Currency_ID", Util.getValueOfInt(data["C_Currency_ID"]));
+                mTab.setValue("C_ConversionType_ID", Util.getValueOfInt(data["C_ConversionType_ID"]));
+                mTab.setValue("C_BPartner_Location_ID", Util.getValueOfInt(data["C_BPartner_Location_ID"]));
+                dueAmount = Util.getValueOfDecimal(data["DueAmount"]);
+
+                //Set IsSOTrx type in context
+                ctx.setContext(windowNo, "VA009_IsSOTrx", data["IsSOTrx"]);
+                var isSOTrx = "Y" == data["IsSOTrx"];
+                if (!isSOTrx) {
+                    dueAmount = (dueAmount) * (-1);
+                }
+                var docbaseType = Util.getValueOfString(data["DocBaseType"]);
+                if (docbaseType == "SOO") {
+                    mTab.setValue("VSS_PAYMENTTYPE", "R");
+                }
+                else {
+                    mTab.setValue("VSS_PAYMENTTYPE", "P");
+                }
+                mTab.setValue("Amount", dueAmount);
+                mTab.setValue("DiscountAmt", VIS.Env.ZERO);
+                mTab.setValue("WriteOffAmt", VIS.Env.ZERO);
+            }
+        }
+        catch (err) {
+            if (data != null) {
+                data = null;
+            }
+            this.log.log(Level.SEVERE, "VA009_CalloutCashJournal.GetOrderPaySchedule -" + C_Order_ID, err.message);
+            this.setCalloutActive(false);
+            return err.toString();
+        }
+        if (C_Order_ID == null || C_Order_ID == 0) {
+            mTab.setValue("C_Currency_ID", null);
+            this.setCalloutActive(false);
+            return "";
+        }
+        this.setCalloutActive(false);
+        ctx = windowNo = mTab = mField = value = oldValue = null;
+        return "";
+    };
+
+    /// <summary>
+    /// Order Pay Schedule
+    /// When Order Pay Schedule Selected
+    /// The Amount Corresponding to that pay Schedule
+    /// filled in Amount
+    /// </summary>
+    /// <param name="ctx"></param>
+    /// <param name="WindowNo"></param>
+    /// <param name="mTab"></param>
+    /// <param name="mField"></param>
+    /// <param name="value"></param>
+    /// <returns>Amount</returns>
+    VA009_CalloutCashJournal.prototype.SetAmount = function (ctx, windowNo, mTab, mField, value, oldValue) {
+        if (this.isCalloutActive()) {
+            return "";
+        }
+        if (value == null || value.toString() == "") {
+            return "";
+        }
+        this.setCalloutActive(true);
+
+        if (Util.getValueOfInt(mTab.getValue("VA009_OrderPaySchedule_ID")) > 0) {
+            var Amount = Util.getValueOfDecimal(VIS.dataContext.getJSONRecord("VA009/CashJournal/GetPaySheduleAmt", mTab.getValue("VA009_OrderPaySchedule_ID").toString()));
+            ctx.setContext(windowNo, "InvTotalAmt", Amount.toString());
+            //Get IsSOTrx type from context
+            var isSOTrx = "Y" == ctx.getContext(windowNo, "VA009_IsSOTrx");
+            if (!isSOTrx) {
+                Amount = (Amount) * (-1);
+            }
+            mTab.setValue("Amount", Amount);
+            this.setCalloutActive(false);
+            return "";
+        }
+        else {
+            this.setCalloutActive(false);
+            return "";
+        }
+        this.setCalloutActive(false);
+        return "";
+    }
+
+    VA009.Model = VA009.Model || {};
+    VA009.Model.VA009_CalloutCashJournal = VA009_CalloutCashJournal;
+
     /* Sample END */
 })(VA009, jQuery);
