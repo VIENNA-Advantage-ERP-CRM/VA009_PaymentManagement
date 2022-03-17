@@ -1742,9 +1742,9 @@ namespace VA009.Models
                         //_Cash.SetName(DateTime.Now.ToShortDateString());
                         //set Name as TransactionDate 
                         _Cash.SetName(PaymentData[0].DateTrx.Value.ToShortDateString());
-                        _Cash.SetDateAcct(PaymentData[0].DateAcct);
                         // to set Transaction date 
                         _Cash.SetStatementDate(PaymentData[0].DateTrx);
+                        _Cash.SetDateAcct(PaymentData[0].DateAcct);
                         //_Cash.SetStatementDate(DateTime.Now.ToLocalTime());
                         _Cash.SetBeginningBalance(BeginningBalance);
                         if (!_Cash.Save())
