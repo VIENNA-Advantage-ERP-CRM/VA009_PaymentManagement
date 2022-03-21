@@ -6175,8 +6175,8 @@ namespace VA009.Models
                             _Bt.Set_Value("C_ConversionType_ID", PaymentData[0].CurrencyType);
                             // _Bt.SetProcessed(true);
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
-                            //Rakesh(VA228):Set account date
-                            _Bt.SetDateAcct(DateTime.Now);
+                            //VA230:Set account date
+                            _Bt.SetDateAcct(PaymentData[0].DateAcct);
                             if (isconsolidate == "Y")
                             {
                                 _Bt.SetVA009_Consolidate(true);
