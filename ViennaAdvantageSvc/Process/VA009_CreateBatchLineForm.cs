@@ -45,6 +45,7 @@ namespace ViennaAdvantage.Process
         int C_Currency_ID = 0;
         int _AD_Client_ID = 0, _AD_Org_ID = 0, _Bank_Currency_ID = 0;
         string _baseType = null;
+        DateTime? _AccountDate = null;
         //int _VA009_BatchDetail_ID = 0;
 
         protected override void Prepare()
@@ -109,6 +110,10 @@ namespace ViennaAdvantage.Process
                 else if (name.Equals("C_Currency_ID"))
                 {
                     C_Currency_ID = para[i].GetParameterAsInt();
+                }
+                else if (name.Equals("DateAcct"))
+                {
+                    _AccountDate = Util.GetValueOfDateTime(para[i].GetParameter());
                 }
                 else
                 {
@@ -541,7 +546,8 @@ namespace ViennaAdvantage.Process
             batch.SetVA009_PaymentRule(paym.GetVA009_PaymentRule());
             batch.SetVA009_PaymentTrigger(paym.GetVA009_PaymentTrigger());
             batch.SetVA009_DocumentDate(DateTime.Now);
-            batch.SetDateAcct(DateTime.Now);
+            //VA230:Set Account from selected report parameter
+            batch.SetDateAcct(_AccountDate == null ? DateTime.Now : _AccountDate);
             //set value of cosnolidate parameter on batch header
             batch.SetVA009_Consolidate(isConsolidate);
             if (!batch.Save())
