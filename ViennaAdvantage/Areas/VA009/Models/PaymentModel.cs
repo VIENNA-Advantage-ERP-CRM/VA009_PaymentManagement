@@ -1612,7 +1612,82 @@ namespace VA009.Models
             }
             return ex;
         }
+        /// <summary>
+        /// Get Query to fetch DocBaseType of selected InvoicePaySchedule or Order
+        /// Author:VA230
+        /// </summary>
+        /// <param name="PaymentData">payment data list</param>
+        /// <param name="whereCondition">where condition</param>
+        /// <returns>Order Pay Schedule Dataset Query</returns>
+        public static string GetOrderOrInvoiceDocBaseTypeQuery(GeneratePaymt[] PaymentData, out List<int> ids, out string whereCondition)
+        {
+            StringBuilder query = new StringBuilder();
+            //VA230:Get DocType dataset based on Order or InvoicePaySchedule ids
+            int orderCount = PaymentData.Where(x => x.TransactionType == "Order").Count();
+            if (orderCount > 0)
+            {
+                //Get distinct Order ids
+                ids = PaymentData.Select(y => y.C_Invoice_ID).Distinct().ToList();
+                query.Append(@"SELECT ORD.C_DocTypeTarget_ID AS C_DocType_ID,DT.DocBaseType,ORD.C_BPartner_Location_ID,ORD.C_Order_ID,0 AS C_InvoicePaySchedule_ID FROM C_Order ORD
+                            INNER JOIN C_DocType DT ON DT.C_DocType_ID=ORD.C_DocType_ID");
+                whereCondition = "ORD.C_Order_ID";
+            }
+            else
+            {
+                //Get distinct InvoicePaySchedule ids
+                ids = PaymentData.Select(y => y.C_InvoicePaySchedule_ID).Distinct().ToList();
+                //Get invoice doctype and BP LocationID query
+                query.Append(@"SELECT PS.C_DocType_ID,DT.DocBaseType,INV.C_BPartner_Location_ID,0 AS C_Order_ID,PS.C_InvoicePaySchedule_ID FROM C_InvoicePaySchedule PS
+                    INNER JOIN C_Invoice INV ON INV.C_Invoice_ID=PS.C_Invoice_ID
+                    INNER JOIN C_DocType DT ON DT.C_DocType_ID=PS.C_DocType_ID");
+                whereCondition = "PS.C_InvoicePaySchedule_ID";
+            }
+            return query.ToString();
+        }
+        /// <summary>
+        /// Get DocBaseType of selected InvoicePaySchedule or Order
+        /// Author:VA230
+        /// </summary>
+        /// <param name="ids">InvoicePaySchedule or Order ids list</param>
+        /// <returns>Order Pay Schedule Dataset</returns>
+        public static DataSet GetOrderOrInvoiceDocBaseTypeData(List<int> ids, string query, string whereId)
+        {
+            decimal totalPages = ids.Count();
+            //to fixed 999 ids per page
+            totalPages = Math.Ceiling(totalPages / 999);
 
+            StringBuilder sql = new StringBuilder();
+            sql.Append(query);
+            List<string> schedule_Ids = new List<string>();
+            //loop through each page
+            for (int i = 0; i <= totalPages - 1; i++)
+            {
+                //get comma seperated product ids max 999
+                schedule_Ids.Add(string.Join(",", ids.Select(r => r.ToString()).Skip(i * 999).Take(999)));
+            }
+            if (schedule_Ids.Count > 0)
+            {
+                //append product in sql statement use OR keyword when records are more than 999
+                for (int i = 0; i < schedule_Ids.Count; i++)
+                {
+                    if (i == 0)
+                    {
+                        sql.Append(@" AND (");
+                    }
+                    else
+                    {
+                        sql.Append(" OR ");
+                    }
+                    sql.Append(" " + whereId + @" IN (" + schedule_Ids[i] + @")");
+                    if (i == schedule_Ids.Count - 1)
+                    {
+                        sql.Append(" ) ");
+                    }
+                }
+            }
+            DataSet ds = DB.ExecuteDataset(sql.ToString());
+            return ds;
+        }
         /// <summary>
         /// Create Cash Journal Payment
         /// </summary>
@@ -1624,17 +1699,14 @@ namespace VA009.Models
         public string CreatePaymentsCash(Ctx ct, GeneratePaymt[] PaymentData, int C_CashBook_ID, decimal BeginningBalance)
         {
             Trx trx = Trx.GetTrx("Cash_" + DateTime.Now.ToString("yyMMddHHmmssff"));
-            string status = string.Empty;
+            string status = "I";
             string msg = string.Empty;
             string docno = "";
-            status = "I";
             try
             {
                 MCashBook cashbookid = new MCashBook(ct, C_CashBook_ID, null);
-                MInvoicePaySchedule _payschedule = null;
-                MDocType _doctype = null;
-                MInvoice _invoice = null;
                 int C_Cash_ID = 0;
+
                 if (PaymentData.Length > 0)
                 {
                     //Rakesh(VA228):Set Document Type id (13/Sep/2021)
@@ -1643,7 +1715,6 @@ namespace VA009.Models
                     //fetch the Cash_ID with the StatementDate not the AccountDate
                     int no = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(C_Cash_ID) FROM C_Cash WHERE IsActive = 'Y' AND DocStatus NOT IN ('CO' , 'CL', 'VO')  
                                  AND StatementDate != " + GlobalVariable.TO_DATE(PaymentData[0].DateTrx, true) + " AND C_CashBook_ID = " + C_CashBook_ID, null, null));
-                    //AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') != to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_CashBook_ID = " + C_CashBook_ID, null, null));
                     if (no > 0)
                     {
                         msg = Msg.GetMsg(ct, "VIS_CantOpenNewCashBook");
@@ -1654,7 +1725,6 @@ namespace VA009.Models
                         //fetch the Cash_ID with the StatementDate not the AccountDate
                         C_Cash_ID = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT C_Cash_ID FROM C_Cash WHERE IsActive='Y' AND DocStatus='DR' 
                                     AND StatementDate = " + GlobalVariable.TO_DATE(PaymentData[0].DateTrx, true) + " AND C_CashBook_ID = " + C_CashBook_ID, null, null));
-                        //AND to_date(TO_CHAR(DateAcct, 'dd/mm/yyyy'), 'dd/mm/yyyy') = to_date(TO_CHAR(SYSDATE, 'dd/mm/yyyy'), 'dd/mm/yyyy') AND C_Cashbook_ID=" + C_CashBook_ID + "", null, null));
                     }
 
                     MCash _Cash = null;
@@ -1672,9 +1742,9 @@ namespace VA009.Models
                         //_Cash.SetName(DateTime.Now.ToShortDateString());
                         //set Name as TransactionDate 
                         _Cash.SetName(PaymentData[0].DateTrx.Value.ToShortDateString());
-                        _Cash.SetDateAcct(PaymentData[0].DateAcct);
                         // to set Transaction date 
                         _Cash.SetStatementDate(PaymentData[0].DateTrx);
+                        _Cash.SetDateAcct(PaymentData[0].DateAcct);
                         //_Cash.SetStatementDate(DateTime.Now.ToLocalTime());
                         _Cash.SetBeginningBalance(BeginningBalance);
                         if (!_Cash.Save())
@@ -1690,16 +1760,46 @@ namespace VA009.Models
                             return msg;
                         }
                     }
+
+                    #region GetDocTypes
+                    //VA230:Get DocType dataset based on Order or InvoicePaySchedule ids
+                    DataSet _Ds = null;
+                    DataRow[] dr = null;
+                    //Get query to fetch DocBase type
+                    string query = GetOrderOrInvoiceDocBaseTypeQuery(PaymentData, out List<int> ids, out string where);
+                    //Get docbasetype data
+                    _Ds = GetOrderOrInvoiceDocBaseTypeData(ids, query, where);
+                    if (_Ds == null && _Ds.Tables.Count == 0 && _Ds.Tables[0].Rows.Count == 0)
+                    {
+                        msg = Msg.GetMsg(ct, "VA009_DocTypeNotFound");
+                        return msg;
+                    }
+
+                    #endregion
+
                     for (int i = 0; i < PaymentData.Length; i++)
                     {
-                        _payschedule = new MInvoicePaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
-                        //_doctype = new MDocType(ct, _payschedule.GetC_DocType_ID(), trx);
-                        _doctype = MDocType.Get(ct, _payschedule.GetC_DocType_ID());
-                        _invoice = new MInvoice(ct, _payschedule.GetC_Invoice_ID(), trx);
+                        //VA230:If transaction type is Order then get order doctype and BP LocationID based on OrderId
+                        if (!string.IsNullOrEmpty(PaymentData[i].TransactionType) && PaymentData[i].TransactionType.ToUpper() == "ORDER")
+                        {
+                            dr = _Ds.Tables[0].Select("C_Order_ID=" + Util.GetValueOfInt(PaymentData[i].C_Invoice_ID));
+                        }
+                        else
+                        {
+                            //Get invoice doctype and BP LocationID based on InvoicePayScheduleId
+                            dr = _Ds.Tables[0].Select("C_InvoicePaySchedule_ID=" + Util.GetValueOfInt(PaymentData[i].C_InvoicePaySchedule_ID));
+                        }
+                        if (dr == null && dr.Length == 0)
+                        {
+                            continue;
+                        }
+                        #region CashLineSave
+
                         MCashLine _cline = new MCashLine(ct, 0, trx);
                         if (PaymentData[i].PaymwentBaseType == "APP")
                         {
-                            if (_doctype.GetDocBaseType() == "API")
+                            //In case of AP Invoice and Purchase Order
+                            if (Util.GetValueOfString(dr[0]["DocBaseType"]) == "API" || Util.GetValueOfString(dr[0]["DocBaseType"]) == "POO")
                             {
                                 _cline.SetVSS_PAYMENTTYPE("P");
                                 _cline.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
@@ -1722,7 +1822,7 @@ namespace VA009.Models
                         }
                         else
                         {
-                            if (_doctype.GetDocBaseType() == "ARC")
+                            if (Util.GetValueOfString(dr[0]["DocBaseType"]) == "ARC")
                             {
                                 _cline.SetVSS_PAYMENTTYPE("P");
                                 _cline.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
@@ -1734,6 +1834,7 @@ namespace VA009.Models
                             }
                             else
                             {
+                                //Also Excute in case doctbasetype is SOO
                                 _cline.SetVSS_PAYMENTTYPE("R");
                                 _cline.SetAmount(PaymentData[i].VA009_RecivedAmt);
                                 //both Amount and ConvertedAmt must be equal in CashLine
@@ -1743,16 +1844,32 @@ namespace VA009.Models
                                 _cline.SetWriteOffAmt(PaymentData[i].Writeoff);
                             }
                         }
-                        _cline.SetCashType(status);
                         _cline.SetAD_Client_ID(PaymentData[i].AD_Client_ID);
                         _cline.SetAD_Org_ID(PaymentData[i].AD_Org_ID);
                         _cline.SetC_Cash_ID(_Cash.GetC_Cash_ID());
                         _cline.SetC_BPartner_ID(PaymentData[i].C_BPartner_ID);
                         _cline.SetDescription(Util.GetValueOfString(PaymentData[i].Description));
-                        _cline.SetC_BPartner_Location_ID(_invoice.GetC_BPartner_Location_ID());
+                        _cline.SetC_BPartner_Location_ID(Util.GetValueOfInt(dr[0]["C_BPartner_Location_ID"]));
                         _cline.SetC_Currency_ID(cashbookid.GetC_Currency_ID());
-                        _cline.SetC_InvoicePaySchedule_ID(PaymentData[i].C_InvoicePaySchedule_ID);
-                        _cline.SetC_Invoice_ID(PaymentData[i].C_Invoice_ID);
+                        //VA230:If transaction type is Order then set order and order payschedule reference else set invoice reference 
+                        if (!String.IsNullOrEmpty(PaymentData[i].TransactionType) && PaymentData[i].TransactionType.ToUpper() == "ORDER")
+                        {
+                            if (_cline.Get_ColumnIndex("VA009_OrderPaySchedule_ID") >= 0)
+                            {
+                                _cline.SetVA009_OrderPaySchedule_ID(PaymentData[i].C_InvoicePaySchedule_ID);
+                                _cline.SetC_Order_ID(PaymentData[i].C_Invoice_ID);
+                                _cline.SetIsPrepayment(true);
+                            }
+                            //Set cashtype Order
+                            status = "O";
+                        }
+                        else
+                        {
+                            _cline.SetC_InvoicePaySchedule_ID(PaymentData[i].C_InvoicePaySchedule_ID);
+                            _cline.SetC_Invoice_ID(PaymentData[i].C_Invoice_ID);
+                            status = "I";
+                        }
+                        _cline.SetCashType(status);
                         //to set ConversionType in Cash Journal Line
                         _cline.SetC_ConversionType_ID(PaymentData[i].CurrencyType);
                         //amit
@@ -1769,6 +1886,7 @@ namespace VA009.Models
                         {
                             DB.ExecuteQuery("UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus= 'J' WHERE C_InvoicePaySchedule_ID = " + PaymentData[i].C_InvoicePaySchedule_ID, null, trx);
                         }
+                        #endregion
                     }
                     docno = _Cash.GetDocumentNo();
                 }
@@ -3381,6 +3499,24 @@ namespace VA009.Models
             if (PaymentData.Length > 0)
             {
                 decimal convrtedamt = 0;
+
+                #region GetDocTypes
+                //VA230:Get DocType dataset based on Order or InvoicePaySchedule ids
+                DataSet _Ds = null;
+                DataRow[] dr = null;
+                //Get query to fetch DocBase type
+                string query = GetOrderOrInvoiceDocBaseTypeQuery(PaymentData, out List<int> ids, out string where);
+                //Get docbasetype data
+                _Ds = GetOrderOrInvoiceDocBaseTypeData(ids, query, where);
+                if (_Ds == null && _Ds.Tables.Count == 0 && _Ds.Tables[0].Rows.Count == 0)
+                {
+                    PaymentData _payData = new PaymentData();
+                    _payData.ERROR = "VA009_DocTypeNotFound";
+                    _lstChqPay.Add(_payData);
+                    return _lstChqPay;
+                }
+                #endregion
+
                 for (int i = 0; i < PaymentData.Length; i++)
                 {
                     PaymentData _payData = new PaymentData();
@@ -3395,19 +3531,31 @@ namespace VA009.Models
                     _payData.AD_Client_ID = PaymentData[i].AD_Client_ID;
                     _payData.recid = PaymentData[i].C_InvoicePaySchedule_ID;
                     _payData.VA009_PaymentMethod_ID = PaymentData[i].VA009_PaymentMethod_ID;
-                    MInvoice _inv = new MInvoice(ctx, PaymentData[i].C_Invoice_ID, null);
-                    MDocType docbasdetype = new MDocType(ctx, _inv.GetC_DocType_ID(), null);
-                    if (docbasdetype.GetDocBaseType() == "API" || docbasdetype.GetDocBaseType() == "APC")
+                    //VA230:If transaction type is Order then get order doctype and BP LocationID based on OrderId
+                    if (!string.IsNullOrEmpty(PaymentData[i].TransactionType) && PaymentData[i].TransactionType.ToUpper() == "ORDER")
+                    {
+                        dr = _Ds.Tables[0].Select("C_Order_ID=" + Util.GetValueOfInt(PaymentData[i].C_Invoice_ID));
+                    }
+                    else
+                    {
+                        //Get invoice doctype and BP LocationID based on InvoicePayScheduleId
+                        dr = _Ds.Tables[0].Select("C_InvoicePaySchedule_ID=" + Util.GetValueOfInt(PaymentData[i].C_InvoicePaySchedule_ID));
+                    }
+                    if (dr == null && dr.Length == 0)
+                    {
+                        continue;
+                    }
+                    if (Util.GetValueOfString(dr[0]["DocBaseType"]) == "API" || Util.GetValueOfString(dr[0]["DocBaseType"]) == "APC" || Util.GetValueOfString(dr[0]["DocBaseType"]) == "POO")
                     {
                         _payData.PaymwentBaseType = "APP";
                     }
-                    else if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "ARI")
+                    else if (Util.GetValueOfString(dr[0]["DocBaseType"]) == "ARC" || Util.GetValueOfString(dr[0]["DocBaseType"]) == "ARI" || Util.GetValueOfString(dr[0]["DocBaseType"]) == "SOO")
                     {
                         _payData.PaymwentBaseType = "ARR";
                     }
                     if (CurrencyCashBook > 0)
                     {
-                        if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "API")
+                        if (Util.GetValueOfString(dr[0]["DocBaseType"]) == "ARC" || Util.GetValueOfString(dr[0]["DocBaseType"]) == "API")
                         {
                             //modified according to user selected AcctDate and BankAccount Org_ID
                             //convrtedamt = -1 * MConversionRate.Convert(ctx, -1 * PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
@@ -3426,7 +3574,7 @@ namespace VA009.Models
                             _payData.ERROR = "ConversionNotFound";
                         }
                     }
-                    if (docbasdetype.GetDocBaseType() == "ARC" || docbasdetype.GetDocBaseType() == "API")
+                    if (Util.GetValueOfString(dr[0]["DocBaseType"]) == "ARC" || Util.GetValueOfString(dr[0]["DocBaseType"]) == "API")
                     {
                         if (PaymentData[i].DueAmt < 0)
                         {
@@ -3442,7 +3590,7 @@ namespace VA009.Models
                     {
                         _payData.DueAmt = PaymentData[i].DueAmt;
                     }
-
+                    _payData.TransactionType = PaymentData[i].TransactionType;
                     _lstChqPay.Add(_payData);
                 }
             }
@@ -6027,8 +6175,8 @@ namespace VA009.Models
                             _Bt.Set_Value("C_ConversionType_ID", PaymentData[0].CurrencyType);
                             // _Bt.SetProcessed(true);
                             _Bt.SetVA009_DocumentDate(DateTime.Now);
-                            //Rakesh(VA228):Set account date
-                            _Bt.SetDateAcct(DateTime.Now);
+                            //VA230:Set account date
+                            _Bt.SetDateAcct(PaymentData[0].DateAcct);
                             if (isconsolidate == "Y")
                             {
                                 _Bt.SetVA009_Consolidate(true);
