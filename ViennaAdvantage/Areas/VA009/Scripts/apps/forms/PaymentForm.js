@@ -1380,7 +1380,12 @@
                         loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         $POP_cmbBank.addClass('vis-ev-col-mandatory');
                         $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                        if ($POP_DateAcct.val()) {
+                            $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+                        }
+                        else {
+                            $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                        }
                         CHQPayGrid_Layout();
                         loadgrdPay(callbackchqPay);
                         loadCurrencyType();
@@ -2510,6 +2515,15 @@
                     });
                 });
 
+                $POP_targetDocType.on("change", function () {
+                    //to set target doc type mandatory
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) == 0) {
+                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
+                    }
+                    else {
+                        $POP_targetDocType.removeClass('vis-ev-col-mandatory');
+                    }
+                });
                 function callbackchqReload(result) {
                     chqpaygrd.clear();
                     popupgrddata = [];
@@ -2912,7 +2926,12 @@
                         loadbanks($RPOP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         $RPOP_cmbBank.addClass('vis-ev-col-mandatory');
                         $RPOP_cmbBankAccount.addClass('vis-ev-col-mandatory');
-                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                        if ($POP_DateAcct.val()) {
+                            $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+                        }
+                        else {
+                            $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                        }
                         loadgrd(callbackchqRec);
                         loadCurrencyType();
                         loadPayMthd();
@@ -3111,6 +3130,16 @@
                             VIS.ADialog.error("VA009_ErrorLoadingPayments");
                         }
                     });
+                });
+
+                $POP_targetDocType.on("change", function () {
+                    //to set target doc type mandatory
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) == 0) {
+                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
+                    }
+                    else {
+                        $POP_targetDocType.removeClass('vis-ev-col-mandatory');
+                    }
                 });
 
                 function callbackchqReload(result) {
@@ -4315,6 +4344,12 @@
 
                 //on change event for DateAcct it should convert the Amount accordingly
                 $POP_DateAcct.on("change", function () {
+                    if ($POP_DateAcct.val()) {
+                        $POP_DateAcct.removeClass('vis-ev-col-mandatory');
+                    }
+                    else {
+                        $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                    }
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
                         type: "POST",
@@ -4347,13 +4382,21 @@
                     _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
                 });
 
+                $POP_targetDocType.on("change", function () {
+                    //to set target doc type mandatory
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) == 0) {
+                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
+                    }
+                    else {
+                        $POP_targetDocType.removeClass('vis-ev-col-mandatory');
+                    }
+                });
                 function Cash_getControls() {
                     $Cash_cmbcashbk = $cash.find("#VA009_POP_Txtcashbk_" + $self.windowNo);
                     //$Cash_OpngBal = $cash.find("#VA009_POP_Txtopngbal_" + $self.windowNo);
                     CashGrid = $cash.find("#VA009_btnPopupGrid");
                     $pop_cmbCurrencyType = $cash.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_DateAcct = $cash.find("#VA009_AccountDate_" + $self.windowNo);
-                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     //Transaction Date
                     $POP_DateTrx = $cash.find("#VA009_TransactionDate" + $self.windowNo);
                     $POP_cmbOrg = $cash.find("#VA009_POP_cmbOrg_" + $self.windowNo);
@@ -6597,6 +6640,26 @@
                             }
                         }
                     });
+
+                    $POP_APTargetDocType.on("change", function () {
+                        //to set target doc type mandatory
+                        if (VIS.Utility.Util.getValueOfInt($POP_APTargetDocType.val()) == 0) {
+                            $POP_APTargetDocType.addClass('vis-ev-col-mandatory');
+                        }
+                        else {
+                            $POP_APTargetDocType.removeClass('vis-ev-col-mandatory');
+                        }
+                    });
+
+                    $POP_ARTargetDocType.on("change", function () {
+                        //to set target doc type mandatory
+                        if (VIS.Utility.Util.getValueOfInt($POP_ARTargetDocType.val()) == 0) {
+                            $POP_ARTargetDocType.addClass('vis-ev-col-mandatory');
+                        }
+                        else {
+                            $POP_ARTargetDocType.removeClass('vis-ev-col-mandatory');
+                        }
+                    });
                 };
 
                 //Set Mandatory and Non-Mandatory
@@ -6727,6 +6790,7 @@
                     function callbackloadbankAcct(dr) {
                         $cmbBankAccount.find('option').remove();
                         $cmbBankAccount.append("<option value='0'></option>");
+                        $cmbBankAccount.addClass('vis-ev-col-mandatory');
                         if (dr != null) {
                             if (dr.length > 0) {
                                 for (var i in dr) {
@@ -6744,6 +6808,7 @@
                     function callbackloadbankAcct(dr) {
                         $cmbToBankAccount.find('option').remove();
                         $cmbToBankAccount.append("<option value='0'></option>");
+                        $cmbToBankAccount.addClass('vis-ev-col-mandatory');
                         if (dr != null) {
                             if (dr.length > 0) {
                                 for (var i in dr) {
@@ -6960,7 +7025,6 @@
                     $POP_PayMthd = $payManual.find("#VA009_cmbPayMthd_" + $self.windowNo);
                     $POP_DateAcct = $payManual.find("#VA009_AccountDate_" + $self.windowNo);
                     $POP_CurrencyType = $payManual.find("#VA009_cmbCurrencyType_" + $self.windowNo);
-                    $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     $POP_DateTrx = $payManual.find("#VA009_TransactionDate" + $self.windowNo);
                     $POP_cmbOrg = $payManual.find("#VA009_POP_cmbOrg_" + $self.windowNo);
                     $POP_cmbOrg.addClass('vis-ev-col-mandatory');
@@ -7055,6 +7119,16 @@
                     }
                     else {
                         $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+                    }
+                });
+
+                $POP_targetDocType.on("change", function () {
+                    //to set target doc type mandatory
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) == 0) {
+                        $POP_targetDocType.addClass('vis-ev-col-mandatory');
+                    }
+                    else {
+                        $POP_targetDocType.removeClass('vis-ev-col-mandatory');
                     }
                 });
 
@@ -7487,6 +7561,9 @@
                         $POP_cmbDocType.empty();
                         $POP_cmbBankAccount.empty();
                         $POP_cmbLocation.empty();
+                        $POP_cmbDocType.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBank.addClass('vis-ev-col-mandatory');
+                        $POP_cmbBankAccount.addClass('vis-ev-col-mandatory');
                         // $POP_Charge.empty();
                         $POP_PayMthd.empty();
                         //change by Amit
@@ -7814,7 +7891,7 @@
                             }
                         }
                         else {
-                            VIS.ADialog.info("VA009_PLSelectDocumentType");
+                            VIS.ADialog.info("VA009_PlsSelectDocumentType");
                             return false;
                         }
                     }
