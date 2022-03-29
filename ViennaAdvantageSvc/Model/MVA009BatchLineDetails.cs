@@ -21,11 +21,19 @@ namespace ViennaAdvantage.Model
         {
 
         }
+
+        /// <summary>
+        /// After Save Logic Implement
+        /// </summary>
+        /// <param name="newRecord">Is new Record</param>
+        /// <param name="success">Success or not</param>
+        /// <returns>True, when save</returns>
         protected override bool AfterSave(bool newRecord, bool success)
         {
-            string sql = @"UPDATE va009_batchlines SET VA009_DueAmount = 
-                           (SELECT SUM(DueAmt) FROM va009_batchlinedetails WHERE IsActive = 'Y' AND va009_batchlines_ID = " + GetVA009_BatchLines_ID() + " ) "
-                           + " WHERE va009_batchlines_ID = " + GetVA009_BatchLines_ID();
+            string sql = @"UPDATE VA009_Batchlines SET VA009_DueAmount = 
+                          (SELECT SUM(VA009_ConvertedAmt) FROM VA009_BatchLineDetails WHERE IsActive = 'Y' 
+                            AND VA009_BatchLines_ID = " + GetVA009_BatchLines_ID() + @" ) 
+                            WHERE VA009_BatchLines_ID = " + GetVA009_BatchLines_ID();
             DB.ExecuteQuery(sql, null, Get_Trx());
             return true;
         }
@@ -36,8 +44,8 @@ namespace ViennaAdvantage.Model
         /// <returns>flag whether deletion possible or not</returns>
         protected override bool BeforeDelete()
         {
-            int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(*)
-                        FROM va009_batchlinedetails WHERE va009_batchlines_id = " + GetVA009_BatchLines_ID() + " AND processed = 'Y' "));
+            int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(VA009_BatchLineDetails_ID)
+                        FROM VA009_BatchLineDetails WHERE VA009_BatchLines_ID = " + GetVA009_BatchLines_ID() + " AND processed = 'Y' "));
             if (count > 0)
             {
                 return false;
