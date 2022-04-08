@@ -4002,7 +4002,7 @@ namespace VA009.Models
         {
             List<Dictionary<string, object>> retDic = null;
             //string sql = "SELECT VA009_PaymentMethod_ID,VA009_Name FROM VA009_PaymentMethod WHERE IsActive='Y' AND VA009_PaymentBaseType NOT IN  ('B','S') AND AD_Client_ID= " + ct.GetAD_Client_ID();
-            string sql = @" SELECT VA009_PaymentMethod_ID,VA009_Name FROM VA009_PaymentMethod WHERE IsActive='Y' AND 
+            string sql = @" SELECT VA009_PaymentMethod_ID,VA009_Name,VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE IsActive='Y' AND 
             VA009_PAYMENTMETHOD_ID  IN (SELECT VA009_PAYMENTMETHOD_ID FROM VA009_PAYMENTMETHOD WHERE 
             VA009_PAYMENTBASETYPE !='B' AND COALESCE(VA009_PaymentType , ' ' ) != 'S') AND 
             AD_Client_ID= " + ct.GetAD_Client_ID();
@@ -4017,6 +4017,7 @@ namespace VA009.Models
                     Dictionary<string, object> obj = new Dictionary<string, object>();
                     obj["VA009_PaymentMethod_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][0]);
                     obj["VA009_Name"] = Util.GetValueOfString(ds.Tables[0].Rows[i][1]);
+                    obj["VA009_PaymentBaseType"]= Util.GetValueOfString(ds.Tables[0].Rows[i][2]);
                     retDic.Add(obj);
                 }
             }
