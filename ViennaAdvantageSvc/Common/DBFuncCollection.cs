@@ -378,7 +378,7 @@ namespace ViennaAdvantage.Common
         /// <param name="ExecutionStatus">Execution Status</param>
         /// <param name="trx">Transaction Object</param>
         /// <returns>query for update execution status</returns>
-        public static string UpdateExecutionStatus(int VA009_Batch_ID, string ExecutionStatus,Trx trx)
+        public static string UpdateExecutionStatus(int VA009_Batch_ID, string ExecutionStatus, Trx trx)
         {
 
             StringBuilder updateSql = new StringBuilder();
@@ -395,7 +395,7 @@ namespace ViennaAdvantage.Common
                     for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                     {
                         sql.Clear();
-                        sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]), 
+                        sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]),
                             Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]),
                             ExecutionStatus));
                         updateSql.Append(" BEGIN execute immediate('" + sql.Replace("'", "''") + "'); exception when others then null; END;");
@@ -407,7 +407,7 @@ namespace ViennaAdvantage.Common
                     for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                     {
                         sql.Clear();
-                        sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]), 
+                        sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]),
                             Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]), ExecutionStatus));
                         updateSql.Append(" SELECT ExecuteImmediate('" + sql.Replace("'", "''") + "') FROM DUAL;");
                     }
@@ -427,12 +427,30 @@ namespace ViennaAdvantage.Common
         {
             if (C_InvoicePaySchedule_ID > 0)
             {
-                return @"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = '"+ ExecutionStatus + "' WHERE C_InvoicePaySchedule_ID = " + C_InvoicePaySchedule_ID;
+                return @"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = '" + ExecutionStatus + "' WHERE C_InvoicePaySchedule_ID = " + C_InvoicePaySchedule_ID;
             }
             else
             {
                 return @"UPDATE VA009_OrderPaySchedule SET VA009_ExecutionStatus = '" + ExecutionStatus + "' WHERE VA009_OrderPaySchedule_ID = " + VA009_OrderPaySchedule_ID;
             }
+        }
+
+        /// <summary>
+        /// This function is used to convert ListAgg to String_Agg
+        /// </summary>
+        /// <param name="listAggregation">aggregated to</param>
+        /// <returns>aggregation syntax</returns>
+        public static string ListAggregationName(string listAggregation)
+        {
+            if (DB.IsOracle())
+            {
+                return listAggregation;
+            }
+            else if (DB.IsPostgreSQL())
+            {
+                return " STRING_AGG(Name, ' ,' ORDER BY Name)";
+            }
+            return listAggregation;
         }
 
     }

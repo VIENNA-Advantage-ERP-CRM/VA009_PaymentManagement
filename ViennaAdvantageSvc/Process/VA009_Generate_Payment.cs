@@ -15,6 +15,7 @@ using System.Data.SqlClient;
 using VAdvantage.Logging;
 using VAdvantage.ProcessEngine;
 using ViennaAdvantage.Model;
+using ViennaAdvantage.Common;
 
 namespace ViennaAdvantage.Process
 {
@@ -1312,15 +1313,10 @@ namespace ViennaAdvantage.Process
                     if (!string.IsNullOrEmpty(msgAPC_API.ToString()))
                     {
                         string BpNames = string.Empty;
-                        if (DB.IsOracle())
-                        {
-                            BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT LISTAGG(NAME, ',') WITHIN GROUP (ORDER BY NAME) as NAMES FROM C_BPARTNER WHERE C_Bpartner_ID IN  (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
-                        }
-                        else if (DB.IsPostgreSQL())
-                        {
-                            BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT STRING_AGG(Name, ' ,' ORDER BY Name) as Names FROM C_BPARTNER WHERE C_Bpartner_ID IN (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
-                        }
-                        
+
+                        BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT "+ DBFuncCollection.ListAggregationName(" LISTAGG(NAME, ',') WITHIN GROUP (ORDER BY NAME) ") + "" +
+                                                         " AS NAMES FROM C_BPARTNER WHERE C_Bpartner_ID IN  (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
+
                         msg += " " + Msg.GetMsg(GetCtx(), "VA009_APCValue") + " " + BpNames + ". ";
                     }
 
