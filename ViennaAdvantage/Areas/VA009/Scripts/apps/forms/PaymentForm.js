@@ -5004,6 +5004,8 @@
                 var InvScheduleLookup = null;
                 var BatchGrid, _Cheque_no = "";
                 var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
+                //Varriables
+                var TotalAPC = 0, TotalAPI = 0;
                 $batch = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:395px !important'>");
                 var _batch = "";
                 _batch += "<div class='VA009-popfrm-wrap'>"
@@ -5232,9 +5234,17 @@
                 function callbackBatch(result) {
                     popupgrddata = [];
                     var rslt = JSON.parse(result);
+                    TotalAPC = 0, TotalAPI = 0;
                     reloaddata = rslt;
                     for (var i in rslt) {
                         var line = {};
+                        //Add the corrosponding value in the varriable based on DocBaseType
+                        if (rslt[i].DocBaseType == "API") {
+                            TotalAPI += rslt[i].convertedAmt;
+                        }
+                        else if (rslt[i].DocBaseType == "APC") {
+                            TotalAPC += rslt[i].convertedAmt;
+                        }
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
                         line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
@@ -5260,8 +5270,8 @@
                         line["DiscountDate"] = rslt[i].DiscountDate;
                         popupgrddata.push(line);
                     }
-                    w2utils.encodeTags(popupgrddata);
-                    BatchGrd.add(popupgrddata);
+                        w2utils.encodeTags(popupgrddata);
+                        BatchGrd.add(popupgrddata);
                 };
 
                 function loadCurrencyType() {
@@ -5501,10 +5511,18 @@
                 function callbackchqReload(result) {
                     BatchGrd.clear();
                     popupgrddata = [];
+                    TotalAPC = 0, TotalAPI = 0;
                     var rslt = JSON.parse(result);
                     reloaddata = rslt;
                     for (var i in rslt) {
                         var line = {};
+                        //Add the corrosponding value in the varriable based on DocBaseType
+                        if (rslt[i].DocBaseType == "API") {
+                            TotalAPI += rslt[i].convertedAmt
+                        }
+                        else if (rslt[i].DocBaseType == "APC") {
+                            TotalAPC += rslt[i].convertedAmt;
+                        }
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
                         line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
@@ -5533,17 +5551,17 @@
                     if (rslt[0].ERROR == "ConversionNotFound") {
                         VIS.ADialog.info("VA009_ConversionNotFound");
                     }
-                    w2utils.encodeTags(popupgrddata);
-                    BatchGrd.add(popupgrddata);
+                        w2utils.encodeTags(popupgrddata);
+                        BatchGrd.add(popupgrddata);
                 };
 
                 function loadPayMthd() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBatchPaymentMethod", null, callbackloadpaymthds);
-                    function callbackloadpaymthds(dr) {
+                    function callbackloadpaymthds(dr) {                        
                         $POP_PayMthd.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
-                                $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
+                                $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + " PaymentBaseType=" + dr[i].VA009_PaymentBaseType + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
                             }
                         }
                         $POP_PayMthd.prop('selectedIndex', 0);
@@ -5584,7 +5602,7 @@
 
                 BatchDialog.onOkClick = function () {
 
-                    var _CollaborateData = [];
+                    var _CollaborateData = [];                  
                     BatchGrd.selectAll();
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
                         //Target Type is Mandatory
@@ -5592,6 +5610,16 @@
                             if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) > 0) {
                                 if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) > 0) {
                                     if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) > 0) {
+                                        //if payment method is check and AP Invoice amount is less than AP Credit memo then show the msg.
+                                        if ($('option:selected', $POP_PayMthd).attr('PaymentBaseType') == "S") {
+                                            if (TotalAPI - TotalAPC < 0) {
+                                                VIS.ADialog.info("VA009_NotAllowed");
+                                                $bsyDiv[0].style.visibility = "hidden";
+                                                BatchGrd.selectNone();
+                                                return false;
+                                            }
+                                        }
+                                        
                                         if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) { //VA230:AccountDate mandatory check
                                             if (BatchGrd.getSelection().length > 0) {
                                                 for (var i = 0; i < BatchGrd.getSelection().length; i++) {
@@ -5664,23 +5692,23 @@
                                                     _CollaborateData.push(_data);
                                                 }
                                             }
-                                            $bsyDiv[0].style.visibility = "visible";
-                                            $.ajax({
-                                                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
-                                                type: "POST",
-                                                datatype: "json",
-                                                // contentType: "application/json; charset=utf-8",
-                                                async: true,
-                                                data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                                                success: function (result) {
-                                                    callbackBatchPay(result);
-                                                },
-                                                error: function (ex) {
-                                                    console.log(ex);
-                                                    $bsyDiv[0].style.visibility = "hidden";
-                                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                                }
-                                            });
+                                                $bsyDiv[0].style.visibility = "visible";
+                                                $.ajax({
+                                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
+                                                    type: "POST",
+                                                    datatype: "json",
+                                                    // contentType: "application/json; charset=utf-8",
+                                                    async: true,
+                                                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                                                    success: function (result) {
+                                                        callbackBatchPay(result);
+                                                    },
+                                                    error: function (ex) {
+                                                        console.log(ex);
+                                                        $bsyDiv[0].style.visibility = "hidden";
+                                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                                    }
+                                                });
                                         } else {
                                             VIS.ADialog.info("VA009_PLSelectAcctDate");
                                             BatchGrd.selectNone();

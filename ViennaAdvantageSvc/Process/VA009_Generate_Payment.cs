@@ -50,7 +50,8 @@ namespace ViennaAdvantage.Process
         Decimal discountAmt, DueAmount = 0, _ConvertedAmt = 0;
         MPayment _pay = null;
         Int32 currencyTo_ID = 0, BlineDetailCur_ID = 0, _ConversionType_ID;
-
+        StringBuilder msgAPC_API = new StringBuilder();
+        List<int> bpids = new List<int>();
         private int allocationId = 0;
 
         #endregion
@@ -403,18 +404,59 @@ namespace ViennaAdvantage.Process
                             //Issue ID In Google Sheet: SI_0673 --> While generating payment from Payment Schedule Batch, "Consolidate Payment" checkbox is true & there are multiple Payment method on payment batch lines, System creates single payment record for all schedules.
                             int c_currency_id = 0; int Bpartner_ID = 0; int C_Payment_ID = 0, batchline_id = 0, allocationHeader = 0, VA009_PaymentMethod_ID = 0;
 
-
+                            // Check the total amount of API-APC must be greater than 0 to create payment otherwise skip the payment creation.
+                            Dictionary<int, BPData> batchInfo = CheckAPIandAPCAmt(ds, _batch.GetVA009_PaymentMethod_ID());
 
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
+                                #region if API amount is +ve then create a payment otherwise do not create
+                                if (batchInfo.Count > 0)
+                                {
+                                    if (batchInfo.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
+                                    {
+                                        // if API amount is -ve then show msg
+                                        if (batchInfo[Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])].isAPIPositive == false)
+                                        {
+                                            //Payment should not be crteated if Payment Method is check and APC/AR Invoice
+                                            if (!bpids.Contains(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"])))
+                                            {
+                                                bpids.Add(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
+                                                if (string.IsNullOrEmpty(msgAPC_API.ToString()))
+                                                {
+                                                    msgAPC_API.Append(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
+                                                }
+                                                else
+                                                {
+                                                    msgAPC_API.Append("," + Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
+                                                }
+                                            }
+                                            continue;
+                                        }
+                                    }
+                                }
+                                #endregion
+
                                 PaymentBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]);
                                 if (((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
                                     Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
                                    PaymentBaseType.Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check)) || PaymentBaseType.Equals("P"))
                                 {
-                                    //Payment should not be crteated if Payment Method is check and APC/AR Invoice
-                                    invDocNo += ", " + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
-                                    continue;
+                                    if (batchInfo.Count > 0)
+                                    {
+                                        // if API amount is -ve then show msg
+                                        if (batchInfo[Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])].isAPIPositive == false)
+                                        {
+                                            //Payment should not be crteated if Payment Method is check and APC/AR Invoice
+                                            invDocNo += ", " + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
+                                            continue;
+                                        }
+                                    }
+                                    else
+                                    {
+                                        //Payment should not be crteated if Payment Method is check and APC/AR Invoice
+                                        invDocNo += ", " + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
+                                        continue;
+                                    }
                                 }
 
                                 BlineDetailCur_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]);
@@ -1267,6 +1309,21 @@ namespace ViennaAdvantage.Process
                         SaveRecordPaymentBachLog(_batch.GetAD_Client_ID(), _batch.GetAD_Org_ID(), GetRecord_ID(), paymentDocumentNo, allocationDocumentNo);
                     }
 
+                    if (!string.IsNullOrEmpty(msgAPC_API.ToString()))
+                    {
+                        string BpNames = string.Empty;
+                        if (DB.IsOracle())
+                        {
+                            BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT LISTAGG(NAME, ',') WITHIN GROUP (ORDER BY NAME) as NAMES FROM C_BPARTNER WHERE C_Bpartner_ID IN  (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
+                        }
+                        else if (DB.IsPostgreSQL())
+                        {
+                            BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT STRING_AGG(Name, ' ,' ORDER BY Name) as Names FROM C_BPARTNER WHERE C_Bpartner_ID IN (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
+                        }
+                        
+                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_APCValue") + " " + BpNames + ". ";
+                    }
+
                     if (!string.IsNullOrEmpty(invDocNo))
                     {
                         if (PaymentBaseType.Equals("P"))
@@ -1700,6 +1757,48 @@ namespace ViennaAdvantage.Process
             }
             return result;
         }
+
+        public Dictionary<int, BPData> CheckAPIandAPCAmt(DataSet ds, int PayMethodID)
+        {
+            Dictionary<int, BPData> batchInfo = new Dictionary<int, BPData>();
+            BPData bp = null; int batchLineID = 0;
+            string PaymentBaseType = Util.GetValueOfString(DB.ExecuteScalar("SELECT VA009_PaymentBaseType FROM " +
+                " VA009_PaymentMethod WHERE VA009_PaymentMethod_ID= " + PayMethodID, null, Get_Trx()));
+            if (PaymentBaseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check))
+            {
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    batchLineID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]);
+                    if (batchInfo.ContainsKey(batchLineID))
+                    {
+                        if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals("APC"))
+                            batchInfo[batchLineID].TotalAPC += Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
+                        if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals("API"))
+                            batchInfo[batchLineID].TotalAPI += Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
+                    }
+                    else
+                    {
+                        bp = new BPData();
+                        if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals("APC"))
+                            bp.TotalAPC = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
+                        if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals("API"))
+                            bp.TotalAPI = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
+                        bp.isAPIPositive = false;
+                        batchInfo.Add(batchLineID, bp);
+                    }
+
+                    batchInfo[batchLineID].isAPIPositive = batchInfo[batchLineID].TotalAPI + batchInfo[batchLineID].TotalAPC >= 0;
+                }
+            }
+            return batchInfo;
+        }
+    }
+
+    public class BPData
+    {
+        public decimal TotalAPI { get; set; }
+        public decimal TotalAPC { get; set; }
+        public bool isAPIPositive { get; set; }
     }
 }
 
