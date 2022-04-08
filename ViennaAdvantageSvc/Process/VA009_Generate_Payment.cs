@@ -1758,6 +1758,12 @@ namespace ViennaAdvantage.Process
             return result;
         }
 
+        /// <summary>
+        /// To get the amount of API and APC
+        /// </summary>
+        /// <param name="ds">Dataset or the data of batch</param>
+        /// <param name="PayMethodID">Payment method of batch</param>
+        /// <returns>List of batch lines with total API and APC Amount</returns>
         public Dictionary<int, BPData> CheckAPIandAPCAmt(DataSet ds, int PayMethodID)
         {
             Dictionary<int, BPData> batchInfo = new Dictionary<int, BPData>();
