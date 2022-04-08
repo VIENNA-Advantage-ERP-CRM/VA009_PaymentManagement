@@ -405,7 +405,7 @@ namespace ViennaAdvantage.Process
                             int c_currency_id = 0; int Bpartner_ID = 0; int C_Payment_ID = 0, batchline_id = 0, allocationHeader = 0, VA009_PaymentMethod_ID = 0;
 
                             // Check the total amount of API-APC must be greater than 0 to create payment otherwise skip the payment creation.
-                            Dictionary<int, BPData> batchInfo = CheckAPIandAPCAmt(ds, _batch.GetVA009_PaymentMethod_ID());
+                            Dictionary<int, VA009_BPData> batchInfo = CheckAPIandAPCAmt(ds, _batch.GetVA009_PaymentMethod_ID());
 
                             for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                             {
@@ -1764,10 +1764,10 @@ namespace ViennaAdvantage.Process
         /// <param name="ds">Dataset or the data of batch</param>
         /// <param name="PayMethodID">Payment method of batch</param>
         /// <returns>List of batch lines with total API and APC Amount</returns>
-        public Dictionary<int, BPData> CheckAPIandAPCAmt(DataSet ds, int PayMethodID)
+        public Dictionary<int, VA009_BPData> CheckAPIandAPCAmt(DataSet ds, int PayMethodID)
         {
-            Dictionary<int, BPData> batchInfo = new Dictionary<int, BPData>();
-            BPData bp = null; int batchLineID = 0;
+            Dictionary<int, VA009_BPData> batchInfo = new Dictionary<int, VA009_BPData>();
+            VA009_BPData bp = null; int batchLineID = 0;
             string PaymentBaseType = Util.GetValueOfString(DB.ExecuteScalar("SELECT VA009_PaymentBaseType FROM " +
                 " VA009_PaymentMethod WHERE VA009_PaymentMethod_ID= " + PayMethodID, null, Get_Trx()));
             if (PaymentBaseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check))
@@ -1784,7 +1784,7 @@ namespace ViennaAdvantage.Process
                     }
                     else
                     {
-                        bp = new BPData();
+                        bp = new VA009_BPData();
                         if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals("APC"))
                             bp.TotalAPC = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
                         if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals("API"))
@@ -1800,7 +1800,8 @@ namespace ViennaAdvantage.Process
         }
     }
 
-    public class BPData
+    //Class defiend to hold the data against BP
+    public class VA009_BPData
     {
         public decimal TotalAPI { get; set; }
         public decimal TotalAPC { get; set; }
