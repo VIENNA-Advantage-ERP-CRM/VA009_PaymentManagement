@@ -79,85 +79,6 @@ namespace ViennaAdvantage.Process
             }
         }
 
-        #region Commented Code
-        //        protected override string DoIt()
-        //        {
-        //            StringBuilder _sql = new StringBuilder();
-        //            string _msg = string.Empty;
-        //            MVA009Batch batch = new MVA009Batch(GetCtx(), GetRecord_ID(), null);
-        //            MPayment _pay = null;
-        //            _Batch_ID = GetRecord_ID();
-        //            _sql.Clear();
-        //            _sql.Append(@"SELECT b.c_bankaccount_id, BL.VA009_BatchLines_ID,   bl.c_bpartner_id,bl.va009_consolidate,  CASE    WHEN bl.va009_consolidate='Y'    THEN 0    ELSE bd.c_invoice_id
-        //                          END AS c_invoice_id,      CASE     WHEN bl.va009_consolidate='Y'    THEN 0    Else BD.c_invoicepayschedule_id    END AS c_invoicepayschedule_id,  i.c_currency_id,bd.c_currency_id,
-        //                          bl.va009_consolidate,  DBT.DocBaseType,  I.ad_org_id,  SUM(bd.dueamt) AS dueamt FROM VA009_Batch B INNER JOIN VA009_Batchlines BL ON B.VA009_Batch_id= BL.VA009_Batch_ID
-        //                          INNER JOIN VA009_BatchLineDetails BD ON BL.VA009_BatchLines_ID= BD.VA009_BatchLines_ID INNER JOIN C_Invoice I ON BD.C_Invoice_ID = I.C_Invoice_ID LEFT JOIN C_DocType DT
-        //                          ON I.C_DocType_ID = DT.C_DocType_ID LEFT JOIN C_DocBaseType DBT ON DBT.docbasetype    = DT.docbasetype WHERE B.VA009_batch_ID=" + _Batch_ID + " AND dbt.docbasetype IN ('ARI', 'API') And B.IsActive = 'Y' AND B.AD_Client_ID = " + GetAD_Client_ID());
-
-        //            DataSet ds = new DataSet();
-        //            MVA009PaymentMethod _PayMethd = new MVA009PaymentMethod(GetCtx(), batch.GetVA009_PaymentMethod_ID(), Get_TrxName());
-        //            if (_PayMethd.GetVA009_PaymentRule() == "E")
-        //            {
-        //                if (_PayMethd.IsVA009_InitiatePay() == false)
-        //                {
-        //                    int countresponse = Util.GetValueOfInt(DB.ExecuteScalar("SELECT bd.VA009_BankResponse FROM va009_batchlinedetails bd INNER JOIN va009_batchlines bl ON bl.va009_batchlines_id=bd.va009_batchlines_id WHERE bl.va009_batch_id=" + batch.GetVA009_Batch_ID() + " AND bd.VA009_BankResponse NOT IN  ('RE','RJ') AND bd.AD_Client_ID = " + GetAD_Client_ID() + " Group by bd.VA009_BankResponse ", null, Get_TrxName()));
-        //                    if (countresponse > 0)
-        //                        _sql.Append(@"AND BD.VA009_BankResponse IN ('RE','RJ') GROUP BY ( b.c_bankaccount_id, BL.VA009_BatchLines_ID,bl.c_bpartner_id,bl.va009_consolidate,  CASE    WHEN bl.va009_consolidate='Y'    THEN 0    ELSE bd.c_invoice_id  END, CASE     WHEN bl.va009_consolidate='Y'
-        //                          THEN 0    Else BD.c_invoicepayschedule_id    END, i.c_currency_id,bd.c_currency_id, bl.va009_consolidate, DBT.DocBaseType, I.ad_org_id) ORDER BY bl.c_bpartner_id ASC");
-        //                    else
-        //                        _sql.Append(@"GROUP BY ( b.c_bankaccount_id,BL.VA009_BatchLines_ID, bl.c_bpartner_id,bl.va009_consolidate,  CASE    WHEN bl.va009_consolidate='Y'    THEN 0    ELSE bd.c_invoice_id  END, CASE     WHEN bl.va009_consolidate='Y'
-        //                          THEN 0    Else BD.c_invoicepayschedule_id    END, i.c_currency_id,bd.c_currency_id, bl.va009_consolidate, DBT.DocBaseType, I.ad_org_id) ORDER BY bl.c_bpartner_id ASC");
-        //                }
-        //            }
-        //            ds = DB.ExecuteDataset(_sql.ToString());
-        //            if (ds.Tables != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
-        //            {
-        //                _DoctypeARR = Util.GetValueOfInt(DB.ExecuteScalar("Select  dt.c_doctype_id  From C_doctype DT inner join c_docbasetype DBT On dt.docbasetype=dbt.docbasetype where dbt.docbasetype='ARR' AND dt.IsActive = 'Y' AND DT.AD_Client_ID = " + GetAD_Client_ID()));
-        //                _DoctypeAPP = Util.GetValueOfInt(DB.ExecuteScalar("Select  dt.c_doctype_id  From C_doctype DT inner join c_docbasetype DBT On dt.docbasetype=dbt.docbasetype where dbt.docbasetype='APP' AND  dt.IsActive = 'Y' AND DT.AD_Client_ID = " + GetAD_Client_ID()));
-        //                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-        //                {
-        //                    _pay = new MPayment(GetCtx(), 0, null);
-        //                    _invoice = Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]);
-        //                    _DocBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]);
-        //                    if (_DocBaseType == "ARI")
-        //                    {
-        //                        _pay.SetC_DocType_ID(_DoctypeARR);
-        //                    }
-        //                    else
-        //                    {
-        //                        _pay.SetC_DocType_ID(_DoctypeAPP);
-        //                    }
-        //                    if (_invoice > 0)
-        //                    {
-
-        //                        _pay.SetC_Invoice_ID(_invoice);
-        //                        _pay.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-        //                    }
-        //                    _pay.SetAD_Client_ID(GetCtx().GetAD_Client_ID());
-        //                    _pay.SetAD_Org_ID(GetCtx().GetAD_Org_ID());
-        //                    _pay.SetDateAcct(System.DateTime.Now);
-        //                    _pay.SetDateTrx(System.DateTime.Now);
-        //                    _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
-        //                    _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
-        //                    _pay.SetPayAmt(Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-        //                    _pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-        //                    if (!_pay.Save())
-        //                    {
-        //                        _msg = Msg.GetMsg(GetCtx(), "VA009_PaymtNtCrtd");
-        //                    }
-        //                    else
-        //                        _msg = Msg.GetMsg(GetCtx(), "VA009_PaymntCrted");
-        //                }
-        //                batch.SetVA009_GeneratePayment("Y");
-        //                batch.SetProcessed(true);
-        //                batch.Save();
-        //                return _msg;
-        //            }
-        //            else
-        //                return Msg.GetMsg(GetCtx(), "VA009_PaymtNtCrtd");
-        //        }
-        #endregion
-
         protected override string DoIt()
         {
             //Check Bank Response
@@ -293,9 +214,8 @@ namespace ViennaAdvantage.Process
                     if (IsBankresponse == "Y")
                         sql.Append(" AND T.va009_bankresponse='RE' ORDER BY T.c_bpartner_id, T.VA009_paymentmethod_ID  ASC ");
                     else if (IsBankresponse == "N")
-                        sql.Append(" ORDER BY T.va009_batchlines_id ,  T.c_bpartner_id , T.VA009_paymentmethod_ID ASC ");
+                        sql.Append(" ORDER BY T.va009_batchlines_id ,  T.c_bpartner_id , T.VA009_paymentmethod_ID ASC, VA009_ConvertedAmt DESC  ");
                     //Changes --Changed above queries to get Invoice Amount from Invoice Schedule/Order Schedule to convert the amount on same day when payment is generating
-                    //End here (Arpit)
                     //else if (IsBankresponse == "Y" && countresponse > 0)
                     //    return Msg.GetMsg(GetCtx(), "VA009_AllResponseNotAvailable");
 
@@ -401,7 +321,6 @@ namespace ViennaAdvantage.Process
                         #region Consolidate  = true
                         if (_batch.IsVA009_Consolidate() == true)
                         {
-                            decimal totalPayAmt = 0;
                             //Issue ID In Google Sheet: SI_0673 --> While generating payment from Payment Schedule Batch, "Consolidate Payment" checkbox is true & there are multiple Payment method on payment batch lines, System creates single payment record for all schedules.
                             int c_currency_id = 0; int Bpartner_ID = 0; int C_Payment_ID = 0, batchline_id = 0, allocationHeader = 0, VA009_PaymentMethod_ID = 0;
 
@@ -471,48 +390,6 @@ namespace ViennaAdvantage.Process
                                 //Rakesh(VA228):Get converted amount
                                 _ConvertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
 
-                                #region Commented Not Required to Convert
-                                //Rakesh(VA228)::Not requird to convert as already converted in respective currency
-                                // Convert Amounts if currency is not same...conversion must be at the same day on which payment is generating
-                                //if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]) != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-                                //if (BlineDetailCur_ID != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-                                //{
-                                //    if (discountAmt > 0)
-                                //    {
-                                //        discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                //               BlineDetailCur_ID,//Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                //               _batch.GetDateAcct(),//Changed to account date
-                                //               Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                //               GetAD_Client_ID(), GetAD_Org_ID());
-                                //        if (discountAmt == 0)
-                                //        {
-                                //            Get_TrxName().Rollback();
-                                //            msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                //            MCurrency from = new MCurrency(GetCtx(),
-                                //               BlineDetailCur_ID,// Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]),
-                                //                Get_TrxName());
-                                //            MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]), Get_TrxName());
-                                //            return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                //        }
-                                //    }
-                                //    DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                //      BlineDetailCur_ID,//  Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                //        _batch.GetDateAcct(),//Changed to account date
-                                //        Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                //        GetAD_Client_ID(), GetAD_Org_ID());
-                                //    if (DueAmount == 0)
-                                //    {
-                                //        Get_TrxName().Rollback();
-                                //        msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                //        MCurrency from = new MCurrency(GetCtx(),
-                                //            BlineDetailCur_ID,//Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]),
-                                //            Get_TrxName());
-                                //        MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]), Get_TrxName());
-                                //        return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                //    }
-                                //}
-                                #endregion
-
                                 #region Create View Allocation Header and line when the Due Amount on Batch line = 0
                                 //(1052) Donot create allocations in case of order
                                 if (c_currency_id ==
@@ -534,20 +411,6 @@ namespace ViennaAdvantage.Process
                                     alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
                                     //to set document date of batch header on all payments and allocations
                                     alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
-
-                                    #region Commented Code
-                                    //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                    //{
-                                    //    alloclne.SetAmount(-1 * (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"])));
-                                    //}
-                                    //else
-                                    //{
-                                    //alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                    //}
-                                    // alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                    //  alloclne.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                    #endregion
-
                                     alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
                                     alloclne.SetDiscountAmt(discountAmt);
                                     if (!alloclne.Save(Get_TrxName()))
@@ -617,19 +480,6 @@ namespace ViennaAdvantage.Process
                                         alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
                                         //to set document date of batch header on all payments and allocations
                                         alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
-
-                                        #region Commented Code
-                                        //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                        //{
-                                        //    alloclne.SetAmount(-1 * (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"])));
-                                        //}
-                                        //else
-                                        //{
-                                        //}
-                                        //alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                        //alloclne.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                        #endregion
-
                                         alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
                                         alloclne.SetDiscountAmt(discountAmt);
                                         if (!alloclne.Save(Get_TrxName()))
@@ -685,30 +535,6 @@ namespace ViennaAdvantage.Process
                                     PayAlocate.SetC_Payment_ID(C_Payment_ID);
                                     PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
                                     PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-
-                                    #region Commented Code
-                                    //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                    //{
-                                    //    PayAlocate.SetDiscountAmt(-1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                    //    PayAlocate.SetAmount(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-                                    //    PayAlocate.SetInvoiceAmt(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-                                    //}
-                                    //else
-                                    //{
-                                    //PayAlocate.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-
-                                    //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                    //{
-                                    //    PayAlocate.SetAmount(-1 * (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"])));
-                                    //}
-                                    //else
-                                    //{
-
-                                    //}
-                                    // PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                    //PayAlocate.SetInvoiceAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["dueamt"]));
-                                    //}
-                                    #endregion
 
                                     PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
                                     PayAlocate.SetDiscountAmt(discountAmt);
@@ -886,29 +712,6 @@ namespace ViennaAdvantage.Process
                                                 PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
                                             }
 
-                                            #region Commented Code
-                                            //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                            //{
-                                            //    PayAlocate.SetDiscountAmt(-1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                            //    PayAlocate.SetAmount(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-                                            //    PayAlocate.SetInvoiceAmt(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-                                            //}
-                                            //else
-                                            //{
-
-                                            //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                            //{
-                                            //    PayAlocate.SetAmount(-1 * (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"])));
-                                            //}
-                                            //else
-                                            //{
-
-                                            //}
-                                            //PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-
-                                            //}
-                                            #endregion
-
                                             PayAlocate.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
                                             PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
                                             PayAlocate.SetInvoiceAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["dueamt"]));
@@ -1043,55 +846,6 @@ namespace ViennaAdvantage.Process
                                 DueAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
                                 //Rakesh(VA228):Get converted amount
                                 _ConvertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
-                                // Convert Amounts if currency is not same...conversion must be at the same day on which payment is generating
-                                // if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]) != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-
-                                #region Commented Not Required to Convert
-                                //Rakesh(VA228):Not requird to convert as already converted in respective currency
-                                //if (BlineDetailCur_ID != Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]))
-                                //{
-                                //    if (discountAmt > 0)
-                                //    {
-                                //        discountAmt = MConversionRate.Convert(GetCtx(), discountAmt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                //              //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                //              BlineDetailCur_ID,
-                                //               _batch.GetDateAcct(),//Changed to account date
-                                //               Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                //               GetAD_Client_ID(), GetAD_Org_ID());
-                                //        if (discountAmt == 0)
-                                //        {
-                                //            Get_TrxName().Rollback();
-                                //            msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                //            MCurrency from = new MCurrency(GetCtx(),
-                                //              BlineDetailCur_ID,  //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), 
-                                //                Get_TrxName());
-                                //            MCurrency to = new MCurrency(GetCtx(),
-                                //              BlineDetailCur_ID,//  Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                //                Get_TrxName());
-                                //            return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                //        }
-                                //    }
-                                //    DueAmount = MConversionRate.Convert(GetCtx(), DueAmount, Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                //      BlineDetailCur_ID,
-                                //        //Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]),
-                                //        _batch.GetDateAcct(),//Changed to account date
-                                //        Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]),
-                                //        GetAD_Client_ID(), GetAD_Org_ID());
-                                //    if (DueAmount == 0)
-                                //    {
-                                //        Get_TrxName().Rollback();
-                                //        msg = Msg.GetMsg(GetCtx(), "NoCurrencyConversion");
-                                //        MCurrency from = new MCurrency(GetCtx(),
-                                //            BlineDetailCur_ID,
-                                //            //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), 
-                                //            Get_TrxName());
-                                //        MCurrency to = new MCurrency(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["Currency_ID"]),
-                                //            Get_TrxName());
-                                //        return msg + " " + to.GetISO_Code() + "," + from.GetISO_Code();
-                                //    }
-                                //    DueAmount = DueAmount - discountAmt;
-                                //}
-                                #endregion
 
                                 _pay = new MPayment(GetCtx(), 0, Get_TrxName());
                                 if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
@@ -1145,28 +899,6 @@ namespace ViennaAdvantage.Process
                                     }
                                     #endregion
                                     _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
-
-                                    #region Commented Code
-                                    //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                    //{
-                                    //    _pay.SetDiscountAmt(-1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                    //    _pay.SetPayAmt(-1 * Util.GetValueOfInt(ds.Tables[0].Rows[i]["dueamt"]));
-                                    //}
-                                    //else
-                                    //{
-                                    //_pay.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-
-                                    //if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
-                                    //{
-                                    //    decimal payamt = (-1 * (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"])));
-                                    //    _pay.SetPayAmt(payamt);
-                                    //}
-                                    //else
-                                    //{
-                                    //_pay.SetPayAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                    //}
-                                    //}
-                                    #endregion
 
                                     _pay.SetDiscountAmt(discountAmt);
                                     _pay.SetPayAmt(_ConvertedAmt);
@@ -1261,25 +993,18 @@ namespace ViennaAdvantage.Process
                                                     AND AL.C_Payment_ID =" + _pay.GetC_Payment_ID());
                                         try
                                         {
-                                            //using (IDataReader idr = DB.ExecuteReader(sql.ToString(), null, Get_TrxName()))
-                                            //{
-                                            //    while (idr.Read())
-                                            //    {
                                             allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
                                             batchLineDetails.SetC_AllocationHdr_ID(allocationId);
                                             if (!batchLineDetails.Save(Get_TrxName()))
                                             {
                                                 return ErrorMessage();
                                             }
-                                            //    }
-                                            //}
                                         }
                                         catch (Exception ex)
                                         {
                                             Get_TrxName().Rollback();
                                             return ex.Message;
                                         }
-                                        //}
                                     }
                                     else
                                     {
@@ -1314,7 +1039,7 @@ namespace ViennaAdvantage.Process
                     {
                         string BpNames = string.Empty;
 
-                        BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT "+ DBFuncCollection.ListAggregationName(" LISTAGG(NAME, ',') WITHIN GROUP (ORDER BY NAME) ") + "" +
+                        BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT " + DBFuncCollection.ListAggregationName(" LISTAGG(NAME, ',') WITHIN GROUP (ORDER BY NAME) ") + "" +
                                                          " AS NAMES FROM C_BPARTNER WHERE C_Bpartner_ID IN  (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
 
                         msg += " " + Msg.GetMsg(GetCtx(), "VA009_APCValue") + " " + BpNames + ". ";
