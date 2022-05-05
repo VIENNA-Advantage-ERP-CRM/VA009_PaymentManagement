@@ -14,7 +14,7 @@
     <RootNamespace>ViennaAdvantageWeb</RootNamespace>
     <AssemblyName>ViennaAdvantageWeb</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <UseIISExpress>false</UseIISExpress>
+    <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -52,11 +52,11 @@
     </Reference>
     <Reference Include="BaseLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Framework Breakage Dlls\BaseLibrary.dll</HintPath>
+      <HintPath>..\..\Framework Breakage Dlls\BaseLibrary.dll</HintPath>
     </Reference>
     <Reference Include="CoreLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Framework Breakage Dlls\CoreLibrary.dll</HintPath>
+      <HintPath>..\..\Framework Breakage Dlls\CoreLibrary.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Web.v14.2">
       <HintPath>DLL\DevExpress.Web.v14.2.dll</HintPath>
@@ -193,18 +193,18 @@
     <Reference Include="System.Xml.Linq" />
     <Reference Include="VAModelAD, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Framework Breakage Dlls\VAModelAD.dll</HintPath>
+      <HintPath>..\..\Framework Breakage Dlls\VAModelAD.dll</HintPath>
     </Reference>
     <Reference Include="ViennaBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Framework Breakage Dlls\ViennaBase.dll</HintPath>
+      <HintPath>..\..\Framework Breakage Dlls\ViennaBase.dll</HintPath>
     </Reference>
     <Reference Include="VIS">
-      <HintPath>..\..\..\Framework Breakage Dlls\VIS.dll</HintPath>
+      <HintPath>..\..\Framework Breakage Dlls\VIS.dll</HintPath>
     </Reference>
     <Reference Include="VISLogic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\Framework Breakage Dlls\VISLogic.dll</HintPath>
+      <HintPath>..\..\Framework Breakage Dlls\VISLogic.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
