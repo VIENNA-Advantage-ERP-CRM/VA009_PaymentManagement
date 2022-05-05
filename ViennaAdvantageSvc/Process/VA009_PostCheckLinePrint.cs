@@ -17,7 +17,7 @@ using VAdvantage.DataBase;
 using VAdvantage.Utility;
 using VAdvantage.Logging;
 using ViennaAdvantage.Model;
-using System.Data.SqlClient;
+using VAdvantage.Model;
 
 namespace ViennaAdvantage.Process
 {
@@ -43,25 +43,31 @@ namespace ViennaAdvantage.Process
         }
         protected override string DoIt()
         {
-            MVA027ChequeDetails PDCLine = new MVA027ChequeDetails(GetCtx(), GetRecord_ID(), Get_Trx());
-
-            PDCLine_ID = PDCLine.GetVA027_ChequeDetails_ID();
-            PDC_id = PDCLine.GetVA027_PostDatedCheck_ID();
-
-            MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), PDC_id, Get_Trx());
-
-            DocStatus = pdc.GetDocStatus();
-            try
+            if (Env.IsModuleInstalled("VA027_"))
             {
-                _sql.Append("Select DocBaseType from C_DocType WHERE C_DocType_ID=" + pdc.GetC_DocType_ID());
-                DocumentBaseType = (String)DB.ExecuteScalar(_sql.ToString(), null, Get_Trx());
-                if (DocStatus == "CO" && DocumentBaseType == "PDP" && PDCLine_ID > 0)
+                MTable tbl = MTable.Get(GetCtx(), "VA027_ChequeDetails");
+                PO PDCLine = tbl.GetPO(GetCtx(), GetRecord_ID(), Get_Trx());
+                //MVA027ChequeDetails PDCLine = new MVA027ChequeDetails(GetCtx(), GetRecord_ID(), Get_Trx());
+
+                PDCLine_ID = Util.GetValueOfInt(PDCLine.Get_Value("VA027_ChequeDetails_ID"));
+                PDC_id = Util.GetValueOfInt(PDCLine.Get_Value("VA027_PostDatedCheck_ID"));
+
+                tbl = MTable.Get(GetCtx(), "VA027_PostDatedCheck");
+                PO pdc = tbl.GetPO(GetCtx(), PDC_id, Get_Trx());
+                //MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), PDC_id, Get_Trx());
+
+                DocStatus = Util.GetValueOfString(pdc.Get_Value("DocStatus"));
+                try
                 {
-                    #region Creating View
-                    _sql.Clear();
-                    //GOM01_PostDataCheck_V
-                    //GOM01_PostDataLINE_V
-                    _sql.Append(@"Create OR replace View VA009_PostDataCheck_V AS
+                    _sql.Append("Select DocBaseType from C_DocType WHERE C_DocType_ID=" + Util.GetValueOfInt(pdc.Get_Value("C_DocType_ID")));
+                    DocumentBaseType = (String)DB.ExecuteScalar(_sql.ToString(), null, Get_Trx());
+                    if (DocStatus == "CO" && DocumentBaseType == "PDP" && PDCLine_ID > 0)
+                    {
+                        #region Creating View
+                        _sql.Clear();
+                        //GOM01_PostDataCheck_V
+                        //GOM01_PostDataLINE_V
+                        _sql.Append(@"Create OR replace View VA009_PostDataCheck_V AS
                               SELECT T.AD_CLIENT_ID,
                               T.AD_ORG_ID,
                               T.VA027_ChequeDetails_ID,
@@ -84,119 +90,119 @@ namespace ViennaAdvantage.Process
                             LEFT JOIN C_BPartner BP ON
                             BP.C_BPartner_ID=PDC.C_BPartner_ID
                             Where PDC.VA027_POSTDATEDCHECK_ID=" + PDC_id + @"
-                                 And dc.VA027_CHEQUEDETAILS_ID=" + PDCLine_ID+ @") T");
-                    count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
-                    _sql.Clear();
-                    #endregion
-
-                    DataSet ds = new DataSet();
-                    int bankAccount = pdc.GetC_BankAccount_ID();
-                    // GET data from Bank Window
-                    _sql.Append("Select NVL(BAD.C_BankAccountDoc_ID,0) C_BankAccountDoc_ID , NVL(BAD.CurrentNext,0) CurrentNext,NVL(BAD.VA009_CheckPrintSetting_ID,0) VA009_CheckPrintSetting_ID," +
-                        " NVL(BA.C_BANK_ID,0) C_BANK_ID From C_BankAccountDoc BAD Left join C_BANKACCOUNT BA ON BA.C_bankAccount_ID=BAD.C_bankAccount_ID" +
-                        " Where BAD.C_BankAccount_ID =" + bankAccount);
-
-                    ds = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
-                    if (ds != null && ds.Tables[0].Rows.Count > 0)
-                    {
-                        checkNo = Convert.ToInt32(ds.Tables[0].Rows[0]["CurrentNext"]);
-                        Doc_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["C_BankAccountDoc_ID"]);
-                        Header_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["VA009_CheckPrintSetting_ID"]);
-                        Bank_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["C_BANK_ID"]);
-                    }
-                    else
-                    {
+                                 And dc.VA027_CHEQUEDETAILS_ID=" + PDCLine_ID + @") T");
+                        count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
                         _sql.Clear();
-                        _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
+                        #endregion
+
+                        DataSet ds = new DataSet();
+                        int bankAccount = Util.GetValueOfInt(pdc.Get_Value("C_BankAccount_ID"));
+                        // GET data from Bank Window
+                        _sql.Append("Select NVL(BAD.C_BankAccountDoc_ID,0) C_BankAccountDoc_ID , NVL(BAD.CurrentNext,0) CurrentNext,NVL(BAD.VA009_CheckPrintSetting_ID,0) VA009_CheckPrintSetting_ID," +
+                            " NVL(BA.C_BANK_ID,0) C_BANK_ID From C_BankAccountDoc BAD Left join C_BANKACCOUNT BA ON BA.C_bankAccount_ID=BAD.C_bankAccount_ID" +
+                            " Where BAD.C_BankAccount_ID =" + bankAccount);
+
+                        ds = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
+                        if (ds != null && ds.Tables[0].Rows.Count > 0)
+                        {
+                            checkNo = Convert.ToInt32(ds.Tables[0].Rows[0]["CurrentNext"]);
+                            Doc_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["C_BankAccountDoc_ID"]);
+                            Header_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["VA009_CheckPrintSetting_ID"]);
+                            Bank_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["C_BANK_ID"]);
+                        }
+                        else
+                        {
+                            _sql.Clear();
+                            _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
+                            count = 0;
+                            count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
+                            log.SaveError("Error", Msg.GetMsg(GetCtx(), "There is no Bank Account Related to This Payee"));
+                            ds.Dispose();
+                            _sql.Clear();
+                            //log.SaveError("Error", Msg.GetMsg(GetCtx(), "Not Able to print check"));                 
+                            return "";
+                        }
+                        checkNo = checkNo + 1;
+                        ds.Clear();
+                        // Check no increase by one
+                        _sql.Clear();
+                        _sql.Append("Update C_BankAccountDoc Set CurrentNext=" + checkNo + " Where isactive='Y' And C_BankAccountDoc_ID =" + Doc_ID);
                         count = 0;
                         count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
-                        log.SaveError("Error", Msg.GetMsg(GetCtx(), "There is no Bank Account Related to This Payee"));
-                        ds.Dispose();
+                        // Get Data from Print Check Window ( GEt Check Setting)
                         _sql.Clear();
-                        //log.SaveError("Error", Msg.GetMsg(GetCtx(), "Not Able to print check"));                 
-                        return "";
-                    }
-                    checkNo = checkNo + 1;
-                    ds.Clear();
-                    // Check no increase by one
-                    _sql.Clear();
-                    _sql.Append("Update C_BankAccountDoc Set CurrentNext=" + checkNo + " Where isactive='Y' And C_BankAccountDoc_ID =" + Doc_ID);
-                    count = 0;
-                    count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
-                    // Get Data from Print Check Window ( GEt Check Setting)
-                    _sql.Clear();
-                    _sql.Append(@"SELECT L.REPORTPATH ,
+                        _sql.Append(@"SELECT L.REPORTPATH ,
                               L.SQLQUERY
                               FROM VA009_DocPrintConfig L
                               LEFT JOIN VA009_CheckPrintSetting H
                               ON H.VA009_CheckPrintSetting_ID =L.VA009_CheckPrintSetting_ID
                               WHERE L.VA009_CHECKTYPE        ='P1'
                              AND H.VA009_CheckPrintSetting_ID=" + Header_ID + " AND H.C_BANK_ID =" + Bank_ID);
-                    ds = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
-                    if (ds != null && ds.Tables[0].Rows.Count > 0)
-                    {
-                        sqlQuery = ds.Tables[0].Rows[0]["SQLQUERY"].ToString();
-                        path = ds.Tables[0].Rows[0]["REPORTPATH"].ToString();
-                        _sql.Clear();
-                        _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
-                        // update print 
-                        count = 0;
-                        count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
-                        PDCLine.SetVA009_Printed(true);
-                        if (!(PDCLine.Save(Get_Trx())))
+                        ds = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
+                        if (ds != null && ds.Tables[0].Rows.Count > 0)
                         {
-                            sqlQuery = "";
-                            path = "";
+                            sqlQuery = ds.Tables[0].Rows[0]["SQLQUERY"].ToString();
+                            path = ds.Tables[0].Rows[0]["REPORTPATH"].ToString();
+                            _sql.Clear();
+                            _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
+                            // update print 
+                            count = 0;
+                            count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
+                            PDCLine.Set_Value("VA009_Printed", true);
+                            if (!(PDCLine.Save(Get_Trx())))
+                            {
+                                sqlQuery = "";
+                                path = "";
+                                _sql.Clear();
+                                _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
+                                count = 0;
+                                count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
+                                log.SaveError("Error", Msg.GetMsg(GetCtx(), "Printed Could not be Updated"));
+                                return "";
+                            }
+                            else
+                            {
+                                // code add for readonly logic  anuj
+                                _sql.Clear();
+                                _sql.Append("SELECT COUNT(*) FROM VA027_CHEQUEDETAILS WHERE VA027_POSTDATEDCHECK_ID=" + PDC_id + " AND VA009_PRINTED='N'");
+                                int i = Convert.ToInt32(DB.ExecuteScalar(_sql.ToString(), null, Get_Trx()));
+                                if (i == 0)
+                                {
+                                    _sql.Clear();
+                                    _sql.Append("UPDATE VA027_POSTDATEDCHECK SET VA009_PRINTED='Y' WHERE isactive='Y' and  VA027_POSTDATEDCHECK_ID=" + PDC_id);
+                                    DB.ExecuteScalar(_sql.ToString(), null, Get_Trx());
+                                }
+                            }
+                        }
+                        else
+                        {
+                            ds.Dispose();
                             _sql.Clear();
                             _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
                             count = 0;
                             count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
-                            log.SaveError("Error", Msg.GetMsg(GetCtx(), "Printed Could not be Updated"));
+                            log.SaveError("Error", Msg.GetMsg(GetCtx(), "There is no Print Format Related to This Payee"));
                             return "";
                         }
-                        else
-                        {
-                            // code add for readonly logic  anuj
-                            _sql.Clear();
-                            _sql.Append("SELECT COUNT(*) FROM VA027_CHEQUEDETAILS WHERE VA027_POSTDATEDCHECK_ID=" + PDC_id + " AND VA009_PRINTED='N'");
-                             int i = Convert.ToInt32(DB.ExecuteScalar(_sql.ToString() , null , Get_Trx()));
-                             if (i == 0)
-                             {
-                                 _sql.Clear();
-                                 _sql.Append("UPDATE VA027_POSTDATEDCHECK SET VA009_PRINTED='Y' WHERE isactive='Y' and  VA027_POSTDATEDCHECK_ID=" + PDC_id);
-                                 DB.ExecuteScalar(_sql.ToString(), null, Get_Trx());
-                             }                            
-                        }
-                    }
-                    else
-                    {
                         ds.Dispose();
+                    }
+
+                    _sql.Clear();
+                    if (DocumentBaseType != "PDP")
+                    {
                         _sql.Clear();
                         _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
                         count = 0;
                         count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
-                        log.SaveError("Error", Msg.GetMsg(GetCtx(), "There is no Print Format Related to This Payee"));
-                        return "";
+
+                        //log.SaveError("Error", Msg.GetMsg(GetCtx(), "Not Able to print check"));
                     }
-                    ds.Dispose();
                 }
-
-                _sql.Clear();
-                if (DocumentBaseType != "PDP")
+                catch (Exception ex)
                 {
-                    _sql.Clear();
-                    _sql.Append("Update AD_Process  Set SqlQuery='" + sqlQuery + "' , ReportPath='" + path + "' Where NAme='VA009_CheckPrintLineReport'");
-                    count = 0;
-                    count = Convert.ToInt32(DB.ExecuteQuery(_sql.ToString(), null, Get_Trx()));
-
-                    //log.SaveError("Error", Msg.GetMsg(GetCtx(), "Not Able to print check"));
+                    log.Log(Level.SEVERE, ex.Message.ToString());
                 }
             }
-            catch (Exception ex)
-            {
-                log.Log(Level.SEVERE, ex.Message.ToString());
-            }
-            
             return " ";
         }
     }

@@ -35,10 +35,15 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="BaseLibrary">
+      <HintPath>..\..\..\Framework Breakage Dlls\BaseLibrary.dll</HintPath>
+    </Reference>
+    <Reference Include="CoreLibrary">
+      <HintPath>..\..\..\Framework Breakage Dlls\CoreLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.VisualBasic" />
-    <Reference Include="ModelLibrary, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ViennaAdvantageWeb\DLL\ModelLibrary.dll</HintPath>
+    <Reference Include="ModelLibrary">
+      <HintPath>..\..\..\Framework Breakage Dlls\ModelLibrary.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
@@ -49,8 +54,11 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="VA027Svc">
-      <HintPath>..\ViennaAdvantageWeb\DLL\VA027Svc.dll</HintPath>
+    <Reference Include="VAModelAD">
+      <HintPath>..\..\..\Framework Breakage Dlls\VAModelAD.dll</HintPath>
+    </Reference>
+    <Reference Include="XModel">
+      <HintPath>..\..\..\Framework Breakage Dlls\XModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>

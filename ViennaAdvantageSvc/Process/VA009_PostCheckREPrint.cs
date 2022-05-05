@@ -38,14 +38,18 @@ namespace ViennaAdvantage.Process
         {
 
             #region Check RE-Print Working for PDc
-            MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), GetRecord_ID(), null);
-            PDC_ID = pdc.GetVA027_PostDatedCheck_ID();
+
+            MTable tbl = MTable.Get(GetCtx(), "VA027_PostDatedCheck");
+            PO pdc = tbl.GetPO(GetCtx(), GetRecord_ID(), Get_Trx());
+
+            //MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), GetRecord_ID(), null);
+            PDC_ID = Util.GetValueOfInt(pdc.Get_Value("VA027_PostDatedCheck_ID"));
             try
             {
                 if (PDC_ID > 0)
                 {
 
-                    int bankAccount = pdc.GetC_BankAccount_ID();
+                    int bankAccount = Util.GetValueOfInt(pdc.Get_Value("C_BankAccount_ID"));
                     #region Creating View
                     _sql.Clear();
                     _sql.Append(@"Create OR replace View VA009_PostDataCheck_V AS

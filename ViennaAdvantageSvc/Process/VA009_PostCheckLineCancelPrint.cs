@@ -17,7 +17,7 @@ using VAdvantage.DataBase;
 using VAdvantage.Utility;
 using VAdvantage.Logging;
 using ViennaAdvantage.Model;
-using System.Data.SqlClient;
+using VAdvantage.Model;
 
 namespace ViennaAdvantage.Process
 {
@@ -43,17 +43,22 @@ namespace ViennaAdvantage.Process
         }
         protected override string DoIt()
         {
+            MTable tbl = MTable.Get(GetCtx(), "VA027_ChequeDetails");
+            PO PDCLine = tbl.GetPO(GetCtx(), GetRecord_ID(), Get_Trx());
 
-            MVA027ChequeDetails PDCLine = new MVA027ChequeDetails(GetCtx(), GetRecord_ID(), Get_Trx());
-            PDCLine_ID = PDCLine.GetVA027_ChequeDetails_ID();
-            PDC_id = PDCLine.GetVA027_PostDatedCheck_ID();
+            //MVA027ChequeDetails PDCLine = new MVA027ChequeDetails(GetCtx(), GetRecord_ID(), Get_Trx());
 
-            MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), PDC_id, Get_Trx());
+            PDCLine_ID = Util.GetValueOfInt(PDCLine.Get_Value("VA027_ChequeDetails_ID"));
+            PDC_id = Util.GetValueOfInt(PDCLine.Get_Value("VA027_PostDatedCheck_ID"));
 
-            DocStatus = pdc.GetDocStatus();
+            tbl = MTable.Get(GetCtx(), "VA027_PostDatedCheck");
+            PO pdc = tbl.GetPO(GetCtx(), PDC_id, Get_Trx());
+            //MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), PDC_id, Get_Trx());
+
+            DocStatus = Util.GetValueOfString(pdc.Get_Value("DocStatus"));
             try
             {
-                _sql.Append("Select DocBaseType from C_DocType WHERE C_DocType_ID=" + pdc.GetC_DocType_ID());
+                _sql.Append("Select DocBaseType from C_DocType WHERE C_DocType_ID=" + Util.GetValueOfInt(pdc.Get_Value("C_DocType_ID")));
                 DocumentBaseType = (String)DB.ExecuteScalar(_sql.ToString(), null, Get_Trx());
                 if ((DocStatus == "RE" || DocStatus == "VO") && DocumentBaseType == "PDP" && PDCLine_ID > 0)
                 {
@@ -89,9 +94,9 @@ namespace ViennaAdvantage.Process
                     #endregion
 
                     DataSet ds = new DataSet();
-                    PDC_id = PDCLine.GetVA027_PostDatedCheck_ID();
+                    PDC_id = Util.GetValueOfInt(PDCLine.Get_Value("VA027_PostDatedCheck_ID"));
 
-                    int bankAccount = pdc.GetC_BankAccount_ID();
+                    int bankAccount = Util.GetValueOfInt(pdc.Get_Value("C_BankAccount_ID"));
                     // GET data from Bank Window
                     _sql.Clear();
                     _sql.Append("Select NVL(BAD.C_BankAccountDoc_ID,0) C_BankAccountDoc_ID,NVL(BAD.CurrentNext,0) CurrentNext,NVL(BAD.VA009_CheckPrintSetting_ID,0) VA009_CheckPrintSetting_ID," +
