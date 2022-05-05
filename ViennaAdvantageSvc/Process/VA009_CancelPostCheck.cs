@@ -54,9 +54,13 @@ namespace ViennaAdvantage.Process
             {
                 #region Cancel Check Print Working for PDc
 
-                MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), GetRecord_ID(), null);
-                PDC_ID = pdc.GetVA027_PostDatedCheck_ID();
-                doctype_ID = pdc.GetC_DocType_ID();
+                MTable tbl = MTable.Get(GetCtx(), "VA027_PostDatedCheck");
+                PO pdc = tbl.GetPO(GetCtx(), GetRecord_ID(), Get_Trx());
+
+                //MVA027PostDatedCheck pdc = new MVA027PostDatedCheck(GetCtx(), GetRecord_ID(), null);
+
+                PDC_ID = Util.GetValueOfInt(pdc.Get_Value("VA027_PostDatedCheck_ID"));
+                doctype_ID = Util.GetValueOfInt(pdc.Get_Value("C_DocType_ID"));
                 _sql.Clear();
                 _sql.Append("Select DocBaseType from C_DocType WHERE C_DocType_ID=" + doctype_ID);
 
@@ -71,7 +75,7 @@ namespace ViennaAdvantage.Process
                     _DocBaseType = docbasetype;
                 if (PDC_ID > 0 && docbasetype == "PDP")
                 {
-                    if (pdc.IsVA027_MultiCheque())
+                    if (Util.GetValueOfString(pdc.Get_Value("VA027_MultiCheque")).Equals("Y"))
                     {
                         _sql.Clear();
                         _sql.Append("Select VA027_CHEQUEDETAILS_ID From VA027_CHEQUEDETAILS where isactive='Y' and VA009_IsCancelled='N' AND VA027_POSTDATEDCHECK_ID=" + PDC_ID);
@@ -92,7 +96,7 @@ namespace ViennaAdvantage.Process
                         }
                     }
 
-                    int bankAccount = pdc.GetC_BankAccount_ID();
+                    int bankAccount = Util.GetValueOfInt(pdc.Get_Value("C_BankAccount_ID"));
                     #region Creating View
                     _sql.Clear();
                     _sql.Append(@"Create OR replace View VA009_PostDataCheck_V AS
@@ -129,7 +133,7 @@ namespace ViennaAdvantage.Process
                                   LEFT JOIN C_BPARTNER BP
                                   ON BP.C_BPartner_ID=PDC.C_BPartner_ID
                                 Where  PDC.VA027_POSTDATEDCHECK_ID=" + PDC_ID);
-                    if (pdc.IsVA027_MultiCheque())
+                    if (Util.GetValueOfString(pdc.Get_Value("VA027_MultiCheque")).Equals("Y"))
                     {
                         _sql.Append(@" And dc.VA027_CHEQUEDETAILS_ID IN (" + _CHEQUEDETAILS_ID + ")");
                     }
@@ -150,7 +154,7 @@ namespace ViennaAdvantage.Process
                         Doc_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["C_BankAccountDoc_ID"]);
                         Header_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["VA009_CheckPrintSetting_ID"]);
                         Bank_ID = Convert.ToInt32(ds.Tables[0].Rows[0]["C_BANK_ID"]);
-                        if (pdc.IsVA027_MultiCheque())
+                        if (Util.GetValueOfString(pdc.Get_Value("VA027_MultiCheque")).Equals("Y"))
                         {
                             _sql.Clear();
                             _sql.Append("Select count(*) from VA027_CHEQUEDETAILS where VA009_IsCancelled='N' AND VA027_POSTDATEDCHECK_ID=" + PDC_ID);
