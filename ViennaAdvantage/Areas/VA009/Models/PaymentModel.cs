@@ -48,11 +48,20 @@ namespace VA009.Models
             string sql = "SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankACcount_ID=" + BankAccount_ID;
             return Util.GetValueOfInt(DB.ExecuteScalar(sql));
         }
+
+        /// <summary>
+        /// Get Business Partner based on serach text
+        /// </summary>
+        /// <param name="searchText">Value/Name</param>
+        /// <param name="ct">Ctx</param>
+        /// <returns>List of BP Details</returns>
         public List<BPDetails> GetBPnames(string searchText, Ctx ct)
         {
             List<BPDetails> Bp = new List<BPDetails>();
             StringBuilder sql = new StringBuilder();
-            sql.Append("SELECT C_BPartner.C_BPartner_ID,C_BPartner.Name FROM C_BPartner C_BPartner WHERE C_BPartner.ISACTIVE='Y' AND UPPER(C_BPartner.Name) like UPPER('%" + searchText + "%')");
+            sql.Append(@"SELECT C_BPartner.C_BPartner_ID,C_BPartner.Name, C_BPartner.Value FROM C_BPartner C_BPartner 
+                        WHERE C_BPartner.ISACTIVE='Y' AND (UPPER(C_BPartner.Name) like UPPER('%" + searchText + @"%')
+                        OR UPPER(C_BPartner.Value) like UPPER('%" + searchText + "%'))");
             string finalQuery = MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_BPartner", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(finalQuery);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -61,7 +70,8 @@ namespace VA009.Models
                 {
                     BPDetails _bpData = new BPDetails();
                     _bpData.C_BPartner_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
-                    _bpData.Name = Util.GetValueOfString(ds.Tables[0].Rows[i]["Name"]);
+                    _bpData.Name = Util.GetValueOfString(ds.Tables[0].Rows[i]["Value"]) + "_" 
+                                 + Util.GetValueOfString(ds.Tables[0].Rows[i]["Name"]);
                     Bp.Add(_bpData);
                 }
             }
@@ -4017,7 +4027,7 @@ namespace VA009.Models
                     Dictionary<string, object> obj = new Dictionary<string, object>();
                     obj["VA009_PaymentMethod_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][0]);
                     obj["VA009_Name"] = Util.GetValueOfString(ds.Tables[0].Rows[i][1]);
-                    obj["VA009_PaymentBaseType"]= Util.GetValueOfString(ds.Tables[0].Rows[i][2]);
+                    obj["VA009_PaymentBaseType"] = Util.GetValueOfString(ds.Tables[0].Rows[i][2]);
                     retDic.Add(obj);
                 }
             }
