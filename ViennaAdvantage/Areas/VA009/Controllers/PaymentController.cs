@@ -58,13 +58,12 @@ namespace VA009.Controllers
         /// <param name="acctno">Account number</param>
         /// <param name="chkno">Check Number</param>
         /// <param name="OrderPayids">Order Pay Schedule IDS</param>
-        /// <param name="IsChequeDetailReq">Is Cheque Details Required true in case of payement method is cheque and type is Batch Only</param>
         /// <returns>List of Records</returns>
-        public ActionResult GetPopUpData(string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids, bool IsChequeDetailReq)
+        public ActionResult GetPopUpData(string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            List<PaymentData> _Paydata = _payMdl.GetChquePopUpdata(ct, InvPayids, bank_id, acctno, HttpUtility.HtmlDecode(chkno), OrderPayids, IsChequeDetailReq);
+            List<PaymentData> _Paydata = _payMdl.GetChquePopUpdata(ct, InvPayids, bank_id, acctno, HttpUtility.HtmlDecode(chkno), OrderPayids);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 

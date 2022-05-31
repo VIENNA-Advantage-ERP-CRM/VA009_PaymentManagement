@@ -2111,7 +2111,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                         success: function (result) {
                             callback(result);
                         },
@@ -3790,7 +3790,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                         success: function (result) {
                             callback(result);
                         },
@@ -4413,7 +4413,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                         success: function (result) {
                             callback(result);
                         },
@@ -5227,7 +5227,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: $CP_Tab.hasClass('VA009-active-tab') }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                         success: function (result) {
                             callback(result);
                         },
@@ -5956,7 +5956,7 @@
                         datatype: "json",
                         contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
                         success: function (result) {
                             callback(result);
                         },

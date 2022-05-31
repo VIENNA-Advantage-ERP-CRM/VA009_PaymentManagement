@@ -419,9 +419,8 @@ namespace VA009.Models
         /// <param name="acctno">Bank Account</param>
         /// <param name="chkno">Check NO</param>
         /// <param name="OrderPayids">List Of Order Schedules</param>
-        /// <param name="IsChequeDetailReq">true if Cheque details are required else false</param>
         /// <returns>List of Check Payment Data</returns>
-        public List<PaymentData> GetChquePopUpdata(Ctx ctx, string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids, bool IsChequeDetailReq)
+        public List<PaymentData> GetChquePopUpdata(Ctx ctx, string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids)
         {
             if (string.IsNullOrEmpty(OrderPayids))
             {
