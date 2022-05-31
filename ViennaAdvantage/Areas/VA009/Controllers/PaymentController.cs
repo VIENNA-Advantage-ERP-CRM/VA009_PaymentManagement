@@ -8,6 +8,7 @@ using VA009.Models;
 using VAdvantage.Utility;
 using VIS.Classes;
 using System.Dynamic;
+using ViennaAdvantage.Common;
 
 namespace VA009.Controllers
 {
@@ -49,11 +50,21 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_BPrtdata), JsonRequestBehavior.AllowGet);
         }
 
-        public ActionResult GetPopUpData(string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids)
+        /// <summary>
+        /// to get the data for payment form based on selected parameters
+        /// </summary>
+        /// <param name="InvPayids">Invoice schedules IDS</param>
+        /// <param name="bank_id">Bank ID</param>
+        /// <param name="acctno">Account number</param>
+        /// <param name="chkno">Check Number</param>
+        /// <param name="OrderPayids">Order Pay Schedule IDS</param>
+        /// <param name="IsChequeDetailReq">Is Cheque Details Required true in case of payement method is cheque and type is Batch Only</param>
+        /// <returns>List of Records</returns>
+        public ActionResult GetPopUpData(string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids, bool IsChequeDetailReq)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            List<PaymentData> _Paydata = _payMdl.GetChquePopUpdata(ct, InvPayids, bank_id, acctno, HttpUtility.HtmlDecode(chkno), OrderPayids);
+            List<PaymentData> _Paydata = _payMdl.GetChquePopUpdata(ct, InvPayids, bank_id, acctno, HttpUtility.HtmlDecode(chkno), OrderPayids, IsChequeDetailReq);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -84,7 +95,10 @@ namespace VA009.Controllers
             GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            string _Paydata = _payMdl.CrateBatchPayments(ct, arr);
+            //created new method to implement new functioanlity of Batch line details count
+            //how many lines will be on batch line details
+            string _Paydata = _payMdl.CratePaymentsForBatchWithMaxCount(ct, arr);
+            // _payMdl.CrateBatchPayments(ct, arr);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -220,7 +234,7 @@ namespace VA009.Controllers
             return Json(JsonConvert.SerializeObject(_payMdl.LoadOrganization(ct)), JsonRequestBehavior.AllowGet);
         }
 
-        
+
         //Added by Bharat on 01/June/2017
         public ActionResult LoadPaymentMethod()
         {
@@ -571,6 +585,24 @@ namespace VA009.Controllers
                 Ctx ctx = Session["ctx"] as Ctx;
                 PaymentModel objConversionModel = new PaymentModel();
                 retJSON = JsonConvert.SerializeObject(objConversionModel.GetBankTargetType(ctx, BankAcct_ID, BaseType));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
+
+        /// <summary>
+        /// Get the details of cheque
+        /// </summary>
+        /// <param name="C_BankAccount_ID">BankAccount ID</param>
+        /// <param name="VA009_PaymentMethod_ID">PaymentMethod ID</param>
+        /// <returns>The data of cheque and account based on bank account and payment method</returns>
+        public JsonResult GetCheckDetails(int C_BankAccount_ID, int VA009_PaymentMethod_ID)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                Ctx ctx = Session["ctx"] as Ctx;
+                //PaymentModel objConversionModel = new PaymentModel();
+                retJSON = JsonConvert.SerializeObject(DBFuncCollection.GetDetailsofChequeForBatch(C_BankAccount_ID, VA009_PaymentMethod_ID, null));
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }

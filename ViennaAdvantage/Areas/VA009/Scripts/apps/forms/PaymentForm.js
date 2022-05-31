@@ -2111,7 +2111,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
                         success: function (result) {
                             callback(result);
                         },
@@ -3790,7 +3790,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
                         success: function (result) {
                             callback(result);
                         },
@@ -4413,7 +4413,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
                         success: function (result) {
                             callback(result);
                         },
@@ -5068,7 +5068,12 @@
 
                     //+ "<div class='vis-control-wrap'>"
                     //+ "<label style='display: none;'>" + VIS.Msg.getMsg("VA009_Consolidate") + "</label>"
-                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label></div></div>'
+                    //added new button to show check details if payment method is cheque
+                    + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label> </div></div>'
+
+                    + "<div class='VA009-popform-data'><div class='VA009-popFormInn'>"
+                    + " <a class='btn VA009-blueBtn' id='VA009_btnCheckDetails_" + $self.windowNo + "' style='display: none !important; margin-bottom: 10px !important; margin-top: 0px !important;'> " + VIS.Msg.getMsg("VA009_CheckDetails") + "</a >"
+                    + " </div></div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap' style='display:none !important'><div class='vis-control-wrap'>"
                     + "<select style='display:none !important' id='VA009_POP_cmbCurrencyType_" + $self.windowNo + "'>"
@@ -5081,9 +5086,7 @@
 
                 $batch.append(_batch);
                 Batch_getControls();
-
                 var BatchDialog = new VIS.ChildDialog();
-
                 BatchDialog.setContent($batch);
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
@@ -5095,11 +5098,8 @@
                 BatchGrid_Layout();
                 loadgrdBatch(callbackBatch);
                 loadOrg();
-                //calling target type to load the DocTypes
-                //loadTargetType();
                 //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
                 _loadFunctions.LoadTargetDocType($POP_targetDocType, _TargetBaseType);
-                //loadbank();
                 //populate banks based on selected organization in dialog
                 loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                 //Set system date as accountdate
@@ -5203,6 +5203,12 @@
                     $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
                     $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                    //added new button to show check details if payment method is cheque
+                    $POP_BtnChkDetails = $batch.find("#VA009_btnCheckDetails_" + $self.windowNo);
+                    if ($CP_Tab.hasClass('VA009-active-tab') && ($('option:selected', $POP_PayMthd).attr('PaymentBaseType') == "S"))
+                        $POP_BtnChkDetails.show();
+                    else
+                        $POP_BtnChkDetails.hide();
                     //get the Id of Target Type field
                     $POP_targetDocType = $batch.find("#VA009_POP_TargetType_" + $self.windowNo);
                     //set Target Type as Mandatory
@@ -5221,7 +5227,7 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: $CP_Tab.hasClass('VA009-active-tab') }),
                         success: function (result) {
                             callback(result);
                         },
@@ -5270,8 +5276,8 @@
                         line["DiscountDate"] = rslt[i].DiscountDate;
                         popupgrddata.push(line);
                     }
-                        w2utils.encodeTags(popupgrddata);
-                        BatchGrd.add(popupgrddata);
+                    w2utils.encodeTags(popupgrddata);
+                    BatchGrd.add(popupgrddata);
                 };
 
                 function loadCurrencyType() {
@@ -5460,6 +5466,52 @@
                     });
                 });
 
+                //added new button to show check details if payment method is cheque
+                $POP_BtnChkDetails.on("click", function (e) {
+
+                    if (parseInt($POP_cmbBankAccount.val()) > 0) {
+
+                        if (parseInt($POP_PayMthd.val()) > 0) {
+                            $.ajax({
+                                url: VIS.Application.contextUrl + "VA009/Payment/GetCheckDetails",
+                                type: "POST",
+                                datatype: "json",
+                                // contentType: "application/json; charset=utf-8",
+                                async: true,
+                                data: ({
+                                    C_BankAccount_ID: parseInt($POP_cmbBankAccount.val()),
+                                    VA009_PaymentMethod_ID: parseInt($POP_PayMthd.val())
+                                }),
+                                success: function (result) {
+                                    callbackgetCheckDetails(result);
+                                },
+                                error: function (ex) {
+                                    console.log(ex);
+                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                }
+                            });
+                            function callbackgetCheckDetails(dr) {
+                                if (dr != null) {
+                                    console.log(dr);
+                                    _loadFunctions.ChequeDetails_Dialog(dr, $consolidate.prop('checked'));
+                                }
+                            }
+                        }
+                        else {
+                            VIS.ADialog.info("VA009_PlsSelectPayMethod");
+                            BatchGrd.selectNone();
+                            return false;
+                        }
+                    }
+                    else {
+                        VIS.ADialog.info("VA009_PLSelectBankAccount");
+                        BatchGrd.selectNone();
+                        return false;
+                    }
+
+
+                });
+
                 //on the change of Currency get the  converted amount
                 $POP_cmbCurrency.on("change", function () {
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbCurrency.val()) == 0) {
@@ -5551,13 +5603,13 @@
                     if (rslt[0].ERROR == "ConversionNotFound") {
                         VIS.ADialog.info("VA009_ConversionNotFound");
                     }
-                        w2utils.encodeTags(popupgrddata);
-                        BatchGrd.add(popupgrddata);
+                    w2utils.encodeTags(popupgrddata);
+                    BatchGrd.add(popupgrddata);
                 };
 
                 function loadPayMthd() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBatchPaymentMethod", null, callbackloadpaymthds);
-                    function callbackloadpaymthds(dr) {                        
+                    function callbackloadpaymthds(dr) {
                         $POP_PayMthd.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -5593,6 +5645,13 @@
                     else {
                         $POP_PayMthd.addClass('vis-ev-col-mandatory');
                     }
+                    //added new button to show check details if payment method is cheque
+                    if ($CP_Tab.hasClass('VA009-active-tab') &&
+                        ($('option:selected', $POP_PayMthd).attr('PaymentBaseType') == "S"))
+                        $POP_BtnChkDetails.show();
+                    else
+                        $POP_BtnChkDetails.hide();
+
                     Payrule = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentRule", { "PaymentMethod": $POP_PayMthd.val() }, null);
                     if (Payrule == "S")
                         BatchGrd.showColumn('CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate');
@@ -5602,7 +5661,7 @@
 
                 BatchDialog.onOkClick = function () {
 
-                    var _CollaborateData = [];                  
+                    var _CollaborateData = [];
                     BatchGrd.selectAll();
                     if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
                         //Target Type is Mandatory
@@ -5619,7 +5678,7 @@
                                                 return false;
                                             }
                                         }
-                                        
+
                                         if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) { //VA230:AccountDate mandatory check
                                             if (BatchGrd.getSelection().length > 0) {
                                                 for (var i = 0; i < BatchGrd.getSelection().length; i++) {
@@ -5692,23 +5751,23 @@
                                                     _CollaborateData.push(_data);
                                                 }
                                             }
-                                                $bsyDiv[0].style.visibility = "visible";
-                                                $.ajax({
-                                                    url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
-                                                    type: "POST",
-                                                    datatype: "json",
-                                                    // contentType: "application/json; charset=utf-8",
-                                                    async: true,
-                                                    data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
-                                                    success: function (result) {
-                                                        callbackBatchPay(result);
-                                                    },
-                                                    error: function (ex) {
-                                                        console.log(ex);
-                                                        $bsyDiv[0].style.visibility = "hidden";
-                                                        VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                                                    }
-                                                });
+                                            $bsyDiv[0].style.visibility = "visible";
+                                            $.ajax({
+                                                url: VIS.Application.contextUrl + "VA009/Payment/GeneratePaymentsBatch",
+                                                type: "POST",
+                                                datatype: "json",
+                                                // contentType: "application/json; charset=utf-8",
+                                                async: true,
+                                                data: ({ PaymentData: JSON.stringify(_CollaborateData) }),
+                                                success: function (result) {
+                                                    callbackBatchPay(result);
+                                                },
+                                                error: function (ex) {
+                                                    console.log(ex);
+                                                    $bsyDiv[0].style.visibility = "hidden";
+                                                    VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                                                }
+                                            });
                                         } else {
                                             VIS.ADialog.info("VA009_PLSelectAcctDate");
                                             BatchGrd.selectNone();
@@ -5750,9 +5809,6 @@
                 function callbackBatchPay(result) {
                     result = JSON.parse(result);
                     DocNumber = "";
-                    //var SpilitedData = result.split(".", result.length);
-                    //DocNumber = VIS.Utility.Util.getValueOfString(SpilitedData[1]);
-                    //console.log(DocNumber);
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
@@ -5763,7 +5819,6 @@
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $bsyDiv[0].style.visibility = "hidden";
-
                     if (DocNumber != "") {
                         w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
                             .yes(function () {
@@ -5801,7 +5856,7 @@
                     STAT_ctrlLoadFile = null;
                     STAT_ctrlLoadFileTxt = null;
                     w2ui['BatchGrid'].destroy();
-                }
+                };
             },
 
             Split_Dialog: function () {
@@ -5901,7 +5956,7 @@
                         datatype: "json",
                         contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(), IsChequeDetailReq: false }),
                         success: function (result) {
                             callback(result);
                         },
@@ -7998,6 +8053,153 @@
                     });
                 };
 
+            },
+            //added new button to show check details if payment method is cheque
+            //cheque details dialouge for showing thr details of cheque and based on batch line detail count
+            ChequeDetails_Dialog: function (ds, isConsolidate) {
+
+                $opnChkDtls = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
+                var _opnChkDtls = "";
+                var BPLocLookup = null;
+                _opnChkDtls += "<div class='VA009-table-container' style='height:300px;' id='VA009_ChkDetailsGrid_" + $self.windowNo + "'> </div>'";
+                $opnChkDtls.append(_opnChkDtls);
+                var _chequeDetailsGrid = $opnChkDtls.find("#VA009_ChkDetailsGrid_" + $self.windowNo);
+                var chequeDetailsDialog = new VIS.ChildDialog();
+                chequeDetailsDialog.setContent($opnChkDtls);
+                chequeDetailsDialog.setTitle(VIS.Msg.getMsg("VA009_CheckDetails"));
+                chequeDetailsDialog.setWidth("50%");
+                chequeDetailsDialog.setEnableResize(true);
+                chequeDetailsDialog.setModal(true);
+                chequeDetailsDialog.show();
+                ChequeDetailsGrid_Layout();
+                BPLocLookup = VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 0, VIS.DisplayType.TableDir, "C_BPartner_Location_ID", 0, false, "C_BPartner_Location.IsActive='Y' ");
+                loadChkDtlsGridData(JSON.parse(ds), ChequeDetailsGrd, JSON.parse(JSON.stringify(BatchGrd.records)), isConsolidate);
+                chequeDetailsDialog.onOkClick = function () {
+                    chequeDetailsDispose();
+                };
+                chequeDetailsDialog.onCancelCLick = function () {
+                    chequeDetailsDispose();
+                };
+                chequeDetailsDialog.onClose = function () {
+                    chequeDetailsDispose();
+                };
+                function chequeDetailsDispose() {
+                    w2ui["VA009_ChkDetailsGrid_" + $self.windowNo].clear();
+                    _opnChkDtls = null;
+                    $opnChkDtls = null;
+                    w2ui["VA009_ChkDetailsGrid_" + $self.windowNo].destroy();
+                };
+                function ChequeDetailsGrid_Layout() {
+                    var _chkDetails_Columns = [];
+                    if (_chkDetails_Columns.length == 0) {
+                        _chkDetails_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({
+                            field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("VA009_PayLocation"), sortable: true, size: '15%', render: function (record, index, col_index) {
+                                var l = BPLocLookup;
+                                var val = record["C_BPartner_Location_ID"];
+                                var d;
+                                if (l) {
+                                    d = l.getDisplay(val);
+                                }
+                                return d;
+                            }
+                        });
+                        _chkDetails_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), hidden: true, sortable: true, size: '0%' });
+                        _chkDetails_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), hidden: true, sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({ field: "DueAmt", caption: VIS.Msg.getMsg("VA009_DueAmt"), hidden: true, sortable: true, size: '10%', style: 'text-align: right' });
+                        _chkDetails_Columns.push({
+                            field: "ConvertedAmt", caption: VIS.Msg.getMsg("Amount"), sortable: true, size: '13%', style: 'text-align: right', render: function (record, index, col_index) {
+                                var val = record["ConvertedAmt"];
+                                return parseFloat(val).toLocaleString();
+                            }
+                        });
+                        _chkDetails_Columns.push({ field: "CheckNumber", caption: VIS.Msg.getMsg("VA009_ChkNo"), sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({
+                            field: "CheckDate", caption: VIS.Msg.getMsg("VA009_CheckDate"), sortable: true, size: '12%',
+                            render: function (record, index, col_index) {
+                                var val;
+                                if (record.changes == undefined || record.changes.CheckDate == "") {
+                                    val = record["CheckDate"];
+                                }
+                                else {
+                                    val = record.changes.CheckDate;
+                                }
+                                return new Date(val).toLocaleDateString();
+                            }, style: 'text-align: left'
+                        });
+                        _chkDetails_Columns.push({ field: "Mandate", caption: VIS.Msg.getMsg("VA009_Mandate"), hidden: true, sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
+                        _chkDetails_Columns.push({ field: "ConversionTypeId", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
+                        _chkDetails_Columns.push({ field: "DiscountAmount", caption: VIS.Msg.getMsg("DiscountAmount"), hidden: true, sortable: true, size: '0%' });
+                        _chkDetails_Columns.push({ field: "ConvertedDiscountAmount", caption: VIS.Msg.getMsg("ConvertedDiscountAmount"), hidden: true, sortable: true, size: '0%' });
+                        _chkDetails_Columns.push({ field: "DiscountDate", caption: VIS.Msg.getMsg("DiscountDate"), hidden: true, sortable: true, size: '0%' });
+                    }
+                    ChequeDetailsGrd = null;
+                    ChequeDetailsGrd = _chequeDetailsGrid.w2grid({
+                        name: 'VA009_ChkDetailsGrid_' + $self.windowNo,
+                        recordHeight: 25,
+                        multiSelect: true,
+                        columns: _chkDetails_Columns
+                    }),
+                        ChequeDetailsGrd.hideColumn('recid', 'CurrencyCode', 'C_InvoicePaySchedule_ID', 'DueAmt', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
+                };
+                function loadChkDtlsGridData(ds, ChequeDetailsGrd, SelectedRecords, isConsolidate) {
+                    if (SelectedRecords.length > 0) {
+                        var checkNum = 0; var recds = []; var amt = 0;
+                        var maxLineCount = 0; var ChkAutoControl = "N";
+
+                        if (ds != null && ds.length > 0) {
+                            checkNum = parseInt(ds[0]["CURRENTNEXT"]);
+                            maxLineCount = parseInt(ds[0]["VA009_BATCHLINEDETAILCOUNT"]);
+                            ChkAutoControl = ds[0]["CHKNOAUTOCONTROL"];
+                        }
+                        if (ChkAutoControl == "Y") {
+                            for (i = 0; i < SelectedRecords.length; i++) {
+                                if (i == 0) {
+                                    SelectedRecords[i]["CheckNumber"] = checkNum;
+                                    SelectedRecords[i]["TotalLinesCount"] = 1;
+                                    checkNum = checkNum + 1;
+                                    recds.push(SelectedRecords[i]);
+                                }
+                                else {
+                                    //Find the selected object into the array based on Business Partner, Location and Lines Count.
+                                    var filterObj = recds.filter(function (e) {
+                                        if (isConsolidate) {
+                                            return (
+                                                e.C_BPartner_ID == SelectedRecords[i].C_BPartner_ID
+                                                && e.C_BPartner_Location_ID == SelectedRecords[i].C_BPartner_Location_ID
+                                                && e.TotalLinesCount < maxLineCount);
+                                        }
+                                    });
+                                    //if record not found then add the checknumber and Increase total count in array
+                                    if (filterObj.length == 0) {
+                                        SelectedRecords[i]["CheckNumber"] = checkNum;
+                                        checkNum = checkNum + 1;
+                                        SelectedRecords[i]["TotalLinesCount"] = 1;
+                                        recds.push(SelectedRecords[i]);
+                                    }
+                                    //if record already found then add the checknumber and Increase total count
+                                    else {
+                                        amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
+                                        filterObj[0]["DueAmt"] = amt;
+                                        amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                        filterObj[0]["ConvertedAmt"] = amt;
+                                        filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
+                                    }
+                                }
+                            }
+                            w2utils.encodeTags(recds);
+                            ChequeDetailsGrd.add(recds);
+                        }
+                        else {
+                            chequeDetailsDispose();
+                            chequeDetailsDialog.close();
+                            VIS.ADialog.info("VA009_PlzCngStngOfAutoCntrl");
+                        }
+                    }
+                };
+
             }
         };
 
@@ -8037,9 +8239,6 @@
                 }
             }
         };
-
-
-
 
         //to generate data for file creation
         function prepareDataForPaymentFile(DocNumber, isBatch) {

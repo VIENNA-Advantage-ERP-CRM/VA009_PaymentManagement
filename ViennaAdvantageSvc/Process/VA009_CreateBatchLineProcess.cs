@@ -15,8 +15,7 @@ using System.Data.SqlClient;
 using VAdvantage.Logging;
 using VAdvantage.ProcessEngine;
 using ViennaAdvantage.Model;
-
-
+using ViennaAdvantage.Common;
 
 namespace ViennaAdvantage.Process
 {
@@ -38,6 +37,8 @@ namespace ViennaAdvantage.Process
         //int _VA009_BatchDetail_ID = 0;
         String msg = String.Empty;
         bool deleteBatchLine = false;
+        //varriable to save lines count
+        int Line_MaxCount = 0, Total_Lines_Count = 0;
 
         protected override void Prepare()
         {
@@ -108,9 +109,18 @@ namespace ViennaAdvantage.Process
                     return msg;
                 }
             }
-
+            bool isAPI_APC = false;
             MBankAccount _bankacc = new MBankAccount(GetCtx(), batch.GetC_BankAccount_ID(), Get_TrxName());
-
+            //to get cheque details based on payment method and bank account
+            DataTable _ChkDtlsDT = DBFuncCollection.GetDetailsofChequeForBatch(batch.GetC_BankAccount_ID(), batch.GetVA009_PaymentMethod_ID(), Get_Trx());
+            
+            if (_ChkDtlsDT != null && _ChkDtlsDT.Rows.Count > 0)
+            {
+                if (Util.GetValueOfString(_ChkDtlsDT.Rows[0]["CHKNOAUTOCONTROL"]).ToUpper().Equals("Y"))
+                {
+                    Line_MaxCount = Util.GetValueOfInt(_ChkDtlsDT.Rows[0]["VA009_BATCHLINEDETAILCOUNT"]);
+                }
+            }
             decimal dueamt = 0;
 
             // docbasetype
@@ -131,8 +141,8 @@ namespace ViennaAdvantage.Process
                           INNER JOIN C_DocType doc ON (doc.C_DocType_ID = CI.C_DocType_ID) 
                           WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
                           CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' 
-                          AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
-                         + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
+                          AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID());
+                        // + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
 
             if (_C_BPartner_ID > 0)
             {
@@ -219,7 +229,13 @@ namespace ViennaAdvantage.Process
                                   GROUP BY BPBA.C_BP_BankAccount_ID, BPBA.A_Name, RoutingNo, BPBA.AccountNo,BP.AD_Org_ID ORDER BY BP.AD_Org_ID DESC", null, Get_TrxName());
                         }
                     }
-
+                    //in case of AP side we need to run new setting btch line count 
+                    if ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                              "APC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                    {
+                        isAPI_APC = true;
+                    }
+                    else { isAPI_APC = false; Total_Lines_Count = 0; }
                     // if invoice is of AP Invoice, AP Credit Memo, AR Invoice and AR Credit Memo then make a single Batch line
                     if (_BPartner == Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) &&
                         ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
@@ -249,21 +265,36 @@ namespace ViennaAdvantage.Process
                         {
                             _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
                         }
-
+                        _sql.Append(" ORDER BY VA009_BatchLines_ID DESC ");
                         DataSet dsBatchLine = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
                         if (dsBatchLine != null && dsBatchLine.Tables[0].Rows.Count > 0)
                         {
                             DataRow dr = dsBatchLine.Tables[0].Rows[0];
                             line = new MVA009BatchLines(GetCtx(), dr, Get_TrxName());
+                            //if line found then add batchlinedetail agaisnt same line otherwise create new line
+                            if (Line_MaxCount > 0 && isAPI_APC)
+                            {
+                                if (Total_Lines_Count == Line_MaxCount)
+                                {
+                                    line = null;
+                                    Total_Lines_Count = 0;
+                                }
+                            }
                         }
                         else
                         {
                             line = null;
+                            //if line null then reset total lines to 0
+                            if (Line_MaxCount > 0 && isAPI_APC)
+                                Total_Lines_Count = 0;
                         }
                     }
                     else
                     {
                         line = null;
+                        //if line null then reset total lines to 0
+                        if (Line_MaxCount > 0 && isAPI_APC)
+                            Total_Lines_Count = 0;
                     }
 
                     if (line == null)
@@ -332,6 +363,9 @@ namespace ViennaAdvantage.Process
                             Get_TrxName().Rollback();
                             _BPartner = 0;
                             _VA009_BatchLine_ID = 0;
+                            //if line null then reset total lines to 0
+                            if (Line_MaxCount > 0 && isAPI_APC)
+                                Total_Lines_Count = 0;
                         }
                     }
 
@@ -453,6 +487,9 @@ namespace ViennaAdvantage.Process
                     }
                     else
                     {
+                        //increase total line count after save the linedetails
+                        if (Line_MaxCount > 0 && isAPI_APC)
+                            Total_Lines_Count = Total_Lines_Count + 1;
                         // Update Invoice Schedule with Status as "Assigned To Batch"
                         DB.ExecuteQuery(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'Y' 
                          WHERE C_InvoicePaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), null, Get_Trx());
