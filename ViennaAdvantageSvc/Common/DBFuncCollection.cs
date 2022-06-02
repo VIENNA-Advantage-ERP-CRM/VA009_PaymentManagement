@@ -463,11 +463,16 @@ namespace ViennaAdvantage.Common
         /// <returns>DataTable or null with cheque details</returns>
         public static DataTable GetDetailsofChequeForBatch(int C_BankAccount_ID, int VA009_PaymentMethod_ID, Trx tr)
         {
-            DataSet ds = DB.ExecuteDataset(@"SELECT bad.CurrentNext as CURRENTNEXT, 
-                        bad.VA009_BatchLineDetailCount as VA009_BATCHLINEDETAILCOUNT, ba.ChkNoAutoControl as CHKNOAUTOCONTROL
+            //'bad.VA009_BatchLineDetailCount'
+            DataSet ds = DB.ExecuteDataset(@" SELECT bad.CurrentNext AS CURRENTNEXT, 
+                        bad.VA009_BatchLineDetailCount AS VA009_BATCHLINEDETAILCOUNT, ba.ChkNoAutoControl AS CHKNOAUTOCONTROL,
+                        bad.startchknumber AS STARTCHKNUMBER, bad.endchknumber AS ENDCHKNUMBER, bad.priority AS PRIORITY,
+                        bad.C_BankAccountdoc_ID AS C_BANKACCOUNTDOC_ID
                         FROM C_BankAccount ba INNER JOIN C_BankAccountdoc bad ON ba.C_BankAccount_ID = 
                         bad.C_BankAccount_ID WHERE bad.C_BankAccount_ID = " + C_BankAccount_ID + @"
-                        AND bad.IsActive = 'Y' AND bad.VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID, null, tr);
+                        AND bad.IsActive = 'Y' AND bad.VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID + "" +
+                        " ORDER BY bad.priority ASC "
+                        , null, tr);
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
                 return ds.Tables[0];

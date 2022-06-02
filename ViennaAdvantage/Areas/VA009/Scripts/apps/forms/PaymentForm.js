@@ -98,8 +98,6 @@
             pgNo = 1; //Commented on 10 Jan 2019 "AND cs.AD_Org_ID IN (" + VIS.context.getAD_Org_ID() + ")"
             loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), 99, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
             isloaded = true;
-            //calling two times that's why commented here
-            //$divPayment.on("click", paymentContainerClick);
             $BP.autocomplete({
                 minLength: 0,
                 source: function (request, response) {
@@ -160,9 +158,7 @@
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="text" id = ' + "VA009_BPartner_" + $self.windowNo + '><label>' + VIS.Msg.getMsg("VA009_BPartner") + '</label> </div></div><div class="VA009-value-list" id= ' + "VA009_BPdataDiv_" + $self.windowNo + '>      </div> </div>';
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap"> <select id = ' + "VA009_PayMthd_" + $self.windowNo + '>   </select><label>' + VIS.Msg.getMsg("VA009_PayMthd") + '</label> </div></div>  <div class="VA009-value-list" id= ' + "VA009_PayMthddataDiv_" + $self.windowNo + '>      </div> </div>';
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_Status_" + $self.windowNo + '>  </select><label>' + VIS.Msg.getMsg("VA009_Status") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_StatusdataDiv_" + $self.windowNo + '>      </div> </div>';
-            // _leftBar += '<div class="VA009-left-data">' + VIS.Msg.getMsg("VA009_Duedate") + ' <div class="VA009-value-list">  <ul id = ' + "VA009_DueDateul_" + $self.windowNo + '><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliCur_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Current") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSeven_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_7Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliFourteen_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_14Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliThirty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_30Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSixty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_60Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliNinty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_90Days") + '</span></li></ul> </div> </div> </div></div></td>';
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_DueDate_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Current") + '</option>  <option value=7>' + VIS.Msg.getMsg("VA009_7Days") + '</option>  <option value=14 >' + VIS.Msg.getMsg("VA009_14Days") + '</option> <option value=30 >' + VIS.Msg.getMsg("VA009_30Days") + '</option> <option value=60 >' + VIS.Msg.getMsg("VA009_60Days") + '</option> <option value=90>' + VIS.Msg.getMsg("VA009_90Days") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_Duedate") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_DueDatedataDiv_" + $self.windowNo + '> </div>  </div> ';
-            //<div class="VA009-value-list">  <ul id = ' + "VA009_DueDateul_" + $self.windowNo + '><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliCur_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_Current") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSeven_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_7Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliFourteen_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_14Days") + '</span></li> <li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliThirty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_30Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliSixty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_60Days") + '</span></li><li class="VA009-Duedate-li"><span class="VA009-Duedate-span" id = ' + "VA009_DueliNinty_" + $self.windowNo + '>' + VIS.Msg.getMsg("VA009_90Days") + '</span></li></ul> </div>
 
             //change by amit - 16-nov-2016
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_TransactionType_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Order") + '</option>  <option value=1>' + VIS.Msg.getMsg("VA009_Invoice") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_TransactionType") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_TransactionTypeDiv_" + $self.windowNo + '> </div>  </div>';
@@ -188,7 +184,6 @@
             //Add Icons
             _MiddlePanel += '<div class="VA009-icons-wrap">';
             _MiddlePanel += "<span><i class='vis vis-cheque' title='" + VIS.Msg.getMsg("VA009_Check") + "' id='" + 'VA009_Chkimg_' + $self.windowNo + "' ></i></span> <span><i class='vis vis-cash-bag' title='" + VIS.Msg.getMsg("VA009_Cash") + "'  id='" + 'VA009_Cashimg_' + $self.windowNo + "' ></i></span><span><i class='vis vis-open-file' title='" + VIS.Msg.getMsg("VA009_Batch") + "' id='" + 'VA009_Batchimg_' + $self.windowNo + "' ></i></span><span><i class='vis vis-split' title='" + VIS.Msg.getMsg("VA009_Split") + "'  id='" + 'VA009_Splitimg_' + $self.windowNo + "'></i></span><span><i class='vis vis-mobile-card' title='" + VIS.Msg.getMsg("VA009_PayMannual") + "'  id='" + 'VA009_PayMannualimg_' + $self.windowNo + "'></i></span><span><i class='vis vis-bank-transfer' title='" + VIS.Msg.getMsg("VA009_BankToBankTransfer") + "'  id='" + 'VA009_BankToBankimg_' + $self.windowNo + "'></i></span></div>";
-            //_MiddlePanel += '<span><img src="Areas/VA009/Images/cheque.png" alt="cheque" id=' + "VA009_Chkimg_" + $self.windowNo + '></span> <span><img src="Areas/VA009/Images/cash.png" alt="cash" id=' + "VA009_Cashimg_" + $self.windowNo + '></span> <span><img src="Areas/VA009/Images/batch.png" alt="batch" id=' + "VA009_Batchimg_" + $self.windowNo + '></span> <span><img src="Areas/VA009/Images/dunning.png" alt="dunning"></span> <span><img src="Areas/VA009/Images/split.png" alt="split" id=' + "VA009_Splitimg_" + $self.windowNo + '></span> </div>';
             //End Icon's Div
 
             MainRoot += _MiddlePanel;
@@ -201,7 +196,6 @@
             MainRoot += '<div class="VA009-search-wrap"> <input value="" placeholder="Search..." type="text" id=' + "VA009_SrchTxtbx_" + $self.windowNo + '> <a class="VA009-search-icon" id=' + "VA009_SrchBtn_" + $self.windowNo + '><span class="vis vis-search"></span></a> </div>';
 
             //Add Selected Payment
-            //MainRoot += '<div class="VA009-selected-text" id=' + "VA009_Selectedtxt_" + $self.windowNo + '> <p>Selected: USD 40,000.00 &nbsp;&nbsp; EUR 55,000.00</p> </div>';
             MainRoot += '</div>';// end of mid-search
             //Payments Container
             MainRoot += ' <div class="VA009-payment-list" id = ' + "VA009_Paymntlst_" + $self.windowNo + '>';
@@ -323,7 +317,6 @@
                     orgids = jQuery.grep(orgids, function (value) {
                         return value != Org_id;
                     });// remove org fro array
-                    // orgids.splice(orgids.indexOf(Org_id), 1); // remove org fro array
 
                     if ($OrgSelected.find("li").length > 0) // checking for li in selected div of org
                         whereClause("cs.AD_Org_ID", orgids);
@@ -336,7 +329,6 @@
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                     resetPaging();
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
             });
@@ -362,7 +354,6 @@
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                     resetPaging();
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
             });
@@ -389,7 +380,6 @@
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
             $PayMSelected.on("click", function (e) {
@@ -402,7 +392,6 @@
                     paymntIds = jQuery.grep(paymntIds, function (value) {
                         return value != Paymt_ID;
                     });// Remove PaymtID From Array
-                    // paymntIds.splice(paymntIds.indexOf(Paymt_ID), 1); // Remove PaymtID From Array
 
                     if ($PayMSelected.find("li").length > 0) // checking for li in selected div of org
                         whereClause("pm.VA009_PaymentMethod_ID", paymntIds);
@@ -415,7 +404,6 @@
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                     resetPaging();
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
             });
@@ -442,7 +430,6 @@
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
             $statusSelected.on("click", function (e) {
@@ -465,7 +452,6 @@
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                     resetPaging();
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
             });
@@ -499,7 +485,6 @@
                     }
                     _WhrTransType += "" + transtypes[i] + "";
                 }
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
             $TransactionTypeSelected.on("click", function (e) {
@@ -523,14 +508,12 @@
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                     resetPaging();
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                 }
             });
             //end
 
             //used blur incase of change to avoid cal the event immediatly when press change the single character
-            //$FromDate.on("change", function () {
             $FromDate.on("blur", function () {
                 if (Date.parse($FromDate.val()) < 0) {
                     //if user not entered proper Date format 
@@ -547,12 +530,10 @@
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
 
             //used blur incase of change to avoid cal the event immediatly when press change the single character
-            /*$ToDate.on("change", function () {*/
             $ToDate.on("blur", function () {
                 if (Date.parse($ToDate.val()) < 0) {
                     //if user not entered proper Date format 
@@ -569,23 +550,10 @@
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
 
             $divPayment.on("scroll", paymentScroll);
-            //commented and pasted inside condition in paymentContainerClick()
-            //$divPayment.on("click", function (e) {
-            //    //if (e.target.className == "VA009-info-icon") {
-            //    if (e.target.className.contains("VA009-info-icon")) {
-            //        var target = $(e.target);
-
-            //        if (target.hasClass('VA009-info-icon')) {
-            //            infoWinID = target.data("uid");
-            //            zoomToWindow(infoWinID, "Business Partner Info", "C_BPartner_ID");
-            //        }
-            //    }
-            //});
 
             //click event for payment records
             $divPayment.on("click", paymentContainerClick);
@@ -713,7 +681,6 @@
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
             });
 
@@ -727,7 +694,6 @@
                     Duedateval = jQuery.grep(Duedateval, function (value) {
                         return value != Due_id;
                     });// remove org fro array
-                    // orgids.splice(orgids.indexOf(Org_id), 1); // remove org fro array
 
                     if ($DueDateSelected.find("li").length > 0) // checking for li in selected div of org
                         whereClause("DueDate", Duedateval);
@@ -751,7 +717,6 @@
                     $divBank.find('.VA009-accordion').remove();
                     pgNo = 1;
                     resetPaging();
-                    //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
                     $SrchTxtBox.val('');
                 }
@@ -763,7 +728,6 @@
                 $divBank.find('.VA009-accordion').remove();
                 pgNo = 1;
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 $SrchTxtBox.val('');
             });
@@ -775,7 +739,6 @@
                 _DocType = 'ARI'; _isinvoice = 'Y';
                 pgNo = 1;
                 resetPaging();
-                // loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 changeTabactive($CR_Tab);
                 ClearEasySearch();
@@ -789,7 +752,6 @@
                 _DocType = 'API'; _isinvoice = 'Y';
                 pgNo = 1;
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 changeTabactive($CP_Tab);
                 ClearEasySearch();
@@ -806,8 +768,6 @@
                 $totalAmt.data('ttlamt', parseFloat(0));
                 if (e.target.type == 'checkbox') {
                     if (target.prop("checked") == true) {
-                        //SlctdPaymentIds = SelectallInvIds;
-                        //SlctdOrderPaymentIds = SelectallOrdIds;
                         $divPayment.find(':checkbox').not(":disabled").prop('checked', true);
                         var v = [];
                         //clear the records from the array
@@ -852,7 +812,6 @@
                 _DocType = 'ARI'; _isinvoice = 'Y';
                 pgNo = 1;
                 resetPaging();
-                //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
                 changeTabactive($CR_Tab);
                 ClearEasySearch();
@@ -920,16 +879,6 @@
                         zoomToWindow(InvID, "Purchase Order", "C_Order_ID");
                     }
                 }
-
-                //modified by arpit on 7th Dec,2016 For the Zoom window of Order Payment Shedule & Payment Shedule
-                //var getTransactionType = $($(e.target.parentElement.parentElement.parentElement).find(".VA009-transactionType")[0]).text().trim();
-                //if (getTransactionType == "Invoice") {
-                //    zoomToWindow(Pay_ID, "VA009_PaymentSchedule", "C_InvoicePaySchedule_ID");
-                //}
-                //else if (getTransactionType == "Order") {
-                //    zoomToWindow(Pay_ID, "VA009_OrderPaySchedule", "VA009_OrderPaySchedule_ID");
-                //}
-                //End here
                 Pay_ID = 0;
             }
             else if (e.target.type == 'checkbox') {
@@ -955,13 +904,11 @@
                     record_ID = target.data("uid");
                     var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(2);
                     amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
-                    //var baseAmt = getFormattednumber(parseFloat(target.data("baseamt")), 3);
                     var baseAmt = VIS.Utility.Util.getValueOfDecimal(target.data("baseamt")).toFixed(2);
                     if (target.data("docbasetype") == "ARC" || target.data("docbasetype") == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
                     var actualAmt = VIS.Utility.Util.getValueOfDecimal(amt) + VIS.Utility.Util.getValueOfDecimal(baseAmt);
-                    //$totalAmt.text(VIS.Utility.Util.getValueOfDecimal(actualAmt).toFixed(2));
                     $totalAmt.data('ttlamt', parseFloat(actualAmt, 2));
                     $totalAmt.text(getFormattednumber(actualAmt, 2));
                 }
@@ -990,7 +937,6 @@
                         baseAmt = (-1 * baseAmt);
                     }
                     var actualAmt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
-                    //$totalAmt.text(VIS.Utility.Util.getValueOfDecimal(actualAmt).toFixed(2));
                     $totalAmt.data('ttlamt', parseFloat(actualAmt, 2));
                     $totalAmt.text(getFormattednumber(actualAmt, 2));
                     //end
@@ -1255,7 +1201,6 @@
                 divAmount.append($divchequeAmtCtrlWrp);
                 $divchequeAmtCtrlWrp.append(cheqAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
                 $chequePayble = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:450px !important'>");
-                //var _ChequePayble = "";
                 _ChequePayble = $("<div class='VA009-popfrm-wrap'>");
                 _chequedata = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
@@ -1280,10 +1225,6 @@
                     + "</select>"
                     + "<label>" + VIS.Msg.getMsg("VA009_BankAccount") + "</label>"
                     + "</div></div>");
-                //+ "<div class='VA009-popCheck-data'>"
-                //+ "<label>" + VIS.Msg.getMsg("VA009_AccountBalance") + "</label>"
-                //+ "<input type='text' style='background-color: #ededed;' id='VA009_AccountBalance" + $self.windowNo + "' disabled/> </div>"
-
 
                 _chequedata1 = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbPaySelectn_" + $self.windowNo + "'>"
@@ -1311,10 +1252,6 @@
                     + "<label>" + VIS.Msg.getMsg("VA009_CurrencyType") + "</label>"
                     + "</div></div>"
 
-                    //+ "<div class='VA009-popCheck-data' style=' padding-left: 0 !important;'>"
-                    //+ '<label>&nbsp;</label><div style=" padding-left: 0; "><input type="checkbox" id="VA009_chkConsolidate_' + $self.windowNo + '"> <label>Consolidate Payment</label></div>'
-                    //+ "</div>"                  
-
                     //payment Method
                     + "<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbPaymthd_" + $self.windowNo + "'>"
@@ -1338,13 +1275,6 @@
                     + "<input type='text' placeholder='" + VIS.Msg.getMsg("VA009_ChkNo") + "' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'><label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label>"
                     + "</div></div> "
 
-                    //+ "<div style='width: 100%; float: left;'>"                            
-
-                    //+ "<div class='VA009-popform-data' id='VA009_POP_textCheckNoDiv' style='margin-left: 20px !important;width: 48%;'>"
-                    //+ "<label>" + VIS.Msg.getMsg("VA009_ChkNo") + "</label>"
-                    //+ "<input type='text' style='background-color: #ededed;' disabled id='VA009_POP_textCheckNo_" + $self.windowNo + "'>"
-                    //+ "</div> "
-                    // + </div>"
                     + "<div class='VA009-grid-container'><div class='VA009-table-container' id='VA009_btnPopupGrid'></div></div>"
 
                     + "</div>");
@@ -1375,7 +1305,6 @@
                     }
                     else {
                         ChequePayDialog.show();
-                        // loadbank();
                         //populate banks based on selected organization in dialog
                         loadbanks($POP_cmbBank, VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()));
                         $POP_cmbBank.addClass('vis-ev-col-mandatory');
@@ -1401,7 +1330,6 @@
 
                     if (_CHQPay_Columns.length == 0) {
                         _CHQPay_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '12%' });
-                        //_CHQPay_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
                         _CHQPay_Columns.push({ field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '7%' });
                         _CHQPay_Columns.push({ field: "Description", caption: VIS.Msg.getMsg("Description"), sortable: true, size: '15%', editable: { type: 'text' } });
                         _CHQPay_Columns.push({ field: "CurrencyCode", caption: VIS.Msg.getMsg("VA009_Currency"), sortable: true, size: '8%' });
@@ -1491,7 +1419,6 @@
                             }, editable: { type: 'date' }
                         });
                         _CHQPay_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
-                        //_CHQPay_Columns.push({ field: "ValidMonths", caption: VIS.Msg.getMsg("VA009_ValidMonths"), sortable: true, size: '10%', editable: { type: 'text' } });
                         //by Amit - 1-12-2016
                         _CHQPay_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
                         //end
@@ -2062,7 +1989,6 @@
                     $POP_PayMthd = $chequePayble.find("#VA009_POP_cmbPaymthd_" + $self.windowNo);
                     $POP_PayMthd.addClass('vis-ev-col-mandatory');
                     $POPtxtCheckNumber = $chequePayble.find("#VA009_POP_textCheckNo_" + $self.windowNo);
-                    //$POPtxtCheckNumber.addClass('vis-ev-col-mandatory');
                     $POP_DateAcct = $chequePayble.find("#VA009_AccountDate_" + $self.windowNo);
                     $POP_Consolidate = $chequePayble.find("#VA009_chkConsolidate_" + $self.windowNo);
                     //Transaction Date
@@ -2078,9 +2004,6 @@
                     $POP_PayMthd.empty();
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadChequePaymentMethod", { "Org_ID": $POP_cmbOrg.val() }, callbackloadpaymthds);
                     function callbackloadpaymthds(dr) {
-                        //if (dr.length > 1)
-                        //    $POP_PayMthd.append(" <option value = 0></option>");
-
                         if (dr.length > 0) {
                             for (var i in dr) {
                                 $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
@@ -5072,7 +4995,7 @@
                     + "<label class='vis-ec-col-lblchkbox'><input type='checkbox' id='VA009_Consolidate_" + $self.windowNo + "'>&nbsp;" + VIS.Msg.getMsg("VA009_Consolidate") + '</label> </div></div>'
 
                     + "<div class='VA009-popform-data'><div class='VA009-popFormInn'>"
-                    + " <a class='btn VA009-blueBtn' id='VA009_btnCheckDetails_" + $self.windowNo + "' style='display: none !important; margin-bottom: 10px !important; margin-top: 0px !important;'> " + VIS.Msg.getMsg("VA009_CheckDetails") + "</a >"
+                    + " <a class='btn VA009-blueBtn VA009-batchCheckDetail' id='VA009_btnCheckDetails_" + $self.windowNo + "'> " + VIS.Msg.getMsg("VA009_CheckDetails") + "</a >"
                     + " </div></div>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap' style='display:none !important'><div class='vis-control-wrap'>"
@@ -5094,6 +5017,7 @@
                 BatchDialog.setHeight(window.innerHeight - 80);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
+                $POP_BtnChkDetails.hide();
                 BatchDialog.show();
                 BatchGrid_Layout();
                 loadgrdBatch(callbackBatch);
@@ -8071,6 +7995,7 @@
                 chequeDetailsDialog.setEnableResize(true);
                 chequeDetailsDialog.setModal(true);
                 chequeDetailsDialog.show();
+                chequeDetailsDialog.hidebuttons();
                 ChequeDetailsGrid_Layout();
                 BPLocLookup = VIS.MLookupFactory.get(VIS.Env.getCtx(), $self.windowNo, 0, VIS.DisplayType.TableDir, "C_BPartner_Location_ID", 0, false, "C_BPartner_Location.IsActive='Y' ");
                 loadChkDtlsGridData(JSON.parse(ds), ChequeDetailsGrd, JSON.parse(JSON.stringify(BatchGrd.records)), isConsolidate);
@@ -8089,6 +8014,7 @@
                     $opnChkDtls = null;
                     w2ui["VA009_ChkDetailsGrid_" + $self.windowNo].destroy();
                 };
+
                 function ChequeDetailsGrid_Layout() {
                     var _chkDetails_Columns = [];
                     if (_chkDetails_Columns.length == 0) {
@@ -8144,22 +8070,35 @@
                     }),
                         ChequeDetailsGrd.hideColumn('recid', 'CurrencyCode', 'C_InvoicePaySchedule_ID', 'DueAmt', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
                 };
+
                 function loadChkDtlsGridData(ds, ChequeDetailsGrd, SelectedRecords, isConsolidate) {
+
                     if (SelectedRecords.length > 0) {
                         var checkNum = 0; var recds = []; var amt = 0;
                         var maxLineCount = 0; var ChkAutoControl = "N";
-
+                        var chk;
                         if (ds != null && ds.length > 0) {
                             checkNum = parseInt(ds[0]["CURRENTNEXT"]);
                             maxLineCount = parseInt(ds[0]["VA009_BATCHLINEDETAILCOUNT"]);
                             ChkAutoControl = ds[0]["CHKNOAUTOCONTROL"];
+                            ds[0]["ASSIGNEDCHKNUM"] = checkNum;
+                            ds[0]["TOTALLINESCOUNT"] = 0;
+                            chk = ds;
                         }
+
                         if (ChkAutoControl == "Y") {
                             for (i = 0; i < SelectedRecords.length; i++) {
+                                chk = getNextCheckNumberBasedOnAssigned(ds, checkNum);
+                                if (chk != null) {
+                                    checkNum = chk["ASSIGNEDCHKNUM"];
+                                }
+
                                 if (i == 0) {
                                     SelectedRecords[i]["CheckNumber"] = checkNum;
                                     SelectedRecords[i]["TotalLinesCount"] = 1;
                                     checkNum = checkNum + 1;
+                                    ds[0]["ASSIGNEDCHKNUM"] = checkNum;
+                                    ds[0]["TOTALLINESCOUNT"] = 1;
                                     recds.push(SelectedRecords[i]);
                                 }
                                 else {
@@ -8177,6 +8116,8 @@
                                         SelectedRecords[i]["CheckNumber"] = checkNum;
                                         checkNum = checkNum + 1;
                                         SelectedRecords[i]["TotalLinesCount"] = 1;
+                                        ds[0]["ASSIGNEDCHKNUM"] = checkNum;
+                                        ds[0]["TOTALLINESCOUNT"] = 1;
                                         recds.push(SelectedRecords[i]);
                                     }
                                     //if record already found then add the checknumber and Increase total count
@@ -8186,7 +8127,17 @@
                                         amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         filterObj[0]["ConvertedAmt"] = amt;
                                         filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
+                                        //ds[0]["ASSIGNEDCHKNUM"] = checkNum;
+                                        ds[0]["TOTALLINESCOUNT"] = filterObj[0]["TotalLinesCount"];
                                     }
+                                }
+                                if (chk != null) {
+                                    for (j = 0; j < ds.length; j++) {
+                                        if (parseInt(ds[j]["C_BANKACCOUNTDOC_ID"]) == parseInt(chk["C_BANKACCOUNTDOC_ID"])) {
+                                            ds[j]["ASSIGNEDCHKNUM"] = checkNum;
+                                        }
+                                    }
+                                    
                                 }
                             }
                             w2utils.encodeTags(recds);
@@ -8200,6 +8151,29 @@
                     }
                 };
 
+                function getNextCheckNumberBasedOnAssigned(Chk_DT, chkNum) {
+                    var chkDtl = [];
+                    var isNewSeries = false;
+                    for (C_Num = 0; C_Num < Chk_DT.length; C_Num++) {
+                        if (Chk_DT[C_Num].hasOwnProperty("ASSIGNEDCHKNUM")) {
+                            if (parseInt(Chk_DT[C_Num]["ASSIGNEDCHKNUM"]) <= parseInt(Chk_DT[C_Num]["ENDCHKNUMBER"])) {
+                                chkDtl = Chk_DT[C_Num];
+                                isNewSeries = false;
+                                break;
+                            }
+                        }
+                        else {
+                            Chk_DT[C_Num]["ASSIGNEDCHKNUM"] = parseInt(Chk_DT[C_Num]["CURRENTNEXT"]);
+                            Chk_DT[C_Num]["TOTALLINESCOUNT"] = 0;
+                            chkDtl = Chk_DT[C_Num];
+                            isNewSeries = true;
+                            break;
+                        }
+                    }
+                    if (!isNewSeries)
+                        chkDtl["ASSIGNEDCHKNUM"] = parseInt(chkNum);
+                    return chkDtl;
+                };
             }
         };
 

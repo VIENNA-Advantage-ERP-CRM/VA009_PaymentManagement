@@ -6725,15 +6725,17 @@ namespace VA009.Models
                     isconsolidate = PaymentData[0].isconsolidate;
                     isOverwrite = PaymentData[0].isOverwrite;
 
+                    //if consolidate is true then get the details from Bank Dcoument against payment method
                     if (isconsolidate.ToUpper().Equals("Y"))
                     {
+                        //it will contain current check number, CHeck number auto control, Max Batch Line count 
+                        //BatchLineDetailCount is used to create maximum lines on Batch Line Details Tab.
                         _bankDoc_chequeDT = DBFuncCollection.GetDetailsofChequeForBatch(PaymentData[0].C_BankAccount_ID, PaymentData[0].VA009_PaymentMethod_ID, null);
                         if (_bankDoc_chequeDT != null && _bankDoc_chequeDT.Rows.Count > 0)
                         {
                             if (Util.GetValueOfString(_bankDoc_chequeDT.Rows[0]["CHKNOAUTOCONTROL"]).ToUpper().Equals("Y"))
                             {
                                 Line_MaxCount = Util.GetValueOfInt(_bankDoc_chequeDT.Rows[0]["VA009_BATCHLINEDETAILCOUNT"]);
-                                //Util.GetValueOfInt(_bankDoc_chequeDT.Rows[0]["CURRENTNEXT"]);
                             }
                         }
                     }
@@ -6768,7 +6770,7 @@ namespace VA009.Models
                             if (_TransactionType.Equals("Invoice"))
                             {
                                 MInvoicePaySchedule _invpaySchdule = new MInvoicePaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
-                                MDocType _doctype = new MDocType(ct, _invpaySchdule.GetC_DocType_ID(), trx);
+                                MDocType _doctype = MDocType.Get(ct, _invpaySchdule.GetC_DocType_ID());
                                 //removed condition of Cheque Payment method Suggested by Ashish and Rajni
                                 // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
                                 if (Line_MaxCount == 0 ?
