@@ -1,4 +1,4 @@
-﻿/***version 1.0.42.0*/
+﻿/***version 1.0.42.1*/
 /*body{
 	margin: 0;
 	padding: 0;	
@@ -74,6 +74,11 @@
 .VA009-data-bot {
     float: left;
     width: 100%;
+}
+
+.VA009-batchCheckDetail {
+    margin-bottom: 10px !important;
+    margin-top: 0px !important;
 }
 /*
 .payment-list .payment-wrap:hover
