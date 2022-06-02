@@ -113,7 +113,7 @@ namespace ViennaAdvantage.Process
             MBankAccount _bankacc = new MBankAccount(GetCtx(), batch.GetC_BankAccount_ID(), Get_TrxName());
             //to get cheque details based on payment method and bank account
             DataTable _ChkDtlsDT = DBFuncCollection.GetDetailsofChequeForBatch(batch.GetC_BankAccount_ID(), batch.GetVA009_PaymentMethod_ID(), Get_Trx());
-            
+
             if (_ChkDtlsDT != null && _ChkDtlsDT.Rows.Count > 0)
             {
                 if (Util.GetValueOfString(_ChkDtlsDT.Rows[0]["CHKNOAUTOCONTROL"]).ToUpper().Equals("Y"))
@@ -141,8 +141,8 @@ namespace ViennaAdvantage.Process
                           INNER JOIN C_DocType doc ON (doc.C_DocType_ID = CI.C_DocType_ID) 
                           WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
                           CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' 
-                          AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID());
-                        // + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
+                          AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
+                          + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
 
             if (_C_BPartner_ID > 0)
             {

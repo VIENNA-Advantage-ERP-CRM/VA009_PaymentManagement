@@ -7978,6 +7978,7 @@
                 };
 
             },
+
             //added new button to show check details if payment method is cheque
             //cheque details dialouge for showing thr details of cheque and based on batch line detail count
             ChequeDetails_Dialog: function (ds, isConsolidate) {
@@ -8071,6 +8072,11 @@
                         ChequeDetailsGrd.hideColumn('recid', 'CurrencyCode', 'C_InvoicePaySchedule_ID', 'DueAmt', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
                 };
 
+                //load data in cheque details grid.
+                //ds--- it contains the data array of cheque series from bank document.
+                //ChequeDetailsGrd--- Grid in which data will be shown
+                //SelectedRecords----records which are selected for batch
+                //isConsolidate--- flag for consolidate funatioanlity.
                 function loadChkDtlsGridData(ds, ChequeDetailsGrd, SelectedRecords, isConsolidate) {
 
                     if (SelectedRecords.length > 0) {
@@ -8081,7 +8087,9 @@
                             checkNum = parseInt(ds[0]["CURRENTNEXT"]);
                             maxLineCount = parseInt(ds[0]["VA009_BATCHLINEDETAILCOUNT"]);
                             ChkAutoControl = ds[0]["CHKNOAUTOCONTROL"];
-                            ds[0]["ASSIGNEDCHKNUM"] = checkNum;
+                            // it will contain the next check number to be assigned
+                            ds[0]["ASSIGNEDCHKNUM"] = checkNum; 
+                            //it contains the total lines created
                             ds[0]["TOTALLINESCOUNT"] = 0;
                             chk = ds;
                         }
@@ -8097,7 +8105,6 @@
                                     SelectedRecords[i]["CheckNumber"] = checkNum;
                                     SelectedRecords[i]["TotalLinesCount"] = 1;
                                     checkNum = checkNum + 1;
-                                    ds[0]["ASSIGNEDCHKNUM"] = checkNum;
                                     ds[0]["TOTALLINESCOUNT"] = 1;
                                     recds.push(SelectedRecords[i]);
                                 }
@@ -8116,7 +8123,6 @@
                                         SelectedRecords[i]["CheckNumber"] = checkNum;
                                         checkNum = checkNum + 1;
                                         SelectedRecords[i]["TotalLinesCount"] = 1;
-                                        ds[0]["ASSIGNEDCHKNUM"] = checkNum;
                                         ds[0]["TOTALLINESCOUNT"] = 1;
                                         recds.push(SelectedRecords[i]);
                                     }
@@ -8127,7 +8133,6 @@
                                         amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         filterObj[0]["ConvertedAmt"] = amt;
                                         filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
-                                        //ds[0]["ASSIGNEDCHKNUM"] = checkNum;
                                         ds[0]["TOTALLINESCOUNT"] = filterObj[0]["TotalLinesCount"];
                                     }
                                 }
@@ -8151,6 +8156,7 @@
                     }
                 };
 
+                //get the check series based on priority and check number.
                 function getNextCheckNumberBasedOnAssigned(Chk_DT, chkNum) {
                     var chkDtl = [];
                     var isNewSeries = false;
