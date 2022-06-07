@@ -16,8 +16,7 @@ using VAdvantage.Logging;
 using VAdvantage.ProcessEngine;
 using ViennaAdvantage.Model;
 using ViennaAdvantage.PaymentClass;
-
-
+using ViennaAdvantage.Common;
 
 namespace ViennaAdvantage.Process
 {
@@ -46,6 +45,8 @@ namespace ViennaAdvantage.Process
         int _AD_Client_ID = 0, _AD_Org_ID = 0, _Bank_Currency_ID = 0;
         string _baseType = null;
         DateTime? _AccountDate = null;
+        //varriable to save lines count
+        int Line_MaxCount = 0, Total_Lines_Count = 0;
         //int _VA009_BatchDetail_ID = 0;
 
         protected override void Prepare()
@@ -137,6 +138,17 @@ namespace ViennaAdvantage.Process
                 }
             }
             batchid = GetBatchId();
+            //to get cheque details based on payment method and bank account
+            DataTable _ChkDtlsDT = DBFuncCollection.GetDetailsofChequeForBatch(_C_BankAccount_ID, _paymentMethod, Get_Trx());
+            bool isAPI_APC = false;
+            if (_ChkDtlsDT != null && _ChkDtlsDT.Rows.Count > 0)
+            {
+                if (Util.GetValueOfString(_ChkDtlsDT.Rows[0]["CHKNOAUTOCONTROL"]).ToUpper().Equals("Y"))
+                {
+                    Line_MaxCount = Util.GetValueOfInt(_ChkDtlsDT.Rows[0]["VA009_BATCHLINEDETAILCOUNT"]);
+                }
+            }
+
             if (batchid > 0)
             {
                 StringBuilder _sql = new StringBuilder();
@@ -207,7 +219,14 @@ namespace ViennaAdvantage.Process
                 {
                     for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                     {
-                        if ((Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"])) == 0)
+                        //in case of AP side we need to run new setting btch line count 
+                        if ("API" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) ||
+                               "APC" == Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]))
+                        {
+                            isAPI_APC = true;
+                        }
+                        else { isAPI_APC = false; Total_Lines_Count = 0; }
+                            if ((Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"])) == 0)
                         {
                             continue;
                         }
@@ -267,20 +286,36 @@ namespace ViennaAdvantage.Process
                             {
                                 _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
                             }
+                            _sql.Append(" ORDER BY VA009_BatchLines_ID DESC ");
                             DataSet dsBatchLine = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
                             if (dsBatchLine != null && dsBatchLine.Tables[0].Rows.Count > 0)
                             {
                                 DataRow dr = dsBatchLine.Tables[0].Rows[0];
                                 line = new MVA009BatchLines(GetCtx(), dr, Get_TrxName());
+                                //if line found then add batchlinedetail agaisnt same line otherwise create new line
+                                if (Line_MaxCount > 0 && isAPI_APC)
+                                {
+                                    if (Total_Lines_Count == Line_MaxCount)
+                                    {
+                                        line = null;
+                                        Total_Lines_Count = 0;
+                                    }
+                                }
                             }
                             else
                             {
                                 line = null;
+                                //if line null then reset total lines to 0
+                                if (Line_MaxCount > 0 && isAPI_APC)
+                                    Total_Lines_Count = 0;
                             }
                         }
                         else
                         {
                             line = null;
+                            //if line null then reset total lines to 0
+                            if (Line_MaxCount > 0 && isAPI_APC)
+                                Total_Lines_Count = 0;
                         }
 
                         // Create Batch Line
@@ -344,6 +379,9 @@ namespace ViennaAdvantage.Process
                             {
                                 _BPartner = 0;
                                 _VA009_BatchLine_ID = 0;
+                                //if line null then reset total lines to 0
+                                if (Line_MaxCount > 0 && isAPI_APC)
+                                    Total_Lines_Count = 0;
                             }
                         }
 
@@ -448,6 +486,9 @@ namespace ViennaAdvantage.Process
                         }
                         else
                         {
+                            //increase total line count after save the linedetails
+                            if (Line_MaxCount > 0 && isAPI_APC)
+                                Total_Lines_Count = Total_Lines_Count + 1;
                             // Update Invoice Schedule with Status as "Assigned To Batch"
                             DB.ExecuteQuery(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'Y' 
                          WHERE C_InvoicePaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), null, Get_Trx());
