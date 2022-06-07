@@ -463,7 +463,7 @@ namespace ViennaAdvantage.Common
         /// <returns>DataTable or null with cheque details</returns>
         public static DataTable GetDetailsofChequeForBatch(int C_BankAccount_ID, int VA009_PaymentMethod_ID, Trx tr)
         {
-            //'bad.VA009_BatchLineDetailCount'
+            // added condition to get only those cheques which current cheque number are less than or equal to end cheque number.
             DataSet ds = DB.ExecuteDataset(@" SELECT bad.CurrentNext AS CURRENTNEXT, 
                         bad.VA009_BatchLineDetailCount AS VA009_BATCHLINEDETAILCOUNT, ba.ChkNoAutoControl AS CHKNOAUTOCONTROL,
                         bad.startchknumber AS STARTCHKNUMBER, bad.endchknumber AS ENDCHKNUMBER, bad.priority AS PRIORITY,
@@ -471,7 +471,7 @@ namespace ViennaAdvantage.Common
                         FROM C_BankAccount ba INNER JOIN C_BankAccountdoc bad ON ba.C_BankAccount_ID = 
                         bad.C_BankAccount_ID WHERE bad.C_BankAccount_ID = " + C_BankAccount_ID + @"
                         AND bad.IsActive = 'Y' AND bad.VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID + "" +
-                        " ORDER BY bad.priority ASC "
+                        " AND bad.CurrentNext <= bad.endchknumber ORDER BY bad.priority ASC "
                         , null, tr);
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {

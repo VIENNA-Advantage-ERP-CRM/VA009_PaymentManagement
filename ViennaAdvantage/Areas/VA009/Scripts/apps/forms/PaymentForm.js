@@ -8097,6 +8097,12 @@
                             ds[0]["TOTALLINESCOUNT"] = 0;
                             chk = ds;
                         }
+                        //if no bank account document record found then show msg cheques not available
+                        else {
+                            chequeDetailsDispose();
+                            chequeDetailsDialog.close();
+                            VIS.ADialog.info("VA009_ChequesNotAvail");
+                        }
 
                         if (ChkAutoControl == "Y") {
                             for (i = 0; i < SelectedRecords.length; i++) {
