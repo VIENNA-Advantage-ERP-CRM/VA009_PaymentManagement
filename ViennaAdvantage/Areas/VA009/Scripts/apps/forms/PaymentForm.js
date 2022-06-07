@@ -78,6 +78,8 @@
         var $resultb2b = null;
         var $closeb2b = null;
         var $createNew = null;
+        //varriable to show the message if cheques are not available 
+        var _ChequesNotAvailable = false;
         //var elements = [
         //    "VA009_Cancel",
         //];
@@ -7989,6 +7991,8 @@
                 _opnChkDtls += "<div class='VA009-table-container' style='height:300px;' id='VA009_ChkDetailsGrid_" + $self.windowNo + "'> </div>'";
                 $opnChkDtls.append(_opnChkDtls);
                 var _chequeDetailsGrid = $opnChkDtls.find("#VA009_ChkDetailsGrid_" + $self.windowNo);
+                //False everytime when dialog opens to show the message if cheques are not available 
+                _ChequesNotAvailable = false;
                 var chequeDetailsDialog = new VIS.ChildDialog();
                 chequeDetailsDialog.setContent($opnChkDtls);
                 chequeDetailsDialog.setTitle(VIS.Msg.getMsg("VA009_CheckDetails"));
@@ -8088,7 +8092,7 @@
                             maxLineCount = parseInt(ds[0]["VA009_BATCHLINEDETAILCOUNT"]);
                             ChkAutoControl = ds[0]["CHKNOAUTOCONTROL"];
                             // it will contain the next check number to be assigned
-                            ds[0]["ASSIGNEDCHKNUM"] = checkNum; 
+                            ds[0]["ASSIGNEDCHKNUM"] = checkNum;
                             //it contains the total lines created
                             ds[0]["TOTALLINESCOUNT"] = 0;
                             chk = ds;
@@ -8142,7 +8146,7 @@
                                             ds[j]["ASSIGNEDCHKNUM"] = checkNum;
                                         }
                                     }
-                                    
+
                                 }
                             }
                             w2utils.encodeTags(recds);
@@ -8153,6 +8157,10 @@
                             chequeDetailsDialog.close();
                             VIS.ADialog.info("VA009_PlzCngStngOfAutoCntrl");
                         }
+                    }
+                   //show msg if cheques are not available 
+                    if (_ChequesNotAvailable) {
+                        VIS.ADialog.info("VA009_ChequesNotAvail");
                     }
                 };
 
@@ -8176,8 +8184,13 @@
                             break;
                         }
                     }
-                    if (!isNewSeries)
+                    //Needs to set balnk in cheque number and show the message if cheques are not available 
+                    if (!isNewSeries && chkDtl != null)
                         chkDtl["ASSIGNEDCHKNUM"] = parseInt(chkNum);
+                    if (chkDtl == null || (chkDtl != null && chkDtl.length == 0)) {
+                        chkDtl["ASSIGNEDCHKNUM"] = "";
+                        _ChequesNotAvailable = true;
+                    }
                     return chkDtl;
                 };
             }
