@@ -139,13 +139,13 @@ namespace ViennaAdvantage.Process
             }
             batchid = GetBatchId();
             //to get cheque details based on payment method and bank account
-            DataTable _ChkDtlsDT = DBFuncCollection.GetDetailsofChequeForBatch(_C_BankAccount_ID, _paymentMethod, Get_Trx());
+            List<CheckDetails> _ChkDtlsDT = DBFuncCollection.GetDetailsofChequeForBatch(_C_BankAccount_ID, _paymentMethod, Get_Trx());
             bool isAPI_APC = false;
-            if (_ChkDtlsDT != null && _ChkDtlsDT.Rows.Count > 0)
+            if (_ChkDtlsDT != null && _ChkDtlsDT.Count > 0)
             {
-                if (Util.GetValueOfString(_ChkDtlsDT.Rows[0]["CHKNOAUTOCONTROL"]).ToUpper().Equals("Y"))
+                if (Util.GetValueOfString(_ChkDtlsDT[0].chknoautocontrol).ToUpper().Equals("Y"))
                 {
-                    Line_MaxCount = Util.GetValueOfInt(_ChkDtlsDT.Rows[0]["VA009_BATCHLINEDETAILCOUNT"]);
+                    Line_MaxCount = Util.GetValueOfInt(_ChkDtlsDT[0].va009_batchlinedetailcount);
                 }
             }
 
