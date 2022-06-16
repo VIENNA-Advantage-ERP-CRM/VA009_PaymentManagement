@@ -8088,9 +8088,9 @@
                         var maxLineCount = 0; var ChkAutoControl = "N";
                         var chk;
                         if (ds != null && ds.length > 0) {
-                            checkNum = parseInt(ds[0]["CURRENTNEXT"]);
-                            maxLineCount = parseInt(ds[0]["VA009_BATCHLINEDETAILCOUNT"]);
-                            ChkAutoControl = ds[0]["CHKNOAUTOCONTROL"];
+                            checkNum = parseInt(ds[0]["currentnext"]);
+                            maxLineCount = parseInt(ds[0]["va009_batchlinedetailcount"]);
+                            ChkAutoControl = ds[0]["chknoautocontrol"];
                             // it will contain the next check number to be assigned
                             ds[0]["ASSIGNEDCHKNUM"] = checkNum;
                             //it contains the total lines created
@@ -8148,7 +8148,7 @@
                                 }
                                 if (chk != null) {
                                     for (j = 0; j < ds.length; j++) {
-                                        if (parseInt(ds[j]["C_BANKACCOUNTDOC_ID"]) == parseInt(chk["C_BANKACCOUNTDOC_ID"])) {
+                                        if (parseInt(ds[j]["c_bankaccountdoc_id"]) == parseInt(chk["c_bankaccountdoc_id"])) {
                                             ds[j]["ASSIGNEDCHKNUM"] = checkNum;
                                         }
                                     }
@@ -8176,14 +8176,14 @@
                     var isNewSeries = false;
                     for (C_Num = 0; C_Num < Chk_DT.length; C_Num++) {
                         if (Chk_DT[C_Num].hasOwnProperty("ASSIGNEDCHKNUM")) {
-                            if (parseInt(Chk_DT[C_Num]["ASSIGNEDCHKNUM"]) <= parseInt(Chk_DT[C_Num]["ENDCHKNUMBER"])) {
+                            if (parseInt(Chk_DT[C_Num]["ASSIGNEDCHKNUM"]) <= parseInt(Chk_DT[C_Num]["endchknumber"])) {
                                 chkDtl = Chk_DT[C_Num];
                                 isNewSeries = false;
                                 break;
                             }
                         }
                         else {
-                            Chk_DT[C_Num]["ASSIGNEDCHKNUM"] = parseInt(Chk_DT[C_Num]["CURRENTNEXT"]);
+                            Chk_DT[C_Num]["ASSIGNEDCHKNUM"] = parseInt(Chk_DT[C_Num]["currentnext"]);
                             Chk_DT[C_Num]["TOTALLINESCOUNT"] = 0;
                             chkDtl = Chk_DT[C_Num];
                             isNewSeries = true;

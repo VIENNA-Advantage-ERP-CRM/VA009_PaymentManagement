@@ -112,13 +112,13 @@ namespace ViennaAdvantage.Process
             bool isAPI_APC = false;
             MBankAccount _bankacc = new MBankAccount(GetCtx(), batch.GetC_BankAccount_ID(), Get_TrxName());
             //to get cheque details based on payment method and bank account
-            DataTable _ChkDtlsDT = DBFuncCollection.GetDetailsofChequeForBatch(batch.GetC_BankAccount_ID(), batch.GetVA009_PaymentMethod_ID(), Get_Trx());
+            List<CheckDetails> _ChkDtlsDT = DBFuncCollection.GetDetailsofChequeForBatch(batch.GetC_BankAccount_ID(), batch.GetVA009_PaymentMethod_ID(), Get_Trx());
 
-            if (_ChkDtlsDT != null && _ChkDtlsDT.Rows.Count > 0)
+            if (_ChkDtlsDT != null && _ChkDtlsDT.Count > 0)
             {
-                if (Util.GetValueOfString(_ChkDtlsDT.Rows[0]["CHKNOAUTOCONTROL"]).ToUpper().Equals("Y"))
+                if (Util.GetValueOfString(_ChkDtlsDT[0].chknoautocontrol).ToUpper().Equals("Y"))
                 {
-                    Line_MaxCount = Util.GetValueOfInt(_ChkDtlsDT.Rows[0]["VA009_BATCHLINEDETAILCOUNT"]);
+                    Line_MaxCount = Util.GetValueOfInt(_ChkDtlsDT[0].va009_batchlinedetailcount);
                 }
             }
             decimal dueamt = 0;

@@ -461,13 +461,13 @@ namespace ViennaAdvantage.Common
         /// <param name="VA009_PaymentMethod_ID">Payment Method</param>
         ///  <param name="tr">Transaction object</param>
         /// <returns>DataTable or null with cheque details</returns>
-        public static DataTable GetDetailsofChequeForBatch(int C_BankAccount_ID, int VA009_PaymentMethod_ID, Trx tr)
+        public static List<CheckDetails> GetDetailsofChequeForBatch(int C_BankAccount_ID, int VA009_PaymentMethod_ID, Trx tr)
         {
             // added condition to get only those cheques which current cheque number are less than or equal to end cheque number.
-            DataSet ds = DB.ExecuteDataset(@" SELECT bad.CurrentNext AS CURRENTNEXT, 
-                        bad.VA009_BatchLineDetailCount AS VA009_BATCHLINEDETAILCOUNT, ba.ChkNoAutoControl AS CHKNOAUTOCONTROL,
-                        bad.startchknumber AS STARTCHKNUMBER, bad.endchknumber AS ENDCHKNUMBER, bad.priority AS PRIORITY,
-                        bad.C_BankAccountdoc_ID AS C_BANKACCOUNTDOC_ID
+            DataSet ds = DB.ExecuteDataset(@" SELECT bad.CurrentNext AS currentnext, 
+                        bad.VA009_BatchLineDetailCount AS va009_batchlinedetailcount, ba.ChkNoAutoControl AS chknoautocontrol,
+                        bad.startchknumber AS startchknumber, bad.endchknumber AS endchknumber, bad.priority AS priority,
+                        bad.C_BankAccountdoc_ID AS c_bankaccountdoc_id
                         FROM C_BankAccount ba INNER JOIN C_BankAccountdoc bad ON ba.C_BankAccount_ID = 
                         bad.C_BankAccount_ID WHERE bad.C_BankAccount_ID = " + C_BankAccount_ID + @"
                         AND bad.IsActive = 'Y' AND bad.VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID + "" +
@@ -475,10 +475,35 @@ namespace ViennaAdvantage.Common
                         , null, tr);
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
-                return ds.Tables[0];
+                List<CheckDetails> lstdtls = new List<CheckDetails>();
+                CheckDetails obj = null;
+               for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    obj = new CheckDetails();
+                    obj.chknoautocontrol = Util.GetValueOfString(ds.Tables[0].Rows[i]["chknoautocontrol"]);
+                    obj.currentnext = Util.GetValueOfString(ds.Tables[0].Rows[i]["currentnext"]);
+                    obj.va009_batchlinedetailcount = Util.GetValueOfString(ds.Tables[0].Rows[i]["va009_batchlinedetailcount"]);
+                    obj.startchknumber = Util.GetValueOfString(ds.Tables[0].Rows[i]["startchknumber"]);
+                    obj.endchknumber = Util.GetValueOfString(ds.Tables[0].Rows[i]["endchknumber"]);
+                    obj.priority = Util.GetValueOfString(ds.Tables[0].Rows[i]["priority"]);
+                    obj.c_bankaccountdoc_id = Util.GetValueOfString(ds.Tables[0].Rows[i]["c_bankaccountdoc_id"]);
+                    lstdtls.Add(obj);
+                }
+                return lstdtls;
             }
             return null;
         }
 
+    }
+
+    public class CheckDetails
+    {
+        public string currentnext { get; set; }
+        public string va009_batchlinedetailcount { get; set; }
+        public string chknoautocontrol { get; set; }
+        public string startchknumber { get; set; }
+        public string endchknumber { get; set; }
+        public string priority { get; set; }
+        public string c_bankaccountdoc_id { get; set; }
     }
 }
