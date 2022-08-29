@@ -1310,13 +1310,14 @@ namespace VA009.Models
                                                 }
                                                 else if (_doctype.GetDocBaseType() == "APC")
                                                 {
+                                                   
                                                     if (PaymentData[i].OverUnder > 0)
                                                         _pay.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
-                                                    if (PaymentData[i].VA009_RecivedAmt > 0)
+                                                    if (M_Allocate.GetAmount() > 0)
                                                         M_Allocate.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
-                                                    if (PaymentData[i].Discount > 0)
+                                                    if (M_Allocate.GetDiscountAmt() > 0)
                                                         M_Allocate.SetDiscountAmt(-1 * (PaymentData[i].Discount));
-                                                    if (PaymentData[i].Writeoff > 0)
+                                                    if (M_Allocate.GetWriteOffAmt() > 0)
                                                         M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
                                                 }
 
@@ -6714,7 +6715,7 @@ namespace VA009.Models
             StringBuilder _sql = new StringBuilder();
             int C_Doctype_ID = 0, paymentmethdoID = 0, Line_MaxCount = 0, total_LineCount = 0;
             Dictionary<string, object> paymethodDetails = null;
-            DataTable _bankDoc_chequeDT = null;
+            List<CheckDetails> _bankDoc_chequeDT = null;
             #endregion
 
             try
@@ -6731,11 +6732,11 @@ namespace VA009.Models
                         //it will contain current check number, CHeck number auto control, Max Batch Line count 
                         //BatchLineDetailCount is used to create maximum lines on Batch Line Details Tab.
                         _bankDoc_chequeDT = DBFuncCollection.GetDetailsofChequeForBatch(PaymentData[0].C_BankAccount_ID, PaymentData[0].VA009_PaymentMethod_ID, null);
-                        if (_bankDoc_chequeDT != null && _bankDoc_chequeDT.Rows.Count > 0)
+                        if (_bankDoc_chequeDT != null && _bankDoc_chequeDT.Count > 0)
                         {
-                            if (Util.GetValueOfString(_bankDoc_chequeDT.Rows[0]["CHKNOAUTOCONTROL"]).ToUpper().Equals("Y"))
+                            if (Util.GetValueOfString(_bankDoc_chequeDT[0].chknoautocontrol).ToUpper().Equals("Y"))
                             {
-                                Line_MaxCount = Util.GetValueOfInt(_bankDoc_chequeDT.Rows[0]["VA009_BATCHLINEDETAILCOUNT"]);
+                                Line_MaxCount = Util.GetValueOfInt(_bankDoc_chequeDT[0].va009_batchlinedetailcount);
                             }
                         }
                     }
