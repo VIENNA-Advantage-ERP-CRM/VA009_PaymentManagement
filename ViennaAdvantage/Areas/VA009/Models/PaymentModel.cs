@@ -1322,11 +1322,11 @@ namespace VA009.Models
                                                 {
                                                     if (PaymentData[i].OverUnder > 0)
                                                         _pay.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
-                                                    if (PaymentData[i].VA009_RecivedAmt > 0)
+                                                    if (M_Allocate.GetAmount() > 0)
                                                         M_Allocate.SetAmount(-1 * (PaymentData[i].VA009_RecivedAmt));
-                                                    if (PaymentData[i].Discount > 0)
+                                                    if (M_Allocate.GetDiscountAmt() > 0)
                                                         M_Allocate.SetDiscountAmt(-1 * (PaymentData[i].Discount));
-                                                    if (PaymentData[i].Writeoff > 0)
+                                                    if (M_Allocate.GetWriteOffAmt() > 0)
                                                         M_Allocate.SetWriteOffAmt(-1 * (PaymentData[i].Writeoff));
                                                 }
 
