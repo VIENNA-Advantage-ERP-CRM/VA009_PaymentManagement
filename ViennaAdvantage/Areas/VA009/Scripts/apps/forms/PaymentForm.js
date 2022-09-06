@@ -4895,8 +4895,8 @@
                         //_Qry += " ) AND pm.va009_paymentbasetype  IN ('S','B') GROUP BY pm.va009_paymentbasetype ";
 
                         //var _sql = VIS.secureEngine.encrypt(_Qry);
-                        //var paystatus = VIS.DB.executeDataSet(_Qry);
-                       // var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
+                        ////var paystatus = VIS.DB.executeDataSet(_Qry);
+                        //var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
 
                         //if (paystatus != null && paystatus.tables[0].rows.length > 0) {
                         //if (paystatus != null && paystatus.length > 0) {
