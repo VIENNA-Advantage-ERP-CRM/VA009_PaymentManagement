@@ -4818,7 +4818,7 @@
                     $bsyDiv[0].style.visibility = "hidden";
                     //VIS.ADialog.info("", null, result, null);
                     // changed info message window to Error message window according to requirement
-                    VIS.ADialog.error("", null, result, null);
+                    VIS.ADialog.info("", null, result, null);
                     //w2alert(result.toString());
                 };
 
