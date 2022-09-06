@@ -553,14 +553,15 @@ namespace ViennaAdvantage.Process
                 {
                     DB.ExecuteQuery("DELETE FROM VA009_Batch WHERE VA009_Batch_ID=" + batchid, null, Get_TrxName());
 
-                    return Msg.GetMsg(GetCtx(), "VA009_RecordNotFound");
+                    return "VA009_RecordNotFound";
+                    
                 }
             }
             else
             {
                 DB.ExecuteQuery("DELETE FROM VA009_Batch WHERE VA009_Batch_ID=" + batchid, null, Get_TrxName());
 
-                return Msg.GetMsg(GetCtx(), "VA009_BatchNotCrtd");
+                return "VA009_BatchNotCrtd";
             }
         }
 

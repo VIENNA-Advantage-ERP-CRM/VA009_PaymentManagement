@@ -4818,7 +4818,7 @@
                     $bsyDiv[0].style.visibility = "hidden";
                     //VIS.ADialog.info("", null, result, null);
                     // changed info message window to Error message window according to requirement
-                    VIS.ADialog.error("", null, result, null);
+                    VIS.ADialog.info("", null, result, null);
                     //w2alert(result.toString());
                 };
 
@@ -4884,19 +4884,19 @@
                             VIS.ADialog.info(("VA009_PlzSelct1Pay"));
                     }
                     else if (Selected == "R") {
-                        var _Qry = "SELECT pm.va009_paymentbasetype FROM c_invoicepayschedule cs INNER JOIN va009_paymentmethod pm " +
-                            " ON pm.va009_paymentmethod_id      =cs.va009_paymentmethod_id WHERE cs.c_invoicepayschedule_id IN (";
-                        if (SlctdPaymentIds.length == 0) {
-                            _Qry += 0;
-                        }
-                        else {
-                            _Qry += SlctdPaymentIds.toString();
-                        }
-                        _Qry += " ) AND pm.va009_paymentbasetype  IN ('S','B') GROUP BY pm.va009_paymentbasetype ";
+                        //var _Qry = "SELECT pm.va009_paymentbasetype FROM c_invoicepayschedule cs INNER JOIN va009_paymentmethod pm " +
+                        //    " ON pm.va009_paymentmethod_id      =cs.va009_paymentmethod_id WHERE cs.c_invoicepayschedule_id IN (";
+                        //if (SlctdPaymentIds.length == 0) {
+                        //    _Qry += 0;
+                        //}
+                        //else {
+                        //    _Qry += SlctdPaymentIds.toString();
+                        //}
+                        //_Qry += " ) AND pm.va009_paymentbasetype  IN ('S','B') GROUP BY pm.va009_paymentbasetype ";
 
-                        var _sql = VIS.secureEngine.encrypt(_Qry);
+                        //var _sql = VIS.secureEngine.encrypt(_Qry);
                         //var paystatus = VIS.DB.executeDataSet(_Qry);
-                        var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
+                       // var paystatus = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetPaymentBaseType", { "BatchQry": _sql }, null);
 
                         //if (paystatus != null && paystatus.tables[0].rows.length > 0) {
                         //if (paystatus != null && paystatus.length > 0) {
