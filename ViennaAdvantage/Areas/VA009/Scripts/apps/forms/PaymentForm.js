@@ -3040,21 +3040,48 @@
                     else {
                         $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
-                    //Used ajax Cal to get the Converted Amount when change the DateAcct
-                    $.ajax({
-                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
-                        type: "GET",
-                        datatype: "json",
-                        async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                        success: function (result) {
-                            callbackchqReload(result);
-                        },
-                        error: function (ex) {
-                            console.log(ex);
-                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                        }
-                    });
+                    //VIS323 06 sept 2022 Set Mandatory validation for Account date change Ajax call
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBank.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PLSelectBank"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($RPOP_cmbBankAccount.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PLSelectBankAccount"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
+                        return false;
+                    }
+                    if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
+                        //Used ajax Cal to get the Converted Amount when change the DateAcct
+                        $.ajax({
+                            url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                            type: "POST",
+                            datatype: "json",
+                            async: true,
+                            data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                            success: function (result) {
+                                callbackchqReload(result);
+                            },
+                            error: function (ex) {
+                                console.log(ex);
+                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                            }
+                        });
+                    }
+                    else {
+                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                        return false;
+                    }
                 });
 
                 $POP_targetDocType.on("change", function () {
@@ -4818,7 +4845,7 @@
                     $bsyDiv[0].style.visibility = "hidden";
                     //VIS.ADialog.info("", null, result, null);
                     // changed info message window to Error message window according to requirement
-                    VIS.ADialog.error("", null, result, null);
+                    VIS.ADialog.info("", null, result, null);
                     //w2alert(result.toString());
                 };
 
@@ -8164,7 +8191,7 @@
                             VIS.ADialog.info("VA009_PlzCngStngOfAutoCntrl");
                         }
                     }
-                   //show msg if cheques are not available 
+                    //show msg if cheques are not available 
                     if (_ChequesNotAvailable) {
                         VIS.ADialog.info("VA009_ChequesNotAvail");
                     }
