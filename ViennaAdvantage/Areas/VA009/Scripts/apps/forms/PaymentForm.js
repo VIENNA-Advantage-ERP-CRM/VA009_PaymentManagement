@@ -7713,6 +7713,7 @@
                     //Handled the Cheque date should not be greater than Account date.
                     $POP_ChkDate.on("blur", function () {
                         if ($POP_ChkDate.val() > $POP_DateAcct.val()) {
+                            $POP_ChkDate.val("");
                             VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
                             return false;
                         }
