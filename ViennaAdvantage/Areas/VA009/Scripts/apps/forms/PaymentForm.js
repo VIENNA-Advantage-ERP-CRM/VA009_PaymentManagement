@@ -2422,6 +2422,33 @@
                     else {
                         $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                     }
+                    //Devops Task Id- 1636
+                    //VIS317  Mandatory Field validation for Account date change.
+                    //Case Of Check button.
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectDocumentType"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectBank"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectBankAccount"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectPaymentMethod"));
+                        return false;
+                    }
+                    if ($POP_DateAcct.val() == "") {
+                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                        return false;
+                    }
                     //used ajax call to get Converted Amount
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
@@ -5498,6 +5525,33 @@
                     else {
                         $POP_DateAcct.addClass('vis-ev-col-mandatory');
                     }
+                    // Devops Task Id - 1637
+                    //VIS317  Mandatory Field validation for Account date change.
+                    //case Of Create Batch (Based On Selection).
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectOrg"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectDocType"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectBank"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectBankAccount"));
+                        return false;
+                    }
+                    if (VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()) <= 0) {
+                        VIS.ADialog.info(("VA009_PlsSelectPaymentMethod"));
+                        return false;
+                    }
+                    if ($POP_DateAcct.val() == "") {
+                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                        return false;
+                    }
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
                         type: "POST",
@@ -7577,12 +7631,18 @@
                         getCheckNo();
                     });
                     $POP_DateTrx.on("change", function () {
+                        //Devops Task Id - 1634
+                        //VIS317 Handled Account Date should be fill Automatically same as Enter Transaction date.
+                        //Can Enter Account date Manually Also.
                         if ($POP_DateTrx.val() == "") {
                             $POP_DateTrx.addClass('vis-ev-col-mandatory');
                         }
                         else {
                             $POP_DateTrx.removeClass('vis-ev-col-mandatory');
+                            $POP_DateAcct.val($POP_DateTrx.val());
+                            $POP_DateAcct.removeClass('vis-ev-col-mandatory');
                         }
+
                     });
                     $POP_DateAcct.on("change", function () {
                         if ($POP_DateAcct.val() == "") {
@@ -7646,6 +7706,15 @@
                         }
                         else {
                             $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
+                        }
+                    });
+                    //Devops Task Id - 1634
+                    //VIS317  cheque date On Blur event 
+                    //Handled the Cheque date should not be greater than Account date.
+                    $POP_ChkDate.on("blur", function () {
+                        if ($POP_ChkDate.val() > $POP_DateAcct.val()) {
+                            VIS.ADialog.info(("VIS_CheckDateCantbeGreaterSys"));
+                            return false;
                         }
                     });
                     $POP_PayMthd.on("change", function () {
