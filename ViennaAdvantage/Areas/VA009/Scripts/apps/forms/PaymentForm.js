@@ -2449,6 +2449,14 @@
                         VIS.ADialog.info(("VA009_PLSelectAcctDate"));
                         return false;
                     }
+                    //VIS317 Invalid Account date check
+                    var dateVal = Date.parse($POP_DateAcct.val());
+                    var currentTime = new Date(parseInt(dateVal));
+                    //check if date is valid
+                    //this check will work for 01/01/1970 on words
+                    if (!isNaN(currentTime.getTime()) && currentTime.getTime() < 0) {
+                        return;
+                    }
                     //used ajax call to get Converted Amount
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
@@ -3088,27 +3096,34 @@
                         VIS.ADialog.info(("VA009_PLSelectPaymentMethod"));
                         return false;
                     }
-                    if ($POP_DateAcct.val() != "" && $POP_DateAcct.val() != null) {
-                        //Used ajax Cal to get the Converted Amount when change the DateAcct
-                        $.ajax({
-                            url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
-                            type: "POST",
-                            datatype: "json",
-                            async: true,
-                            data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
-                            success: function (result) {
-                                callbackchqReload(result);
-                            },
-                            error: function (ex) {
-                                console.log(ex);
-                                VIS.ADialog.error("VA009_ErrorLoadingPayments");
-                            }
-                        });
-                    }
-                    else {
+                    if ($POP_DateAcct.val() == "") {
                         VIS.ADialog.info(("VA009_PLSelectAcctDate"));
                         return false;
                     }
+                    //VIS317 Invalid Account date check
+                    var dateVal = Date.parse($POP_DateAcct.val());
+                    var currentTime = new Date(parseInt(dateVal));
+                    //check if date is valid
+                    //this check will work for 01/01/1970 on words
+                    if (!isNaN(currentTime.getTime()) && currentTime.getTime() < 0) {
+                        return;
+                    }
+                    //Used ajax Cal to get the Converted Amount when change the DateAcct
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmt",
+                        type: "POST",
+                        datatype: "json",
+                        async: true,
+                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $RPOP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        success: function (result) {
+                            callbackchqReload(result);
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+
                 });
 
                 $POP_targetDocType.on("change", function () {
@@ -4328,6 +4343,18 @@
                     }
                     else {
                         $POP_DateAcct.addClass('vis-ev-col-mandatory');
+                    }
+                    if ($POP_DateAcct.val() == "") {
+                        VIS.ADialog.info(("VA009_PLSelectAcctDate"));
+                        return false;
+                    }
+                    //VIS317 Invalid Account date check
+                    var dateVal = Date.parse($POP_DateAcct.val());
+                    var currentTime = new Date(parseInt(dateVal));
+                    //check if date is valid
+                    //this check will work for 01/01/1970 on words
+                    if (!isNaN(currentTime.getTime()) && currentTime.getTime() < 0) {
+                        return;
                     }
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetCashJournalConvertedAmt",
@@ -5551,6 +5578,14 @@
                     if ($POP_DateAcct.val() == "") {
                         VIS.ADialog.info(("VA009_PLSelectAcctDate"));
                         return false;
+                    }
+                    //VIS317 Invalid Account date check
+                    var dateVal = Date.parse($POP_DateAcct.val());
+                    var currentTime = new Date(parseInt(dateVal));
+                    //check if date is valid
+                    //this check will work for 01/01/1970 on words
+                    if (!isNaN(currentTime.getTime()) && currentTime.getTime() < 0) {
+                        return;
                     }
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
@@ -8306,7 +8341,7 @@
         function loadbanks(bankcmbdiv, ids) {
             VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBank", { "Orgs": ids.toString() }, callbackloadbank);
             function callbackloadbank(dr) {
-                if (dr.length > 0) {
+                if (dr != null && dr.length > 0) {
                     bankcmbdiv.find('option').remove();
                     bankcmbdiv.append("<option value='0'></option>");
                     for (var i in dr) {
