@@ -392,11 +392,8 @@ namespace ViennaAdvantage.Process
 
                                 #region Create View Allocation Header and line when the Due Amount on Batch line = 0
                                 //(1052) Donot create allocations in case of order
-                                if (c_currency_id ==
-                                    BlineDetailCur_ID
-                                    //Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"])
-                                    &&
-                                   Bpartner_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) &&
+                                if (c_currency_id == BlineDetailCur_ID &&
+                                    Bpartner_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) &&
                                    batchline_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]) &&
                                     Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_DueAmount"]) == 0
                                     && VA009_PaymentMethod_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]) &&
@@ -770,7 +767,6 @@ namespace ViennaAdvantage.Process
                                 #endregion
 
                             }
-
                             // Complete the Consolidate Records of payment
                             for (int i = 0; i < payment.Count(); i++)
                             {
@@ -803,11 +799,26 @@ namespace ViennaAdvantage.Process
                                     {
                                         docNos.Append(completePayment.GetDocumentNo());
                                     }
-
+                                    //Devlops TASK 1719 
+                                    //VIS317
+                                    //To Set Allocation ID on Batch Line Details
+                                    //Also it will handled multiple allocation to multiple invoice against Different Vendor/Customer.
+                                    sql.Clear();
+                                    sql.Append(@"Select AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
+                                                    INNER JOIN C_AllocationHdr AH ON
+                                                    AH.C_AllocationHdr_ID=AL.C_AllocationHdr_ID
+                                                    WHERE AH.Processed='Y'
+                                                    AND AH.DocStatus   IN ('CO','CL')
+                                                    AND AL.C_Payment_ID =" + completePayment.GetC_Payment_ID());
+                                    
+                                       allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
+                                       sql.Clear();
+                                       sql.Append(@"UPDATE VA009_BatchLineDetails SET C_AllocationHdr_ID
+                                                =" + allocationId + " WHERE VA009_BatchLines_ID =" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"])
+                                                   + "AND C_Payment_ID=" + completePayment.GetC_Payment_ID());
+                                    DB.ExecuteQuery(sql.ToString(), null, Get_TrxName());
                                 }
-
                             }
-
                             // Complete the Consolidate Records of View allocation 
                             for (int i = 0; i < viewAllocationId.Count(); i++)
                             {
@@ -1263,7 +1274,7 @@ namespace ViennaAdvantage.Process
             }
             else
             {
-                sql.Append(@"SELECT COUNT(bld.C_PAYMENT_ID) AS C_PAYMENT_ID,COUNT(bld.VA009_BATCHLINEDETAILS_ID) AS VA009_BATCHLINE_ID  FROM VA009_BATCHLINEDETAILS BLD INNER JOIN VA009_BATCHLINES BL ON BL.VA009_BATCHLINES_ID=BLD.VA009_BATCHLINES_ID 
+                sql.Append(@"SELECT COUNT(bld.C_PAYMENT_ID) AS C_PAYMENT_ID,COUNT(bld.VA009_BATCHLINEDETAILS_ID) AS VA009_BATCHLINE_ID  FROM VA009_BATCHLINEDETAILS BLD INNER JOIN VA009_BATCHLINES BL ON BL.VA009_BATCHLINES_ID=BLD.VA009_BATCHLINES_ID
                           WHERE BL.VA009_BATCH_ID=" + GetRecord_ID());
             }
             DataSet result = DB.ExecuteDataset(sql.ToString(), null, null);
