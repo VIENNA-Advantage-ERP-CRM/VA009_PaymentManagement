@@ -1546,6 +1546,10 @@
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).Writeoff = 0;
                                                         chqpaygrd.get(event.recid).changes.Discount = 0;
+                                                        //VIS317
+                                                        //Devops 1800
+                                                        //Getting Discount Value Zero. 
+                                                        chqpaygrd.get(event.recid).Discount = 0;
                                                     }
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "OverUnder");
