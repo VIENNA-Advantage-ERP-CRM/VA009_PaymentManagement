@@ -1546,6 +1546,7 @@
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).Writeoff = 0;
                                                         chqpaygrd.get(event.recid).changes.Discount = 0;
+                                                        chqpaygrd.get(event.recid).Discount = 0;//set Discount value on grid
                                                     }
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "OverUnder");
