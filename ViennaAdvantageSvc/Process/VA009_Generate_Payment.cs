@@ -768,8 +768,6 @@ namespace ViennaAdvantage.Process
 
                             }
                             // Complete the Consolidate Records of payment
-                            DataView view = new DataView(ds.Tables[0]);
-                            DataTable dtdistinctValues = view.ToTable(true, "VA009_BatchLines_ID");//distinct VA009_BatchLines_ID from dataset
                             for (int i = 0; i < payment.Count(); i++)
                             {
                                 Get_TrxName().Commit();
@@ -815,8 +813,7 @@ namespace ViennaAdvantage.Process
                                        allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
                                     sql.Clear();
                                        sql.Append(@"UPDATE VA009_BatchLineDetails SET C_AllocationHdr_ID
-                                                =" + allocationId + " WHERE VA009_BatchLines_ID =" + Util.GetValueOfInt(dtdistinctValues.Rows[i]["VA009_BatchLines_ID"])
-                                                   + " AND C_Payment_ID=" + completePayment.GetC_Payment_ID());
+                                                =" + allocationId + " WHERE C_Payment_ID=" + completePayment.GetC_Payment_ID());
                                     DB.ExecuteQuery(sql.ToString(), null, Get_TrxName());
                                 }
                             }
