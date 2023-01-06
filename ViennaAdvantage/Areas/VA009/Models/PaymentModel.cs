@@ -1310,7 +1310,7 @@ namespace VA009.Models
                                                 }
                                                 else if (_doctype.GetDocBaseType() == "APC")
                                                 {
-                                                   
+
                                                     if (PaymentData[i].OverUnder > 0)
                                                         _pay.SetOverUnderAmt(-1 * (PaymentData[i].OverUnder));
                                                     if (M_Allocate.GetAmount() > 0)
@@ -5869,7 +5869,7 @@ namespace VA009.Models
         /// <param name="DocNumber">Document Number</param>
         /// <param name="isBatch">Is Batch Check</param>
         /// <returns>List Of Files Created</returns>
-        public List<PaymentResponse> prepareDataForPaymentFile(Ctx ct, string DocNumber, bool isBatch, string AD_Org_ID)
+        public List<PaymentResponse> prepareDataForPaymentFile(Ctx ct, string DocNumber, bool isBatch, string AD_Org_ID, int RecordId)
         {
             int payment_ID = 0;
             List<PaymentResponse> batchResponse = new List<PaymentResponse>();
@@ -5893,11 +5893,19 @@ namespace VA009.Models
             else
             {
                 //add sql access to generate batch file for those who have access
-                sql.Clear();
-                //removed brackets from this query because it was creating problem in case of document number was having special characters
-                sql.Append(@"SELECT c_payment_id FROM C_Payment 
-                            WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno)=UPPER('" + DocNumber + "') ");
-                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
+                //VIS323 Added Special case for generate payment file on payment window
+                if (RecordId > 0)
+                {
+                    payment_ID = RecordId;
+                }
+                else
+                {
+                    sql.Clear();
+                    //removed brackets from this query because it was creating problem in case of document number was having special characters
+                    sql.Append(@"SELECT c_payment_id FROM C_Payment 
+                            WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno)=UPPER('" + DocNumber + "') AND DOCSTATUS='CO'");
+                    payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
+                }
             }
             PaymentResponse obj = null;
             sql.Clear();

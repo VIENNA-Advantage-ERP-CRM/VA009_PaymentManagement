@@ -55,16 +55,18 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ "DocNumber": DocNumber, "isBatch": isBatch, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID") }),//these parameteres are not used in controller now
+                data: ({ "DocNumber": DocNumber, "isBatch": isBatch, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID"), "RecordId": recordID }),//these parameteres are not used in controller now
                 success: function (result) {
                     result = JSON.parse(result);
                     for (var i in result) {
                         if (result[i]._error != null) {
                             var error = result[i]._error;
-                            if (isBatch)
-                                VIS.ADialog.info(error + "," + VIS.Msg.getMsg("BatchIsCompleted") + DocNumber)
-                            else
-                                VIS.ADialog.info(error + "," + VIS.Msg.getMsg("VA009_PaymentCompletedWith") + DocNumber)
+                            if (isBatch) {
+                                VIS.ADialog.info(error + "," + VIS.Msg.getMsg("BatchIsCompleted") + DocNumber);
+                            }
+                            else {
+                                VIS.ADialog.info(error);
+                            }
                         }
                         else {
                             // checking extension
@@ -93,7 +95,6 @@
             else {
                 batchWindow = true;
             }
-
             $.ajax({
                 url: VIS.Application.contextUrl + "VA009/DownloadPaymentFIle/GetDocuentNumber",
                 type: "GET",

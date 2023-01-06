@@ -508,12 +508,12 @@ namespace VA009.Controllers
         /// </summary>
         /// <param name="Payment_ID"> Payment ID</param>
         /// <returns>Data For Payment</returns>
-        public ActionResult prepareDataForPaymentFile(String DocNumber, bool isBatch, string AD_Org_ID)
+        public ActionResult prepareDataForPaymentFile(String DocNumber, bool isBatch, string AD_Org_ID,int RecordId)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
             List<PaymentResponse> obj = new List<PaymentResponse>();
-            obj = _payMdl.prepareDataForPaymentFile(ct, DocNumber, isBatch, AD_Org_ID);
+            obj = _payMdl.prepareDataForPaymentFile(ct, DocNumber, isBatch, AD_Org_ID, RecordId);
             return Json(JsonConvert.SerializeObject(obj), JsonRequestBehavior.AllowGet);
         }
 

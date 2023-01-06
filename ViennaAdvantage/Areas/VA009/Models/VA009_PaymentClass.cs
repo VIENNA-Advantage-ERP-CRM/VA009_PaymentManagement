@@ -242,7 +242,8 @@ namespace VA009.Models
                         if (_file == null)		//	Fallback create temp file
                         {
                             _log.SaveError("Error: ", "File Null- " + "- " + fileName);
-                            _file = new FileStream(HostingEnvironment.ApplicationPhysicalPath + "\\" + Environment.GetEnvironmentVariable("TEMP") + "\\" + "PaymentFile.dat", FileMode.OpenOrCreate, FileAccess.Write);
+                            _file = new FileStream(HostingEnvironment.ApplicationPhysicalPath + "\\" + "TempDownload" + "\\" + "PaymentFile.dat", FileMode.OpenOrCreate, FileAccess.Write);
+                            _file.Close();//close the file which is used by system process
                         }
                     }
                 }
@@ -765,8 +766,8 @@ namespace VA009.Models
                         INNER JOIN C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN va009_batchlines bl ON bl.VA009_Batch_ID=p.VA009_Batch_ID LEFT 
                         JOIN C_Payment pa ON pa.C_Payment_ID=bl.c_payment_id WHERE p.VA009_Batch_ID= " + paymentID);
 
-                    paymentCount = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT Count(C_Payment_ID) FROM va009_batchlines WHERE VA009_Batch_ID = " + paymentID));
-                    totalAmt = Util.GetValueOfDecimal(DB.ExecuteScalar(@" SELECT SUM(p.payamt) FROM c_payment p WHERE c_payment_id IN   (SELECT DISTINCT c_payment_id
+                paymentCount = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT Count(C_Payment_ID) FROM va009_batchlines WHERE VA009_Batch_ID = " + paymentID));
+                totalAmt = Util.GetValueOfDecimal(DB.ExecuteScalar(@" SELECT SUM(p.payamt) FROM c_payment p WHERE c_payment_id IN   (SELECT DISTINCT c_payment_id
                             FROM va009_batchlinedetails   WHERE va009_batchlines_id IN    (SELECT va009_batchlines_id    FROM va009_batchlines     WHERE VA009_Batch_ID = " + paymentID + ") ) "));
             }
             else
@@ -786,7 +787,7 @@ namespace VA009.Models
                 hashTotal = totalHash;
                 decimal b = hashTotal * 24;
                 decimal c = b + 2994;
-                 hashTotal = Decimal.Truncate(c / 285);
+                hashTotal = Decimal.Truncate(c / 285);
                 //to return only the integral part of decimal.
 
                 //set allignment from left to right
