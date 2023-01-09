@@ -55,7 +55,7 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ "DocNumber": DocNumber, "isBatch": isBatch, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID"), "RecordId": recordID }),//these parameteres are not used in controller now
+                data: ({ "DocNumber": DocNumber, "isBatch": isBatch, "AD_Org_ID": VIS.context.getWindowContext($self.windowNo, "AD_Org_ID")}),//these parameteres are not used in controller now
                 success: function (result) {
                     result = JSON.parse(result);
                     for (var i in result) {
