@@ -811,10 +811,9 @@ namespace ViennaAdvantage.Process
                                                     AND AL.C_Payment_ID =" + completePayment.GetC_Payment_ID());
                                     
                                        allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
-                                       sql.Clear();
+                                    sql.Clear();
                                        sql.Append(@"UPDATE VA009_BatchLineDetails SET C_AllocationHdr_ID
-                                                =" + allocationId + " WHERE VA009_BatchLines_ID =" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"])
-                                                   + "AND C_Payment_ID=" + completePayment.GetC_Payment_ID());
+                                                =" + allocationId + " WHERE C_Payment_ID=" + completePayment.GetC_Payment_ID());
                                     DB.ExecuteQuery(sql.ToString(), null, Get_TrxName());
                                 }
                             }
