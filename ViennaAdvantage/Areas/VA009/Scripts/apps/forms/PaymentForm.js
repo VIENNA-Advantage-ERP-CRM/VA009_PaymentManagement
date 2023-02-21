@@ -8306,6 +8306,7 @@
                                         amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         filterObj[0]["ConvertedAmt"] = amt;
                                         SelectedRecords[i]["ConvertedAmt"] = amt;
+                                        SelectedRecords[i-1]["ConvertedAmt"] = amt;
                                         filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
                                         ds[0]["TOTALLINESCOUNT"] = filterObj[0]["TotalLinesCount"];
                                     }
@@ -8319,7 +8320,7 @@
 
                                 }
                             }
-                            chequePrintParams= SelectedRecords;//Get all popup records with change in Converted Amt and Due Amt
+                            chequePrintParams = SelectedRecords;//Get all popup records with change in Converted Amt and Due Amt
                             w2utils.encodeTags(recds);
                             ChequeDetailsGrd.add(recds);
                         }
@@ -9196,7 +9197,7 @@
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
             popupgrddata = null;
-            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null, $btnChequePrint = null, chequePrintParams=null;
+            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null, $btnChequePrint = null, chequePrintParams = null;
         };
         //********************
         //Set Size OF Div's
