@@ -9,40 +9,40 @@ namespace ViennaAdvantage.Model
     using VAdvantage.Process;
     using VAdvantage.Model;
     using VAdvantage.Utility;
-    using System.Data;/** Generated Model for VA009_T_ChequePrintPreview
+    using System.Data;/** Generated Model for VA009_T_CheckPrintPreview
  *  @author Raghu (Updated) 
  *  @version Vienna Framework 1.1.1 - $Id$ */
-    public class X_VA009_T_ChequePrintPreview : PO
+    public class X_VA009_T_CheckPrintPreview : PO
     {
-        public X_VA009_T_ChequePrintPreview(Context ctx, int VA009_T_ChequePrintPreview_ID, Trx trxName) : base(ctx, VA009_T_ChequePrintPreview_ID, trxName)
-        {/** if (VA009_T_ChequePrintPreview_ID == 0){SetVA009_T_ChequePrintPreview_ID (0);} */
+        public X_VA009_T_CheckPrintPreview(Context ctx, int VA009_T_CheckPrintPreview_ID, Trx trxName) : base(ctx, VA009_T_CheckPrintPreview_ID, trxName)
+        {/** if (VA009_T_CheckPrintPreview_ID == 0){} */
         }
-        public X_VA009_T_ChequePrintPreview(Ctx ctx, int VA009_T_ChequePrintPreview_ID, Trx trxName) : base(ctx, VA009_T_ChequePrintPreview_ID, trxName)
-        {/** if (VA009_T_ChequePrintPreview_ID == 0){SetVA009_T_ChequePrintPreview_ID (0);} */
+        public X_VA009_T_CheckPrintPreview(Ctx ctx, int VA009_T_CheckPrintPreview_ID, Trx trxName) : base(ctx, VA009_T_CheckPrintPreview_ID, trxName)
+        {/** if (VA009_T_CheckPrintPreview_ID == 0){} */
         }/** Load Constructor 
 @param ctx context
 @param rs result set 
 @param trxName transaction
 */
-        public X_VA009_T_ChequePrintPreview(Context ctx, DataRow rs, Trx trxName) : base(ctx, rs, trxName) { }/** Load Constructor 
+        public X_VA009_T_CheckPrintPreview(Context ctx, DataRow rs, Trx trxName) : base(ctx, rs, trxName) { }/** Load Constructor 
 @param ctx context
 @param rs result set 
 @param trxName transaction
 */
-        public X_VA009_T_ChequePrintPreview(Ctx ctx, DataRow rs, Trx trxName) : base(ctx, rs, trxName) { }/** Load Constructor 
+        public X_VA009_T_CheckPrintPreview(Ctx ctx, DataRow rs, Trx trxName) : base(ctx, rs, trxName) { }/** Load Constructor 
 @param ctx context
 @param rs result set 
 @param trxName transaction
 */
-        public X_VA009_T_ChequePrintPreview(Ctx ctx, IDataReader dr, Trx trxName) : base(ctx, dr, trxName) { }/** Static Constructor 
+        public X_VA009_T_CheckPrintPreview(Ctx ctx, IDataReader dr, Trx trxName) : base(ctx, dr, trxName) { }/** Static Constructor 
  Set Table ID By Table Name
  added by ->Harwinder */
-        static X_VA009_T_ChequePrintPreview() { Table_ID = Get_Table_ID(Table_Name); model = new KeyNamePair(Table_ID, Table_Name); }/** Serial Version No */
-        static long serialVersionUID = 27956660809732L;/** Last Updated Timestamp 1/24/2023 4:44:52 AM */
-        public static long updatedMS = 1674535492943L;/** AD_Table_ID=1002043 */
+        static X_VA009_T_CheckPrintPreview() { Table_ID = Get_Table_ID(Table_Name); model = new KeyNamePair(Table_ID, Table_Name); }/** Serial Version No */
+        static long serialVersionUID = 27959196960355L;/** Last Updated Timestamp 2/22/2023 1:14:03 PM */
+        public static long updatedMS = 1677071643566L;/** AD_Table_ID=1002043 */
         public static int Table_ID; // =1002043;
-        /** TableName=VA009_T_ChequePrintPreview */
-        public static String Table_Name = "VA009_T_ChequePrintPreview";
+        /** TableName=VA009_T_CheckPrintPreview */
+        public static String Table_Name = "VA009_T_CheckPrintPreview";
         protected static KeyNamePair model; protected Decimal accessLevel = new Decimal(3);/** AccessLevel
 @return 3 - Client - Org 
 */
@@ -57,7 +57,16 @@ namespace ViennaAdvantage.Model
         protected override POInfo InitPO(Ctx ctx) { POInfo poi = POInfo.GetPOInfo(ctx, Table_ID); return poi; }/** Info
 @return info
 */
-        public override String ToString() { StringBuilder sb = new StringBuilder("X_VA009_T_ChequePrintPreview[").Append(Get_ID()).Append("]"); return sb.ToString(); }/** Set Business Partner.
+        public override String ToString() { StringBuilder sb = new StringBuilder("X_VA009_T_CheckPrintPreview[").Append(Get_ID()).Append("]"); return sb.ToString(); }/** Set Process Instance.
+@param AD_PInstance_ID Instance of the process */
+        public void SetAD_PInstance_ID(int AD_PInstance_ID)
+        {
+            if (AD_PInstance_ID <= 0) Set_Value("AD_PInstance_ID", null);
+            else
+                Set_Value("AD_PInstance_ID", AD_PInstance_ID);
+        }/** Get Process Instance.
+@return Instance of the process */
+        public int GetAD_PInstance_ID() { Object ii = Get_Value("AD_PInstance_ID"); if (ii == null) return 0; return Convert.ToInt32(ii); }/** Set Business Partner.
 @param C_BPartner_ID Identifies a Customer/Prospect */
         public void SetC_BPartner_ID(int C_BPartner_ID)
         {
@@ -124,26 +133,26 @@ namespace ViennaAdvantage.Model
 @param Export_ID Export */
         public void SetExport_ID(String Export_ID) { if (Export_ID != null && Export_ID.Length > 50) { log.Warning("Length > 50 - truncated"); Export_ID = Export_ID.Substring(0, 50); } Set_Value("Export_ID", Export_ID); }/** Get Export.
 @return Export */
-        public String GetExport_ID() { return (String)Get_Value("Export_ID"); }/** Set Cheque Amount.
-@param VA009_ChequeAmount Cheque Amount */
-        public void SetVA009_ChequeAmount(Decimal? VA009_ChequeAmount) { Set_Value("VA009_ChequeAmount", (Decimal?)VA009_ChequeAmount); }/** Get Cheque Amount.
-@return Cheque Amount */
-        public Decimal GetVA009_ChequeAmount() { Object bd = Get_Value("VA009_ChequeAmount"); if (bd == null) return Env.ZERO; return Convert.ToDecimal(bd); }/** Set Cheque Date.
-@param VA009_ChequeDate Cheque Date */
-        public void SetVA009_ChequeDate(DateTime? VA009_ChequeDate) { Set_Value("VA009_ChequeDate", (DateTime?)VA009_ChequeDate); }/** Get Cheque Date.
-@return Cheque Date */
-        public DateTime? GetVA009_ChequeDate() { return (DateTime?)Get_Value("VA009_ChequeDate"); }/** Set Cheque Number.
-@param VA009_ChequeNumber Cheque Number */
-        public void SetVA009_ChequeNumber(Decimal? VA009_ChequeNumber) { Set_Value("VA009_ChequeNumber", (Decimal?)VA009_ChequeNumber); }/** Get Cheque Number.
-@return Cheque Number */
-        public Decimal GetVA009_ChequeNumber() { Object bd = Get_Value("VA009_ChequeNumber"); if (bd == null) return Env.ZERO; return Convert.ToDecimal(bd); }/** Set Due Amount.
+        public String GetExport_ID() { return (String)Get_Value("Export_ID"); }/** Set Check Amount.
+@param VA009_CheckAmount Check Amount */
+        public void SetVA009_CheckAmount(Decimal? VA009_CheckAmount) { Set_Value("VA009_CheckAmount", (Decimal?)VA009_CheckAmount); }/** Get Check Amount.
+@return Check Amount */
+        public Decimal GetVA009_CheckAmount() { Object bd = Get_Value("VA009_CheckAmount"); if (bd == null) return Env.ZERO; return Convert.ToDecimal(bd); }/** Set Check Date.
+@param VA009_CheckDate Check Date */
+        public void SetVA009_CheckDate(DateTime? VA009_CheckDate) { Set_Value("VA009_CheckDate", (DateTime?)VA009_CheckDate); }/** Get Check Date.
+@return Check Date */
+        public DateTime? GetVA009_CheckDate() { return (DateTime?)Get_Value("VA009_CheckDate"); }/** Set Check Number.
+@param VA009_CheckNumber Check Number */
+        public void SetVA009_CheckNumber(Decimal? VA009_CheckNumber) { Set_Value("VA009_CheckNumber", (Decimal?)VA009_CheckNumber); }/** Get Check Number.
+@return Check Number */
+        public Decimal GetVA009_CheckNumber() { Object bd = Get_Value("VA009_CheckNumber"); if (bd == null) return Env.ZERO; return Convert.ToDecimal(bd); }/** Set Due Amount.
 @param VA009_DueAmount Due Amount */
         public void SetVA009_DueAmount(Decimal? VA009_DueAmount) { Set_Value("VA009_DueAmount", (Decimal?)VA009_DueAmount); }/** Get Due Amount.
 @return Due Amount */
-        public Decimal GetVA009_DueAmount() { Object bd = Get_Value("VA009_DueAmount"); if (bd == null) return Env.ZERO; return Convert.ToDecimal(bd); }/** Set VA009_T_ChequePrintPreview_ID.
-@param VA009_T_ChequePrintPreview_ID VA009_T_ChequePrintPreview_ID */
-        public void SetVA009_T_ChequePrintPreview_ID(int VA009_T_ChequePrintPreview_ID) { if (VA009_T_ChequePrintPreview_ID < 1) throw new ArgumentException("VA009_T_ChequePrintPreview_ID is mandatory."); Set_ValueNoCheck("VA009_T_ChequePrintPreview_ID", VA009_T_ChequePrintPreview_ID); }/** Get VA009_T_ChequePrintPreview_ID.
-@return VA009_T_ChequePrintPreview_ID */
-        public int GetVA009_T_ChequePrintPreview_ID() { Object ii = Get_Value("VA009_T_ChequePrintPreview_ID"); if (ii == null) return 0; return Convert.ToInt32(ii); }
+        public Decimal GetVA009_DueAmount() { Object bd = Get_Value("VA009_DueAmount"); if (bd == null) return Env.ZERO; return Convert.ToDecimal(bd); }/** Set IsConsolidate.
+@param VA009_IsConsolidate IsConsolidate */
+        public void SetVA009_IsConsolidate(Boolean VA009_IsConsolidate) { Set_Value("VA009_IsConsolidate", VA009_IsConsolidate); }/** Get IsConsolidate.
+@return IsConsolidate */
+        public Boolean IsVA009_IsConsolidate() { Object oo = Get_Value("VA009_IsConsolidate"); if (oo != null) { if (oo.GetType() == typeof(bool)) return Convert.ToBoolean(oo); return "Y".Equals(oo); } return false; }
     }
 }

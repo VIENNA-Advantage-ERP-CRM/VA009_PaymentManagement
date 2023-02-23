@@ -5133,7 +5133,7 @@
                     var _batch_Columns = [];
                     if (_batch_Columns.length == 0) {
                         _batch_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                        _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
                         //_batch_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
                         _batch_Columns.push({
                             field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%',
@@ -8158,7 +8158,7 @@
                         type: "POST",
                         datatype: "json",
                         async: true,
-                        data: ({ "ChequeData": JSON.stringify(chequePrintParams), "BankId": $POP_cmbBank.val(), "BankAccId": $POP_cmbBankAccount.val() }),
+                        data: ({ "ChequeData": JSON.stringify(chequePrintParams), "BankId": $POP_cmbBank.val(), "BankAccId": $POP_cmbBankAccount.val(), "IsConsolidate": ($consolidate.is(':checked')) ? 'Y' : 'N' }),
                         success: function (data) {
                             if (data != null) {
                                 data = JSON.parse(data);
@@ -8187,7 +8187,7 @@
                     var _chkDetails_Columns = [];
                     if (_chkDetails_Columns.length == 0) {
                         _chkDetails_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _chkDetails_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
                         _chkDetails_Columns.push({
                             field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("VA009_PayLocation"), sortable: true, size: '15%', render: function (record, index, col_index) {
                                 var l = BPLocLookup;
@@ -8306,7 +8306,6 @@
                                         amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         filterObj[0]["ConvertedAmt"] = amt;
                                         SelectedRecords[i]["ConvertedAmt"] = amt;
-                                        SelectedRecords[i-1]["ConvertedAmt"] = amt;
                                         filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
                                         ds[0]["TOTALLINESCOUNT"] = filterObj[0]["TotalLinesCount"];
                                     }

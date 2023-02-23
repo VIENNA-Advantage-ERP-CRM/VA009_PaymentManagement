@@ -7190,7 +7190,7 @@ namespace VA009.Models
         /// <param name="params">context</param>
         /// <param name="ctx">context object</param>
         /// <returns>AD_Table_ID,AD_Process_ID,AD_Instance_ID</returns>
-        public string SaveCheckPrintPreview(Ctx ctx, string param, int BankId, int BankAccId)
+        public string SaveCheckPrintPreview(Ctx ctx, string param, int BankId, int BankAccId, string IsConsolidate)
         {
             ChequePrintParams[] objChequePrintParams = JsonConvert.DeserializeObject<ChequePrintParams[]>(param);
             int Ad_Table_ID = VAdvantage.Model.MTable.Get_Table_ID("VA009_T_CheckPrintPreview");
@@ -7201,10 +7201,16 @@ namespace VA009.Models
                 return Msg.GetMsg(ctx, "ProcessNoInstance");
             }
             StringBuilder sql = new StringBuilder();
-            int count = 0;
+            DateTime? date = null; decimal chkAmount = 0; string chkNumber = "";
             for (int i = 0; i < objChequePrintParams.Length; i++)
             {
-                DateTime? date = Convert.ToDateTime(objChequePrintParams[i].CheckDate);
+                //if checknumer is different then Assign it to current chkNumber
+                if (String.IsNullOrEmpty(chkNumber) || !chkNumber.Equals(objChequePrintParams[i].CheckNumber.ToString()))
+                {
+                    chkAmount = Util.GetValueOfDecimal(objChequePrintParams[i].ConvertedAmt);
+                    chkNumber = objChequePrintParams[i].CheckNumber.ToString();
+                }
+                date = Convert.ToDateTime(objChequePrintParams[i].CheckDate);
                 sql.Clear();
                 sql.Append(@"INSERT INTO VA009_T_CheckPrintPreview(AD_CLIENT_ID
                             , AD_ORG_ID
@@ -7223,14 +7229,15 @@ namespace VA009.Models
                             , VA009_CHECKDATE
                             , VA009_CHECKNUMBER
                             , VA009_DUEAMOUNT
-                            , AD_PINSTANCE_ID) VALUES " +
+                            , AD_PINSTANCE_ID               
+                            ,VA009_IsConsolidate) VALUES " +
                     "( " + objChequePrintParams[i].AD_Client_ID + " , " +
                     "" + objChequePrintParams[i].AD_Org_ID + " , " +
                     "" + objChequePrintParams[i].C_BPartner_ID + " , " + objChequePrintParams[i].C_BPartner_Location_ID + ", " +
                     " " + BankAccId + " , " + BankId + " , " + objChequePrintParams[i].C_Currency_ID + " , " + objChequePrintParams[i].C_InvoicePaySchedule_ID + " , " +
                     "" + objChequePrintParams[i].C_Invoice_ID + " , SYSDATE , " + ctx.GetAD_User_ID() + ",SYSDATE," + ctx.GetAD_User_ID() + "," +
-                    "" + Util.GetValueOfDecimal(objChequePrintParams[i].ConvertedAmt) + "," + GlobalVariable.TO_DATE(date, true) + "," + objChequePrintParams[i].CheckNumber + "," +
-                    Util.GetValueOfDecimal(objChequePrintParams[i].DueAmt) + "," + instance.GetAD_PInstance_ID() + ")"
+                    "" + chkAmount + "," + GlobalVariable.TO_DATE(date, true) + "," + chkNumber + "," +
+                    Util.GetValueOfDecimal(objChequePrintParams[i].DueAmt) + "," + instance.GetAD_PInstance_ID() + ",'" + Util.GetValueOfChar(IsConsolidate) + "')"
                     );
                 int no = DB.ExecuteQuery(sql.ToString(), null, null);
             }

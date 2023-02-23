@@ -611,14 +611,14 @@ namespace VA009.Controllers
         /// <param name="C_BankAccount_ID">BankAccount ID</param>
         /// <param name="VA009_PaymentMethod_ID">PaymentMethod ID</param>
         /// <returns>The data of cheque and account based on bank account and payment method</returns>
-        public JsonResult SavePrintCheckDetails(string ChequeData,int BankId, int BankAccId)
+        public JsonResult SavePrintCheckDetails(string ChequeData,int BankId, int BankAccId, string IsConsolidate)
         {
             string retJSON = "";
             if (Session["ctx"] != null)
             {
                 Ctx ctx = Session["ctx"] as Ctx;
                 PaymentModel objConversionModel = new PaymentModel();
-                retJSON = JsonConvert.SerializeObject(objConversionModel.SaveCheckPrintPreview(ctx,ChequeData, BankId, BankAccId));
+                retJSON = JsonConvert.SerializeObject(objConversionModel.SaveCheckPrintPreview(ctx,ChequeData, BankId, BankAccId, IsConsolidate));
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
