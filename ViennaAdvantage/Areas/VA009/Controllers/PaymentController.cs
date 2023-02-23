@@ -606,11 +606,14 @@ namespace VA009.Controllers
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
         /// <summary>
-        /// Get the details of cheque
+        /// Save print check details in Temp table
         /// </summary>
-        /// <param name="C_BankAccount_ID">BankAccount ID</param>
-        /// <param name="VA009_PaymentMethod_ID">PaymentMethod ID</param>
-        /// <returns>The data of cheque and account based on bank account and payment method</returns>
+        /// <writer>VIS323</writer>
+        /// <param name="ChequeData">list of check parameters</param>
+        /// <param name="BankId">Bank ID</param>
+        /// <param name="BankAccId">Bank Account ID</param>
+        /// <param name="IsConsolidate">Batch is consolidate or not</param>
+        /// <returns>AD_Table_ID,AD_Process_ID,AD_Instance_ID</returns>
         public JsonResult SavePrintCheckDetails(string ChequeData,int BankId, int BankAccId, string IsConsolidate)
         {
             string retJSON = "";

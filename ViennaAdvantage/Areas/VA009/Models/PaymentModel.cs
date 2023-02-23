@@ -7185,10 +7185,14 @@ namespace VA009.Models
         }
 
         /// <summary>
-        /// to save Cheque Print Preview
+        /// To save Check Print Preview details
         /// </summary>
-        /// <param name="params">context</param>
+        /// <writer>VIS323</writer>
+        /// <param name="params">list of check parameters</param>
         /// <param name="ctx">context object</param>
+        /// <param name="BankId">Bank Id</param>
+        /// <param name="BankAccId">Bank Account Details</param>
+        /// <param name="IsConsolidate">Batch consolidate or not</param>
         /// <returns>AD_Table_ID,AD_Process_ID,AD_Instance_ID</returns>
         public string SaveCheckPrintPreview(Ctx ctx, string param, int BankId, int BankAccId, string IsConsolidate)
         {
@@ -7200,6 +7204,7 @@ namespace VA009.Models
             {
                 return Msg.GetMsg(ctx, "ProcessNoInstance");
             }
+            DB.ExecuteQuery("DELETE FROM VA009_T_CheckPrintPreview WHERE CREATED <=SYSDATE-1");
             StringBuilder sql = new StringBuilder();
             DateTime? date = null; decimal chkAmount = 0; string chkNumber = "";
             for (int i = 0; i < objChequePrintParams.Length; i++)
@@ -7239,7 +7244,7 @@ namespace VA009.Models
                     "" + chkAmount + "," + GlobalVariable.TO_DATE(date, true) + "," + chkNumber + "," +
                     Util.GetValueOfDecimal(objChequePrintParams[i].DueAmt) + "," + instance.GetAD_PInstance_ID() + ",'" + Util.GetValueOfChar(IsConsolidate) + "')"
                     );
-                int no = DB.ExecuteQuery(sql.ToString(), null, null);
+                DB.ExecuteQuery(sql.ToString(), null, null);
             }
             string Ids = AD_Process_ID + ";" + Ad_Table_ID + ";" + instance.GetAD_PInstance_ID();
 

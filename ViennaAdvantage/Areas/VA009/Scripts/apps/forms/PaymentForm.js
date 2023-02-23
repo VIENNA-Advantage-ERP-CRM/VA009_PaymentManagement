@@ -8153,6 +8153,7 @@
                     chequeDetailsDispose();
                 };
                 $btnChequePrint.on("click", function (e) {
+                    $bsyDiv[0].style.visibility = "visible";
                     $.ajax({
                         url: VIS.Application.contextUrl + "VA009/Payment/SavePrintCheckDetails",
                         type: "POST",
@@ -8168,6 +8169,7 @@
                                     prin.startPdf();
                                 }
                             }
+                            $bsyDiv[0].style.visibility = "hidden";
                         },
                         error: function (ex) {
                             console.log(ex);
@@ -8305,7 +8307,6 @@
                                         SelectedRecords[i]["CheckNumber"] = filterObj[0]["CheckNumber"];
                                         amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         filterObj[0]["ConvertedAmt"] = amt;
-                                        SelectedRecords[i]["ConvertedAmt"] = amt;
                                         filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
                                         ds[0]["TOTALLINESCOUNT"] = filterObj[0]["TotalLinesCount"];
                                     }
