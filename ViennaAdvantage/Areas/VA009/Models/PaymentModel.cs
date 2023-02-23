@@ -21,6 +21,7 @@ using VAdvantage.DataBase;
 using System.Dynamic;
 using System.Globalization;
 using ViennaAdvantage.Common;
+using Newtonsoft.Json;
 
 namespace VA009.Models
 {
@@ -5893,11 +5894,11 @@ namespace VA009.Models
             else
             {
                 //add sql access to generate batch file for those who have access
-                    sql.Clear();
-                    //removed brackets from this query because it was creating problem in case of document number was having special characters
-                    sql.Append(@"SELECT c_payment_id FROM C_Payment 
+                sql.Clear();
+                //removed brackets from this query because it was creating problem in case of document number was having special characters
+                sql.Append(@"SELECT c_payment_id FROM C_Payment 
                             WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno)=UPPER('" + DocNumber + "') AND DocStatus IN ('CO','CL') ");
-                    payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
+                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
             }
             PaymentResponse obj = null;
             sql.Clear();
@@ -7183,175 +7184,256 @@ namespace VA009.Models
             return _Bt;
         }
 
+        /// <summary>
+        /// To save Check Print Preview details
+        /// </summary>
+        /// <writer>VIS323</writer>
+        /// <param name="params">list of check parameters</param>
+        /// <param name="ctx">context object</param>
+        /// <param name="BankId">Bank Id</param>
+        /// <param name="BankAccId">Bank Account Details</param>
+        /// <param name="IsConsolidate">Batch consolidate or not</param>
+        /// <returns>AD_Table_ID,AD_Process_ID,AD_Instance_ID</returns>
+        public string SaveCheckPrintPreview(Ctx ctx, string param, int BankId, int BankAccId, string IsConsolidate)
+        {
+            ChequePrintParams[] objChequePrintParams = JsonConvert.DeserializeObject<ChequePrintParams[]>(param);
+            int Ad_Table_ID = VAdvantage.Model.MTable.Get_Table_ID("VA009_T_CheckPrintPreview");
+            int AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Process_ID FROM AD_Process WHERE IsActive = 'Y' AND Name ='VA009_CheckPrintPreview'"));
+            MPInstance instance = new MPInstance(ctx, AD_Process_ID, 0);
+            if (!instance.Save())
+            {
+                return Msg.GetMsg(ctx, "ProcessNoInstance");
+            }
+            DB.ExecuteQuery("DELETE FROM VA009_T_CheckPrintPreview WHERE CREATED <=SYSDATE-1");
+            StringBuilder sql = new StringBuilder();
+            DateTime? date = null; decimal chkAmount = 0; string chkNumber = "";
+            for (int i = 0; i < objChequePrintParams.Length; i++)
+            {
+                //if checknumer is different then Assign it to current chkNumber
+                if (String.IsNullOrEmpty(chkNumber) || !chkNumber.Equals(objChequePrintParams[i].CheckNumber.ToString()))
+                {
+                    chkAmount = Util.GetValueOfDecimal(objChequePrintParams[i].ConvertedAmt);
+                    chkNumber = objChequePrintParams[i].CheckNumber.ToString();
+                }
+                date = Convert.ToDateTime(objChequePrintParams[i].CheckDate);
+                sql.Clear();
+                sql.Append(@"INSERT INTO VA009_T_CheckPrintPreview(AD_CLIENT_ID
+                            , AD_ORG_ID
+                            , C_BPARTNER_ID
+                            , C_BPARTNER_LOCATION_ID
+                            , C_BANKACCOUNT_ID
+                            , C_BANK_ID
+                            , C_CURRENCY_ID
+                            , C_INVOICESCHEDULE_ID
+                            , C_INVOICE_ID
+                            , CREATED
+                            , CREATEDBY
+                            , UPDATED
+                            , UPDATEDBY
+                            , VA009_CHECKAMOUNT
+                            , VA009_CHECKDATE
+                            , VA009_CHECKNUMBER
+                            , VA009_DUEAMOUNT
+                            , AD_PINSTANCE_ID               
+                            ,VA009_IsConsolidate) VALUES " +
+                    "( " + objChequePrintParams[i].AD_Client_ID + " , " +
+                    "" + objChequePrintParams[i].AD_Org_ID + " , " +
+                    "" + objChequePrintParams[i].C_BPartner_ID + " , " + objChequePrintParams[i].C_BPartner_Location_ID + ", " +
+                    " " + BankAccId + " , " + BankId + " , " + objChequePrintParams[i].C_Currency_ID + " , " + objChequePrintParams[i].C_InvoicePaySchedule_ID + " , " +
+                    "" + objChequePrintParams[i].C_Invoice_ID + " , SYSDATE , " + ctx.GetAD_User_ID() + ",SYSDATE," + ctx.GetAD_User_ID() + "," +
+                    "" + chkAmount + "," + GlobalVariable.TO_DATE(date, true) + "," + chkNumber + "," +
+                    Util.GetValueOfDecimal(objChequePrintParams[i].DueAmt) + "," + instance.GetAD_PInstance_ID() + ",'" + Util.GetValueOfChar(IsConsolidate) + "')"
+                    );
+                DB.ExecuteQuery(sql.ToString(), null, null);
+            }
+            string Ids = AD_Process_ID + ";" + Ad_Table_ID + ";" + instance.GetAD_PInstance_ID();
+
+            return Ids;
+        }
     }
-}
-//**************************************
-//Properties Classes for Payment Form
-//**************************************
+    //**************************************
+    //Properties Classes for Payment Form
+    //**************************************
 
-public class PaymentResponse
-{
-    public string _path { get; set; }
-    public string _filename { get; set; }
-    public string _error { get; set; }
-}
-public class PaymentData
-{
-    public int C_BPartner_ID { get; set; }
-    public int C_BPartner_Location_ID { get; set; }
-    public int C_BP_Group_ID { get; set; }
-    public int C_InvoicePaySchedule_ID { get; set; }
-    public int C_Currency_ID { get; set; }
-    public int VA009_PaymentMethod_ID { get; set; }
-    public DateTime? VA009_plannedduedate { get; set; }
-    public DateTime? VA009_FollowupDate { get; set; }
-    public decimal VA009_RecivedAmt { get; set; }
-    public decimal DueAmt { get; set; }
-    public decimal BaseAmt { get; set; }
-    public string VA009_ExecutionStatus { get; set; }
-    public int AD_Org_ID { get; set; }
-    public int AD_Client_ID { get; set; }
-    public string VA009_PaymentMode { get; set; }
-    public int paymentCount { get; set; }
-    public string C_Bpartner { get; set; }
-    public string C_BP_Group { get; set; }
-    public string VA009_PaymentMethod { get; set; }
-    public string CurrencyCode { get; set; }
-    public string BaseCurrencyCode { get; set; }
-    public decimal convertedAmt { get; set; }
-    public decimal TotalInvAmt { get; set; }
-    public int C_Invoice_ID { get; set; }
-    public int recid { get; set; }
-    public DateTime? DueDate { get; set; }
-    public string ERROR { get; set; }
-    public String LastChat { get; set; }
-    public string Systemdate { get; set; }
-    public string PaymwentBaseType { get; set; }
-    public string DocumentNo { get; set; }
-    public string TransactionType { get; set; }
-    public string PaymentRule { get; set; }
-    public string PaymentType { get; set; }
-    public string PaymentTriggerBy { get; set; }
-    public string DocBaseType { get; set; }
-    public string IsHoldPayment { get; set; }
-    public DateTime? DateAcct { get; set; }
-    public int ConversionTypeId { get; set; }
-    public decimal DiscountAmount { get; set; }
-    public decimal ConvertedDiscountAmount { get; set; }
-    public DateTime? DiscountDate { get; set; }
-}
-public class BPDetails
-{
-    public int C_BPartner_ID { get; set; }
-    public string Name { get; set; }
-}
-public class BankDetails
-{
-    public string BankName { get; set; }
-    public int C_Bank_ID { get; set; }
-    public int C_BankAccount_ID { get; set; }
-    public String BankAccountNumber { get; set; }
-    public string CurrencyCode1 { get; set; }
-    public decimal TotalAmt { get; set; }
-    public decimal UnreconsiledAmt { get; set; }
-    public decimal CurrentBalance { get; set; }
-    //public Dictionary<string, decimal> TotalAmtBank { get; set; }
-}
-public class LoadData
-{
-    public List<PaymentData> paymentdata { get; set; }
-    public List<BankDetails> bankdetails { get; set; }
-    public List<CashBook> Cbk { get; set; }
-}
-public class CashBook
-{
-    public string CBCurrencyCode { get; set; }
-    public int C_Cashbook_ID { get; set; }
-    public string CashBookName { get; set; }
-    public decimal Csb_Amt { get; set; }
+    public class ChequePrintParams
+    {
+        public int C_BPartner_ID { get; set; }
+        public int C_BPartner_Location_ID { get; set; }
+        public int C_Invoice_ID { get; set; }
+        public int C_Currency_ID { get; set; }
+        public int AD_Org_ID { get; set; }
+        public int AD_Client_ID { get; set; }
+        public decimal ConvertedAmt { get; set; }
+        public decimal DueAmt { get; set; }
+        public DateTime? CheckDate { get; set; }
+        //Date Trx
+        public decimal CheckNumber { get; set; }
+        public int C_InvoicePaySchedule_ID { get; set; }
+    }
+    public class PaymentResponse
+    {
+        public string _path { get; set; }
+        public string _filename { get; set; }
+        public string _error { get; set; }
+    }
+    public class PaymentData
+    {
+        public int C_BPartner_ID { get; set; }
+        public int C_BPartner_Location_ID { get; set; }
+        public int C_BP_Group_ID { get; set; }
+        public int C_InvoicePaySchedule_ID { get; set; }
+        public int C_Currency_ID { get; set; }
+        public int VA009_PaymentMethod_ID { get; set; }
+        public DateTime? VA009_plannedduedate { get; set; }
+        public DateTime? VA009_FollowupDate { get; set; }
+        public decimal VA009_RecivedAmt { get; set; }
+        public decimal DueAmt { get; set; }
+        public decimal BaseAmt { get; set; }
+        public string VA009_ExecutionStatus { get; set; }
+        public int AD_Org_ID { get; set; }
+        public int AD_Client_ID { get; set; }
+        public string VA009_PaymentMode { get; set; }
+        public int paymentCount { get; set; }
+        public string C_Bpartner { get; set; }
+        public string C_BP_Group { get; set; }
+        public string VA009_PaymentMethod { get; set; }
+        public string CurrencyCode { get; set; }
+        public string BaseCurrencyCode { get; set; }
+        public decimal convertedAmt { get; set; }
+        public decimal TotalInvAmt { get; set; }
+        public int C_Invoice_ID { get; set; }
+        public int recid { get; set; }
+        public DateTime? DueDate { get; set; }
+        public string ERROR { get; set; }
+        public String LastChat { get; set; }
+        public string Systemdate { get; set; }
+        public string PaymwentBaseType { get; set; }
+        public string DocumentNo { get; set; }
+        public string TransactionType { get; set; }
+        public string PaymentRule { get; set; }
+        public string PaymentType { get; set; }
+        public string PaymentTriggerBy { get; set; }
+        public string DocBaseType { get; set; }
+        public string IsHoldPayment { get; set; }
+        public DateTime? DateAcct { get; set; }
+        public int ConversionTypeId { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal ConvertedDiscountAmount { get; set; }
+        public DateTime? DiscountDate { get; set; }
+    }
+    public class BPDetails
+    {
+        public int C_BPartner_ID { get; set; }
+        public string Name { get; set; }
+    }
+    public class BankDetails
+    {
+        public string BankName { get; set; }
+        public int C_Bank_ID { get; set; }
+        public int C_BankAccount_ID { get; set; }
+        public String BankAccountNumber { get; set; }
+        public string CurrencyCode1 { get; set; }
+        public decimal TotalAmt { get; set; }
+        public decimal UnreconsiledAmt { get; set; }
+        public decimal CurrentBalance { get; set; }
+        //public Dictionary<string, decimal> TotalAmtBank { get; set; }
+    }
+    public class LoadData
+    {
+        public List<PaymentData> paymentdata { get; set; }
+        public List<BankDetails> bankdetails { get; set; }
+        public List<CashBook> Cbk { get; set; }
+    }
+    public class CashBook
+    {
+        public string CBCurrencyCode { get; set; }
+        public int C_Cashbook_ID { get; set; }
+        public string CashBookName { get; set; }
+        public decimal Csb_Amt { get; set; }
 
-}
-public class GeneratePaymt
-{
-    public int C_BPartner_ID { get; set; }
-    public int C_BPartner_Location_ID { get; set; }
-    public string Description { get; set; }
-    public int C_Invoice_ID { get; set; }
-    public string ValidMonths { get; set; }
-    public int C_Currency_ID { get; set; }
-    public int AD_Org_ID { get; set; }
-    public int AD_Client_ID { get; set; }
-    public decimal VA009_RecivedAmt { get; set; }
-    public int VA009_PaymentMethod_ID { get; set; }
-    public decimal DueAmt { get; set; }
-    public DateTime? DueDate { get; set; }
-    public DateTime? CheckDate { get; set; }
-    public DateTime? DateAcct { get; set; }
-    //Date Trx
-    public DateTime? DateTrx { get; set; }
-    public string CheckNumber { get; set; }
-    public int C_BankAccount_ID { get; set; }
-    public int C_Bank_ID { get; set; }
-    public int C_CashBook_ID { get; set; }
-    public int C_InvoicePaySchedule_ID { get; set; }
-    public string C_Bpartner { get; set; }
-    public string ISO_CODE { get; set; }
-    public string isconsolidate { get; set; }
-    public string isOverwrite { get; set; }
-    public string From { get; set; }
-    public string CurrencyCode { get; set; }
-    public int CurrencyType { get; set; }
-    //change by Amit
-    public Decimal Discount { get; set; }
-    public Decimal Writeoff { get; set; }
-    public Decimal OverUnder { get; set; }
-    public string PaymwentBaseType { get; set; }
-    public decimal convertedAmt { get; set; }
-    public string TransactionType { get; set; }
-    public int TargetDocType { get; set; }
-    public int HeaderCurrency { get; set; }
-    public int ConversionTypeId { get; set; }
-    public decimal DiscountAmount { get; set; }
-    public decimal ConvertedDiscountAmount { get; set; }
-    public DateTime? DiscountDate { get; set; }
-    public bool IsOverrideAutoCheck { get; set; }
+    }
+    public class GeneratePaymt
+    {
+        public int C_BPartner_ID { get; set; }
+        public int C_BPartner_Location_ID { get; set; }
+        public string Description { get; set; }
+        public int C_Invoice_ID { get; set; }
+        public string ValidMonths { get; set; }
+        public int C_Currency_ID { get; set; }
+        public int AD_Org_ID { get; set; }
+        public int AD_Client_ID { get; set; }
+        public decimal VA009_RecivedAmt { get; set; }
+        public int VA009_PaymentMethod_ID { get; set; }
+        public decimal DueAmt { get; set; }
+        public DateTime? DueDate { get; set; }
+        public DateTime? CheckDate { get; set; }
+        public DateTime? DateAcct { get; set; }
+        //Date Trx
+        public DateTime? DateTrx { get; set; }
+        public string CheckNumber { get; set; }
+        public int C_BankAccount_ID { get; set; }
+        public int C_Bank_ID { get; set; }
+        public int C_CashBook_ID { get; set; }
+        public int C_InvoicePaySchedule_ID { get; set; }
+        public string C_Bpartner { get; set; }
+        public string ISO_CODE { get; set; }
+        public string isconsolidate { get; set; }
+        public string isOverwrite { get; set; }
+        public string From { get; set; }
+        public string CurrencyCode { get; set; }
+        public int CurrencyType { get; set; }
+        //change by Amit
+        public Decimal Discount { get; set; }
+        public Decimal Writeoff { get; set; }
+        public Decimal OverUnder { get; set; }
+        public string PaymwentBaseType { get; set; }
+        public decimal convertedAmt { get; set; }
+        public string TransactionType { get; set; }
+        public int TargetDocType { get; set; }
+        public int HeaderCurrency { get; set; }
+        public int ConversionTypeId { get; set; }
+        public decimal DiscountAmount { get; set; }
+        public decimal ConvertedDiscountAmount { get; set; }
+        public DateTime? DiscountDate { get; set; }
+        public bool IsOverrideAutoCheck { get; set; }
 
-    //end
-}
-public class PayBatchDetails
-{
-    public string DocumentNo { get; set; }
-    public string VA009_DocumentDate { get; set; }
-    public string bankName { get; set; }
-    public string bankaccount { get; set; }
-    public int c_bank_id { get; set; }
-    public decimal BaseAmt { get; set; }
-    public int c_bankaccount_id { get; set; }
-    public int va009_paymentmethod_id { get; set; }
-    public string PaymentMethod { get; set; }
-    public int c_currency_id { get; set; }
-    public string ISO_CODE { get; set; }
-    public decimal VA009_ConvertedAmt { get; set; }
-}
-public class LocationDetails
-{
-    public int C_Location_ID { get; set; }
-    public string Name { get; set; }
-}
-public class ChargeDetails
-{
-    public int C_Charge_ID { get; set; }
-    public string Name { get; set; }
-}
-public class DocTypeDetails
-{
-    public int C_DocType_ID { get; set; }
-    public string Name { get; set; }
-    public string DocBaseType { get; set; }
-}
-public class BPLocDetails
-{
-    public int BP_ID { get; set; }
-    public int BP_Loc_ID { get; set; }
-    public int Total_Lines_Count { get; set; }
+        //end
+    }
+    public class PayBatchDetails
+    {
+        public string DocumentNo { get; set; }
+        public string VA009_DocumentDate { get; set; }
+        public string bankName { get; set; }
+        public string bankaccount { get; set; }
+        public int c_bank_id { get; set; }
+        public decimal BaseAmt { get; set; }
+        public int c_bankaccount_id { get; set; }
+        public int va009_paymentmethod_id { get; set; }
+        public string PaymentMethod { get; set; }
+        public int c_currency_id { get; set; }
+        public string ISO_CODE { get; set; }
+        public decimal VA009_ConvertedAmt { get; set; }
+    }
+    public class LocationDetails
+    {
+        public int C_Location_ID { get; set; }
+        public string Name { get; set; }
+    }
+    public class ChargeDetails
+    {
+        public int C_Charge_ID { get; set; }
+        public string Name { get; set; }
+    }
+    public class DocTypeDetails
+    {
+        public int C_DocType_ID { get; set; }
+        public string Name { get; set; }
+        public string DocBaseType { get; set; }
+    }
+    public class BPLocDetails
+    {
+        public int BP_ID { get; set; }
+        public int BP_Loc_ID { get; set; }
+        public int Total_Lines_Count { get; set; }
+    }
 }

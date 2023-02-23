@@ -80,6 +80,7 @@
         var $createNew = null;
         //varriable to show the message if cheques are not available 
         var _ChequesNotAvailable = false;
+        var $btnChequePrint = null, chequePrintParams = [];
         //var elements = [
         //    "VA009_Cancel",
         //];
@@ -5132,7 +5133,7 @@
                     var _batch_Columns = [];
                     if (_batch_Columns.length == 0) {
                         _batch_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                        _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
                         //_batch_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
                         _batch_Columns.push({
                             field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%',
@@ -8124,9 +8125,11 @@
                 $opnChkDtls = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
                 var _opnChkDtls = "";
                 var BPLocLookup = null;
+                var btnPrintCheque = $("<button class= 'ui-button' id = 'VA009_PrintCheque" + $self.windowNo + "'>" + VIS.Msg.getMsg("VA009_PrintCheque") + "</button>");
                 _opnChkDtls += "<div class='VA009-table-container' style='height:300px;' id='VA009_ChkDetailsGrid_" + $self.windowNo + "'> </div>'";
-                $opnChkDtls.append(_opnChkDtls);
+                $opnChkDtls.append(_opnChkDtls).append(btnPrintCheque);
                 var _chequeDetailsGrid = $opnChkDtls.find("#VA009_ChkDetailsGrid_" + $self.windowNo);
+                $btnChequePrint = $opnChkDtls.find("#VA009_PrintCheque" + $self.windowNo);
                 //False everytime when dialog opens to show the message if cheques are not available 
                 _ChequesNotAvailable = false;
                 var chequeDetailsDialog = new VIS.ChildDialog();
@@ -8149,6 +8152,32 @@
                 chequeDetailsDialog.onClose = function () {
                     chequeDetailsDispose();
                 };
+                $btnChequePrint.on("click", function (e) {
+                    $bsyDiv[0].style.visibility = "visible";
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/SavePrintCheckDetails",
+                        type: "POST",
+                        datatype: "json",
+                        async: true,
+                        data: ({ "ChequeData": JSON.stringify(chequePrintParams), "BankId": $POP_cmbBank.val(), "BankAccId": $POP_cmbBankAccount.val(), "IsConsolidate": ($consolidate.is(':checked')) ? 'Y' : 'N' }),
+                        success: function (data) {
+                            if (data != null) {
+                                data = JSON.parse(data);
+                                var Ids = data.split(';');
+                                if (Ids && Ids.length > 2) {
+                                    var prin = new VIS.APrint(Ids[0], Ids[1], Ids[2], $self.windowNo, null);//process, tableid , recordid
+                                    prin.startPdf();
+                                }
+                            }
+                            $bsyDiv[0].style.visibility = "hidden";
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            $bsyDiv[0].style.visibility = "hidden";
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+                });
                 function chequeDetailsDispose() {
                     w2ui["VA009_ChkDetailsGrid_" + $self.windowNo].clear();
                     _opnChkDtls = null;
@@ -8160,7 +8189,7 @@
                     var _chkDetails_Columns = [];
                     if (_chkDetails_Columns.length == 0) {
                         _chkDetails_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _chkDetails_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
                         _chkDetails_Columns.push({
                             field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("VA009_PayLocation"), sortable: true, size: '15%', render: function (record, index, col_index) {
                                 var l = BPLocLookup;
@@ -8275,7 +8304,7 @@
                                     //if record already found then add the checknumber and Increase total count
                                     else {
                                         amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
-                                        filterObj[0]["DueAmt"] = amt;
+                                        SelectedRecords[i]["CheckNumber"] = filterObj[0]["CheckNumber"];
                                         amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         filterObj[0]["ConvertedAmt"] = amt;
                                         filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
@@ -8291,6 +8320,7 @@
 
                                 }
                             }
+                            chequePrintParams = SelectedRecords;//Get all popup records with change in Converted Amt and Due Amt
                             w2utils.encodeTags(recds);
                             ChequeDetailsGrd.add(recds);
                         }
@@ -9167,7 +9197,7 @@
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
             popupgrddata = null;
-            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null;
+            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null, $btnChequePrint = null, chequePrintParams = null;
         };
         //********************
         //Set Size OF Div's

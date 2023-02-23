@@ -605,5 +605,25 @@ namespace VA009.Controllers
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
+        /// <summary>
+        /// Save print check details in Temp table
+        /// </summary>
+        /// <writer>VIS323</writer>
+        /// <param name="ChequeData">list of check parameters</param>
+        /// <param name="BankId">Bank ID</param>
+        /// <param name="BankAccId">Bank Account ID</param>
+        /// <param name="IsConsolidate">Batch is consolidate or not</param>
+        /// <returns>AD_Table_ID,AD_Process_ID,AD_Instance_ID</returns>
+        public JsonResult SavePrintCheckDetails(string ChequeData,int BankId, int BankAccId, string IsConsolidate)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                Ctx ctx = Session["ctx"] as Ctx;
+                PaymentModel objConversionModel = new PaymentModel();
+                retJSON = JsonConvert.SerializeObject(objConversionModel.SaveCheckPrintPreview(ctx,ChequeData, BankId, BankAccId, IsConsolidate));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
     }
 }
