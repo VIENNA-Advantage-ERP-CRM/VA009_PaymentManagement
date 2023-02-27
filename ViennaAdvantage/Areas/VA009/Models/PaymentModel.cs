@@ -7196,7 +7196,7 @@ namespace VA009.Models
         /// <returns>AD_Table_ID,AD_Process_ID,AD_Instance_ID</returns>
         public string SaveCheckPrintPreview(Ctx ctx, string param, int BankId, int BankAccId, string IsConsolidate)
         {
-            ChequePrintParams[] objChequePrintParams = JsonConvert.DeserializeObject<ChequePrintParams[]>(param);
+            ChequePrintParams[] objParam = JsonConvert.DeserializeObject<ChequePrintParams[]>(param);
             int Ad_Table_ID = VAdvantage.Model.MTable.Get_Table_ID("VA009_T_CheckPrintPreview");
             int AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Process_ID FROM AD_Process WHERE IsActive = 'Y' AND Name ='VA009_CheckPrintPreview'"));
             MPInstance instance = new MPInstance(ctx, AD_Process_ID, 0);
@@ -7207,15 +7207,15 @@ namespace VA009.Models
             DB.ExecuteQuery("DELETE FROM VA009_T_CheckPrintPreview WHERE CREATED <=SYSDATE-1");
             StringBuilder sql = new StringBuilder();
             DateTime? date = null; decimal chkAmount = 0; string chkNumber = "";
-            for (int i = 0; i < objChequePrintParams.Length; i++)
+            for (int i = 0; i < objParam.Length; i++)
             {
                 //if checknumer is different then Assign it to current chkNumber
-                if (String.IsNullOrEmpty(chkNumber) || !chkNumber.Equals(objChequePrintParams[i].CheckNumber.ToString()))
+                if (String.IsNullOrEmpty(chkNumber) || !chkNumber.Equals(objParam[i].CheckNumber.ToString()))
                 {
-                    chkAmount = Util.GetValueOfDecimal(objChequePrintParams[i].ConvertedAmt);
-                    chkNumber = objChequePrintParams[i].CheckNumber.ToString();
+                    chkAmount = Util.GetValueOfDecimal(objParam[i].ConvertedAmt);
+                    chkNumber = objParam[i].CheckNumber.ToString();
                 }
-                date = Convert.ToDateTime(objChequePrintParams[i].CheckDate);
+                date = Convert.ToDateTime(objParam[i].CheckDate);
                 sql.Clear();
                 sql.Append(@"INSERT INTO VA009_T_CheckPrintPreview(AD_CLIENT_ID
                             , AD_ORG_ID
@@ -7226,6 +7226,8 @@ namespace VA009.Models
                             , C_CURRENCY_ID
                             , C_INVOICESCHEDULE_ID
                             , C_INVOICE_ID
+                            , C_Order_Id
+                            , VA009_OrderPaySchedule_ID
                             , CREATED
                             , CREATEDBY
                             , UPDATED
@@ -7236,13 +7238,17 @@ namespace VA009.Models
                             , VA009_DUEAMOUNT
                             , AD_PINSTANCE_ID               
                             ,VA009_IsConsolidate) VALUES " +
-                    "( " + objChequePrintParams[i].AD_Client_ID + " , " +
-                    "" + objChequePrintParams[i].AD_Org_ID + " , " +
-                    "" + objChequePrintParams[i].C_BPartner_ID + " , " + objChequePrintParams[i].C_BPartner_Location_ID + ", " +
-                    " " + BankAccId + " , " + BankId + " , " + objChequePrintParams[i].C_Currency_ID + " , " + objChequePrintParams[i].C_InvoicePaySchedule_ID + " , " +
-                    "" + objChequePrintParams[i].C_Invoice_ID + " , SYSDATE , " + ctx.GetAD_User_ID() + ",SYSDATE," + ctx.GetAD_User_ID() + "," +
+                    "( " + objParam[i].AD_Client_ID + " , " +
+                    "" + objParam[i].AD_Org_ID + " , " +
+                    "" + objParam[i].C_BPartner_ID + " , " + objParam[i].C_BPartner_Location_ID + ", " +
+                    " " + BankAccId + " , " + BankId + " , " + objParam[i].C_Currency_ID + " , " +
+                    "" + (objParam[i].TransactionType == "Invoice" ? objParam[i].C_InvoicePaySchedule_ID : 0) + "," +
+                    "" + (objParam[i].TransactionType == "Invoice" ? objParam[i].C_Invoice_ID : 0) + "," +
+                    "" + (objParam[i].TransactionType == "Order" ? objParam[i].C_Invoice_ID : 0) + "," +
+                    "" + (objParam[i].TransactionType == "Order" ? objParam[i].C_InvoicePaySchedule_ID : 0)+"," + 
+                    "SYSDATE, " + ctx.GetAD_User_ID() + ",SYSDATE," + ctx.GetAD_User_ID() + "," +
                     "" + chkAmount + "," + GlobalVariable.TO_DATE(date, true) + "," + chkNumber + "," +
-                    Util.GetValueOfDecimal(objChequePrintParams[i].DueAmt) + "," + instance.GetAD_PInstance_ID() + ",'" + Util.GetValueOfChar(IsConsolidate) + "')"
+                    Util.GetValueOfDecimal(objParam[i].DueAmt) + "," + instance.GetAD_PInstance_ID() + ",'" + Util.GetValueOfChar(IsConsolidate) + "')"
                     );
                 DB.ExecuteQuery(sql.ToString(), null, null);
             }
@@ -7269,6 +7275,7 @@ namespace VA009.Models
         //Date Trx
         public decimal CheckNumber { get; set; }
         public int C_InvoicePaySchedule_ID { get; set; }
+        public string TransactionType { get; set; }
     }
     public class PaymentResponse
     {
