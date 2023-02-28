@@ -80,6 +80,7 @@
         var $createNew = null;
         //varriable to show the message if cheques are not available 
         var _ChequesNotAvailable = false;
+        var $btnChequePrint = null, chequePrintParams = [];
         //var elements = [
         //    "VA009_Cancel",
         //];
@@ -5132,7 +5133,7 @@
                     var _batch_Columns = [];
                     if (_batch_Columns.length == 0) {
                         _batch_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                        _batch_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
                         //_batch_Columns.push({ field: "C_Invoice_ID", caption: VIS.Msg.getMsg("VA009_Invoice"), sortable: true, size: '10%' });
                         _batch_Columns.push({
                             field: "C_InvoicePaySchedule_ID", caption: VIS.Msg.getMsg("VA009_Schedule"), sortable: true, size: '10%',
@@ -5285,6 +5286,12 @@
                         line["DiscountAmount"] = rslt[i].DiscountAmount;
                         line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
                         line["DiscountDate"] = rslt[i].DiscountDate;
+                        line["TotalAPC"] = rslt[i].TotalAPC;
+                        line["TotalAPI"] = rslt[i].TotalAPI;
+                        line["DocBaseType"] = rslt[i].DocBaseType;
+                        line["IsAPCGreater"] = rslt[i].IsAPCGreater;
+                        line["IsAPCExists"] = rslt[i].IsAPCExists;
+                        line["PrintConvertedAmt"] = rslt[i].convertedAmt;
                         popupgrddata.push(line);
                     }
                     w2utils.encodeTags(popupgrddata);
@@ -5644,6 +5651,12 @@
                         line["DiscountAmount"] = rslt[i].DiscountAmount;
                         line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
                         line["DiscountDate"] = rslt[i].DiscountDate;
+                        line["TotalAPC"] = rslt[i].TotalAPC;
+                        line["TotalAPI"] = rslt[i].TotalAPI;
+                        line["DocBaseType"] = rslt[i].DocBaseType;
+                        line["IsAPCGreater"] = rslt[i].IsAPCGreater;
+                        line["IsAPCExists"] = rslt[i].IsAPCExists;
+                        line["PrintConvertedAmt"] = rslt[i].convertedAmt;
                         popupgrddata.push(line);
                     }
                     if (rslt[0].ERROR == "ConversionNotFound") {
@@ -5750,6 +5763,8 @@
                                                     _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'];
                                                     _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'];
                                                     _data["DiscountDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']);
+                                                    _data["TotalAPI"] = VIS.Utility.Util.getValueOfDecimal(BatchGrd.get(BatchGrd.getSelection()[i])['TotalAPI']);
+                                                    _data["TotalAPC"] = VIS.Utility.Util.getValueOfDecimal(BatchGrd.get(BatchGrd.getSelection()[i])['TotalAPC']);
 
                                                     if (_data["DueAmt"] != 0 && BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'] == 0) {
                                                         //ConvertedAmt is zero then show the message Conversion Rate not found
@@ -8124,9 +8139,11 @@
                 $opnChkDtls = $("<div class='VA009-popform-content' style='min-height:25px !important'>");
                 var _opnChkDtls = "";
                 var BPLocLookup = null;
+                var btnPrintCheque = $("<button class= 'ui-button' id = 'VA009_PrintCheque" + $self.windowNo + "'>" + VIS.Msg.getMsg("VA009_PrintCheque") + "</button>");
                 _opnChkDtls += "<div class='VA009-table-container' style='height:300px;' id='VA009_ChkDetailsGrid_" + $self.windowNo + "'> </div>'";
-                $opnChkDtls.append(_opnChkDtls);
+                $opnChkDtls.append(_opnChkDtls).append(btnPrintCheque);
                 var _chequeDetailsGrid = $opnChkDtls.find("#VA009_ChkDetailsGrid_" + $self.windowNo);
+                $btnChequePrint = $opnChkDtls.find("#VA009_PrintCheque" + $self.windowNo);
                 //False everytime when dialog opens to show the message if cheques are not available 
                 _ChequesNotAvailable = false;
                 var chequeDetailsDialog = new VIS.ChildDialog();
@@ -8149,6 +8166,32 @@
                 chequeDetailsDialog.onClose = function () {
                     chequeDetailsDispose();
                 };
+                $btnChequePrint.on("click", function (e) {
+                    $bsyDiv[0].style.visibility = "visible";
+                    $.ajax({
+                        url: VIS.Application.contextUrl + "VA009/Payment/SavePrintCheckDetails",
+                        type: "POST",
+                        datatype: "json",
+                        async: true,
+                        data: ({ "ChequeData": JSON.stringify(chequePrintParams), "BankId": $POP_cmbBank.val(), "BankAccId": $POP_cmbBankAccount.val(), "IsConsolidate": ($consolidate.is(':checked')) ? 'Y' : 'N' }),
+                        success: function (data) {
+                            if (data != null) {
+                                data = JSON.parse(data);
+                                var Ids = data.split(';');
+                                if (Ids && Ids.length > 2) {
+                                    var prin = new VIS.APrint(Ids[0], Ids[1], Ids[2], $self.windowNo, null);//process, tableid , recordid
+                                    prin.startPdf();
+                                }
+                            }
+                            $bsyDiv[0].style.visibility = "hidden";
+                        },
+                        error: function (ex) {
+                            console.log(ex);
+                            $bsyDiv[0].style.visibility = "hidden";
+                            VIS.ADialog.error("VA009_ErrorLoadingPayments");
+                        }
+                    });
+                });
                 function chequeDetailsDispose() {
                     w2ui["VA009_ChkDetailsGrid_" + $self.windowNo].clear();
                     _opnChkDtls = null;
@@ -8160,7 +8203,7 @@
                     var _chkDetails_Columns = [];
                     if (_chkDetails_Columns.length == 0) {
                         _chkDetails_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '10%' });
-                        _chkDetails_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_Vendor"), sortable: true, size: '10%' });
+                        _chkDetails_Columns.push({ field: "C_Bpartner", caption: VIS.Msg.getMsg("VA009_BPartner"), sortable: true, size: '10%' });
                         _chkDetails_Columns.push({
                             field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("VA009_PayLocation"), sortable: true, size: '15%', render: function (record, index, col_index) {
                                 var l = BPLocLookup;
@@ -8242,6 +8285,19 @@
 
                         if (ChkAutoControl == "Y") {
                             for (i = 0; i < SelectedRecords.length; i++) {
+
+                                if (SelectedRecords[i].IsAPCGreater) {
+                                    chequeDetailsDispose();
+                                    chequeDetailsDialog.close();
+                                    VIS.ADialog.info("VA009_APCreditIsGreater");
+                                    return false;
+                                }
+                                if (!isConsolidate && SelectedRecords[i].IsAPCExists) {
+                                    chequeDetailsDispose();
+                                    chequeDetailsDialog.close();
+                                    VIS.ADialog.info("VA009_APCreditExists");
+                                    return false;
+                                }
                                 chk = getNextCheckNumberBasedOnAssigned(ds, checkNum);
                                 if (chk != null) {
                                     checkNum = chk["ASSIGNEDCHKNUM"];
@@ -8250,6 +8306,7 @@
                                 if (i == 0) {
                                     SelectedRecords[i]["CheckNumber"] = checkNum;
                                     SelectedRecords[i]["TotalLinesCount"] = 1;
+                                    SelectedRecords[i]["MergeIds"] = VIS.Utility.Util.getValueOfString(SelectedRecords[i].recid);
                                     checkNum = checkNum + 1;
                                     ds[0]["TOTALLINESCOUNT"] = 1;
                                     recds.push(SelectedRecords[i]);
@@ -8264,19 +8321,45 @@
                                                 && e.TotalLinesCount < maxLineCount);
                                         }
                                     });
+
                                     //if record not found then add the checknumber and Increase total count in array
                                     if (filterObj.length == 0) {
                                         SelectedRecords[i]["CheckNumber"] = checkNum;
                                         checkNum = checkNum + 1;
                                         SelectedRecords[i]["TotalLinesCount"] = 1;
+                                        SelectedRecords[i]["MergeIds"] = VIS.Utility.Util.getValueOfString(SelectedRecords[i].recid);
                                         ds[0]["TOTALLINESCOUNT"] = 1;
                                         recds.push(SelectedRecords[i]);
                                     }
                                     //if record already found then add the checknumber and Increase total count
                                     else {
-                                        amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
-                                        filterObj[0]["DueAmt"] = amt;
-                                        amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                        //API==API OR APC==APC
+                                        if (filterObj[0]["DocBaseType"] == SelectedRecords[i]["DocBaseType"]) {
+                                            //amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
+                                            amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                        }
+                                        else {
+                                            //Old Record DocBaseType = API AND New Record is API
+                                            if (SelectedRecords[i]["DocBaseType"] == "API") {
+                                                //API > APC
+                                                if (parseFloat(SelectedRecords[i]["ConvertedAmt"]) > parseFloat(filterObj[0]["ConvertedAmt"]))
+                                                    amt = parseFloat(SelectedRecords[i]["ConvertedAmt"]) - parseFloat(filterObj[0]["ConvertedAmt"]);
+                                            }
+                                            //Old Record DocBaseType = APC AND New Record is APC
+                                            else if (SelectedRecords[i]["DocBaseType"] == "APC") {
+                                                //APC < API
+                                                if (parseFloat(SelectedRecords[i]["ConvertedAmt"]) < parseFloat(filterObj[0]["ConvertedAmt"]))
+                                                    amt = parseFloat(filterObj[0]["ConvertedAmt"]) - parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                            }//if record is ordertype then Amt calculated
+                                            else if (SelectedRecords[i]["DocBaseType"] == "POO") {
+                                                amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                            }
+                                            // amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
+                                            //amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                        }
+                                        SelectedRecords[i]["CheckNumber"] = filterObj[0]["CheckNumber"];
+                                        SelectedRecords[i]["ConvertedAmt"] = amt;
+                                        filterObj[0]["MergeIds"] += "," + VIS.Utility.Util.getValueOfString(SelectedRecords[i].recid);
                                         filterObj[0]["ConvertedAmt"] = amt;
                                         filterObj[0]["TotalLinesCount"] = parseInt(filterObj[0]["TotalLinesCount"]) + 1;
                                         ds[0]["TOTALLINESCOUNT"] = filterObj[0]["TotalLinesCount"];
@@ -8291,6 +8374,9 @@
 
                                 }
                             }
+                            console.log(recds);
+                            preparedataforChqPrint(recds, SelectedRecords);
+                            chequePrintParams = SelectedRecords;//Get all popup records with change in Converted Amt and Due Amt
                             w2utils.encodeTags(recds);
                             ChequeDetailsGrd.add(recds);
                         }
@@ -8305,6 +8391,22 @@
                         VIS.ADialog.info("VA009_ChequesNotAvail");
                     }
                 };
+
+                function preparedataforChqPrint(recds, SelectedRecords) {
+                    var recIds = [];
+                    if (recds.length > 0) {
+                        for (var i = 0; i < recds.length; i++) {
+                            recIds = recds[i]["MergeIds"].split(",");
+                            if (recIds.length > 0) {
+                                recIds.forEach(function (e) {
+                                    upd_obj = SelectedRecords.findIndex(obj => parseInt(obj.recid) == parseInt(e));
+                                    if (upd_obj != -1)
+                                        SelectedRecords[upd_obj]["ConvertedAmt"] = parseFloat(recds[i]["ConvertedAmt"]);
+                                });
+                            }
+                        }
+                    }
+                }
 
                 //get the check series based on priority and check number.
                 function getNextCheckNumberBasedOnAssigned(Chk_DT, chkNum) {
@@ -9167,7 +9269,7 @@
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
             popupgrddata = null;
-            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null;
+            CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null, $btnChequePrint = null, chequePrintParams = null;
         };
         //********************
         //Set Size OF Div's
