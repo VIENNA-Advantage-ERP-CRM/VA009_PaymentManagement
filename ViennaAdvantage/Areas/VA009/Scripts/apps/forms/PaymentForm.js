@@ -8350,6 +8350,9 @@
                                                 //APC < API
                                                 if (parseFloat(SelectedRecords[i]["ConvertedAmt"]) < parseFloat(filterObj[0]["ConvertedAmt"]))
                                                     amt = parseFloat(filterObj[0]["ConvertedAmt"]) - parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                            }//if record is ordertype then Amt calculated
+                                            else if (SelectedRecords[i]["DocBaseType"] == "POO") {
+                                                amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                             }
                                             // amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
                                             //amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
