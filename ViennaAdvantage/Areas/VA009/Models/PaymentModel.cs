@@ -511,6 +511,8 @@ namespace VA009.Models
                            bpLoc.VA009_PaymentLocation_ID ORDER BY C_Bpartner");
 
             DataSet ds = DB.ExecuteDataset(sql.ToString());
+            Dictionary<int, TotalAmounts> BP_AmtObj = new Dictionary<int, TotalAmounts>();
+            int APCcount = 0;
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
@@ -549,6 +551,9 @@ namespace VA009.Models
                     //}
                     MDocType docbasdetype = MDocType.Get(ctx, Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_DocType_ID"]));
                     _payData.DocBaseType = docbasdetype.GetDocBaseType();
+                    _payData.IsAPCExists = false;
+                    if (docbasdetype.GetDocBaseType().Equals("APC"))
+                        APCcount = 1;
                     if (docbasdetype.GetDocBaseType() == "API" || docbasdetype.GetDocBaseType() == "APC" || docbasdetype.GetDocBaseType() == "POO")
                     {
                         _payData.PaymwentBaseType = "APP";
@@ -587,9 +592,52 @@ namespace VA009.Models
                     _payData.ConversionTypeId = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]);
                     _payData.DiscountDate = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]);
                     //end
+
                     _lstChqPay.Add(_payData);
+
+                    #region adding amounts total business partner and docbase type wise in array
+                    if (BP_AmtObj != null)
+                    {
+                        if (BP_AmtObj.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])))
+                        {
+                            if (_payData.DocBaseType == "APC")
+                                BP_AmtObj[Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])].TotalAPC += _payData.convertedAmt;
+                            if (_payData.DocBaseType == "API")
+                                BP_AmtObj[Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])].TotalAPI += _payData.convertedAmt;
+                        }
+                        else
+                        {
+                            TotalAmounts amtobj = new TotalAmounts();
+                            if (_payData.DocBaseType == "APC")
+                                amtobj.TotalAPC = _payData.convertedAmt;
+                            if (_payData.DocBaseType == "API")
+                                amtobj.TotalAPI = _payData.convertedAmt;
+                            BP_AmtObj.Add(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]), amtobj);
+                        }
+                    }
+                    #endregion
+
                 }
             }
+
+            #region To update the TotalAPC and TotalAPI Amount in primary list based on Business Partner
+            if ((BP_AmtObj != null && BP_AmtObj.Count > 0) && (_lstChqPay != null && _lstChqPay.Count > 0))
+            {
+                foreach (var lst in _lstChqPay)
+                {
+                    if (BP_AmtObj.ContainsKey(lst.C_BPartner_ID))
+                    {
+                        lst.TotalAPC = BP_AmtObj[lst.C_BPartner_ID].TotalAPC;
+                        lst.TotalAPI = BP_AmtObj[lst.C_BPartner_ID].TotalAPI;
+                        lst.IsAPCGreater = lst.TotalAPC > lst.TotalAPI;
+                    }
+                    if (APCcount > 0)
+                        lst.IsAPCExists = true;
+
+                }
+            }
+            #endregion
+
             sql = null;
             return _lstChqPay;
         }
@@ -3191,7 +3239,8 @@ namespace VA009.Models
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             if (PaymentData.Length > 0)
             {
-                decimal convertdamt = 0, discountAmt = 0;
+                decimal convertdamt = 0, discountAmt = 0; int APCcount = 0;
+                Dictionary<int, TotalAmounts> BP_AmtObj = new Dictionary<int, TotalAmounts>();
                 for (int i = 0; i < PaymentData.Length; i++)
                 {
                     PaymentData _payData = new PaymentData();
@@ -3235,6 +3284,9 @@ namespace VA009.Models
 
                     MDocType docbasdetype = new MDocType(ctx, documentId, null);
                     _payData.DocBaseType = docbasdetype.GetDocBaseType();
+                    _payData.IsAPCExists = false;
+                    if (docbasdetype.GetDocBaseType().Equals("APC"))
+                        APCcount = 1;
                     if (docbasdetype.GetDocBaseType() == "API" || docbasdetype.GetDocBaseType() == "APC" || docbasdetype.GetDocBaseType() == "POO")
                     {
                         _payData.PaymwentBaseType = "APP";
@@ -3342,7 +3394,44 @@ namespace VA009.Models
                     }
                     //end
                     _lstChqPay.Add(_payData);
+                    #region adding amounts total business partner and docbase type wise in array
+                    if (BP_AmtObj != null)
+                    {
+                        if (BP_AmtObj.ContainsKey(PaymentData[i].C_BPartner_ID))
+                        {
+                            if (_payData.DocBaseType == "APC")
+                                BP_AmtObj[PaymentData[i].C_BPartner_ID].TotalAPC += _payData.convertedAmt;
+                            if (_payData.DocBaseType == "API")
+                                BP_AmtObj[PaymentData[i].C_BPartner_ID].TotalAPI += _payData.convertedAmt;
+                        }
+                        else
+                        {
+                            TotalAmounts amtobj = new TotalAmounts();
+                            if (_payData.DocBaseType == "APC")
+                                amtobj.TotalAPC = _payData.convertedAmt;
+                            if (_payData.DocBaseType == "API")
+                                amtobj.TotalAPI = _payData.convertedAmt;
+                            BP_AmtObj.Add(Util.GetValueOfInt(PaymentData[i].C_BPartner_ID), amtobj);
+                        }
+                    }
+                    #endregion
                 }
+                #region To update the TotalAPC and TotalAPI Amount in primary list based on Business Partner
+                if ((BP_AmtObj != null && BP_AmtObj.Count > 0) && (_lstChqPay != null && _lstChqPay.Count > 0))
+                {
+                    foreach (var lst in _lstChqPay)
+                    {
+                        if (BP_AmtObj.ContainsKey(lst.C_BPartner_ID))
+                        {
+                            lst.TotalAPC = BP_AmtObj[lst.C_BPartner_ID].TotalAPC;
+                            lst.TotalAPI = BP_AmtObj[lst.C_BPartner_ID].TotalAPI;
+                            lst.IsAPCGreater = lst.TotalAPC > lst.TotalAPI;
+                        }
+                        if (APCcount > 0)
+                            lst.IsAPCExists = true;
+                    }
+                }
+                #endregion
             }
             return _lstChqPay;
         }
@@ -7245,10 +7334,10 @@ namespace VA009.Models
                     "" + (objParam[i].TransactionType == "Invoice" ? objParam[i].C_InvoicePaySchedule_ID : 0) + "," +
                     "" + (objParam[i].TransactionType == "Invoice" ? objParam[i].C_Invoice_ID : 0) + "," +
                     "" + (objParam[i].TransactionType == "Order" ? objParam[i].C_Invoice_ID : 0) + "," +
-                    "" + (objParam[i].TransactionType == "Order" ? objParam[i].C_InvoicePaySchedule_ID : 0)+"," + 
+                    "" + (objParam[i].TransactionType == "Order" ? objParam[i].C_InvoicePaySchedule_ID : 0) + "," +
                     "SYSDATE, " + ctx.GetAD_User_ID() + ",SYSDATE," + ctx.GetAD_User_ID() + "," +
                     "" + chkAmount + "," + GlobalVariable.TO_DATE(date, true) + "," + chkNumber + "," +
-                    Util.GetValueOfDecimal(objParam[i].DueAmt) + "," + instance.GetAD_PInstance_ID() + ",'" + Util.GetValueOfChar(IsConsolidate) + "')"
+                    Util.GetValueOfDecimal(objParam[i].PrintConvertedAmt) + "," + instance.GetAD_PInstance_ID() + ",'" + Util.GetValueOfChar(IsConsolidate) + "')"
                     );
                 DB.ExecuteQuery(sql.ToString(), null, null);
             }
@@ -7276,6 +7365,7 @@ namespace VA009.Models
         public decimal CheckNumber { get; set; }
         public int C_InvoicePaySchedule_ID { get; set; }
         public string TransactionType { get; set; }
+        public decimal PrintConvertedAmt { get; set; }
     }
     public class PaymentResponse
     {
@@ -7327,6 +7417,10 @@ namespace VA009.Models
         public decimal DiscountAmount { get; set; }
         public decimal ConvertedDiscountAmount { get; set; }
         public DateTime? DiscountDate { get; set; }
+        public decimal TotalAPI { get; set; }
+        public decimal TotalAPC { get; set; }
+        public bool IsAPCGreater { get; set; }
+        public bool IsAPCExists { get; set; }
     }
     public class BPDetails
     {
@@ -7403,6 +7497,8 @@ namespace VA009.Models
         public decimal ConvertedDiscountAmount { get; set; }
         public DateTime? DiscountDate { get; set; }
         public bool IsOverrideAutoCheck { get; set; }
+        public decimal TotalAPC { get; set; }
+        public decimal TotalAPI { get; set; }
 
         //end
     }
@@ -7442,5 +7538,10 @@ namespace VA009.Models
         public int BP_ID { get; set; }
         public int BP_Loc_ID { get; set; }
         public int Total_Lines_Count { get; set; }
+    }
+    public class TotalAmounts
+    {
+        public decimal TotalAPC { get; set; }
+        public decimal TotalAPI { get; set; }
     }
 }
