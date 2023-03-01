@@ -8340,7 +8340,7 @@
                                         }
                                         else {
                                             //Old Record DocBaseType = API AND New Record is API
-                                            if (SelectedRecords[i]["DocBaseType"] == "API") {
+                                            if (SelectedRecords[i]["DocBaseType"] == "API" && SelectedRecords[i].IsAPCExists) {
                                                 //API > APC
                                                 if (parseFloat(SelectedRecords[i]["ConvertedAmt"]) > parseFloat(filterObj[0]["ConvertedAmt"]))
                                                     amt = parseFloat(SelectedRecords[i]["ConvertedAmt"]) - parseFloat(filterObj[0]["ConvertedAmt"]);
@@ -8353,6 +8353,10 @@
                                             }//if record is ordertype then Amt calculated
                                             else if (SelectedRecords[i]["DocBaseType"] == "POO") {
                                                 amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
+                                            }//In case of order and document types are not same
+                                            else if (filterObj[0]["DocBaseType"] != SelectedRecords[i]["DocBaseType"]) {
+                                                if (filterObj[0]["DocBaseType"] == "POO")
+                                                    amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                             }
                                             // amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
                                             //amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
