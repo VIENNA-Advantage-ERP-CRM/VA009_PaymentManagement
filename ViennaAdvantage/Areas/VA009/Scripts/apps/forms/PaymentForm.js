@@ -8312,10 +8312,10 @@
                                     recds.push(SelectedRecords[i]);
                                 }
                                 else {
-                                    //Find the selected object into the array based on Business Partner, Location and Lines Count.
+                                    //Find the selected object into the array based on Business Partner, Location, Lines Count and DocBaseType.
                                     var filterObj = recds.filter(function (e) {
                                         if (isConsolidate) {
-                                            if (SelectedRecords[i].DocBaseType == "API" || SelectedRecords[i].DocBaseType == "APC") {
+                                            if ((e.DocBaseType == "API" || e.DocBaseType == "APC") && (SelectedRecords[i].DocBaseType == "API" || SelectedRecords[i].DocBaseType == "APC")) {
                                                 return (
                                                     e.C_BPartner_ID == SelectedRecords[i].C_BPartner_ID
                                                     && e.C_BPartner_Location_ID == SelectedRecords[i].C_BPartner_Location_ID
