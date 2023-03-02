@@ -8315,10 +8315,12 @@
                                     //Find the selected object into the array based on Business Partner, Location and Lines Count.
                                     var filterObj = recds.filter(function (e) {
                                         if (isConsolidate) {
-                                            return (
-                                                e.C_BPartner_ID == SelectedRecords[i].C_BPartner_ID
-                                                && e.C_BPartner_Location_ID == SelectedRecords[i].C_BPartner_Location_ID
-                                                && e.TotalLinesCount < maxLineCount);
+                                            if (SelectedRecords[i].DocBaseType == "API" || SelectedRecords[i].DocBaseType == "APC") {
+                                                return (
+                                                    e.C_BPartner_ID == SelectedRecords[i].C_BPartner_ID
+                                                    && e.C_BPartner_Location_ID == SelectedRecords[i].C_BPartner_Location_ID
+                                                    && e.TotalLinesCount < maxLineCount);
+                                            }
                                         }
                                     });
 
@@ -8339,8 +8341,8 @@
                                             amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         }
                                         else {
-                                            //Old Record DocBaseType = API AND New Record is API
-                                            if (SelectedRecords[i]["DocBaseType"] == "API" && SelectedRecords[i].IsAPCExists) {
+                                            //Old Record DocBaseType = API AND New Record is API&& SelectedRecords[i].IsAPCExists
+                                            if (SelectedRecords[i]["DocBaseType"] == "API") {
                                                 //API > APC
                                                 if (parseFloat(SelectedRecords[i]["ConvertedAmt"]) > parseFloat(filterObj[0]["ConvertedAmt"]))
                                                     amt = parseFloat(SelectedRecords[i]["ConvertedAmt"]) - parseFloat(filterObj[0]["ConvertedAmt"]);
@@ -8354,10 +8356,6 @@
                                             else if (SelectedRecords[i]["DocBaseType"] == "POO") {
                                                 amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                             }//In case of order and document types are not same
-                                            else if (filterObj[0]["DocBaseType"] != SelectedRecords[i]["DocBaseType"]) {
-                                                if (filterObj[0]["DocBaseType"] == "POO")
-                                                    amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
-                                            }
                                             // amt = parseFloat(filterObj[0]["DueAmt"]) + parseFloat(SelectedRecords[i]["DueAmt"]);
                                             //amt = parseFloat(filterObj[0]["ConvertedAmt"]) + parseFloat(SelectedRecords[i]["ConvertedAmt"]);
                                         }

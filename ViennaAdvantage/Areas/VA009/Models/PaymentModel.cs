@@ -602,7 +602,7 @@ namespace VA009.Models
                         {
                             if (_payData.DocBaseType == "APC")
                                 BP_AmtObj[Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])].TotalAPC += _payData.convertedAmt;
-                            if (_payData.DocBaseType == "API" || _payData.DocBaseType == "POO")
+                            if (_payData.DocBaseType == "API")
                                 BP_AmtObj[Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])].TotalAPI += _payData.convertedAmt;
                         }
                         else
@@ -610,7 +610,7 @@ namespace VA009.Models
                             TotalAmounts amtobj = new TotalAmounts();
                             if (_payData.DocBaseType == "APC")
                                 amtobj.TotalAPC = _payData.convertedAmt;
-                            if (_payData.DocBaseType == "API" || _payData.DocBaseType == "POO")
+                            if (_payData.DocBaseType == "API")
                                 amtobj.TotalAPI = _payData.convertedAmt;
                             BP_AmtObj.Add(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]), amtobj);
                         }
@@ -3401,7 +3401,7 @@ namespace VA009.Models
                         {
                             if (_payData.DocBaseType == "APC")
                                 BP_AmtObj[PaymentData[i].C_BPartner_ID].TotalAPC += _payData.convertedAmt;
-                            if (_payData.DocBaseType == "API" || _payData.DocBaseType == "POO")
+                            if (_payData.DocBaseType == "API")
                                 BP_AmtObj[PaymentData[i].C_BPartner_ID].TotalAPI += _payData.convertedAmt;
                         }
                         else
@@ -3409,7 +3409,7 @@ namespace VA009.Models
                             TotalAmounts amtobj = new TotalAmounts();
                             if (_payData.DocBaseType == "APC")
                                 amtobj.TotalAPC = _payData.convertedAmt;
-                            if (_payData.DocBaseType == "API" || _payData.DocBaseType == "POO")
+                            if (_payData.DocBaseType == "API")
                                 amtobj.TotalAPI = _payData.convertedAmt;
                             BP_AmtObj.Add(Util.GetValueOfInt(PaymentData[i].C_BPartner_ID), amtobj);
                         }
