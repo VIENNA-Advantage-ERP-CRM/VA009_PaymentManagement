@@ -59,38 +59,6 @@ namespace ViennaAdvantage.Model
             log.Info(ToString());
             SetProcessed(true);
             SetDocAction(DOCACTION_None);
-            #region CommentedOldCode
-            //StringBuilder sql = new StringBuilder();
-            //sql.Append(@"SELECT COUNT(va009_batchlines_id) FROM va009_batchlinedetails WHERE va009_batchlines_id IN
-            //        (SELECT va009_batchlines_id  FROM va009_batchlines  WHERE va009_batch_id= " + GetVA009_Batch_ID()
-            //        + "  ) AND c_payment_id IS NOT NULL ");
-            //if (Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null)) > 0)
-            //{
-            //    return false;
-            //}
-            //else
-            //{
-            //    //to update processed to flase when we perform Close.
-            //    int updateProcessedBD = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlinedetails set processed='N'
-            //        WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() +
-            //        ")"));
-
-            //    int updateProcessedBL = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlines set processed='N' 
-            //                    WHERE va009_batch_id=" + GetVA009_Batch_ID()));
-            //    if (updateProcessedBL > 0 && updateProcessedBD > 0)
-            //    {
-            //        //to update execution status to awaited when we perform delete.
-            //        int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE c_invoicepayschedule SET VA009_ExecutionStatus = 'A' WHERE c_invoicepayschedule_id IN
-            //    (SELECT c_invoicepayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
-            //        int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE va009_orderpayschedule SET VA009_ExecutionStatus = 'A'
-            //    WHERE va009_orderpayschedule_id IN (SELECT va009_orderpayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
-            //        if (schdeuleCount > 0 || OrdschdeuleCount > 0)
-            //        {
-            //            return true;
-            //        }
-            //    }
-            //}
-            #endregion
             return true;
         }
 
@@ -103,20 +71,17 @@ namespace ViennaAdvantage.Model
                 if (!DocActionVariables.STATUS_INPROGRESS.Equals(status))
                     return status;
             }
-            //to check if payment method is CHECK then skip otherwise set these values
-            string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
-                                VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null,
-             Get_TrxName()));
-            if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
+
+            //VIS_045 -> DevOps task ID: 2035 -> 28/March/2023 
+            String valid = ModelValidationEngine.Get().FireDocValidate(this, ModalValidatorVariables.DOCTIMING_AFTER_COMPLETE);
+            if (valid != null)
             {
-                // to check whether partner bank account and account name is selected on batch line or not
-                if (Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(va009_batchlines_ID) FROM va009_batchlines
-                WHERE c_bp_bankaccount_id IS NULL AND a_name IS NULL AND VA009_Batch_ID = " + GetVA009_Batch_ID(), null, null)) > 0)
-                {
-                    _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
-                    return DocActionVariables.STATUS_INVALID;
-                }
+                _processMsg = valid;
+                return DocActionVariables.STATUS_INVALID;
             }
+
+            SetProcessed(true);
+            SetDocAction(DOCACTION_Close);
             return DocActionVariables.STATUS_COMPLETED;
         }
 
@@ -127,6 +92,31 @@ namespace ViennaAdvantage.Model
         public String GetProcessMsg()
         {
             return _processMsg;
+        }
+
+        /// <summary>
+        /// Set Processed value (Own Document, Batch Line and Details)
+        /// </summary>
+        /// <param name="processed">true/false</param>
+        /// <writer>VIS_045 -> DevOps Task ID: 2035 -> 28/March/2023 </writer>
+        public new void SetProcessed(bool processed)
+        {
+            base.SetProcessed(processed);
+            if (Get_ID() == 0)
+                return;
+
+            int no = DB.ExecuteQuery($@"UPDATE VA009_BatchLines SET Processed = 
+                         {GlobalVariable.TO_STRING(processed ? "Y" : "N")} 
+                         WHERE VA009_Batch_ID = {GetVA009_Batch_ID()}", null, Get_Trx());
+            log.Fine(processed + " - Batch Lines=" + no);
+
+            no = DB.ExecuteQuery($@"UPDATE VA009_BatchLineDetails  SET Processed = 
+                         {GlobalVariable.TO_STRING(processed ? "Y" : "N")} 
+                         WHERE VA009_BatchLines_ID IN (SELECT VA009_BatchLines_ID FROM VA009_BatchLines WHERE
+                            VA009_Batch_ID = {GetVA009_Batch_ID()})", null, Get_Trx());
+            log.Fine(processed + " - Batch Lines Details =" + no);
+            _lines = null;
+          
         }
 
         public FileInfo CreatePDF()
@@ -172,6 +162,7 @@ namespace ViennaAdvantage.Model
         {
             return true;
         }
+
         /// <summary>
         /// Prepare batch
         /// </summary>
@@ -206,6 +197,22 @@ namespace ViennaAdvantage.Model
                 _processMsg = "@NoLines@";
                 return DocActionVariables.STATUS_INVALID;
             }
+
+            //VIS_045 -> DevOps task ID: 2035 -> 28/March/2023 
+            //to check if payment method is CHECK then skip otherwise set these values
+            string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
+                                VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null, Get_TrxName()));
+            if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
+            {
+                // to check whether partner bank account and account name is selected on batch line or not
+                if (Util.GetValueOfInt(DB.ExecuteScalar($@"SELECT COUNT(VA009_BatchLines_ID) FROM VA009_BatchLines
+                         WHERE C_BP_BankAccount_ID IS NULL AND A_Name IS NULL AND VA009_Batch_ID = {GetVA009_Batch_ID()}", null, null)) > 0)
+                {
+                    _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
+                    return DocActionVariables.STATUS_INVALID;
+                }
+            }
+
             _justPrepared = true;
             if (!DOCACTION_Complete.Equals(GetDocAction()))
                 SetDocAction(DOCACTION_Complete);
