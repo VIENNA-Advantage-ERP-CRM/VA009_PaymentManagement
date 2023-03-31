@@ -114,11 +114,12 @@ namespace VA009.Models
             DataSet ds = null;
             if (isBatch)
             {
-                ds = DB.ExecuteDataset(@" SELECT documentno, VA009_Batch_ID,VA009_DocumentDate, NVL(VA009_PayFileCount,0) AS VA009_PayFileCount
-                    FROM VA009_Batch WHERE VA009_Batch_ID = " + Payment_ID);
+                ds = DB.ExecuteDataset(@" SELECT b.documentno, b.VA009_Batch_ID, b.VA009_DocumentDate, NVL(b.VA009_PayFileCount,0) AS VA009_PayFileCount,
+                                            NVL(ba.CMS01_CorporateID,'000000') AS CMS01_CorporateID 
+                    FROM VA009_Batch b INNER JOIN C_BankAccount ba ON (b.C_BankAccount_ID = ba.C_BankAccount_ID)  WHERE b.VA009_Batch_ID = " + Payment_ID);
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
-                    documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["documentno"]));
+                    documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]));
                     _obj = new PaymentResponse();
 
                     //Name should Start with "PAYMENT" and set the length of document numer
@@ -549,7 +550,7 @@ namespace VA009.Models
             {
                 //to calculate if bank name is more than 40 character then we need to trim it by 40 character.
                 BankName = Util.GetValueOfString(ds.Tables[0].Rows[0]["Name"]);
-                if(BankName.Length > 40)
+                if (BankName.Length > 40)
                 {
                     BankName = RemoveSpecialCharacters(BankName).Substring(0, 40);
                 }
@@ -766,7 +767,9 @@ namespace VA009.Models
                         INNER JOIN C_BankAccount ba ON ba.C_BankAccount_ID=p.C_BankAccount_ID INNER JOIN va009_batchlines bl ON bl.VA009_Batch_ID=p.VA009_Batch_ID LEFT 
                         JOIN C_Payment pa ON pa.C_Payment_ID=bl.c_payment_id WHERE p.VA009_Batch_ID= " + paymentID);
 
-                paymentCount = Util.GetValueOfInt(DB.ExecuteScalar(" SELECT Count(C_Payment_ID) FROM va009_batchlines WHERE VA009_Batch_ID = " + paymentID));
+                paymentCount = Util.GetValueOfInt(DB.ExecuteScalar($@"SELECT Count(Distinct bld.C_Payment_ID) FROM VA009_BatchLineDetails bld 
+                                INNER JOIN VA009_BatchLines bl ON (bl.VA009_BatchLines_ID = bld.VA009_BatchLines_ID)
+                                WHERE bl.VA009_Batch_ID = {paymentID}"));
                 totalAmt = Util.GetValueOfDecimal(DB.ExecuteScalar(@" SELECT SUM(p.payamt) FROM c_payment p WHERE c_payment_id IN   (SELECT DISTINCT c_payment_id
                             FROM va009_batchlinedetails   WHERE va009_batchlines_id IN    (SELECT va009_batchlines_id    FROM va009_batchlines     WHERE VA009_Batch_ID = " + paymentID + ") ) "));
             }
@@ -812,7 +815,7 @@ namespace VA009.Models
         public decimal claculateHashTotal(string accountno, decimal amount)
         {
             decimal amt = decimal.Zero;
-            if(amount.ToString().Length > 6)
+            if (amount.ToString().Length > 6)
             {
                 amt = Util.GetValueOfDecimal(amount.ToString().Substring(amount.ToString().Length - 6, 6));
             }
