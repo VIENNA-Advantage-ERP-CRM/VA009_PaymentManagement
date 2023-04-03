@@ -112,6 +112,7 @@ namespace VA009.Models
             PaymentResponse _obj = null;
             bool created = false;
             DataSet ds = null;
+            int VA009_PayFileCount = 0;
             if (isBatch)
             {
                 ds = DB.ExecuteDataset(@" SELECT b.documentno, b.VA009_Batch_ID, b.VA009_DocumentDate, NVL(b.VA009_PayFileCount,0) AS VA009_PayFileCount,
@@ -119,16 +120,30 @@ namespace VA009.Models
                     FROM VA009_Batch b INNER JOIN C_BankAccount ba ON (b.C_BankAccount_ID = ba.C_BankAccount_ID)  WHERE b.VA009_Batch_ID = " + Payment_ID);
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
+                    VA009_PayFileCount = Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PayFileCount"]);
                     documentno = RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[0]["CMS01_CorporateID"]));
                     _obj = new PaymentResponse();
 
-                    //Name should Start with "PAYMENT" and set the length of document numer
-                    fileName = String.Format("{0,-7}_{1,-" + documentno.Length + "}_{2,-8}_{3,-3}{4,-4}",
-                             "PAYMENT", documentno, Convert.ToDateTime(ds.Tables[0].Rows[0]["VA009_DocumentDate"]).ToString("ddMMyyyy"), Util.GetValueOfInt(Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PayFileCount"]) + 1).ToString("D3"), ".CSV");
+
+                    //Name should Start with "PAYMENT" and set the length of document number
+                    try
+                    {
+                    checkfile:
+                        fileName = String.Format("{0,-7}_{1,-" + documentno.Length + "}_{2,-8}_{3,-3}{4,-4}",
+                                 "PAYMENT", documentno, Convert.ToDateTime(ds.Tables[0].Rows[0]["VA009_DocumentDate"]).ToString("ddMMyyyy"), Util.GetValueOfInt(VA009_PayFileCount + 1).ToString("D3"), ".CSV");
+
+                        if (File.Exists(_filePath + "\\" + fileName))
+                        {
+                            VA009_PayFileCount++;
+                            goto checkfile;
+                        }
+                    }
+                    catch { }
+
                     created = CreateCSVFile(_filePath, true, false, ctx, Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_Batch_ID"]), fileName, isBatch);
                     if (created)
                     {
-                        DB.ExecuteQuery("UPDATE VA009_Batch SET VA009_PayFileCount = " + Util.GetValueOfInt(Util.GetValueOfInt(ds.Tables[0].Rows[0]["VA009_PayFileCount"]) + 1).ToString("D3") + " WHERE VA009_Batch_ID=" + Payment_ID);
+                        DB.ExecuteQuery("UPDATE VA009_Batch SET VA009_PayFileCount = " + Util.GetValueOfInt(VA009_PayFileCount + 1).ToString("D3") + " WHERE VA009_Batch_ID=" + Payment_ID);
                         _obj._filename = fileName;
                         _obj._path = _filePath;
                     }
@@ -459,7 +474,6 @@ namespace VA009.Models
                         fileName += Path.DirectorySeparatorChar;
                         if (isClient)
                             fileName += Sufix;
-
 
                         //_fileNameDate = GetFileNameDate();
                         //fileName += _fileNameDate + "_";
