@@ -604,7 +604,7 @@ namespace VA009.Models
             if (isBatch)
             {
                 sql.Append(@"SELECT ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
-                           ba.Name,  ba.AccountNo,  p.payamt, oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.ReferenceNo,
+                           ba.Name,  ba.AccountNo,  p.payamt, oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.BusinessRegNo,
                            oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID as BPAddress, bp.A_Name,cp.CMS01_BeneficiaryIDIndicator,
                            bp.AccountNo AS BPAcctNo, p.RoutingNo as swiftcode,  p.AccountNo as Acctnumber,  p.A_Name as AcctName, 
                            u.email FROM c_payment p INNER JOIN C_BankAccount ba
@@ -618,7 +618,7 @@ namespace VA009.Models
                            INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID INNER JOIN C_Payment p
                            ON p.C_Payment_ID= bld.C_Payment_ID WHERE b.VA009_Batch_ID = " + paymentID + " ) " +
                            @"AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID  GROUP BY ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
-                           ba.Name, ba.AccountNo, p.payamt, oi.CMS01_BRegNo, cp.CMS01_IsResident, cp.ReferenceNo,
+                           ba.Name, ba.AccountNo, p.payamt, oi.CMS01_BRegNo, cp.CMS01_IsResident, cp.BusinessRegNo,
                            oi.Phone, oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID, bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
                            bp.AccountNo, p.RoutingNo, p.AccountNo, p.A_Name,
                            u.email ");
@@ -628,7 +628,7 @@ namespace VA009.Models
             {
                 //cp.CMS01_BeneficiaryIDIndicator,
                 sql.Append(@"SELECT ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
-                           ba.Name,  ba.AccountNo,  p.payamt,  oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.ReferenceNo,
+                           ba.Name,  ba.AccountNo,  p.payamt,  oi.CMS01_BRegNo,cp.CMS01_IsResident,cp.BusinessRegNo,
                            oi.Phone,  oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID as BPAddress,  bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
                            bp.AccountNo AS BPAcctNo, p.RoutingNo as swiftcode,  p.AccountNo as Acctnumber,  p.A_Name as AcctName,
                            u.email FROM c_payment p INNER JOIN C_BankAccount ba
@@ -639,7 +639,7 @@ namespace VA009.Models
                            ON bp.C_BPartner_ID=p.C_BPartner_ID LEFT JOIN AD_USer u ON u.C_BPartner_ID  = p.C_BPartner_ID
                            WHERE p.c_payment_id=" + paymentID + " AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID  GROUP BY " +
                            @" ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno, p.description,
-                           ba.Name, ba.AccountNo, p.payamt, oi.CMS01_BRegNo, cp.CMS01_IsResident, cp.ReferenceNo,
+                           ba.Name, ba.AccountNo, p.payamt, oi.CMS01_BRegNo, cp.CMS01_IsResident, cp.BusinessRegNo,
                            oi.Phone, oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID ,  bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
                            bp.AccountNo, p.RoutingNo, p.AccountNo,  p.A_Name,  u.email ");
             }
@@ -724,7 +724,7 @@ namespace VA009.Models
                         "{4,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["swiftcode"])).Length + "}," +
                         "{5,1},{6,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"])).Length + "}," +
                         "{7,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"])).Length + "}," +
-                        "{8,-2},{9,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["ReferenceNo"])).Length + "}," +
+                        "{8,-2},{9,-" + RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["BusinessRegNo"])).Length + "}," +
                         "{10,-" + bpAdd1.Length + "}," +
                         "{11,-" + bpAdd2.Length + "}," +
                         "{12,-" + bpAdd3.Length + "}," +
@@ -741,7 +741,7 @@ namespace VA009.Models
                                     RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"])),
                                     RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"])),
                                     idIndicator,
-                                    RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["ReferenceNo"])),
+                                    RemoveSpecialCharacters(Util.GetValueOfString(ds.Tables[0].Rows[i]["BusinessRegNo"])),
                                     bpAdd1, bpAdd2, bpAdd3,
                                     Util.GetValueOfString("Payment"), string.Empty, string.Empty,
                                     string.Empty, string.Empty, string.Empty, string.Empty, string.Empty, string.Empty,
@@ -837,7 +837,15 @@ namespace VA009.Models
             {
                 amt = amount;
             }
-            decimal hashamount = Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amt;
+            decimal hashamount = 0;
+            if (accountno.Length >= 6)
+            {
+                hashamount = Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amt;
+            }
+            else
+            {
+                hashamount = Util.GetValueOfDecimal(accountno) * amt;
+            }
             return hashamount;
             ////FORMULA GIVEN BY CMS BANK 
             //decimal calculateHash = (Util.GetValueOfDecimal(accountno.Substring(accountno.Length - 6, 6)) * amount);
