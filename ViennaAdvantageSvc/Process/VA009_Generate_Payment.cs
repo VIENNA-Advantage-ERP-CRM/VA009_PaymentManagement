@@ -660,6 +660,7 @@ namespace ViennaAdvantage.Process
                                             _pay.SetTenderType("A");
                                         }
                                     }
+                                    SetVA009_Batch_ID(_pay, GetRecord_ID());
                                     if (!_pay.Save(Get_TrxName()))
                                     {
                                         string val = "";
@@ -950,6 +951,7 @@ namespace ViennaAdvantage.Process
                                         _pay.SetTenderType("A");
                                     }
                                 }
+                                SetVA009_Batch_ID(_pay, GetRecord_ID());
                                 if (!_pay.Save(Get_TrxName()))
                                 {
                                     ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
@@ -1103,6 +1105,20 @@ namespace ViennaAdvantage.Process
             }
 
             return msg;
+        }
+
+        /// <summary>
+        /// Set Payment Schedule Batch ID on Payment
+        /// </summary>
+        /// <param name="Payment">Payment Object</param>
+        /// <param name="VA009_Batch_ID">Batch ID</param>
+        /// <write>VIS_045 - 04-April-2023 - Devops Task ID = 2061</write>
+        private void SetVA009_Batch_ID(MPayment Payment, int VA009_Batch_ID)
+        {
+            if (Payment != null && Payment.Get_ColumnIndex("VA009_Batch_ID") >= 0)
+            {
+                Payment.Set_Value("VA009_Batch_ID", VA009_Batch_ID);
+            }
         }
 
         /// <summary> Obsolete method because plenty of cases for order payment Schedule
