@@ -25,8 +25,8 @@
         var $togglebtn, lbdata, $lbmain, $divPayment, $BP, $BPSelected, $divBank;
         var pgNo = 1, pgSize = 20, PAGESIZE = 20, $CR_Tab, $CP_Tab, $XML_Tab, Pay_ID = 0; //changed page size
         var isloaded = false, _WhereQuery = "", $divcashbk;
-        var orgids = [], bpids = [], SlctdPaymentIds = [];
-        var SelectallOrdIds = [], SelectallInvIds = [];
+        var orgids = [], bpids = [], SlctdPaymentIds = []; SlctdJournalPaymentIds = [];
+        var SelectallOrdIds = [], SelectallInvIds = [], SelectallJournalIds = [];
         var paymntIds = [], statusIds = [];
         var _WhrOrg = "", _WhrPayMtd = "", _Whr_BPrtnr = "", _WhrStatus = "";
         // By Amit - 16-11-2016
@@ -38,6 +38,7 @@
         //end
         //By Manjot For Batch Functionality 1/8/17
         var batchObjInv = [];
+        var batchObjJournal = [];
         var batchObjOrd = [];
         var $xmlpopGrid = null;
         var MsgReturn = "";
@@ -164,7 +165,7 @@
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_DueDate_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Current") + '</option>  <option value=7>' + VIS.Msg.getMsg("VA009_7Days") + '</option>  <option value=14 >' + VIS.Msg.getMsg("VA009_14Days") + '</option> <option value=30 >' + VIS.Msg.getMsg("VA009_30Days") + '</option> <option value=60 >' + VIS.Msg.getMsg("VA009_60Days") + '</option> <option value=90>' + VIS.Msg.getMsg("VA009_90Days") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_Duedate") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_DueDatedataDiv_" + $self.windowNo + '> </div>  </div> ';
 
             //change by amit - 16-nov-2016
-            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_TransactionType_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Order") + '</option>  <option value=1>' + VIS.Msg.getMsg("VA009_Invoice") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_TransactionType") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_TransactionTypeDiv_" + $self.windowNo + '> </div>  </div>';
+            _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <select id = ' + "VA009_TransactionType_" + $self.windowNo + '><option value=""></option> <option  value=0>' + VIS.Msg.getMsg("VA009_Order") + '</option>  <option value=1>' + VIS.Msg.getMsg("VA009_Invoice") + '</option> <option  value=2>' + VIS.Msg.getMsg("VA009_Journal") + '</option>" </select><label>' + VIS.Msg.getMsg("VA009_TransactionType") + '</label></div></div>  <div class="VA009-value-list" id= ' + "VA009_TransactionTypeDiv_" + $self.windowNo + '> </div>  </div>';
             //end
             _leftBar += '<div class="VA009-left-data"><div class="vis-input-wrap"><div class="vis-control-wrap">  <input type="date" max="9999-12-31" id="VA009_FromDate_' + $self.windowNo + '"><label>' + VIS.Msg.getMsg("VA009_FromDate") + '</label></div></div> </div>';
 
@@ -305,7 +306,7 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 // loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
@@ -330,7 +331,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
                 }
@@ -355,7 +356,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
                 }
@@ -381,7 +382,7 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
             });
@@ -405,7 +406,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
                 }
@@ -431,7 +432,7 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
             });
@@ -453,7 +454,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
                 }
@@ -480,8 +481,9 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
+                _WhrTransType = "";
                 for (var i in transtypes) {
                     if (i != 0) {
                         _WhrTransType += ",";
@@ -509,7 +511,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
                 }
@@ -531,7 +533,7 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
             });
@@ -551,7 +553,7 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
             });
@@ -580,7 +582,7 @@
 
             $chkicon.on("click", function (e) {
                 if ($CP_Tab.hasClass('VA009-active-tab')) {
-                    if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+                    if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                         //Rakesh(VA228):Set target base type
                         //AP Payment(APP)
                         _TargetBaseType = 2;
@@ -590,7 +592,7 @@
                         VIS.ADialog.info("VA009_PlzSelct1Pay");
                 }
                 else if ($CR_Tab.hasClass('VA009-active-tab')) {
-                    if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+                    if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                         //AR Receipt (ARR)
                         _TargetBaseType = 1;
                         _loadFunctions.Cheque_Rec_Dialog();
@@ -606,6 +608,9 @@
                 //VA230:Select either Invoice or Order schedule only
                 if (SlctdPaymentIds.length > 0 && SlctdOrderPaymentIds.length > 0) {
                     VIS.ADialog.info("VA009_SelectEitherInvoiceOrOrderSchedule");
+                }
+                else if (SlctdJournalPaymentIds.length > 0) {
+                    VIS.ADialog.info("VA009_JournalRecordCantSelected");
                 }
                 else if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
                     //Cash Journal(CMC)
@@ -623,20 +628,27 @@
             });
 
             $Spliticon.on("click", function (e) {
-                if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
-                    if (SlctdPaymentIds.length == 1 && SlctdOrderPaymentIds.length == 0)
-                        _loadFunctions.Split_Dialog();
-                    else if (SlctdPaymentIds.length == 0 && SlctdOrderPaymentIds.length == 1)
-                        _loadFunctions.Split_Dialog();
-                    else
-                        VIS.ADialog.info("VA009_PlzSelctOnly1Pay");
+                if (SlctdJournalPaymentIds.length > 0) {
+                    VIS.ADialog.info("VA009_JournalRecordCantSelected");
                 }
-                else
+                else if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+                    if (SlctdPaymentIds.length == 1 && SlctdOrderPaymentIds.length == 0) {
+                        _loadFunctions.Split_Dialog();
+                    }
+                    else if (SlctdPaymentIds.length == 0 && SlctdOrderPaymentIds.length == 1) {
+                        _loadFunctions.Split_Dialog();
+                    }
+                    else {
+                        VIS.ADialog.info("VA009_PlzSelctOnly1Pay");
+                    }
+                }
+                else {
                     VIS.ADialog.info("VA009_PlzSelct1Pay");
+                }
             });
 
             $PayMannualicon.on("click", function (e) {
-                if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+                if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                     if ($CR_Tab.hasClass('VA009-active-tab')) {
                         _TargetBaseType = 1;
                     }
@@ -682,7 +694,7 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
             });
@@ -776,8 +788,10 @@
                         //clear the records from the array
                         SlctdPaymentIds = [];
                         SlctdOrderPaymentIds = [];
+                        SlctdJournalPaymentIds = [];
                         batchObjInv = [];
                         batchObjOrd = [];
+                        batchObjJournal = [];
                         for (var i = 0; i < SelectallInvIds.length; i++) {
                             v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallInvIds[i] + ']'))[0];
                             if (!v.target == false) {
@@ -791,10 +805,16 @@
                             if (!v.target == false)
                                 paymentContainerClick(v);
                         }
+                        for (var j = 0; j < SelectallJournalIds.length; j++) {
+                            v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallJournalIds[j] + ']'))[0];
+                            if (!v.target == false)
+                                paymentContainerClick(v);
+                        }
                     }
                     else {
                         SlctdPaymentIds = [];
                         SlctdOrderPaymentIds = [];
+                        SlctdJournalPaymentIds = [];
                         $divPayment.find(':checkbox').prop('checked', false);
                         $selectall.find(':checkbox').prop('checked', false);
                         //removing the background color for unselected records
@@ -851,6 +871,7 @@
             $selectall.prop('checked', false);
             SlctdPaymentIds = [];
             SlctdOrderPaymentIds = [];
+            SlctdJournalPaymentIds = [];
             $totalAmt.text(0);
             $totalAmt.data('ttlamt', parseFloat(0));
         };
@@ -882,6 +903,9 @@
                         zoomToWindow(InvID, "Purchase Order", "C_Order_ID");
                     }
                 }
+                else if (TransactionType == "GL Journal") {
+                    zoomToWindow(InvID, "GL Journal Line", "GL_Journal_ID");
+                }
                 Pay_ID = 0;
             }
             else if (e.target.type == 'checkbox') {
@@ -893,13 +917,16 @@
                         SlctdPaymentIds.push(target.data("uid"));
                         batchObjInv.push({ "ID": target.data("uid"), "PM": target.data() });
                     }
-                    else {
+                    else if (target.data("name") == "Order") {
                         SlctdOrderPaymentIds.push(target.data("uid"));
                         batchObjOrd.push({ "ID": target.data("uid"), "PM": target.data() });
-
+                    }
+                    else {
+                        SlctdJournalPaymentIds.push(target.data("uid"));
+                        batchObjJournal.push({ "ID": target.data("uid"), "PM": target.data() });
                     }
                     //when max payment records selected at that time need to checkall checkbox true.
-                    var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length;
+                    var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
                     var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
                     if (countRecords == selRecords) {
                         $selectall.prop('checked', true);
@@ -926,10 +953,16 @@
                     SlctdOrderPaymentIds = jQuery.grep(SlctdOrderPaymentIds, function (value) {
                         return value != DeslctPaymt_ID;
                     });
+                    SlctdJournalPaymentIds = jQuery.grep(SlctdJournalPaymentIds, function (value) {
+                        return value != DeslctPaymt_ID;
+                    });
                     batchObjInv = jQuery.grep(batchObjInv, function (value) {
                         return value.ID != DeslctPaymt_ID;
                     });
                     batchObjOrd = jQuery.grep(batchObjOrd, function (value) {
+                        return value.ID != DeslctPaymt_ID;
+                    });
+                    batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
                         return value.ID != DeslctPaymt_ID;
                     });
                     record_ID = 0;
@@ -967,8 +1000,10 @@
                         $selectall.prop('checked', false);
                         SlctdPaymentIds = [];
                         SlctdOrderPaymentIds = [];
+                        SlctdJournalPaymentIds = [];
                         batchObjInv = [];
                         batchObjOrd = [];
+                        batchObjJournal = [];
                         $totalAmt.text(0);
                         $totalAmt.data('ttlamt', parseFloat(0));
                     }
@@ -981,17 +1016,23 @@
                         record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
                         SlctdPaymentIds = [];
                         SlctdOrderPaymentIds = [];
+                        SlctdJournalPaymentIds = [];
                         batchObjInv = [];
                         batchObjOrd = [];
+                        batchObjJournal = [];
                         if (inputTag.dataset["name"] == "Invoice") {
                             SlctdPaymentIds.push(record_ID);
                             batchObjInv.push({ "ID": record_ID, "PM": inputTag.dataset });
                         }
-                        else {
+                        else if (inputTag.dataset["name"] == "Order") {
                             SlctdOrderPaymentIds.push(record_ID);
                             batchObjOrd.push({ "ID": record_ID, "PM": inputTag.dataset });
                         }
-                        var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length;
+                        else {
+                            SlctdJournalPaymentIds.push(record_ID);
+                            batchObjJournal.push({ "ID": record_ID, "PM": inputTag.dataset });
+                        }
+                        var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
                         var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
                         if (countRecords == selRecords) {
                             $selectall.prop('checked', true);
@@ -1011,8 +1052,10 @@
                     $selectall.prop('checked', false);
                     SlctdPaymentIds = [];
                     SlctdOrderPaymentIds = [];
+                    SlctdJournalPaymentIds = [];
                     batchObjInv = [];
                     batchObjOrd = [];
+                    batchObjJournal = [];
                     $totalAmt.text(0);
                     $totalAmt.data('ttlamt', parseFloat(0));
                 }
@@ -1029,17 +1072,23 @@
                     record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
                     SlctdPaymentIds = [];
                     SlctdOrderPaymentIds = [];
+                    SlctdJournalPaymentIds = [];
                     batchObjInv = [];
                     batchObjOrd = [];
+                    batchObjJournal = [];
                     if (inputTag.dataset["name"] == "Invoice") {
                         SlctdPaymentIds.push(record_ID);
                         batchObjInv.push({ "ID": record_ID, "PM": inputTag.dataset });
                     }
-                    else {
+                    else if (inputTag.dataset["name"] == "Order") {
                         SlctdOrderPaymentIds.push(record_ID);
                         batchObjOrd.push({ "ID": record_ID, "PM": inputTag.dataset });
                     }
-                    var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length;
+                    else {
+                        SlctdJournalPaymentIds.push(record_ID);
+                        batchObjJournal.push({ "ID": record_ID, "PM": inputTag.dataset });
+                    }
+                    var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
                     var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
                     if (countRecords == selRecords) {
                         $selectall.prop('checked', true);
@@ -1086,10 +1135,12 @@
             bpids = [];
             SlctdPaymentIds = [];
             SlctdOrderPaymentIds = [];
+            SlctdJournalPaymentIds = [];
             $divPayment.find(':checkbox').prop('checked', false);
             $selectall.find(':checkbox').prop('checked', false);
             batchObjInv = [];
             batchObjOrd = [];
+            batchObjJournal = [];
             $totalAmt.text(0);
             $totalAmt.data('ttlamt', parseFloat(0));
         };
@@ -1296,7 +1347,7 @@
                 ChequePayDialog.setHeight(window.innerHeight - 75);
                 ChequePayDialog.setEnableResize(true);
                 ChequePayDialog.setModal(true);
-                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
+                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
                     // Added by Bharat on 01/May/2017
                     callbackCashPayments("");
                 }
@@ -1424,7 +1475,9 @@
                         _CHQPay_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
                         //by Amit - 1-12-2016
                         _CHQPay_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
-                        //end
+                        _CHQPay_Columns.push({ field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("C_BPartner_Location_ID"), sortable: true, size: '1%' });
+                        _CHQPay_Columns.push({ field: "C_DocType_ID", caption: VIS.Msg.getMsg("C_DocType_ID"), sortable: true, size: '1%' });
+                        _CHQPay_Columns.push({ field: "DocBaseType", caption: VIS.Msg.getMsg("DocBaseType"), sortable: true, size: '1%' });
                     }
                     chqpaygrd = null;
                     chqpaygrd = CheuePaybleGrid.w2grid({
@@ -1432,11 +1485,9 @@
                         recordHeight: 25,
                         columns: _CHQPay_Columns,
                         multiSelect: true,
-                        //method: 'GET',
-
                         onEditField: function (event) {
                             if (event.column == 6 || event.column == 8 || event.column == 9) {
-                                if (chqpaygrd.get(event.recid).TransactionType == 'Order') {
+                                if (chqpaygrd.get(event.recid).TransactionType == 'Order' || chqpaygrd.get(event.recid).TransactionType == 'GL Journal') {
                                     event.isCancelled = true;
                                 }
                             }
@@ -1982,7 +2033,7 @@
                         }
                     })
                     chqpaygrd.hideColumn('recid');
-                    chqpaygrd.hideColumn('TransactionType');
+                    chqpaygrd.hideColumn('TransactionType', 'C_BPartner_Location_ID', 'C_DocType_ID', 'DocBaseType');
                 };
 
                 function CHQPAY_getControls() {
@@ -2041,7 +2092,11 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({
+                            InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID,
+                            chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(),
+                            JournalPayids: SlctdJournalPaymentIds.toString()
+                        }),
                         success: function (result) {
                             callback(result);
                         },
@@ -2060,6 +2115,8 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
@@ -2070,7 +2127,6 @@
                         line["Writeoff"] = "0";
                         line["Discount"] = "0";
                         line["ConvertedAmt"] = rslt[i].DueAmt;
-                        //end
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
@@ -2097,6 +2153,8 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
@@ -2106,7 +2164,6 @@
                         line["OverUnder"] = "0";
                         line["Writeoff"] = "0";
                         line["Discount"] = "0";
-                        //end
                         line["ConvertedAmt"] = rslt[i].convertedAmt;
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -2498,6 +2555,8 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
@@ -2544,8 +2603,6 @@
                                                     _data["C_BPartner_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_ID'];
                                                     _data["Description"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Description'];
                                                     _data["C_Invoice_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_Invoice_ID'];
-                                                    //commented because ashish and surya said that payment will be created in selected organization
-                                                    //_data["AD_Org_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['AD_Org_ID'];
                                                     _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
                                                     //Rakesh(VA228):Set Document Type (13/Sep/2021)
                                                     _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
@@ -2557,9 +2614,11 @@
                                                     _data["ConvertedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['ConvertedAmt'];
                                                     _data["PaymwentBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['PaymwentBaseType'];
                                                     _data["TransactionType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'];
+                                                    _data["C_BPartner_Location_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_BPartner_Location_ID'];
+                                                    _data["C_DocType_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_DocType_ID'];
+                                                    _data["DocBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['DocBaseType'];
                                                     //validate zero also, if the value is zero it will ask to enter the recieved amount
-                                                    //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'] != "")
-                                                    if (VIS.Utility.Util.getValueOfInt(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
                                                         _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
                                                     }
                                                     else {
@@ -2626,12 +2685,6 @@
                                                             }
                                                         }
                                                     }
-                                                    //if (chqpaygrd.get(chqpaygrd.getSelection()[i])['DocBaseType'] == "APC") {
-                                                    //    total -= VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
-                                                    //}
-                                                    //else {
-                                                    //    total += VIS.Utility.Util.getValueOfDecimal(_data["VA009_RecivedAmt"]);
-                                                    //}
                                                     _CollaborateData.push(_data);
                                                 }
                                             }
@@ -2744,7 +2797,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                     resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
@@ -2760,7 +2813,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                     resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
@@ -2873,7 +2926,7 @@
                 ChequeReceDialog.setWidth("80%");
                 ChequeReceDialog.setEnableResize(true);
                 ChequeReceDialog.setModal(true);
-                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
+                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
                     // Added by Bharat on 01/May/2017
                     callbackCashReceipt("");
                 }
@@ -3150,6 +3203,8 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
@@ -3159,7 +3214,6 @@
                         line["OverUnder"] = "0";
                         line["Writeoff"] = "0";
                         line["Discount"] = "0";
-                        //end
                         line["ConvertedAmt"] = rslt[i].convertedAmt;
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -3249,6 +3303,9 @@
                         //by Amit - 19-11-2016
                         _CHQRec_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
                         _CHQRec_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
+                        _CHQRec_Columns.push({ field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("C_BPartner_Location_ID"), sortable: true, size: '1%' });
+                        _CHQRec_Columns.push({ field: "C_DocType_ID", caption: VIS.Msg.getMsg("C_DocType_ID"), sortable: true, size: '1%' });
+                        _CHQRec_Columns.push({ field: "DocBaseType", caption: VIS.Msg.getMsg("DocBaseType"), sortable: true, size: '1%' });
                         //end
                     }
                     chqrecgrd = null;
@@ -3264,7 +3321,7 @@
 
                         onEditField: function (event) {
                             if (event.column == 6 || event.column == 8 || event.column == 9) {
-                                if (chqrecgrd.get(event.recid).TransactionType == 'Order') {
+                                if (chqrecgrd.get(event.recid).TransactionType == 'Order' || chqpaygrd.get(event.recid).TransactionType == 'GL Journal') {
                                     event.isCancelled = true;
                                 }
                             }
@@ -3780,6 +3837,7 @@
                     })
                     chqrecgrd.hideColumn('recid');
                     chqrecgrd.hideColumn('TransactionType');
+                    chqrecgrd.hideColumn('C_BPartner_Location_ID', 'C_DocType_ID');
                 };
 
                 function loadgrd(callback) {
@@ -3789,7 +3847,11 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({
+                            InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID,
+                            chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(),
+                            JournalPayids: SlctdJournalPaymentIds.toString(),
+                        }),
                         success: function (result) {
                             callback(result);
                         },
@@ -3808,6 +3870,8 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
@@ -3818,7 +3882,6 @@
                         line["Writeoff"] = "0";
                         line["Discount"] = "0";
                         line["ConvertedAmt"] = rslt[i].DueAmt;
-                        //end
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
@@ -3828,6 +3891,7 @@
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
                         line["TransactionType"] = rslt[i].TransactionType;
                         line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
+                        line["DocBaseType"] = rslt[i].DocBaseType;
                         popupgrddata.push(line);
                     }
                     w2utils.encodeTags(popupgrddata);
@@ -3853,8 +3917,6 @@
                                                     _data["C_BPartner_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_BPartner_ID'];
                                                     _data["Description"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Description'];
                                                     _data["C_Invoice_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Invoice_ID'];
-                                                    //commented because ashish and surya said that payment will be created in selected organization
-                                                    //_data["AD_Org_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['AD_Org_ID'];
                                                     _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
                                                     //Rakesh(VA228):Set Document Type (13/Sep/2021)
                                                     _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
@@ -3862,6 +3924,9 @@
                                                     _data["C_Currency_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_Currency_ID'];
                                                     _data["C_InvoicePaySchedule_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
                                                     _data["TransactionType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['TransactionType'];
+                                                    _data["C_BPartner_Location_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_BPartner_Location_ID'];
+                                                    _data["C_DocType_ID"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['C_DocType_ID'];
+                                                    _data["DocBaseType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['DocBaseType'];
                                                     if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'] != "") {
                                                         var dt = new Date(chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate']);
                                                         dt = new Date(dt.setHours(0, 0, 0, 0));
@@ -3873,7 +3938,6 @@
                                                             return false;
                                                         }
                                                         _data["CheckDate"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckDate'];
-                                                        //_data["CheckDate"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
                                                     }
                                                     else {
                                                         VIS.ADialog.info(("VA009_PLCheckDate"));
@@ -3902,8 +3966,7 @@
                                                         return false;
                                                     }
                                                     //If the VA009_RecivedAmt value is "0" then the below condition will not work
-                                                    //if (chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'] != "")
-                                                    if (VIS.Utility.Util.getValueOfInt(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
+                                                    if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
                                                         _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
                                                     }
                                                     else {
@@ -3976,7 +4039,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                     resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
@@ -4089,9 +4152,8 @@
                 CashDialog.setHeight(window.innerHeight - 120);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
-                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
+                if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
                     var cash = null;
-                    //if (cash.tables[0].rows.length == 0) {
                     if (cash == null) {
                         CashDialog.show();
                         CashGrid_Layout();
@@ -4113,17 +4175,6 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
-                        //if (dr != null) {
-                        //    $pop_cmbCurrencyType.append("<option value='0'></option>");
-                        //    if (dr.tables[0].rows.length > 0) {
-                        //        for (var i = 0; i < dr.tables[0].rows.length; i++) {
-                        //            $pop_cmbCurrencyType.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr.tables[0].rows[i].cells.c_conversiontype_id) + ">" + VIS.Utility.encodeText(dr.tables[0].rows[i].cells.name) + "</option>");
-                        //        }
-                        //    }
-                        //    $pop_cmbCurrencyType.prop('selectedIndex', 1);
-                        //}
-                        //dr.dispose();
-
                         $pop_cmbCurrencyType.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -4163,7 +4214,7 @@
                 function CashGrid_Layout() {
                     var hideColumn = false;
                     //VA230:If order selected then hide columns Received Amount/OverUnder/Writeoff/Discount
-                    if (SlctdOrderPaymentIds.length > 0 && SlctdPaymentIds.length == 0) {
+                    if ((SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) && SlctdPaymentIds.length == 0) {
                         hideColumn = true;
                     }
                     var _Cash_Columns = [];
@@ -4212,8 +4263,9 @@
                             }, editable: { type: 'number' }
                         });
                         _Cash_Columns.push({ field: "recid", caption: VIS.Msg.getMsg("VA009_srno"), sortable: true, size: '1%' });
-                        //end
-
+                        _Cash_Columns.push({ field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("C_BPartner_Location_ID"), sortable: true, size: '1%' });
+                        _Cash_Columns.push({ field: "C_DocType_ID", caption: VIS.Msg.getMsg("C_DocType_ID"), sortable: true, size: '1%' });
+                        _Cash_Columns.push({ field: "DocBaseType", caption: VIS.Msg.getMsg("DocBaseType"), sortable: true, size: '1%' });
                     }
                     Cashgrd = null;
                     Cashgrd = CashGrid.w2grid({
@@ -4225,7 +4277,8 @@
 
                         onEditField: function (event) {
                             if (event.column == 6 || event.column == 8 || event.column == 9) {
-                                if (Cashgrd.get(event.recid).TransactionType == 'Order') {
+                                if (Cashgrd.get(event.recid).TransactionType == 'Order' ||
+                                    Cashgrd.get(event.recid).TransactionType == 'GL Journal') {
                                     event.isCancelled = true;
                                 }
                             }
@@ -4261,7 +4314,7 @@
                             };
                         }
                     }),
-                        Cashgrd.hideColumn('recid');
+                        Cashgrd.hideColumn('recid', 'C_BPartner_Location_ID', 'C_DocType_ID', 'DocBaseType');
                 };
 
                 function loadcashbook() {
@@ -4447,6 +4500,8 @@
                         var line = {};
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
+                        line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
                         line["CurrencyCode"] = rslt[i].CurrencyCode;
@@ -4456,7 +4511,6 @@
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
                         line["AD_Client_ID"] = rslt[i].AD_Client_ID;
                         line["VA009_PaymentMode"] = rslt[i].VA009_PaymentMode;
-                        //amit
                         line["ConvertedAmt"] = rslt[i].convertedAmt;
                         line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
                         line["OverUnder"] = "0";
@@ -4465,7 +4519,7 @@
                         line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
                         //VA230:Set TransactionType
                         line["TransactionType"] = rslt[i].TransactionType;
-                        //end
+                        line["DocBaseType"] = rslt[i].DocBaseType;
                         popupgrddata.push(line);
                     }
                     if (rslt[0].ERROR == "ConversionNotFound") {
@@ -4785,14 +4839,14 @@
                                                 _data["C_BPartner_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_BPartner_ID'];
                                                 _data["Description"] = Cashgrd.get(Cashgrd.getSelection()[i])['Description'];
                                                 _data["C_Invoice_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Invoice_ID'];
-                                                //commented because ashish and surya said that payment will be created in selected organization
-                                                // _data["AD_Org_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Org_ID'];
                                                 _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
                                                 _data["AD_Client_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['AD_Client_ID'];
                                                 _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_Currency_ID'];
-                                                //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
                                                 _data["C_Currency_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_Currency_ID"];
                                                 _data["C_InvoicePaySchedule_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])["C_InvoicePaySchedule_ID"];
+                                                _data["C_BPartner_Location_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_BPartner_Location_ID'];
+                                                _data["C_DocType_ID"] = Cashgrd.get(Cashgrd.getSelection()[i])['C_DocType_ID'];
+                                                _data["DocBaseType"] = Cashgrd.get(Cashgrd.getSelection()[i])['DocBaseType'];
 
                                                 //change amit
                                                 //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt != undefined) {
@@ -4895,7 +4949,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                     resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
@@ -4961,7 +5015,7 @@
                     Selected = $opnbatch.find("input[name='VA009_Sel" + $self.windowNo + "']:checked").val();
                     $bsyDiv[0].style.visibility = "visible";
                     if (Selected == "S") {
-                        if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "") {
+                        if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
 
                             _loadFunctions.Batch_Dialog();
 
@@ -5239,7 +5293,11 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({
+                            InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID,
+                            chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(),
+                            JournalPayids: SlctdJournalPaymentIds.toString()
+                        }),
                         success: function (result) {
                             callback(result);
                         },
@@ -5271,7 +5329,6 @@
                         line["CurrencyCode"] = rslt[i].CurrencyCode;
                         line["DueAmt"] = rslt[i].DueAmt;
                         line["ConvertedAmt"] = rslt[i].convertedAmt;
-                        // line["VA009_RecivedAmt"] = Globalize.format(rslt[i].VA009_RecivedAmt, "N");
                         line["C_BPartner_ID"] = rslt[i].C_BPartner_ID;
                         line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                         line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -5873,7 +5930,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                     resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
@@ -6294,7 +6351,7 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                    pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                     resetPaging();
                     //after successfully created Payment selectall checkbox should be false
                     $selectall.prop('checked', false);
@@ -7332,7 +7389,7 @@
                 };
 
                 manualDialog.onOkClick = function () {
-                    if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
+                    if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                         if (VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val()) > 0) {
                             //Rakesh(VA228):Make Document Type selection mandatory
                             if (VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()) > 0) {
@@ -7356,7 +7413,8 @@
                                                                 InvoiceSchdIDS: SlctdPaymentIds.toString(), OrderSchdIDS: SlctdOrderPaymentIds.toString(), BankID: VIS.Utility.Util.getValueOfInt($POP_cmbBank.val()),
                                                                 BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
                                                                 DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
-                                                                , docTypeID: VIS.Utility.Util.getValueOfInt($POP_targetDocType.val())
+                                                                , docTypeID: VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()),
+                                                                  JournalSchdIDS: SlctdJournalPaymentIds.toString()
                                                             }),
                                                             success: function (result) {
                                                                 result = JSON.parse(result);
@@ -8097,7 +8155,7 @@
                             $divPayment.find('.VA009-payment-wrap').remove();
                             $divBank.find('.VA009-right-data-main').remove();
                             $divBank.find('.VA009-accordion').remove();
-                            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                             resetPaging();
                             loadPaymetsAll();
                             $bsyDiv[0].style.visibility = "hidden";
@@ -8108,6 +8166,7 @@
                                     .yes(function () {
                                         SlctdPaymentIds = [];
                                         SlctdOrderPaymentIds = [];
+                                        SlctdJournalPaymentIds = [];
                                         $selectall.prop('checked', false);
                                         $divPayment.find(':checkbox').prop('checked', false);
                                         prepareDataForPaymentFile(DocNumber, false);
@@ -8592,7 +8651,7 @@
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                 resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
@@ -8673,8 +8732,11 @@
                     if (data.paymentdata[i].TransactionType == "Invoice") {
                         SelectallInvIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallInvIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
                     }
-                    else {
+                    else if (data.paymentdata[i].TransactionType == "Order") {
                         SelectallOrdIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallOrdIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
+                    }
+                    else {
+                        SelectallJournalIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallJournalIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
                     }
                     if (data.paymentdata[i].VA009_plannedduedate != null) {
                         var Dt = new Date(data.paymentdata[i].VA009_plannedduedate);
@@ -9266,7 +9328,7 @@
             $togglebtn = null, $lbdata = null, $lbmain = null, $divPayment = null, $BP = null, $BPSelected = null, $divBank = null;
             pgNo = null, pgSize = null, PAGESIZE = null, $CR_Tab = null, $CP_Tab = null, $UCR_Tab = null, $UCP_Tab = null, Pay_ID = null;
             isloaded = null, _WhereQuery = null, $divcashbk = null;
-            orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null;
+            orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null; SlctdJournalPaymentIds = null;
             paymntIds = null, statusIds = null;
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
