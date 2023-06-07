@@ -46,7 +46,7 @@ namespace ViennaAdvantage.Common
 
             if (DB.IsOracle())
             {
-                if (TransTypes.Count() == 0 || TransTypes.Count() == 2 || TransTypes[0] == 1)
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
                 {
                     //Table Name is case sensitive must follow Camel format
                     sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
@@ -120,11 +120,11 @@ namespace ViennaAdvantage.Common
                         sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
                     }
                 }
-                if (TransTypes.Count() == 0 || TransTypes.Count() == 2)
+                if (TransTypes.Count() == 0 || TransTypes.Count() >= 2)
                 {
                     sql.Append(" UNION ");
                 }
-                if (TransTypes.Count() == 0 || TransTypes.Count() == 2 || TransTypes[0] == 0)
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
                 {
                     //Table Name is case sensitive must follow Camel format
                     sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
@@ -197,6 +197,96 @@ namespace ViennaAdvantage.Common
                         sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
                     }
                 }
+
+                // GET GL Journal Data
+                if (TransTypes.Count() == 0 || TransTypes.Count() > 2)
+                {
+                    sql.Append(" UNION ");
+                }
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
+                {
+                    //Table Name is case sensitive must follow Camel format
+                    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  
+                        t.c_bp_group,  t.C_InvoicePaySchedule_ID, t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,
+                        t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
+                        t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.DueAmt AS VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,
+                        t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,
+                        t.DueAmt AS GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
+                    //Log Warnings handled
+                    string query = $@" SELECT '' AS VA009_PaymentMode, gl.C_BPartner_ID, g.GL_Journal_ID AS c_invoice_id, g.DocumentNo, 
+                                        cb.name AS C_Bpartner, cb.c_bp_group_id, cbg.name AS c_bp_group, gl.GL_JournalLine_ID AS C_InvoicePaySchedule_ID,
+                                        0 AS VA009_PaymentMethod_ID, null AS VA009_PaymentMethod, '' AS va009_paymentbasetype, 
+                                       '' AS VA009_PaymentRule, '' AS VA009_PaymentType, '' AS VA009_PaymentTrigger, g.DateAcct AS va009_plannedduedate,
+                                        g.DateAcct AS VA009_FollowupDate, 0 AS VA009_RecivedAmt, 
+                                       CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
+                                            WHEN (ev.AccountType = 'A' AND AmtSourceDr <= 0) THEN  -1 * AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr > 0) THEN AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr <= 0) THEN  -1 * AmtSourceDr
+                                        END AS DueAmt, 
+                                        0 AS VA009_OpenAmnt, null AS VA009_ExecutionStatus, gl.ad_org_id, gl.ad_client_id, gl.C_Currency_ID, cc.ISO_CODE, 
+                                        ac.c_currency_id AS basecurrency,
+                                         NVL(CURRENCYRATE(gl.C_Currency_ID,cy.C_Currency_ID,g.DateAcct, {ctx.GetContextAsInt("#C_ConversionType_ID")}, gl.AD_Client_ID,gl.AD_ORG_ID), 0) AS multiplyrate,  
+                                        cy.ISO_CODE AS basecurrencycode, 0 AS GrandTotal, 
+                                        (to_date(TO_CHAR(TRUNC(g.DateAcct)),'dd/mm/yyyy') - to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) AS Due_Date_Diff,
+                                        g.DateAcct, 'GL Journal' AS VA009_TransactionType, 'N' AS IsHoldPayment
+                                  FROM GL_JournalLine gl
+                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
+                                  INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
+                                  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=gl.C_Bpartner_ID)  
+                                  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                                  INNER JOIN C_Currency cc  ON (gl.C_Currency_ID=cc.C_Currency_ID)
+                                  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =gl.AD_Client_ID)
+                                  INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  
+                                  INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
+                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' 
+                                        AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb."))) : "")} ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                }
+
             }
             else if (DB.IsPostgreSQL())
             {
@@ -477,7 +567,7 @@ namespace ViennaAdvantage.Common
             {
                 List<CheckDetails> lstdtls = new List<CheckDetails>();
                 CheckDetails obj = null;
-               for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     obj = new CheckDetails();
                     obj.chknoautocontrol = Util.GetValueOfString(ds.Tables[0].Rows[i]["chknoautocontrol"]);
