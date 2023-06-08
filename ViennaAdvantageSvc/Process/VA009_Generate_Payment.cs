@@ -101,6 +101,7 @@ namespace ViennaAdvantage.Process
                                T.c_currency_id, 
                                T.c_invoice_id,
                                T.C_order_ID,  
+                               T.GL_JournalLine_ID,
                                T.dueamt, 
                                T.VA009_ConvertedAmt, 
                                T.discountamt,
@@ -133,7 +134,8 @@ namespace ViennaAdvantage.Process
                                END AS C_BPartner_Location_ID, 
                                bld.c_currency_id, 
                                bld.c_invoice_id,
-                               NULL AS C_order_ID,  
+                               NULL AS C_order_ID,
+                               0 AS GL_JournalLine_ID,
                                IPS.DueAmt, 
                                bld.VA009_ConvertedAmt, 
                                bld.discountamt,
@@ -178,7 +180,8 @@ namespace ViennaAdvantage.Process
                                END AS C_BPartner_Location_ID, 
                                bld.c_currency_id, 
                                NULL AS C_Invoice_ID,
-                               bld.C_order_ID,  
+                               bld.C_order_ID, 
+                               0 AS GL_JournalLine_ID,
                                OPS.DueAmt, 
                                bld.VA009_ConvertedAmt, 
                                bld.discountamt,
@@ -210,6 +213,56 @@ namespace ViennaAdvantage.Process
                                       AND NVL(bld.c_payment_id , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
                                       AND  b.va009_batch_id    =" + GetRecord_ID());
+
+                    //VIS_427 DevOps TaskId: 2156 added query for Gl journalline
+                    sql.Append(@" UNION SELECT bld.C_ConversionType_ID,b.C_BankAccount_ID, 
+                               bl.C_BPartner_ID,
+                               NULL AS DocBPLocation,
+                               CASE 
+                               WHEN (ev.AccountType = 'A') THEN bl.VA009_ReceiptLocation_ID
+                               WHEN (ev.AccountType = 'L') THEN bl.VA009_PaymentLocation_ID
+                               END AS C_BPartner_Location_ID,
+                               bld.C_Currency_ID, 
+                               0 AS C_Invoice_ID,
+                               0 AS C_Order_ID, 
+                               gl.GL_JournalLine_ID,
+                               bld.DueAmt, 
+                               bld.VA009_ConvertedAmt, 
+                               0 AS DiscountAmt,
+                               bld.VA009_BatchLineDetails_ID,
+                               bl.VA009_BatchLines_ID, 
+                               NULL AS DiscountDate,
+                               NULL AS IsSoTrx,
+                               NULL AS IsReturnTrx,
+                               g.DocumentNo,
+                               0 AS C_InvoicePaySchedule_ID,
+                               0 AS VA009_OrderPaySchedule_ID,
+                               bld.AD_Org_ID, 
+                               bld.AD_Client_ID , 
+                               CASE
+                               WHEN (ev.AccountType = 'A' AND bld.DueAmt > 0) THEN 'ARI'
+                               WHEN (ev.AccountType = 'A' AND bld.DueAmt < 0) THEN 'ARC'
+                               WHEN (ev.AccountType = 'L' AND bld.DueAmt > 0) THEN 'API'
+                               WHEN (ev.AccountType = 'L' AND bld.DueAmt < 0) THEN 'APC'
+                               END AS DocBaseType ,
+                               b.VA009_PaymentMethod_ID ,
+                               pm.VA009_PaymentBasetype,
+                               bl.VA009_DueAmount,
+                               bl.C_BP_BankAccount_ID,
+                               bl.RoutingNo AS SwiftCode, bl.AccountNo AS Acctnumber, bl.A_Name AS AcctName,
+                               gl.C_Currency_ID AS Currency_ID
+                               FROM VA009_BatchLineDetails bld
+                               INNER JOIN VA009_BatchLines bl ON (bl.VA009_BatchLines_ID = bld.VA009_BatchLines_ID)
+                               INNER JOIN VA009_Batch b ON (b.VA009_Batch_ID = bl.VA009_Batch_ID)
+                               INNER JOIN GL_JournalLine gl ON (gl.GL_JournalLine_ID = bld.GL_JournalLine_ID)
+                               INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
+                               INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID)
+                               INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID = b.VA009_PaymentMethod_ID)
+                               WHERE NVL(bl.C_Payment_ID , 0) = 0 
+                                 AND NVL(bld.C_Payment_ID , 0) = 0 
+                                      AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
+                                      AND  b.VA009_Batch_ID=" + GetRecord_ID());
+
                     sql.Append(")T");
                     if (IsBankresponse == "Y")
                         sql.Append(" AND T.va009_bankresponse='RE' ORDER BY T.c_bpartner_id, T.VA009_paymentmethod_ID  ASC ");
@@ -404,8 +457,16 @@ namespace ViennaAdvantage.Process
                                     alloclne.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
                                     alloclne.SetC_AllocationHdr_ID(allocationHeader);
                                     alloclne.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
-                                    alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                    alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                    //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline to set value in allocationline
+                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
+                                    {
+                                        alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
+                                        alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                    }
+                                    else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
+                                    {
+                                        alloclne.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
+                                    }
                                     //to set document date of batch header on all payments and allocations
                                     alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
                                     alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
@@ -473,8 +534,16 @@ namespace ViennaAdvantage.Process
                                         alloclne.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
                                         alloclne.SetC_AllocationHdr_ID(allocHdr.GetC_AllocationHdr_ID());
                                         alloclne.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
-                                        alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                        alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                        //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
+                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
+                                        {
+                                            alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
+                                            alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                        }
+                                        else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
+                                        {
+                                            alloclne.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
+                                        }
                                         //to set document date of batch header on all payments and allocations
                                         alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
                                         alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
@@ -530,8 +599,16 @@ namespace ViennaAdvantage.Process
                                 {
                                     MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
                                     PayAlocate.SetC_Payment_ID(C_Payment_ID);
-                                    PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                    PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                    //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
+                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
+                                    {
+                                        PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
+                                        PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                    }
+                                    else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
+                                    {
+                                        PayAlocate.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
+                                    }
 
                                     PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
                                     PayAlocate.SetDiscountAmt(discountAmt);
@@ -704,10 +781,15 @@ namespace ViennaAdvantage.Process
                                             //Donot create payment allocate in  case of Order.
                                             MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
                                             PayAlocate.SetC_Payment_ID(C_Payment_ID);
-                                            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]) > 0)
+                                            //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
+                                            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
                                             {
                                                 PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
                                                 PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                            }
+                                            else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
+                                            {
+                                                PayAlocate.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
                                             }
 
                                             PayAlocate.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
@@ -800,7 +882,7 @@ namespace ViennaAdvantage.Process
                                     {
                                         docNos.Append(completePayment.GetDocumentNo());
                                     }
-                                   
+
                                     //VIS323 DevOpsId- 1719 Set Allocation on Batch Line Details
                                     //Handled multiple allocation to multiple invoice against Different Vendor/Customer.
                                     sql.Clear();
@@ -810,10 +892,10 @@ namespace ViennaAdvantage.Process
                                                     WHERE AH.Processed='Y'
                                                     AND AH.DocStatus   IN ('CO','CL')
                                                     AND AL.C_Payment_ID =" + completePayment.GetC_Payment_ID());
-                                    
-                                       allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
+
+                                    allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
                                     sql.Clear();
-                                       sql.Append(@"UPDATE VA009_BatchLineDetails SET C_AllocationHdr_ID
+                                    sql.Append(@"UPDATE VA009_BatchLineDetails SET C_AllocationHdr_ID
                                                 =" + allocationId + " WHERE C_Payment_ID=" + completePayment.GetC_Payment_ID());
                                     DB.ExecuteQuery(sql.ToString(), null, Get_TrxName());
                                 }
@@ -872,8 +954,16 @@ namespace ViennaAdvantage.Process
                                 {
                                     int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]));
                                     _pay.SetC_DocType_ID(C_Doctype_ID);
-                                    _pay.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                    _pay.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                    //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
+                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
+                                    {
+                                        _pay.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
+                                        _pay.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+                                    }
+                                    else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
+                                    {
+                                        _pay.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
+                                    }
                                     _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                     _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
                                     //Rakesh(VA228):to set account date of batch header on all payments and allocations
