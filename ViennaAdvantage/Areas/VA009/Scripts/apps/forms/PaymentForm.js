@@ -5235,13 +5235,15 @@
                         _batch_Columns.push({ field: "Mandate", caption: VIS.Msg.getMsg("VA009_Mandate"), sortable: true, size: '10%', editable: { type: 'text' } });
                         //by Amit - 1-12-2016
                         _batch_Columns.push({ field: "TransactionType", caption: VIS.Msg.getMsg("VA009_TransactionType"), sortable: true, size: '1%' });
-                        //end
                         //Rakesh(VA228):Set conversion rate type on 17/Sep/2021
                         _batch_Columns.push({ field: "ConversionTypeId", caption: VIS.Msg.getMsg("VA009_ConversionType"), hidden: true, sortable: true, size: '0%' });
                         _batch_Columns.push({ field: "DiscountAmount", caption: VIS.Msg.getMsg("DiscountAmount"), hidden: true, sortable: true, size: '0%' });
                         _batch_Columns.push({ field: "ConvertedDiscountAmount", caption: VIS.Msg.getMsg("ConvertedDiscountAmount"), hidden: true, sortable: true, size: '0%' });
                         _batch_Columns.push({ field: "DiscountDate", caption: VIS.Msg.getMsg("DiscountDate"), hidden: true, sortable: true, size: '0%' });
                         _batch_Columns.push({ field: "C_BPartner_Location_ID", caption: VIS.Msg.getMsg("C_BPartner_Location_ID"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "C_DocType_ID", caption: VIS.Msg.getMsg("C_DocType_ID"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "DocBaseType", caption: VIS.Msg.getMsg("DocBaseType"), hidden: true, sortable: true, size: '0%' });
+                        _batch_Columns.push({ field: "PaymwentBaseType", caption: VIS.Msg.getMsg("PaymwentBaseType"), hidden: true, sortable: true, size: '0%' });
                     }
                     BatchGrd = null;
                     BatchGrd = BatchGrid.w2grid({
@@ -5254,7 +5256,9 @@
                         //    selectColumn: true
                         //}
                     }),
-                        BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
+                        BatchGrd.hideColumn('recid', 'CheckNumber', 'CheckDate', 'ValidMonths', 'Mandate',
+                            'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount",
+                            'DiscountDate');
 
                 };
 
@@ -5324,6 +5328,7 @@
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
                         line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
                         line["CurrencyCode"] = rslt[i].CurrencyCode;
@@ -5338,6 +5343,7 @@
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
                         line["TransactionType"] = rslt[i].TransactionType;
+                        line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
                         //Rakesh(VA228):Set conversion type and discount amount/date
                         line["ConversionTypeId"] = rslt[i].ConversionTypeId;
                         line["DiscountAmount"] = rslt[i].DiscountAmount;
@@ -5688,6 +5694,7 @@
                         line["recid"] = rslt[i].recid;
                         line["C_Bpartner"] = rslt[i].C_Bpartner;
                         line["C_BPartner_Location_ID"] = rslt[i].C_BPartner_Location_ID;
+                        line["C_DocType_ID"] = rslt[i].C_DocType_ID;
                         line["C_Invoice_ID"] = rslt[i].C_Invoice_ID;
                         line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
                         line["CurrencyCode"] = rslt[i].CurrencyCode;
@@ -5703,6 +5710,7 @@
                         line["ValidMonths"] = null;
                         line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
                         line["TransactionType"] = rslt[i].TransactionType;
+                        line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
                         //Rakesh(VA228):Set conversion type
                         line["ConversionTypeId"] = rslt[i].ConversionTypeId;
                         line["DiscountAmount"] = rslt[i].DiscountAmount;
@@ -5803,15 +5811,12 @@
                                                     _data["C_BPartner_Location_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_BPartner_Location_ID'];
                                                     _data["C_Invoice_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Invoice_ID'];
                                                     _data["C_InvoicePaySchedule_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_InvoicePaySchedule_ID'];
-                                                    //commented because ashish and surya said that payment will be created in selected organization
-                                                    //_data["AD_Org_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Org_ID'];
                                                     _data["AD_Org_ID"] = VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val());
                                                     //Target Doc Type
                                                     _data["TargetDocType"] = VIS.Utility.Util.getValueOfInt($POP_targetDocType.val());
                                                     _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
                                                     _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
                                                     _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
-                                                    //_data["VA009_RecivedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['VA009_RecivedAmt'];
                                                     _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
                                                     _data["C_Bank_ID"] = $POP_cmbBank.val();
                                                     _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
@@ -5819,7 +5824,11 @@
                                                     _data["ConversionTypeId"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConversionTypeId'];
                                                     _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'];
                                                     _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'];
-                                                    _data["DiscountDate"] = VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']);
+                                                    _data["DiscountDate"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate'] != null ?
+                                                        VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']) : null;
+                                                    _data["C_DocType_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_DocType_ID'];
+                                                    _data["DocBaseType"] = BatchGrd.get(BatchGrd.getSelection()[i])['DocBaseType'];
+                                                    _data["PaymwentBaseType"] = BatchGrd.get(BatchGrd.getSelection()[i])['PaymwentBaseType'];
                                                     _data["TotalAPI"] = VIS.Utility.Util.getValueOfDecimal(BatchGrd.get(BatchGrd.getSelection()[i])['TotalAPI']);
                                                     _data["TotalAPC"] = VIS.Utility.Util.getValueOfDecimal(BatchGrd.get(BatchGrd.getSelection()[i])['TotalAPC']);
 
@@ -7414,7 +7423,7 @@
                                                                 BankAccountID: VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), PaymentMethodID: VIS.Utility.Util.getValueOfInt($POP_PayMthd.val()),
                                                                 DateAcct: $POP_DateAcct.val(), CurrencyType: $POP_CurrencyType.val(), DateTrx: $POP_DateTrx.val(), AD_Org_ID: VIS.Utility.Util.getValueOfInt($POP_cmbOrg.val())
                                                                 , docTypeID: VIS.Utility.Util.getValueOfInt($POP_targetDocType.val()),
-                                                                  JournalSchdIDS: SlctdJournalPaymentIds.toString()
+                                                                JournalSchdIDS: SlctdJournalPaymentIds.toString()
                                                             }),
                                                             success: function (result) {
                                                                 result = JSON.parse(result);
@@ -8524,8 +8533,8 @@
             if ($(this).scrollTop() + $(this).innerHeight() + 5 >= this.scrollHeight) {
                 if (pgNo < noPages) {
                     pgNo++;
-                    if (orgids.length == 1) {
-                        if (orgids.indexOf(VIS.context.getAD_Org_ID()) == -1) {
+                    if (orgids.length == 0) {
+                        if (VIS.context.getAD_Org_ID() <= 0) {
                             _WhrOrg = "";
                         }
                         else {

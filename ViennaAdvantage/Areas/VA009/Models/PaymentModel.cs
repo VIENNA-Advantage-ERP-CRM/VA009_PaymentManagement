@@ -859,7 +859,7 @@ namespace VA009.Models
                                 }
                                 else
                                 {
-                                   // _pay.SetVA009_PaymentMethod_ID(_payschedule.GetVA009_PaymentMethod_ID());
+                                    // _pay.SetVA009_PaymentMethod_ID(_payschedule.GetVA009_PaymentMethod_ID());
                                 }
                                 if (PaymentData[0].CheckDate != null)
                                 {
@@ -1092,7 +1092,7 @@ namespace VA009.Models
                                             }
                                             else
                                             {
-                                               // _pay.SetVA009_PaymentMethod_ID(_payschedule.GetVA009_PaymentMethod_ID());
+                                                // _pay.SetVA009_PaymentMethod_ID(_payschedule.GetVA009_PaymentMethod_ID());
                                             }
                                             if (PaymentData[i].PaymwentBaseType == "APP")
                                             {
@@ -1317,7 +1317,7 @@ namespace VA009.Models
                                             }
                                             else
                                             {
-                                               // _pay.SetVA009_PaymentMethod_ID(_payschedule.GetVA009_PaymentMethod_ID());
+                                                // _pay.SetVA009_PaymentMethod_ID(_payschedule.GetVA009_PaymentMethod_ID());
                                             }
                                             //end
                                             if (PaymentData[i].CheckDate != null)
@@ -1579,7 +1579,7 @@ namespace VA009.Models
                 MPayment _pay = null;
                 //MVA009OrderPaySchedule orderPaySchedule = new MVA009OrderPaySchedule(ct, PaymentData.C_InvoicePaySchedule_ID, trx);
                 //MOrder order = new MOrder(ct, PaymentData.C_Invoice_ID, trx);
-                MDocType _doctype =  MDocType.Get(ct, PaymentData.C_DocType_ID);
+                MDocType _doctype = MDocType.Get(ct, PaymentData.C_DocType_ID);
 
                 _pay = new MPayment(ct, 0, trx);
                 _pay.SetAD_Client_ID(Util.GetValueOfInt(PaymentData.AD_Client_ID));
@@ -1651,7 +1651,7 @@ namespace VA009.Models
                 }
                 else
                 {
-                   // _pay.SetVA009_PaymentMethod_ID(orderPaySchedule.GetVA009_PaymentMethod_ID());
+                    // _pay.SetVA009_PaymentMethod_ID(orderPaySchedule.GetVA009_PaymentMethod_ID());
                 }
 
                 if (PaymentData.CheckDate != null)
@@ -5913,20 +5913,36 @@ namespace VA009.Models
         {
             //to get the BP_BankAccount_ID
             int _BP_BankAccount_ID = 0;
+            string trxDocBaseType = string.Empty;
+            if (PaymentData.TransactionType.Equals("GL Journal"))
+            {
+                trxDocBaseType = PaymentData.DocBaseType;
+            }
+            else
+            {
+                trxDocBaseType = _doctype.GetDocBaseType();
+            }
             MVA009BatchLineDetails _btDetal = new MVA009BatchLineDetails(ct, 0, trx);
             _btDetal.SetAD_Client_ID(PaymentData.AD_Client_ID);
             _btDetal.SetAD_Org_ID(PaymentData.AD_Org_ID);
-            _btDetal.SetC_InvoicePaySchedule_ID(PaymentData.C_InvoicePaySchedule_ID);
-            _btDetal.SetC_Invoice_ID(PaymentData.C_Invoice_ID);
+            if (PaymentData.TransactionType.Equals("GL Journal"))
+            {
+                _btDetal.Set_Value("GL_JournalLine_ID", PaymentData.C_InvoicePaySchedule_ID);
+            }
+            else
+            {
+                _btDetal.SetC_InvoicePaySchedule_ID(PaymentData.C_InvoicePaySchedule_ID);
+                _btDetal.SetC_Invoice_ID(PaymentData.C_Invoice_ID);
+            }
             _btDetal.SetVA009_BatchLines_ID(Batchline_ID);
             //Rakesh(VA228):Set currency and conversion type id from invoice
             _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
             _btDetal.SetC_ConversionType_ID(PaymentData.ConversionTypeId);
             //Adjust discount amount from due amount if discount date greater than account date
-            if (Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
+            if (_invpaySchdule != null && Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
             {
                 convertedAmount = convertedAmount - PaymentData.ConvertedDiscountAmount;
-                if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
+                if (trxDocBaseType == "ARC" || trxDocBaseType == "APC")
                 {
                     if (PaymentData.ConvertedDiscountAmount > 0)
                     {
@@ -5935,7 +5951,7 @@ namespace VA009.Models
                 }
                 else
                 {
-                    if (_doctype.GetDocBaseType() == "API" && PaymentData.ConvertedDiscountAmount < 0)
+                    if (trxDocBaseType == "API" && PaymentData.ConvertedDiscountAmount < 0)
                     {
                         PaymentData.ConvertedDiscountAmount = -1 * PaymentData.ConvertedDiscountAmount;
                     }
@@ -5949,16 +5965,19 @@ namespace VA009.Models
                 PaymentData.DiscountDate = null;
             }
             _btDetal.SetDueAmt(PaymentData.DueAmt);
-            _btDetal.SetDueDate(_invpaySchdule.GetDueDate());
+            if (!PaymentData.TransactionType.Equals("GL Journal"))
+            {
+                _btDetal.SetDueDate(_invpaySchdule.GetDueDate());
+            }
 
-            if (_doctype.GetDocBaseType() == "ARC" || _doctype.GetDocBaseType() == "APC")
+            if (trxDocBaseType == "ARC" || trxDocBaseType == "APC")
             {
                 if (convertedAmount > 0)
                     convertedAmount = -1 * convertedAmount;
             }
             else
             {
-                if (_doctype.GetDocBaseType() == "API")
+                if (trxDocBaseType == "API")
                 {
                     if (convertedAmount < 0)
                         convertedAmount = -1 * convertedAmount;
@@ -5972,7 +5991,11 @@ namespace VA009.Models
             //to set the C_BP_BankAccount_ID get the C_BP_BankAccount_ID from Invoice or C_BP_BankAccount table
             if (PaymentData.C_Invoice_ID > 0)
             {
-                _BP_BankAccount_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_BP_BankAccount_ID FROM C_Invoice WHERE IsActive='Y' AND C_Invoice_ID=" + PaymentData.C_Invoice_ID, null, trx));
+                _BP_BankAccount_ID = 0;
+                if (PaymentData.TransactionType.Equals("Invoice"))
+                {
+                    _BP_BankAccount_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_BP_BankAccount_ID FROM C_Invoice WHERE IsActive='Y' AND C_Invoice_ID=" + PaymentData.C_Invoice_ID, null, trx));
+                }
                 if (_BP_BankAccount_ID == 0)
                 {
                     //PostGre SQL for Aggragate funcation should use Group by clause whenever used Order By Clause otherwise through error
@@ -5983,23 +6006,30 @@ namespace VA009.Models
             }
             //Set the C_BP_BankAccount_ID Value
             _btDetal.Set_Value("C_BP_BankAccount_ID", _BP_BankAccount_ID);
-            //_btDetal.SetProcessed(true);
             if (!_btDetal.Save())
             {
                 return 0;
             }
             else
             {
-                _invpaySchdule = new MInvoicePaySchedule(ct, PaymentData.C_InvoicePaySchedule_ID, trx);
-                _invpaySchdule.SetVA009_ExecutionStatus("Y");
-                if (isOverwrite == "Y")
-                    _invpaySchdule.SetVA009_PaymentMethod_ID(PaymentData.VA009_PaymentMethod_ID);
-
-                if (!_invpaySchdule.Save())
+                if (PaymentData.TransactionType.Equals("Invoice"))
                 {
-                    ValueNamePair pp = VLogger.RetrieveError();
-                    if (pp != null)
-                        _log.Info(pp.GetName());
+                    //_invpaySchdule = new MInvoicePaySchedule(ct, PaymentData.C_InvoicePaySchedule_ID, trx);
+                    _invpaySchdule.SetVA009_ExecutionStatus("Y");
+                    if (isOverwrite == "Y")
+                        _invpaySchdule.SetVA009_PaymentMethod_ID(PaymentData.VA009_PaymentMethod_ID);
+
+                    if (!_invpaySchdule.Save())
+                    {
+                        ValueNamePair pp = VLogger.RetrieveError();
+                        if (pp != null)
+                            _log.Info(pp.GetName());
+                    }
+                }
+                else if (PaymentData.TransactionType.Equals("GL Journal"))
+                {
+                    DB.ExecuteQuery($@"UPDATE GL_JournalLine SET VA009_IsAssignedtoBatch = 'Y' 
+                                        WHERE GL_JournalLine_ID = {PaymentData.C_InvoicePaySchedule_ID}", null, trx);
                 }
                 return _btDetal.GetVA009_BatchLineDetails_ID();
             }
@@ -7184,7 +7214,8 @@ namespace VA009.Models
 
                     for (int i = 0; i < PaymentData.Length; i++)
                     {
-                        paymentmethdoID = PaymentData[i].VA009_PaymentMethod_ID; convertedAmount = PaymentData[i].convertedAmt;
+                        paymentmethdoID = PaymentData[i].VA009_PaymentMethod_ID;
+                        convertedAmount = PaymentData[i].convertedAmt;
                         paymethodDetails = GetPaymentMethodDetails(ct, paymentmethdoID, trx);
                         _TransactionType = String.Empty;
                         _TransactionType = PaymentData[i].TransactionType;
@@ -7209,10 +7240,21 @@ namespace VA009.Models
                         #region Create Batch Lines and Details
                         if (batchid > 0)
                         {
-                            if (_TransactionType.Equals("Invoice"))
+                            if (_TransactionType.Equals("Invoice") || _TransactionType.Equals("GL Journal"))
                             {
-                                MInvoicePaySchedule _invpaySchdule = new MInvoicePaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
-                                MDocType _doctype = MDocType.Get(ct, _invpaySchdule.GetC_DocType_ID());
+                                MInvoicePaySchedule _invpaySchdule = null;
+                                MDocType _doctype = null;
+                                String trxDocBaseType = string.Empty;
+                                if (_TransactionType.Equals("Invoice"))
+                                {
+                                    _invpaySchdule = new MInvoicePaySchedule(ct, PaymentData[i].C_InvoicePaySchedule_ID, trx);
+                                    _doctype = MDocType.Get(ct, _invpaySchdule.GetC_DocType_ID());
+                                    trxDocBaseType = _doctype.GetDocBaseType();
+                                }
+                                else
+                                {
+                                    trxDocBaseType = PaymentData[i].DocBaseType;
+                                }
                                 //removed condition of Cheque Payment method Suggested by Ashish and Rajni
                                 // && (paymethodDetails["VA009_PaymentType"].ToString() != "S")
                                 if (Line_MaxCount == 0 ?
@@ -7230,11 +7272,11 @@ namespace VA009.Models
                                                   VA009_Batch_ID=" + _Bt.GetVA009_Batch_ID() +
                                                   " AND C_BPartner_ID=" + PaymentData[i].C_BPartner_ID);
                                     //VIS0045 : check Batch line created with selected BP Location
-                                    if ("API".Equals(_doctype.GetDocBaseType()) || "APC".Equals(_doctype.GetDocBaseType()))
+                                    if ("API".Equals(trxDocBaseType) || "APC".Equals(trxDocBaseType))
                                     {
                                         _sql.Append(" AND NVL(VA009_PaymentLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
                                     }
-                                    else if ("ARI".Equals(_doctype.GetDocBaseType()) || "ARC".Equals(_doctype.GetDocBaseType()))
+                                    else if ("ARI".Equals(trxDocBaseType) || "ARC".Equals(trxDocBaseType))
                                     {
                                         _sql.Append(" AND NVL(VA009_ReceiptLocation_ID, 0) = " + PaymentData[i].C_BPartner_Location_ID);
                                     }
@@ -7242,7 +7284,7 @@ namespace VA009.Models
 
                                     if (Batchline_ID == 0)
                                     {
-                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, _doctype.GetDocBaseType());
+                                        Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, trxDocBaseType);
                                         if (Batchline_ID == 0)
                                         {
                                             trx.Rollback();
@@ -7285,7 +7327,7 @@ namespace VA009.Models
                                 {
                                     BpList.Add(PaymentData[i].C_BPartner_ID);
                                     BpLoc.Add(loc);
-                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, _doctype.GetDocBaseType());
+                                    int Batchline_ID = GenerateBatchLine(ct, PaymentData[i], _Bt, trx, trxDocBaseType);
                                     if (Batchline_ID == 0)
                                     {
                                         trx.Rollback();
@@ -7576,17 +7618,13 @@ namespace VA009.Models
             _Bt.SetAD_Client_ID(PaymentData.AD_Client_ID);
             _Bt.SetAD_Org_ID(PaymentData.AD_Org_ID);
             _Bt.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(paymethodDetails["VA009_PaymentMethod_ID"]));
-            //to set document type against batch payment
-            //_Bt.Set_ValueNoCheck("C_DocType_ID", getDocumentTypeID(ct, PaymentData[0].AD_Org_ID, trx));
             //Target Document Type selected by the User
             _Bt.Set_ValueNoCheck("C_DocType_ID", PaymentData.TargetDocType);
-            //end
             _Bt.SetVA009_PaymentRule(paymethodDetails["VA009_PaymentRule"].ToString());
             _Bt.SetVA009_PaymentTrigger(paymethodDetails["VA009_PaymentTrigger"].ToString());
             //to set bank currency on Payment Batch given by Rajni and Ashish
             _Bt.Set_Value("C_Currency_ID", PaymentData.HeaderCurrency);
             _Bt.Set_Value("C_ConversionType_ID", PaymentData.CurrencyType);
-            // _Bt.SetProcessed(true);
             _Bt.SetVA009_DocumentDate(DateTime.Now);
             //VA230:Set account date
             _Bt.SetDateAcct(PaymentData.DateAcct);
