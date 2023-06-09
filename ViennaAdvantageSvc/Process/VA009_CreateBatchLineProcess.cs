@@ -37,6 +37,9 @@ namespace ViennaAdvantage.Process
         //int _VA009_BatchDetail_ID = 0;
         String msg = String.Empty;
         bool deleteBatchLine = false;
+        //VIS_427 DevOps TaskId: 2156 parameters added for Gl journalline case 
+        bool includeGl = false;
+        int C_ElementValue_ID = 0;
         //varriable to save lines count
         int Line_MaxCount = 0, Total_Lines_Count = 0;
 
@@ -87,6 +90,14 @@ namespace ViennaAdvantage.Process
                 {
                     deleteBatchLine = "Y".Equals(para[i].GetParameter());
                 }
+                else if (name.Equals("IsIncludeGL"))
+                {
+                    includeGl = "Y".Equals(para[i].GetParameter());                  //VIS_427 DevOps TaskId: 2156 parameters added for Gl journalline case
+                }
+                else if (name.Equals("C_ElementValue_ID"))
+                {
+                    C_ElementValue_ID = para[i].GetParameterAsInt();
+                }
                 else
                 {
                     log.Log(Level.SEVERE, "Unknown Parameter: " + name);
@@ -127,8 +138,8 @@ namespace ViennaAdvantage.Process
             string _baseType = null;
 
             _sql.Clear();
-            _sql.Append(@"SELECT cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, 
-                          cp.duedate, C_BP_BankAccount_ID, cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,
+            _sql.Append(@"SELECT 'INVOICE' as Type,cp.ad_client_id, cp.ad_org_id,ci.c_invoice_id,CI.C_Bpartner_ID, cp.c_invoicepayschedule_id, 
+                          cp.duedate, C_BP_BankAccount_ID,null as AccountType, cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,
                           ci.c_currency_id , doc.DocBaseType, CI.C_ConversionType_ID, 
                           CASE WHEN (bpLoc.IsPayFrom = 'Y' AND doc.DocBaseType IN ('ARI' , 'ARC')) THEN  CI.C_BPartner_Location_ID
                                WHEN (bpLoc.IsRemitTo = 'Y' AND doc.DocBaseType IN ('API' , 'APC')) THEN  CI.C_BPartner_Location_ID
@@ -142,11 +153,11 @@ namespace ViennaAdvantage.Process
                           WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
                           CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus !='Y' 
                           AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
-                          + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
+              + " AND CI.AD_Org_ID = " + batch.GetAD_Org_ID());
 
             if (_C_BPartner_ID > 0)
             {
-                _sql.Append("  and CI.C_Bpartner_ID=" + _C_BPartner_ID);
+                _sql.Append(" and CI.C_Bpartner_ID=" + _C_BPartner_ID);
             }
             if (_C_invoice_ID > 0)
             {
@@ -182,8 +193,53 @@ namespace ViennaAdvantage.Process
             {
                 _sql.Append(" AND CI.C_Currency_ID =" + _bankacc.GetC_Currency_ID());
             }
+            if (includeGl == false)
+            {
+                _sql.Append(" Order by CI.C_Bpartner_ID asc , doc.docbasetype ");
+            }
 
-            _sql.Append(" Order by CI.C_Bpartner_ID asc , doc.docbasetype ");
+            //VIS_427 DevOps TaskId: 2156 added query for Gl journalline
+            if (includeGl == true)
+            {
+                _sql.Append(" UNION ");
+                _sql.Append(@"SELECT 'GL' AS Type,gl.AD_Client_ID, gl.AD_Org_ID,gl.GL_JournalLine_ID AS C_Invoice_ID,gl.C_BPartner_ID,ev.C_ElementValue_ID AS C_InvoicePaySchedule_ID,
+                              NULL AS DueDate,0 AS C_BP_BankAccount_ID,ev.AccountType,
+                              CASE 
+                              WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
+                              WHEN (ev.AccountType = 'A' AND AmtSourceCr > 0) THEN AmtSourceCr
+                              WHEN (ev.AccountType = 'L' AND AmtSourceCr > 0) THEN AmtSourceCr
+                              WHEN (ev.AccountType = 'L' AND AmtSourceDr > 0) THEN AmtSourceDr
+                              END AS DueAmt,NULL AS DiscountDate,0 AS DiscountAmt," + batch.GetVA009_PaymentMethod_ID() + @" AS VA009_PaymentMethod_ID,gl.C_Currency_ID,
+                              CASE 
+                              WHEN (ev.AccountType = 'A' AND AmtSourceDr >0) THEN 'ARI'
+                              WHEN (ev.AccountType = 'A' AND AmtSourceCr >0) THEN 'ARC'
+                              WHEN (ev.AccountType = 'L' AND AmtSourceCr >0) THEN 'API'
+                              WHEN (ev.AccountType = 'L' AND AmtSourceDr >0) THEN 'APC'
+                              END AS DocBaseType,
+                              " + batch.GetC_ConversionType_ID() + @" AS C_ConversionType_ID ,
+                              (First_VALUE(loc.C_BPartner_Location_ID) OVER (PARTITION BY cb.C_BPartner_ID
+                              ORDER BY CASE WHEN ev.AccountType = 'A' THEN loc.IsPayFrom ELSE loc.IsRemitTo END DESC, loc.C_BPartner_Location_ID DESC)) AS C_BPartner_Location_ID
+                              FROM GL_Journal g
+                              INNER JOIN GL_JournalLine gl ON (gl.GL_Journal_ID=g.GL_Journal_ID)
+                              INNER JOIN C_BPartner cb ON (cb.C_BPartner_ID =gl.C_BPartner_ID )
+                              INNER JOIN C_BPartner_Location loc ON (loc.C_BPartner_ID =gl.C_BPartner_ID )
+                              INNER JOIN C_ElementValue ev on (ev.C_ElementValue_ID=gl.Account_ID)
+                              WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated='Y' AND g.DocStatus IN ('CO','CL') AND gl.AD_Client_ID =" + batch.GetAD_Client_ID() + " AND gl.AD_Org_ID=" + batch.GetAD_Org_ID());
+
+                if (_C_BPartner_ID > 0)
+                {
+                    _sql.Append(" AND gl.C_BPartner_ID=" + _C_BPartner_ID);
+                }
+                if (VA009_IsSameCurrency == true)
+                {
+                    _sql.Append(" AND gl.C_Currency_ID =" + _bankacc.GetC_Currency_ID());
+                }
+                if (C_ElementValue_ID > 0)
+                {
+                    _sql.Append(" AND gl.Account_ID =" + C_ElementValue_ID);
+                }
+                _sql.Append(" ORDER BY C_BPartner_ID ASC , DocbaseType ");
+            }
 
             DataSet ds = DB.ExecuteDataset(_sql.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -371,16 +427,25 @@ namespace ViennaAdvantage.Process
 
                     //Rakesh(VA228)://to Set Invoice conversion Type
                     C_ConversionType_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]);
-
                     lineDetail = new MVA009BatchLineDetails(GetCtx(), 0, Get_TrxName());
                     lineDetail.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Client_ID"]));
                     lineDetail.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["Ad_Org_ID"]));
                     lineDetail.SetVA009_BatchLines_ID(line.GetVA009_BatchLines_ID());
-                    lineDetail.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]));
-                    lineDetail.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]));
-                    lineDetail.SetDueDate(Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DueDate"]));
+                    lineDetail.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
                     lineDetail.SetC_ConversionType_ID(C_ConversionType_ID);
+                    //VIS_427 DevOps TaskId: 2156 Setting value based on Gl and Invoice 
+                    if (Util.GetValueOfString(ds.Tables[0].Rows[i]["Type"]) != "GL")
+                    {
+                        lineDetail.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]));
+                        lineDetail.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]));
+                    }
+                    else if (Util.GetValueOfString(ds.Tables[0].Rows[i]["Type"]) == "GL")
+                    {
+                        lineDetail.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]));
+                    }
+                    lineDetail.SetDueDate(Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DueDate"]));
                     dueamt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
+                    lineDetail.SetDueAmt(dueamt);
                     Decimal DiscountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
 
                     bool issamme = true; decimal comvertedamt = 0;
@@ -399,7 +464,6 @@ namespace ViennaAdvantage.Process
                         //Rakesh(VA228):Changed system date to DateAcct
                         //Convert amount if batch currency not equal to invoice currency
                         dueamt = MConversionRate.Convert(GetCtx(), dueamt, Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]), batch.GetC_Currency_ID(), batch.GetDateAcct(), batch.GetC_ConversionType_ID(), batch.GetAD_Client_ID(), batch.GetAD_Org_ID());
-
                         if (DiscountAmt > 0)
                         {
                             //Convert discount amount if batch currency not equal to invoice currency
@@ -428,15 +492,16 @@ namespace ViennaAdvantage.Process
                         dueamt = dueamt - DiscountAmt;
                     }
                     if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" ||
-                        Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
+                       Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                     {
-                        lineDetail.SetDueAmt(-1 * dueamt);
+                        lineDetail.SetDueAmt(-1 * lineDetail.GetDueAmt());
                         comvertedamt = (-1 * dueamt);
                         DiscountAmt = Decimal.Negate(DiscountAmt);
+
                     }
                     else
                     {
-                        lineDetail.SetDueAmt(dueamt);
+                        lineDetail.SetDueAmt(lineDetail.GetDueAmt());
                         comvertedamt = (dueamt);
                     }
 
@@ -451,10 +516,9 @@ namespace ViennaAdvantage.Process
                         }
                     }
 
-                    //Replaced bank currency with invoice currency
+                    //Replaced bank currency with invoice currency                    
                     lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
                     lineDetail.SetVA009_ConvertedAmt(comvertedamt);
-                    lineDetail.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
                     if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) < Util.GetValueOfDateTime(batch.GetDateAcct()))
                     {
                         lineDetail.SetDiscountDate(null);
@@ -491,8 +555,11 @@ namespace ViennaAdvantage.Process
                         if (Line_MaxCount > 0 && isAPI_APC)
                             Total_Lines_Count = Total_Lines_Count + 1;
                         // Update Invoice Schedule with Status as "Assigned To Batch"
-                        DB.ExecuteQuery(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'Y' 
+                        if (Util.GetValueOfString(ds.Tables[0].Rows[i]["TYPE"]) != "GL")
+                        {
+                            DB.ExecuteQuery(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'Y' 
                          WHERE C_InvoicePaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), null, Get_Trx());
+                        }
                     }
                 }
 
