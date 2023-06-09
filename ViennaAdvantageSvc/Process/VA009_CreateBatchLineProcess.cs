@@ -193,13 +193,13 @@ namespace ViennaAdvantage.Process
             {
                 _sql.Append(" AND CI.C_Currency_ID =" + _bankacc.GetC_Currency_ID());
             }
-            if (includeGl == false)
+            if (!includeGl)
             {
                 _sql.Append(" Order by CI.C_Bpartner_ID asc , doc.docbasetype ");
             }
 
             //VIS_427 DevOps TaskId: 2156 added query for Gl journalline
-            if (includeGl == true)
+            if (includeGl)
             {
                 _sql.Append(" UNION ");
                 _sql.Append(@"SELECT 'GL' AS Type,gl.AD_Client_ID, gl.AD_Org_ID,gl.GL_JournalLine_ID AS C_Invoice_ID,gl.C_BPartner_ID,ev.C_ElementValue_ID AS C_InvoicePaySchedule_ID,
@@ -224,13 +224,14 @@ namespace ViennaAdvantage.Process
                               INNER JOIN C_BPartner cb ON (cb.C_BPartner_ID =gl.C_BPartner_ID )
                               INNER JOIN C_BPartner_Location loc ON (loc.C_BPartner_ID =gl.C_BPartner_ID )
                               INNER JOIN C_ElementValue ev on (ev.C_ElementValue_ID=gl.Account_ID)
-                              WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated='Y' AND g.DocStatus IN ('CO','CL') AND gl.AD_Client_ID =" + batch.GetAD_Client_ID() + " AND gl.AD_Org_ID=" + batch.GetAD_Org_ID());
+                              WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated='Y' AND gl.VA009_IsAssignedtoBatch='N' AND g.DocStatus IN ('CO','CL') 
+                              AND gl.AD_Client_ID =" + batch.GetAD_Client_ID() + " AND gl.AD_Org_ID=" + batch.GetAD_Org_ID());
 
                 if (_C_BPartner_ID > 0)
                 {
                     _sql.Append(" AND gl.C_BPartner_ID=" + _C_BPartner_ID);
                 }
-                if (VA009_IsSameCurrency == true)
+                if (VA009_IsSameCurrency)
                 {
                     _sql.Append(" AND gl.C_Currency_ID =" + _bankacc.GetC_Currency_ID());
                 }
@@ -559,6 +560,12 @@ namespace ViennaAdvantage.Process
                         {
                             DB.ExecuteQuery(@"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'Y' 
                          WHERE C_InvoicePaySchedule_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_id"]), null, Get_Trx());
+                        }
+                        //VIS_427 DevOps TaskId: 2156 check added for Gl journalline case to change status "Assigned To Batch"
+                        else if (Util.GetValueOfString(ds.Tables[0].Rows[i]["TYPE"]) == "GL")
+                        {
+                            DB.ExecuteQuery(@"UPDATE GL_JournalLine SET VA009_IsAssignedtoBatch = 'Y' 
+                         WHERE GL_JournalLine_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_id"]), null, Get_Trx());
                         }
                     }
                 }
