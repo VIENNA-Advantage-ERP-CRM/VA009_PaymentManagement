@@ -238,7 +238,7 @@ namespace ViennaAdvantage.Common
                                   INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =gl.AD_Client_ID)
                                   INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  
                                   INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
-                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' 
+                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND gl.VA009_IsAssignedtoBatch = 'N' 
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
                                         AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb."))) : "")} ";
 
@@ -473,7 +473,7 @@ namespace ViennaAdvantage.Common
 
             StringBuilder updateSql = new StringBuilder();
             StringBuilder sql = new StringBuilder();
-            sql.Append(@" SELECT VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN
+            sql.Append(@" SELECT VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID , GL_JournalLine_ID FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN
                         (SELECT VA009_BatchLines_ID  FROM VA009_BatchLines  WHERE VA009_Batch_ID = " + VA009_Batch_ID + " ) GROUP BY " +
                         " VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID ");
             DataSet ds = DB.ExecuteDataset(sql.ToString(), null, trx);
@@ -487,6 +487,7 @@ namespace ViennaAdvantage.Common
                         sql.Clear();
                         sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]),
                             Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]),
+                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]),
                             ExecutionStatus));
                         updateSql.Append(" BEGIN execute immediate('" + sql.Replace("'", "''") + "'); exception when others then null; END;");
                     }
@@ -498,7 +499,9 @@ namespace ViennaAdvantage.Common
                     {
                         sql.Clear();
                         sql.Append(GetExecutionStatusQry(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]),
-                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]), ExecutionStatus));
+                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]),
+                             Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]),
+                            ExecutionStatus));
                         updateSql.Append(" SELECT ExecuteImmediate('" + sql.Replace("'", "''") + "') FROM DUAL;");
                     }
                 }
@@ -511,18 +514,24 @@ namespace ViennaAdvantage.Common
         /// </summary>
         /// <param name="C_InvoicePaySchedule_ID">Invoice Pay Schedule ID</param>
         /// <param name="VA009_OrderPaySchedule_ID">Order Pay Schedule ID</param>
+        /// <param name="GL_JournalLine_ID">Journal Line ID</param>
         /// <param name="ExecutionStatus">ExecutionStatus</param>
         /// <returns>Update Query</returns>
-        public static string GetExecutionStatusQry(int C_InvoicePaySchedule_ID, int VA009_OrderPaySchedule_ID, string ExecutionStatus)
+        public static string GetExecutionStatusQry(int C_InvoicePaySchedule_ID, int VA009_OrderPaySchedule_ID, int GL_JournalLine_ID, string ExecutionStatus)
         {
             if (C_InvoicePaySchedule_ID > 0)
             {
                 return @"UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = '" + ExecutionStatus + "' WHERE C_InvoicePaySchedule_ID = " + C_InvoicePaySchedule_ID;
             }
-            else
+            else if (VA009_OrderPaySchedule_ID > 0)
             {
                 return @"UPDATE VA009_OrderPaySchedule SET VA009_ExecutionStatus = '" + ExecutionStatus + "' WHERE VA009_OrderPaySchedule_ID = " + VA009_OrderPaySchedule_ID;
             }
+            else if(GL_JournalLine_ID > 0)
+            {
+                return $@"UPDATE GL_JournalLine SET VA009_IsAssignedtoBatch = 'N' WHERE GL_JournalLine_ID = " + GL_JournalLine_ID;
+            }
+            return "";
         }
 
         /// <summary>
