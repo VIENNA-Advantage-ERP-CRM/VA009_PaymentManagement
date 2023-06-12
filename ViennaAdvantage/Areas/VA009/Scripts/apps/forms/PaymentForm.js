@@ -8701,7 +8701,7 @@
             //VA230:Handle amount search according to culture in searchtext field
             var txtSearchText = convertSearchAmountToDotFormat();
             $bsyDiv[0].style.visibility = "visible";
-            _whereQry = _orgwhr + _PaymWhr + _statuswhr + _BPWhr;
+            _whereQry = _PaymWhr + _statuswhr + _BPWhr + _orgwhr;
             FinalWhereQry(_isInv, _DocBaseTyp, _whereQry);
             $.ajax({
                 url: VIS.Application.contextUrl + "VA009/Payment/GetData",
