@@ -240,7 +240,8 @@ namespace ViennaAdvantage.Common
                                   INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
                                   WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND gl.VA009_IsAssignedtoBatch = 'N' 
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
-                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb."))) : "")} ";
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs" , "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs" , "gl")) : ""))} ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);
