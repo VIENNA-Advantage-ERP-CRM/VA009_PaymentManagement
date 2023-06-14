@@ -732,6 +732,8 @@ namespace VA009.Models
                     int C_doctype_ID = PaymentData[0].TargetDocType;
                     int currencyTypeID = PaymentData[0].CurrencyType;
 
+                    MPayment payment = null;
+
                     List<VA009_CreatedPaymentDetail> lstPaymentGL = new List<VA009_CreatedPaymentDetail>();
 
                     if (PaymentData.Length > 0)
@@ -928,7 +930,7 @@ namespace VA009.Models
                             }
                             else if (PaymentData[0].TransactionType == "GL Journal")
                             {
-                                MPayment payment = CreatePaymentAgainstJournal(ct, PaymentData[0], ex, out docno1, trx, true);
+                                payment = CreatePaymentAgainstJournal(ct, PaymentData[0], ex, out docno1, trx, true);
                                 if (payment != null && docno1 != "")
                                 {
                                     if (docno.Length > 0)
@@ -1477,9 +1479,10 @@ namespace VA009.Models
                                 else if (PaymentData[i].TransactionType == "GL Journal")
                                 {
                                     // check payment already created with same BP and Check no or not
-                                    // if created, then get the payment object
-                                    MPayment payment = null;
+                                    // if created, then get the payment object                                 
                                     int index = lstPaymentGL.FindIndex(x => x.BPName_Check == (PaymentData[i].C_BPartner_ID + "_" + PaymentData[i].CheckNumber));
+                                    int countor = PaymentData.Count(x => x.C_BPartner_ID == (PaymentData[i].C_BPartner_ID) && x.CheckNumber == (PaymentData[i].CheckNumber) &&
+                                                                           (x.TransactionType == "Invoice" || x.TransactionType == "GL Journal"));
                                     if (index >= 0)
                                     {
                                         payment = lstPaymentGL[index].Payment;
@@ -1487,7 +1490,8 @@ namespace VA009.Models
                                     else
                                     {
                                         // Create Payment header
-                                        payment = CreatePaymentAgainstJournal(ct, PaymentData[i], ex, out docno1, trx, false);
+                                        payment = CreatePaymentAgainstJournal(ct, PaymentData[i], ex, out docno1, trx, countor > 1 ? false : true);
+
                                         if (payment != null && docno1 != "")
                                         {
                                             lstPaymentGL.Add(new VA009_CreatedPaymentDetail
@@ -1497,9 +1501,11 @@ namespace VA009.Models
                                             });
                                         }
                                     }
-
-                                    // Create Payment Allocate tab 
-                                    CreatePaymentAllocateforJournal(ct, PaymentData[i], payment, trx, ex);
+                                    //Create Payment in Allocate tab
+                                    if (countor > 1)
+                                    {
+                                        CreatePaymentAllocateforJournal(ct, PaymentData[i], payment, trx, ex);
+                                    }
                                 }
                             }
                         }
