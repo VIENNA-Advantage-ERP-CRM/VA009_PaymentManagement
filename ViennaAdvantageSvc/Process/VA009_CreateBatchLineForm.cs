@@ -119,7 +119,7 @@ namespace ViennaAdvantage.Process
                 {
                     _AccountDate = Util.GetValueOfDateTime(para[i].GetParameter());
                 }
-                else if (name.Equals("IsIncludeGL"))
+                else if (name.Equals("IsIncludeGl"))
                 {
                     includeGl = "Y".Equals(para[i].GetParameter());                        //VIS_427 DevOps TaskId: 2156 parameters added for Gl journalline case
                 }
