@@ -4489,12 +4489,14 @@ namespace VA009.Models
 
                 int payid = 0;
                 List<int> count = new List<int>();
+                List<int> PartnerID = new List<int>();
                 bool Found = false, Allocate = false;
 
                 int _doctype_ID = 0;
                 int c_currencytype = 0;
                 decimal _dueAmt = 0;
                 string[] _result = null;
+                List<MPayment> paymentCreated = new List<MPayment>();
                 //to set currency type 
                 if (CurrencyType != string.Empty)
                 {
@@ -4511,22 +4513,46 @@ namespace VA009.Models
                     OrderIds = OrderSchdIDS.Split(',');
                 if (!string.IsNullOrEmpty(JournalSchdIDS))
                     journalIDs = JournalSchdIDS.Split(',');
+                //When either invoice or gl is null
+                if (String.IsNullOrEmpty(InvoiceSchdIDS))
+                {
+                    InvoiceSchdIDS = "0";
+                }
+                else if (String.IsNullOrEmpty(JournalSchdIDS))
+                {
+                    JournalSchdIDS = "0";
+                }
+                //to find the count and business partner id when select invoice and gl
+                StringBuilder sql = new StringBuilder();
+                sql.Append(@"SELECT C_BPartner_ID,COUNT(C_BPartner_ID) AS Count FROM (SELECT C_BPartner_ID FROM GL_JournalLine WHERE GL_JournalLine_ID IN (" + (JournalSchdIDS) + ") " +
+                    "UNION ALL SELECT C_BPartner_ID FROM C_InvoicePaySchedule WHERE C_InvoicePaySchedule_ID IN (" + (InvoiceSchdIDS) + ")) GROUP BY C_BPartner_ID");
+                DataSet dsbusiness = DB.ExecuteDataset(sql.ToString());
 
-
+                if (journalIDs.Length > 0)
+                {
+                    CreateManualJournalPayment(ct, AD_Org_ID, docTypeId, BankID, BankAccountID, c_currencytype,
+                       PaymentMethodID, DateAcct, DateTrx, JournalSchdIDS, trx, PartnerID, dsbusiness, count, paymentCreated, ex, docno, _conv);
+                }
                 if (invoiceIds.Length > 0)
                 {
-                    List<int> PartnerID = new List<int>();
-
                     _payschedule1 = new MInvoicePaySchedule(ct, Util.GetValueOfInt(invoiceIds[0]), trx);
                     _invoice1 = new MInvoice(ct, _payschedule1.GetC_Invoice_ID(), trx);
 
                     _doctype = MDocType.Get(ct, _invoice1.GetC_DocType_ID());
                     _doctype_ID = docTypeId;
-
+                    int bpcount = 0;
                     #region Single Invoice Schedule
                     if (invoiceIds.Length == 1)
                     {
                         _payschedule = new MInvoicePaySchedule(ct, Util.GetValueOfInt(invoiceIds[0]), trx);
+                        DataRow[] drbusiness = dsbusiness.Tables[0].Select($@"C_BPartner_ID = {_payschedule.GetC_BPartner_ID()}");
+                        if (drbusiness != null && drbusiness.Length > 0)
+                        {
+                            bpcount = Util.GetValueOfInt(drbusiness[0]["Count"]);
+                        }
+                    }
+                    if (invoiceIds.Length == 1 && bpcount <= 1)
+                    {
                         _invoice = new MInvoice(ct, _payschedule.GetC_Invoice_ID(), trx);
 
                         _pay = new MPayment(ct, 0, trx);
@@ -4644,7 +4670,10 @@ namespace VA009.Models
                             {
                                 int indx = PartnerID.IndexOf(_invoice.GetC_BPartner_ID());
                                 payid = count[indx];
-
+                                if (paymentCreated != null && paymentCreated.Count >= 0)
+                                {
+                                    _pay = paymentCreated[indx];
+                                }
                                 MPaymentAllocate M_Allocate = new MPaymentAllocate(ct, 0, trx);
                                 M_Allocate.SetAD_Org_ID(AD_Org_ID);
                                 M_Allocate.SetAD_Client_ID(_invoice.GetAD_Client_ID());
@@ -4731,21 +4760,31 @@ namespace VA009.Models
                             }
                             else
                             {
-                                for (int j = 0; j < invoiceIds.Length; j++)
+                                bpcount = 0;
+                                DataRow[] drbusiness = dsbusiness.Tables[0].Select($@"C_BPartner_ID = {_payschedule.GetC_BPartner_ID()}");
+                                if (drbusiness != null && drbusiness.Length > 0)
                                 {
-                                    // check if more than one schedule have same business partner then create consolidate payment
-                                    if (j == i) { continue; }
-                                    else
-                                    {
-                                        _payschedule1 = new MInvoicePaySchedule(ct, Util.GetValueOfInt(invoiceIds[j]), trx);
-                                        _invoice1 = new MInvoice(ct, _payschedule1.GetC_Invoice_ID(), trx);
-                                        if (_invoice1.GetC_BPartner_ID() == _invoice.GetC_BPartner_ID())
-                                        {
-                                            Found = true;
-                                            break;
-                                        }
-                                    }
+                                    bpcount = Util.GetValueOfInt(drbusiness[0]["Count"]);
                                 }
+                                if (bpcount > 1)
+                                {
+                                    Found = true;
+                                }
+                                //for (int j = 0; j < invoiceIds.Length; j++)
+                                //{
+                                //    // check if more than one schedule have same business partner then create consolidate payment
+                                //    if (j == i) { continue; }
+                                //    else
+                                //    {
+                                //        _payschedule1 = new MInvoicePaySchedule(ct, Util.GetValueOfInt(invoiceIds[j]), trx);
+                                //        _invoice1 = new MInvoice(ct, _payschedule1.GetC_Invoice_ID(), trx);
+                                //        if (_invoice1.GetC_BPartner_ID() == _invoice.GetC_BPartner_ID())
+                                //        {
+                                //            Found = true;
+                                //            break;
+                                //        }
+                                //    }
+                                //}
 
                                 if (Found == true)
                                 {
@@ -4801,6 +4840,7 @@ namespace VA009.Models
                                         payid = _pay.GetC_Payment_ID();
                                         count.Add(payid);
                                         PartnerID.Add(_payschedule.GetC_BPartner_ID());
+                                        paymentCreated.Add(_pay);
                                     }
                                     Found = false;
                                 }
@@ -5038,45 +5078,43 @@ namespace VA009.Models
                         }
                     }
 
-                    #endregion
-
-                    #region Complete Payments
-                    if (count.Count > 0)
+                    #endregion                 
+                }
+                #region Complete Payments
+                if (paymentCreated.Count > 0)
+                {
+                    for (int j = 0; j < paymentCreated.Count; j++)
                     {
-                        for (int j = 0; j < count.Count; j++)
+                        MPayment _PayComp = paymentCreated[j];
+                        if (Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(C_PaymentAllocate_ID) FROM C_PaymentAllocate WHERE C_Payment_ID=" + _PayComp.GetC_Payment_ID(), null, trx)) > 0)
                         {
-                            MPayment _PayComp = new MPayment(ct, count[j], trx);
-                            if (_PayComp.GetPayAmt() != 0 && Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(C_PaymentAllocate_ID) FROM C_PaymentAllocate WHERE C_Payment_ID=" + _PayComp.GetC_Payment_ID(), null, trx)) > 0)
+                            _result = CompleteOrReverse(ct, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(), _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                            if (_result != null && _result[1].Equals("Y"))
                             {
-                                _result = CompleteOrReverse(ct, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(), _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                                if (_result != null && _result[1].Equals("Y"))
+                                if (docno.Length > 0)
                                 {
-                                    if (docno.Length > 0)
-                                    {
-                                        docno.Append(", ");
-                                    }
-                                    docno.Append(_PayComp.GetDocumentNo());
+                                    docno.Append(", ");
+                                }
+                                docno.Append(_PayComp.GetDocumentNo());
+                            }
+                            else
+                            {
+                                ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ": " + _PayComp.GetDocumentNo());
+                                if (_PayComp.GetProcessMsg() != null && _PayComp.GetProcessMsg().IndexOf("@") != -1)
+                                {
+                                    processMsg = Msg.ParseTranslation(ct, _PayComp.GetProcessMsg());
                                 }
                                 else
                                 {
-                                    ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ": " + _PayComp.GetDocumentNo());
-                                    if (_PayComp.GetProcessMsg() != null && _PayComp.GetProcessMsg().IndexOf("@") != -1)
-                                    {
-                                        processMsg = Msg.ParseTranslation(ct, _PayComp.GetProcessMsg());
-                                    }
-                                    else
-                                    {
-                                        processMsg = Msg.GetMsg(ct, _PayComp.GetProcessMsg());
-                                    }
-                                    ex.Append(", " + processMsg);
-                                    _log.Info(ex.ToString());
+                                    processMsg = Msg.GetMsg(ct, _PayComp.GetProcessMsg());
                                 }
+                                ex.Append(", " + processMsg);
+                                _log.Info(ex.ToString());
                             }
                         }
                     }
-                    #endregion
-
                 }
+                #endregion
 
                 if (OrderIds.Length > 0)
                 {
@@ -5204,13 +5242,6 @@ namespace VA009.Models
                     #endregion
                 }
 
-                if (journalIDs.Length > 0)
-                {
-                    // Create Manual Payment when GL journal record selected
-                    CreateManualJournalPayment(ct, AD_Org_ID, docTypeId, BankID, BankAccountID, c_currencytype,
-                       PaymentMethodID, DateAcct, DateTrx, JournalSchdIDS, trx, ex, docno, _conv);
-                }
-
             }
             catch (Exception e)
             {
@@ -5260,11 +5291,15 @@ namespace VA009.Models
         /// <param name="ex">Exception string</param>
         /// <param name="docno">Document No String</param>
         /// <param name="_conv">Convetsion Issue String</param>
+        /// <param name="PartnerId">"List of Business Partner"</param>
+        /// <param name="dsbusiness">"Dataset of Business Partner"</param>
+        /// <param name="listpaymentid">"List"</param>
+        /// <param name="paymentCreated">"List of Payment"</param>
         /// <returns></returns>
         /// <Author>VIS_0045 - 26-May-2023</Author>
         public String CreateManualJournalPayment(Ctx ctx, int AD_Org_ID, int docTypeId, int BankID, int BankAccountID, int CurrencyType,
-                int PaymentMethodID, DateTime? DateAcct, DateTime? DateTrx, string JournalSchdIDS, Trx trx,
-                StringBuilder ex, StringBuilder docno, StringBuilder _conv)
+                int PaymentMethodID, DateTime? DateAcct, DateTime? DateTrx, string JournalSchdIDS, Trx trx, List<int> PartnerId, DataSet dsbusiness, List<int> listpaymentid,
+                List<MPayment> paymentCreated, StringBuilder ex, StringBuilder docno, StringBuilder _conv)
         {
             StringBuilder sql = new StringBuilder();
             sql.Append($@"SELECT MAX(bp.C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
@@ -5276,7 +5311,7 @@ namespace VA009.Models
             DataSet dsBankAccount = DB.ExecuteDataset(sql.ToString(), null, trx);
 
             sql.Clear();
-            sql.Append(@"SELECT cb.C_BPartner_ID, g.DocumentNo, g.GL_Journal_ID, 
+            sql.Append(@"SELECT DISTINCT gl.C_BPartner_ID, g.DocumentNo, g.GL_Journal_ID, 
                                 gl.GL_JournalLine_ID, gl.C_Currency_ID AS GL_Currency, ba.C_Currency_ID AS BA_Currency, ");
             sql.Append(@" CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
                                WHEN (ev.AccountType = 'A' AND AmtSourceDr <= 0) THEN  -1 * AmtSourceCr
@@ -5296,16 +5331,18 @@ namespace VA009.Models
                                   INNER JOIN C_BankAccount ba ON (ba.C_BankAccount_ID={BankAccountID})
                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND 
                                        gl.AD_Client_ID= { ctx.GetAD_Client_ID() } AND gl.GL_JournalLine_ID IN ({ JournalSchdIDS })");
-            sql.Append(@" ORDER BY gl.C_Bpartner_ID ASC, loc.C_BPartner_Location_ID ASC");
+            sql.Append(@" ORDER BY gl.C_Bpartner_ID ASC");
             DataSet ds = DB.ExecuteDataset(sql.ToString(), null, trx);
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
                 DataRow[] drData = null;
                 DataRow[] drBankAccount = null;
+                DataRow[] drbusiness = null;
 
                 List<int> BPartnerExecuted = new List<int>();
-                List<MPayment> paymentCreated = new List<MPayment>();
+                // List<MPayment> paymentCreated = new List<MPayment>();
                 MPayment pay = null;
+
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     if (BPartnerExecuted.Contains(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])))
@@ -5313,7 +5350,14 @@ namespace VA009.Models
                         continue;
                     }
                     BPartnerExecuted.Add(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]));
+                    PartnerId.Add(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]));
                     drData = ds.Tables[0].Select($@"C_BPartner_ID = {Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])}");
+                    drbusiness = dsbusiness.Tables[0].Select($@"C_BPartner_ID = {Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"])}");
+                    if (drbusiness == null || (drbusiness != null && drbusiness.Length == 0))
+                    {
+                        continue;
+                    }
+
                     if (drData != null && drData.Length > 0)
                     {
                         // Get Bank Account Detail 
@@ -5323,15 +5367,16 @@ namespace VA009.Models
                         {
                             if (j == 0)
                             {
-                                pay = CreatePaymentHeaderforJournal(ctx, drData[j], drBankAccount, (drData.Length > 1 ? false : true),
+                                pay = CreatePaymentHeaderforJournal(ctx, drData[j], drBankAccount, (Util.GetValueOfInt(drbusiness[0]["Count"]) > 1 ? false : true),
                                     AD_Org_ID, docTypeId, BankAccountID, CurrencyType, PaymentMethodID, DateAcct, DateTrx, trx, ex, docno, _conv);
                                 if (pay != null)
                                 {
                                     paymentCreated.Add(pay);
+                                    listpaymentid.Add(pay.GetC_Payment_ID());
                                 }
                             }
 
-                            if (drData.Length > 1)
+                            if (Util.GetValueOfInt(drbusiness[0]["Count"]) > 1)
                             {
                                 CreatePaymentAllocateforJournal(ctx, drData[j], pay, trx, ex, docno, _conv);
                             }
@@ -5339,39 +5384,6 @@ namespace VA009.Models
                     }
                 }
 
-                #region Complete Payments
-                if (paymentCreated.Count > 0)
-                {
-                    string[] _result = null;
-                    for (int j = 0; j < paymentCreated.Count; j++)
-                    {
-                        MPayment _PayComp = paymentCreated[j];
-                        _result = CompleteOrReverse(ctx, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(),
-                                    _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                        if (_result != null && _result[1].Equals("Y"))
-                        {
-                            if (docno.Length > 0)
-                            {
-                                docno.Append(", ");
-                            }
-                            docno.Append(_PayComp.GetDocumentNo());
-                        }
-                        else
-                        {
-                            ex.Append(Msg.GetMsg(ctx, "VA009_PNotCompelted") + ": " + _PayComp.GetDocumentNo());
-                            if (_PayComp.GetProcessMsg() != null && _PayComp.GetProcessMsg().IndexOf("@") != -1)
-                            {
-                                ex.Append(", " + Msg.ParseTranslation(ctx, _PayComp.GetProcessMsg()));
-                            }
-                            else
-                            {
-                                ex.Append(", " + Msg.GetMsg(ctx, _PayComp.GetProcessMsg()));
-                            }
-                            _log.Info(ex.ToString());
-                        }
-                    }
-                }
-                #endregion
             }
             return "";
         }
