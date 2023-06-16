@@ -4513,10 +4513,19 @@ namespace VA009.Models
                     OrderIds = OrderSchdIDS.Split(',');
                 if (!string.IsNullOrEmpty(JournalSchdIDS))
                     journalIDs = JournalSchdIDS.Split(',');
-
+                //When either invoice or gl is null
+                if (String.IsNullOrEmpty(InvoiceSchdIDS))
+                {
+                    InvoiceSchdIDS = "0";
+                }
+                else if (String.IsNullOrEmpty(JournalSchdIDS))
+                {
+                    JournalSchdIDS = "0";
+                }
+                //to find the count and business partner id when select invoice and gl
                 StringBuilder sql = new StringBuilder();
-                sql.Append(@"SELECT C_BPartner_ID,COUNT(C_BPartner_ID) AS Count FROM (SELECT C_BPartner_ID FROM GL_JournalLine WHERE GL_JournalLine_ID in " + (JournalSchdIDS) + " " +
-                    "UNION ALL SELECT C_BPartner_ID FROM C_InvoicePaySchedule WHERE C_InvoicePaySchedule_ID in " + (InvoiceSchdIDS) + ") GROUP BY C_BPartner_ID");
+                sql.Append(@"SELECT C_BPartner_ID,COUNT(C_BPartner_ID) AS Count FROM (SELECT C_BPartner_ID FROM GL_JournalLine WHERE GL_JournalLine_ID IN (" + (JournalSchdIDS) + ") " +
+                    "UNION ALL SELECT C_BPartner_ID FROM C_InvoicePaySchedule WHERE C_InvoicePaySchedule_ID IN (" + (InvoiceSchdIDS) + ")) GROUP BY C_BPartner_ID");
                 DataSet dsbusiness = DB.ExecuteDataset(sql.ToString());
 
                 if (journalIDs.Length > 0)
@@ -5069,45 +5078,43 @@ namespace VA009.Models
                         }
                     }
 
-                    #endregion
-
-                    #region Complete Payments
-                    if (count.Count > 0)
+                    #endregion                 
+                }
+                #region Complete Payments
+                if (paymentCreated.Count > 0)
+                {
+                    for (int j = 0; j < paymentCreated.Count; j++)
                     {
-                        for (int j = 0; j < count.Count; j++)
+                        MPayment _PayComp = paymentCreated[j];
+                        if (Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(C_PaymentAllocate_ID) FROM C_PaymentAllocate WHERE C_Payment_ID=" + _PayComp.GetC_Payment_ID(), null, trx)) > 0)
                         {
-                            MPayment _PayComp = new MPayment(ct, count[j], trx);
-                            if (_PayComp.GetPayAmt() != 0 && Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(C_PaymentAllocate_ID) FROM C_PaymentAllocate WHERE C_Payment_ID=" + _PayComp.GetC_Payment_ID(), null, trx)) > 0)
+                            _result = CompleteOrReverse(ct, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(), _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
+                            if (_result != null && _result[1].Equals("Y"))
                             {
-                                _result = CompleteOrReverse(ct, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(), _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                                if (_result != null && _result[1].Equals("Y"))
+                                if (docno.Length > 0)
                                 {
-                                    if (docno.Length > 0)
-                                    {
-                                        docno.Append(", ");
-                                    }
-                                    docno.Append(_PayComp.GetDocumentNo());
+                                    docno.Append(", ");
+                                }
+                                docno.Append(_PayComp.GetDocumentNo());
+                            }
+                            else
+                            {
+                                ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ": " + _PayComp.GetDocumentNo());
+                                if (_PayComp.GetProcessMsg() != null && _PayComp.GetProcessMsg().IndexOf("@") != -1)
+                                {
+                                    processMsg = Msg.ParseTranslation(ct, _PayComp.GetProcessMsg());
                                 }
                                 else
                                 {
-                                    ex.Append(Msg.GetMsg(ct, "VA009_PNotCompelted") + ": " + _PayComp.GetDocumentNo());
-                                    if (_PayComp.GetProcessMsg() != null && _PayComp.GetProcessMsg().IndexOf("@") != -1)
-                                    {
-                                        processMsg = Msg.ParseTranslation(ct, _PayComp.GetProcessMsg());
-                                    }
-                                    else
-                                    {
-                                        processMsg = Msg.GetMsg(ct, _PayComp.GetProcessMsg());
-                                    }
-                                    ex.Append(", " + processMsg);
-                                    _log.Info(ex.ToString());
+                                    processMsg = Msg.GetMsg(ct, _PayComp.GetProcessMsg());
                                 }
+                                ex.Append(", " + processMsg);
+                                _log.Info(ex.ToString());
                             }
                         }
                     }
-                    #endregion
-
                 }
+                #endregion
 
                 if (OrderIds.Length > 0)
                 {
@@ -5284,6 +5291,10 @@ namespace VA009.Models
         /// <param name="ex">Exception string</param>
         /// <param name="docno">Document No String</param>
         /// <param name="_conv">Convetsion Issue String</param>
+        /// <param name="PartnerId">"List of Business Partner"</param>
+        /// <param name="dsbusiness">"Dataset of Business Partner"</param>
+        /// <param name="listpaymentid">"List"</param>
+        /// <param name="paymentCreated">"List of Payment"</param>
         /// <returns></returns>
         /// <Author>VIS_0045 - 26-May-2023</Author>
         public String CreateManualJournalPayment(Ctx ctx, int AD_Org_ID, int docTypeId, int BankID, int BankAccountID, int CurrencyType,
@@ -5373,39 +5384,6 @@ namespace VA009.Models
                     }
                 }
 
-                #region Complete Payments
-                if (paymentCreated.Count > 0)
-                {
-                    string[] _result = null;
-                    for (int j = 0; j < paymentCreated.Count; j++)
-                    {
-                        MPayment _PayComp = paymentCreated[j];
-                        _result = CompleteOrReverse(ctx, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(),
-                                    _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
-                        if (_result != null && _result[1].Equals("Y"))
-                        {
-                            if (docno.Length > 0)
-                            {
-                                docno.Append(", ");
-                            }
-                            docno.Append(_PayComp.GetDocumentNo());
-                        }
-                        else
-                        {
-                            ex.Append(Msg.GetMsg(ctx, "VA009_PNotCompelted") + ": " + _PayComp.GetDocumentNo());
-                            if (_PayComp.GetProcessMsg() != null && _PayComp.GetProcessMsg().IndexOf("@") != -1)
-                            {
-                                ex.Append(", " + Msg.ParseTranslation(ctx, _PayComp.GetProcessMsg()));
-                            }
-                            else
-                            {
-                                ex.Append(", " + Msg.GetMsg(ctx, _PayComp.GetProcessMsg()));
-                            }
-                            _log.Info(ex.ToString());
-                        }
-                    }
-                }
-                #endregion
             }
             return "";
         }
