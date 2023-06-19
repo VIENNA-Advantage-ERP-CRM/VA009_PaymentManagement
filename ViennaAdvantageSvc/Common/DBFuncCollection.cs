@@ -485,7 +485,7 @@ namespace ViennaAdvantage.Common
                                   INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =gl.AD_Client_ID)
                                   INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  
                                   INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
-                                  WHERE gl.IsAllocated='N'  AND ev.IsAllocationRelated = 'Y' /* AND gl.VA009_IsAssignedtoBatch = 'N' */
+                                  WHERE gl.IsAllocated='N'  AND ev.IsAllocationRelated = 'Y'  AND gl.VA009_IsAssignedtoBatch = 'N' 
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
                                         AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
                                         : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
