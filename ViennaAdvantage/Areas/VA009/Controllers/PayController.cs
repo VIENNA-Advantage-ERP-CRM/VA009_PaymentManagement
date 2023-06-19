@@ -165,6 +165,7 @@ namespace VA009.Controllers
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
 
+
         public JsonResult GetScheduleData(string fields) 
         {
             string retJSON = "";
@@ -176,7 +177,22 @@ namespace VA009.Controllers
             }
             return Json(retJSON, JsonRequestBehavior.AllowGet);
         }
-
+        /// <summary>
+        /// This method is used to get journal detail
+        /// </summary>
+        /// <param name="fields">This fields is used to display the Parameter</param>
+        /// <returns></returns>
+        public JsonResult GetjournalDetail(string fields)
+        {
+            string retJSON = "";
+            if (Session["ctx"] != null)
+            {
+                VAdvantage.Utility.Ctx ctx = Session["ctx"] as Ctx;
+                PayModel payModel = new PayModel();
+                retJSON = JsonConvert.SerializeObject(payModel.GetJournalDetail(ctx, fields));
+            }
+            return Json(retJSON, JsonRequestBehavior.AllowGet);
+        }
         // this linkage is used to veify the payment base type of payment method
         public JsonResult VerifyPayMethod(string fields)
         {

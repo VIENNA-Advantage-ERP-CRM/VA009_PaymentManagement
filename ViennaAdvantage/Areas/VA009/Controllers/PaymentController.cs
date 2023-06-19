@@ -457,6 +457,13 @@ namespace VA009.Controllers
             List<LocationDetails> _LocationData = _payMdl.GetLocation(BP, ct);
             return Json(JsonConvert.SerializeObject(_LocationData), JsonRequestBehavior.AllowGet);
         }
+        //public ActionResult GetLocation(string BP, string locationId)
+        //{
+        //    Ctx ct = Session["ctx"] as Ctx;
+        //    PaymentModel _payMdl = new PaymentModel();
+        //    List<LocationDetails> _LocationData = _payMdl.GetLocation(BP,ct, locationId);
+        //    return Json(JsonConvert.SerializeObject(_LocationData), JsonRequestBehavior.AllowGet);
+        //}
         /// <summary>
         /// Get Location against selected Business partner
         /// </summary>
