@@ -476,7 +476,7 @@ namespace ViennaAdvantage.Common
             StringBuilder sql = new StringBuilder();
             sql.Append(@" SELECT VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID , GL_JournalLine_ID FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN
                         (SELECT VA009_BatchLines_ID  FROM VA009_BatchLines  WHERE VA009_Batch_ID = " + VA009_Batch_ID + " ) GROUP BY " +
-                        " VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID ");
+                        " VA009_OrderPaySchedule_ID, C_InvoicePaySchedule_ID, GL_JournalLine_ID ");
             DataSet ds = DB.ExecuteDataset(sql.ToString(), null, trx);
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
