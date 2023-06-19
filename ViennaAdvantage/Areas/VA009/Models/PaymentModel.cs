@@ -5123,25 +5123,11 @@ namespace VA009.Models
                     {
                         orderPaySchedule = new MVA009OrderPaySchedule(ct, Util.GetValueOfInt(OrderIds[i]), trx);
                         _ord = new MOrder(ct, orderPaySchedule.GetC_Order_ID(), trx);
-                        _curr = new MCurrency(ct, orderPaySchedule.GetC_Currency_ID(), trx);
 
-                        //Bug177 Get Doctype 
-                        if (!_ord.IsSOTrx())
-                        {
-                            //Ap Payment
-                            _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='APP' AND IsActive = 'Y' AND AD_Client_ID="
-                                + _ord.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
-                        }
-                        else
-                        {
-                            //Ar Receipt
-                            _doctype_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT C_DocType_ID FROM C_DocType WHERE DocBaseType='ARR' AND IsActive = 'Y' AND AD_Client_ID="
-                                + _ord.GetAD_Client_ID() + " AND AD_Org_ID IN (0, " + AD_Org_ID + ") ORDER BY AD_Org_ID DESC, C_DocType_ID DESC"));
-                        }
                         _pay = new MPayment(ct, 0, trx);
                         _pay.SetAD_Client_ID(Util.GetValueOfInt(orderPaySchedule.GetAD_Client_ID()));
                         _pay.SetAD_Org_ID(Util.GetValueOfInt(AD_Org_ID));
-                        _pay.SetC_DocType_ID(_doctype_ID);
+                        _pay.SetC_DocType_ID(docTypeId);
                         _pay.SetDateAcct(Util.GetValueOfDateTime(DateAcct));
                         //to set trx date 
                         _pay.SetDateTrx(Util.GetValueOfDateTime(DateTrx));
