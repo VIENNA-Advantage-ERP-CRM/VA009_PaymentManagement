@@ -2678,7 +2678,8 @@
                                                                 && chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'] != e.TransactionType;
                                                         });
                                                         if (obj) {
-                                                            if (obj.length > 0) {
+                                                             //VIS_427 DevOps TaskId: 2156 Condition added For order when their is different Transaction
+                                                            if (obj.length > 0 && chqpaygrd.get(chqpaygrd.getSelection()[i])['TransactionType'] == "Order") {
                                                                 VIS.ADialog.info("VA009_SameCheckNo");
                                                                 chqpaygrd.selectNone();
                                                                 return false;
