@@ -48,15 +48,15 @@ namespace ViennaAdvantage.Model
                         //to update execution status to awaited when we perform delete.
                         int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'A' 
                         WHERE C_InvoicePaySchedule_ID IN
-                        (SELECT C_InvoicePaySchedule_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN ({ GetVA009_BatchLines_ID() })", null, Get_Trx()));
+                        (SELECT C_InvoicePaySchedule_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN ({ GetVA009_BatchLines_ID() }))", null, Get_Trx()));
 
                         int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE VA009_OrderPaySchedule SET VA009_ExecutionStatus = 'A'
                         WHERE VA009_OrderPaySchedule_ID IN (SELECT VA009_OrderPaySchedule_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN 
-                        ({ GetVA009_BatchLines_ID() })", null, Get_Trx()));
+                        ({ GetVA009_BatchLines_ID() }))", null, Get_Trx()));
 
                         int JournalCount = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE GL_JournalLine SET VA009_IsAssignedtoBatch = 'N'
                         WHERE GL_JournalLine_ID IN (SELECT GL_JournalLine_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN 
-                        ({ GetVA009_BatchLines_ID() })", null, Get_Trx()));
+                        ({ GetVA009_BatchLines_ID() }))", null, Get_Trx()));
 
                         if (schdeuleCount > 0 || OrdschdeuleCount > 0 || JournalCount > 0)
                         {
