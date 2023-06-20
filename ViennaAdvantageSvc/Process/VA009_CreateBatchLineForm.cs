@@ -428,7 +428,7 @@ namespace ViennaAdvantage.Process
                                 //Rakesh(VA228):Removed dataset direct fetch from main ds
                                 line.SetVA009_BPMandate_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BPMandate_id"]));
                             }
-                            line.SetProcessed(true);
+                            line.SetProcessed(false); //VIS_427 DevopsID:2156 Set processed false
                             if (line.Save())
                             {
                                 _VA009_BatchLine_ID = line.GetVA009_BatchLines_ID();
@@ -536,7 +536,7 @@ namespace ViennaAdvantage.Process
                         {
                             lineDetail.Set_Value("C_BP_BankAccount_ID", Util.GetValueOfInt(_ds.Tables[0].Rows[0]["C_BP_BankAccount_ID"]));
                         }
-                        lineDetail.SetProcessed(true);
+                        lineDetail.SetProcessed(false); //VIS_427 DevopsID:2156 Set processed false
                         if (!lineDetail.Save())
                         {
                             ValueNamePair pp = VLogger.RetrieveError();
@@ -606,7 +606,7 @@ namespace ViennaAdvantage.Process
 
                     batch.SetAD_Org_ID(_AD_Org_ID);
                     batch.SetVA009_GenerateLines("Y");
-                    batch.SetProcessed(true);
+                    batch.SetProcessed(false); //VIS_427 DevopsID:2156 Set processed false
                     if (!batch.Save(Get_TrxName()))
                     {
                         Get_TrxName().Rollback();
