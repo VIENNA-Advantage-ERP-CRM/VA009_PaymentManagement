@@ -58,12 +58,13 @@ namespace VA009.Controllers
         /// <param name="acctno">Account number</param>
         /// <param name="chkno">Check Number</param>
         /// <param name="OrderPayids">Order Pay Schedule IDS</param>
+        /// <param name="JournalPayids">Journal Record IDs</param>
         /// <returns>List of Records</returns>
-        public ActionResult GetPopUpData(string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids)
+        public ActionResult GetPopUpData(string InvPayids, int bank_id, int acctno, string chkno, string OrderPayids , string JournalPayids)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            List<PaymentData> _Paydata = _payMdl.GetChquePopUpdata(ct, InvPayids, bank_id, acctno, HttpUtility.HtmlDecode(chkno), OrderPayids);
+            List<PaymentData> _Paydata = _payMdl.GetChquePopUpdata(ct, InvPayids, bank_id, acctno, HttpUtility.HtmlDecode(chkno), OrderPayids , JournalPayids);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -390,14 +391,19 @@ namespace VA009.Controllers
         /// <param name="DateAcct">Account Date</param>
         /// <param name="CurrencyType">Currency Type</param>
         ///  <param name="DateTrx">Transaction Date</param>
+        ///  <param name="AD_Org_ID">Organization ID</param>
         ///  <param name="docTypeId">Document Type Id</param>
+        ///  <param name="JournalSchdIDS">Journal Record IDs</param>
         /// <returns>Message in JSON Format</returns>
         [HttpPost]
-        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, int AD_Org_ID, int docTypeId)
+        public ActionResult GeneratePaymentsMannualy(string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID, 
+                                                     int PaymentMethodID, string DateAcct, string CurrencyType, string DateTrx, 
+                                                     int AD_Org_ID, int docTypeId, string JournalSchdIDS)
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
-            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, PaymentMethodID, DateAcct, CurrencyType, DateTrx, AD_Org_ID, docTypeId);
+            string _Paydata = _payMdl.CreatePaymentsMannualy(ct, InvoiceSchdIDS, OrderSchdIDS, BankID, BankAccountID, 
+                                                             PaymentMethodID, DateAcct, CurrencyType, DateTrx, AD_Org_ID, docTypeId, JournalSchdIDS);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
 
@@ -451,6 +457,13 @@ namespace VA009.Controllers
             List<LocationDetails> _LocationData = _payMdl.GetLocation(BP, ct);
             return Json(JsonConvert.SerializeObject(_LocationData), JsonRequestBehavior.AllowGet);
         }
+        //public ActionResult GetLocation(string BP, string locationId)
+        //{
+        //    Ctx ct = Session["ctx"] as Ctx;
+        //    PaymentModel _payMdl = new PaymentModel();
+        //    List<LocationDetails> _LocationData = _payMdl.GetLocation(BP,ct, locationId);
+        //    return Json(JsonConvert.SerializeObject(_LocationData), JsonRequestBehavior.AllowGet);
+        //}
         /// <summary>
         /// Get Location against selected Business partner
         /// </summary>

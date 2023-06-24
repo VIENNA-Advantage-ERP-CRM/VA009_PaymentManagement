@@ -77,6 +77,75 @@
 
     };
 
+    /**
+   * Callout function for Payment window and Allocate tab to set PaymentAmount,PayAmt and InvoiceAmt,Amount
+   * @param {any} ctx
+   * @param {any} windowNo
+   * @param {any} mTab
+   * @param {any} mField
+   * @param {any} value
+   * @param {any} oldValue
+   */
+    VA009_CalloutPayment.prototype.setPayAmt = function (ctx, windowNo, mTab, mField, value, oldValue) {
+
+        if (this.isCalloutActive() || value == null || value.toString() == "") {
+            return "";
+        }
+        try {
+            var AcountDate = ctx.getContext(windowNo, "DateAcct");//get AcountDate from Payment window
+            var C_Currency_ID = ctx.getContextAsInt(windowNo, "C_Currency_ID");//get C_Currency_ID from Payment window
+            var AD_Client_ID = mTab.getValue("AD_Client_ID");//get AD_Client_ID
+            var AD_Org_ID = mTab.getValue("AD_Org_ID");//get AD_Org_ID
+            var C_ConversionType_ID = ctx.getContextAsInt(windowNo, "C_ConversionType_ID");//get C_Currency_ID from Payment window
+            var docTypeId = ctx.getContextAsInt(windowNo, "C_DocType_ID");
+            this.setCalloutActive(true);
+            var paramString = value.toString() + "," + docTypeId + "," + C_Currency_ID + "," + AcountDate + "," + AD_Client_ID
+                + "," + AD_Org_ID + "," + C_ConversionType_ID;
+
+            var dr = VIS.dataContext.getJSONRecord("Pay/GetjournalDetail", paramString);
+            if (dr != null) {
+
+                var docbaseType = Util.getValueOfString(dr["docbaseType"]);
+                var AccountType = Util.getValueOfString(dr["AccountType"]);
+
+                // In case of APP Selected Accounttype not Liability then show the message 
+                //In case of ARR Selected Accounttype not Asset then show the message 
+                if ("APP" == docbaseType && AccountType != "L" || "ARR" == docbaseType && AccountType != "A") {
+                    VIS.ADialog.info("VIS_SlctedAccountType");
+                    this.setCalloutActive(false);
+                    return "";
+                }
+                var credit = 0;
+                if (Util.getValueOfDecimal(dr["AmtSourceCr"]) == 0) {
+                    credit = Util.getValueOfDecimal(dr["AmtSourceDr"]);
+                }
+                else {
+                    credit = Util.getValueOfDecimal(dr["AmtSourceCr"])
+                }
+
+                // On GL Journal line selected accounttype is Liability /Asset and Amount source is Debited / Credited  then Amount sign will be negative
+                if ((AccountType == "L" && credit == Util.getValueOfDecimal(dr["AmtSourceDr"])) ||
+                    (AccountType == "A" && credit == Util.getValueOfDecimal(dr["AmtSourceCr"]))) {
+                    credit = -1 * credit;
+                }
+                if (mTab.getField("C_BankAccount_ID") != null) {
+                    mTab.setValue("PayAmt", credit); // Set PayAmt and PaymentAmount
+                    mTab.setValue("PaymentAmount", credit);
+                }
+                else if (mTab.getField("C_BankAccount_ID") == null) {                  
+                    mTab.setValue("Amount", credit);// Set Amount
+
+                }
+            }
+        }
+        catch (err) {
+            this.setCalloutActive(false);
+            return err;
+        }
+        this.setCalloutActive(false);
+        return "";
+    };
+
     //Callout Added By Vivek on 20/06/2016 for Advance payment on order Schedules
 
     VA009_CalloutPayment.prototype.setScheduleAmount = function (ctx, windowNo, mTab, mField, value, oldValue) {

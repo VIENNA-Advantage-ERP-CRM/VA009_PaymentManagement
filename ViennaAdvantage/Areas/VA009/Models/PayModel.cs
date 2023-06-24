@@ -85,6 +85,66 @@ namespace VA009.Models
                 return null;
             }
         }
+        /// <summary>
+        /// Get Journal Detail
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="fields">This Field is used to display the Parameter</param>
+        /// <returns>Dictionary</returns>
+        public Dictionary<String, object> GetJournalDetail(Ctx ctx, string fields)
+        {
+            if (fields != null)
+            {
+                Dictionary<String, object> retDic = null;
+                string[] paramValue = fields.ToString().Split(',');
+                //Assign parameter value
+                int GL_JournalLine_ID = Util.GetValueOfInt(paramValue[0].ToString());
+                int C_DocType_ID = Util.GetValueOfInt(paramValue[1].ToString());
+                int C_Currency_ID = Util.GetValueOfInt(paramValue[2].ToString());
+                DateTime? AcountDate = Util.GetValueOfDateTime(paramValue[3].ToString());
+                int AD_Client_ID = Util.GetValueOfInt(paramValue[4].ToString());
+                int AD_Org_ID = Util.GetValueOfInt(paramValue[5].ToString());
+                int C_ConversionType_ID = Util.GetValueOfInt(paramValue[6].ToString());
+
+                string _sql= @"SELECT GL.AmtSourceDr,GL.AmtSourceCr,GL.C_Currency_ID AS C_Currency_ID,El.AccountType," +
+                            "(SELECT DocBaseType FROM c_doctype WHERE C_doctype_Id=" + C_DocType_ID+ ") AS docbaseType FROM " +
+                            "GL_Journalline GL INNER JOIN C_ELEMENTVALUE El ON GL.Account_ID=El.C_ELEMENTVALUE_ID WHERE" +
+                            " GL.GL_JournalLine_ID=" + GL_JournalLine_ID;                 
+                DataSet ds = DB.ExecuteDataset(_sql,null,null);            
+                if (ds != null && ds.Tables[0].Rows.Count > 0)
+                {
+                    retDic = new Dictionary<string, object>();
+                    decimal rate;
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        if (Util.GetValueOfDecimal(dr["AmtSourceDr"]) != 0)
+                        {
+                             rate = MConversionRate.Convert(ctx, Util.GetValueOfDecimal(dr["AmtSourceDr"]),
+                                 Util.GetValueOfInt(dr["C_Currency_ID"]), C_Currency_ID, AcountDate, C_ConversionType_ID,
+                                 AD_Client_ID, AD_Org_ID);
+                            retDic["AmtSourceDr"] = rate;
+                            retDic["AmtSourceCr"] = 0;
+                        }
+                        else
+                        {
+                            rate = MConversionRate.Convert(ctx, Util.GetValueOfDecimal(dr["AmtSourceCr"]),
+                                Util.GetValueOfInt(dr["C_Currency_ID"]), C_Currency_ID, AcountDate, C_ConversionType_ID,
+                                AD_Client_ID, AD_Org_ID);
+                            retDic["AmtSourceCr"] = rate;
+                            retDic["AmtSourceDr"] = 0;
+                        }
+                     
+                        retDic["AccountType"] = Util.GetValueOfString(dr["AccountType"]);
+                        retDic["docbaseType"] = Util.GetValueOfString(dr["docbaseType"]);
+                    }
+                }
+                return retDic;
+            }
+            else
+            {
+                return null;
+            }
+        }
 
         /// Get Due Amount
         /// </summary>
@@ -350,6 +410,7 @@ namespace VA009.Models
                 return null;
             }
         }
+
 
         /// Get Bank Details
         /// </summary>

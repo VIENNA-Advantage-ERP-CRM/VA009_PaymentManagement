@@ -40,17 +40,25 @@ namespace ViennaAdvantage.Model
                 if (!docstatus.Equals(MVA009Batch.DOCSTATUS_InProgress))
                 {
                     //to update va009executionstatus to awaited 
-                    int updateProcessedBD = Util.GetValueOfInt(DB.ExecuteQuery(@" Update va009_batchlinedetails set processed='N'
-                    WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() +
-                        ")"));
+                    int updateProcessedBD = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE VA009_BatchLineDetails SET processed='N'
+                    WHERE VA009_BatchLines_ID IN (SELECT VA009_BatchLines_ID FROM VA009_BatchLines WHERE VA009_Batch_ID= { GetVA009_Batch_ID() } )"));
+
                     if (updateProcessedBD > 0)
                     {
                         //to update execution status to awaited when we perform delete.
-                        int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE c_invoicepayschedule SET VA009_ExecutionStatus = 'A' WHERE c_invoicepayschedule_id IN
-                (SELECT c_invoicepayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
-                        int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE va009_orderpayschedule SET VA009_ExecutionStatus = 'A'
-                WHERE va009_orderpayschedule_id IN (SELECT va009_orderpayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
-                        if (schdeuleCount > 0 || OrdschdeuleCount > 0)
+                        int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus = 'A' 
+                        WHERE C_InvoicePaySchedule_ID IN
+                        (SELECT C_InvoicePaySchedule_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN ({ GetVA009_BatchLines_ID() }))", null, Get_Trx()));
+
+                        int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE VA009_OrderPaySchedule SET VA009_ExecutionStatus = 'A'
+                        WHERE VA009_OrderPaySchedule_ID IN (SELECT VA009_OrderPaySchedule_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN 
+                        ({ GetVA009_BatchLines_ID() }))", null, Get_Trx()));
+
+                        int JournalCount = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE GL_JournalLine SET VA009_IsAssignedtoBatch = 'N'
+                        WHERE GL_JournalLine_ID IN (SELECT GL_JournalLine_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN 
+                        ({ GetVA009_BatchLines_ID() }))", null, Get_Trx()));
+
+                        if (schdeuleCount > 0 || OrdschdeuleCount > 0 || JournalCount > 0)
                         {
                             return true;
                         }

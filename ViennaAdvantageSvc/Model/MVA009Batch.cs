@@ -116,7 +116,7 @@ namespace ViennaAdvantage.Model
                             VA009_Batch_ID = {GetVA009_Batch_ID()})", null, Get_Trx());
             log.Fine(processed + " - Batch Lines Details =" + no);
             _lines = null;
-          
+
         }
 
         public FileInfo CreatePDF()
@@ -304,11 +304,17 @@ namespace ViennaAdvantage.Model
                     if (updateProcessedBD > 0)
                     {
                         //to update execution status to awaited when we perform delete.
-                        int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE c_invoicepayschedule SET VA009_ExecutionStatus = 'A' WHERE c_invoicepayschedule_id IN
-                (SELECT c_invoicepayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
+                        int schdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE c_invoicepayschedule SET VA009_ExecutionStatus = 'A' 
+                WHERE c_invoicepayschedule_id IN (SELECT c_invoicepayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN 
+                (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
                         int OrdschdeuleCount = Util.GetValueOfInt(DB.ExecuteQuery(@" UPDATE va009_orderpayschedule SET VA009_ExecutionStatus = 'A'
-                WHERE va009_orderpayschedule_id IN (SELECT va009_orderpayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
-                        if (schdeuleCount > 0 || OrdschdeuleCount > 0)
+                WHERE va009_orderpayschedule_id IN (SELECT va009_orderpayschedule_id  FROM va009_batchlinedetails  WHERE va009_batchlines_id IN 
+                (SELECT va009_batchlines_id FROM va009_batchlines WHERE va009_batch_id= " + GetVA009_Batch_ID() + "))"));
+                        //VIS_427 DevOps TaskId: 2156 To update the Assign to batch false
+                        int GlJournalLineCount = Util.GetValueOfInt(DB.ExecuteQuery($@" UPDATE GL_JournalLine SET VA009_IsAssignedtoBatch = 'N'
+                WHERE GL_JournalLine_ID IN (SELECT GL_JournalLine_ID  FROM VA009_BatchLineDetails  WHERE VA009_BatchLines_ID IN 
+                (SELECT VA009_BatchLines_ID FROM VA009_BatchLines WHERE VA009_Batch_ID= { GetVA009_Batch_ID() }))"));
+                        if (schdeuleCount > 0 || OrdschdeuleCount > 0 || GlJournalLineCount > 0)
                         {
                             return true;
                         }
