@@ -4524,8 +4524,8 @@ namespace VA009.Models
                 }
                 //to find the count and business partner id when select invoice and gl
                 StringBuilder sql = new StringBuilder();
-                sql.Append(@"SELECT C_BPartner_ID,COUNT(C_BPartner_ID) AS Count FROM (SELECT C_BPartner_ID FROM GL_JournalLine WHERE GL_JournalLine_ID IN (" + (JournalSchdIDS) + ") " +
-                    "UNION ALL SELECT C_BPartner_ID FROM C_InvoicePaySchedule WHERE C_InvoicePaySchedule_ID IN (" + (InvoiceSchdIDS) + ")) GROUP BY C_BPartner_ID");
+                sql.Append(@"SELECT t.C_BPartner_ID,COUNT(t.C_BPartner_ID) AS Count FROM (SELECT C_BPartner_ID FROM GL_JournalLine WHERE GL_JournalLine_ID IN (" + (JournalSchdIDS) + ") " +
+                    "UNION ALL SELECT C_BPartner_ID FROM C_InvoicePaySchedule WHERE C_InvoicePaySchedule_ID IN (" + (InvoiceSchdIDS) + "))t GROUP BY t.C_BPartner_ID");
                 DataSet dsbusiness = DB.ExecuteDataset(sql.ToString());
 
                 if (journalIDs.Length > 0)
