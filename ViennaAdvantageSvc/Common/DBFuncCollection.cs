@@ -515,7 +515,7 @@ namespace ViennaAdvantage.Common
                         }
                         else
                         {
-                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(cast(t.DueAmt as VARCHAR(100))) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(cast(t.VA009_FollowupDate as VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(cast(t.va009_plannedduedate as VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.DueAmt AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(CAST(t.VA009_FollowupDate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.va009_plannedduedate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
                         }
                     }
 
