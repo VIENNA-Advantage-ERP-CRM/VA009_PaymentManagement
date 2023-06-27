@@ -5096,7 +5096,7 @@ namespace VA009.Models
                     for (int j = 0; j < paymentCreated.Count; j++)
                     {
                         MPayment _PayComp = paymentCreated[j];
-                        if (Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(C_PaymentAllocate_ID) FROM C_PaymentAllocate WHERE C_Payment_ID=" + _PayComp.GetC_Payment_ID(), null, trx)) > 0)
+                        if (Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(C_PaymentAllocate_ID) FROM C_PaymentAllocate WHERE C_Payment_ID=" + _PayComp.GetC_Payment_ID(), null, trx)) > 0 || Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(C_Payment_ID) FROM C_Payment WHERE C_Payment_ID=" + _PayComp.GetC_Payment_ID(), null, trx)) > 0)
                         {
                             _result = CompleteOrReverse(ct, _PayComp.GetC_Payment_ID(), _PayComp.Get_Table_ID(), _PayComp.Get_TableName().ToLower(), DocActionVariables.ACTION_COMPLETE, trx);
                             if (_result != null && _result[1].Equals("Y"))

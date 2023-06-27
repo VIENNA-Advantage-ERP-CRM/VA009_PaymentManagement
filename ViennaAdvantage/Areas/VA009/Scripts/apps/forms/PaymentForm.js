@@ -7431,7 +7431,7 @@
                                                                 $divPayment.find('.VA009-payment-wrap').remove();
                                                                 $divBank.find('.VA009-right-data-main').remove();
                                                                 $divBank.find('.VA009-accordion').remove();
-                                                                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = [];
+                                                                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = [];
                                                                 resetPaging();
                                                                 //after successfully created Payment selectall checkbox should be false
                                                                 $selectall.prop('checked', false);
