@@ -8324,12 +8324,24 @@
                         ChequeDetailsGrd.hideColumn('recid', 'CurrencyCode', 'C_InvoicePaySchedule_ID', 'DueAmt', 'ValidMonths', 'Mandate', 'TransactionType', 'ConversionTypeId', 'DiscountAmount', "ConvertedDiscountAmount", 'DiscountDate');
                 };
 
+                //VIS_427  Sorting of records according to location
+                function SortingAccordingBPLocation(a, b) {
+                    if (a.C_BPartner_Location_ID < b.C_BPartner_Location_ID) {
+                        return -1;
+                    }
+                    if (a.C_BPartner_Location_ID > b.C_BPartner_Location_ID) {
+                        return 1;
+                    }
+                    return 0;
+                }
                 //load data in cheque details grid.
                 //ds--- it contains the data array of cheque series from bank document.
                 //ChequeDetailsGrd--- Grid in which data will be shown
                 //SelectedRecords----records which are selected for batch
                 //isConsolidate--- flag for consolidate funatioanlity.
                 function loadChkDtlsGridData(ds, ChequeDetailsGrd, SelectedRecords, isConsolidate) {
+                    
+                    SelectedRecords.sort(SortingAccordingBPLocation);  //VIS_427 Calling the function for sorting
 
                     if (SelectedRecords.length > 0) {
                         var checkNum = 0; var recds = []; var amt = 0;
