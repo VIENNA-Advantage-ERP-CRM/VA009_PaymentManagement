@@ -7084,7 +7084,7 @@
                                 $successNote.text(MsgReturn.success);
                                 $successNote.css('visibility', 'visible');
                                 b2bDialog.setContent($resultb2b);
-                                b2bDialog.setHeight(window.innerHeight - 385)
+                               // b2bDialog.setHeight(window.innerHeight - 385)
                                 b2bDialog.setWidth("47%");
                                 b2bDialog.show();
                                 b2bDialog.hidebuttons();
@@ -7137,7 +7137,7 @@
                         $POP_ARTargetDocType.val("");
 
                         b2bDialog.setContent($b2b);
-                        b2bDialog.setHeight(window.innerHeight - 180)
+                       // b2bDialog.setHeight(window.innerHeight - 180)
                         b2bDialog.setWidth("60%");
                         b2bDialog.setEnableResize(true);
                         b2bDialog.setModal(true);
@@ -7161,7 +7161,7 @@
             Pay_ManualDialog: function () {
                 $payManual = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:210px !important'>");
                 var _payManual = "";
-                _payManual += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
+                _payManual += "<div class='VA009-popfrm-wrap' style='height:auto !important'>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
@@ -7618,7 +7618,7 @@
                 var manualDialog = new VIS.ChildDialog();
                 manualDialog.setContent($payManual);
                 manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
-                manualDialog.setHeight(window.innerHeight - 120);
+               // manualDialog.setHeight(window.innerHeight - 120);
                 manualDialog.setWidth("70%");
                 manualDialog.setEnableResize(true);
                 manualDialog.setModal(true);
