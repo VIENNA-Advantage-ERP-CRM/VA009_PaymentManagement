@@ -6539,7 +6539,7 @@
                 $b2b.append(_b2b);
 
                 //1052-- create note div and buttons to display after the creation of payment
-                $resultb2b = $("<div>"
+                $resultb2b = $("<div style='min-height:75px !important'>"
                     + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label>"
                     + "</div>");
                 $resltbtns = $("<button class='ui-button' id='VA009_CreateNew_" + $self.windowNo + "'style = 'float: right; margin-right: 12px; margin-bottom:12px; visibility:hidden;display:none;'>" + VIS.Msg.getMsg("CreateNew") + "</button>"
@@ -7084,8 +7084,8 @@
                                 $successNote.text(MsgReturn.success);
                                 $successNote.css('visibility', 'visible');
                                 b2bDialog.setContent($resultb2b);
-                               // b2bDialog.setHeight(window.innerHeight - 385)
-                                b2bDialog.setWidth("47%");
+                              //  b2bDialog.setHeight(window.innerHeight - 385);
+                                b2bDialog.setWidth("32%");
                                 b2bDialog.show();
                                 b2bDialog.hidebuttons();
                                 $createNew.css({ 'visibility': 'visible', 'display': 'block' });
@@ -7137,7 +7137,7 @@
                         $POP_ARTargetDocType.val("");
 
                         b2bDialog.setContent($b2b);
-                       // b2bDialog.setHeight(window.innerHeight - 180)
+                        //b2bDialog.setHeight(window.innerHeight - 180);
                         b2bDialog.setWidth("60%");
                         b2bDialog.setEnableResize(true);
                         b2bDialog.setModal(true);
@@ -7619,7 +7619,7 @@
                 manualDialog.setContent($payManual);
                 manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
                // manualDialog.setHeight(window.innerHeight - 120);
-                manualDialog.setWidth("70%");
+                manualDialog.setWidth("65%");
                 manualDialog.setEnableResize(true);
                 manualDialog.setModal(true);
                 manualDialog.show();
