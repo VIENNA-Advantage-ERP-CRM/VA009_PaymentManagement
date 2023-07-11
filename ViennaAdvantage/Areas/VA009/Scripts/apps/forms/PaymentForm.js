@@ -1255,7 +1255,7 @@
                 divAmount.append($divchequeAmtCtrlWrp);
                 $divchequeAmtCtrlWrp.append(cheqAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
                 $chequePayble = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:450px !important'>");
-                _ChequePayble = $("<div class='VA009-popfrm-wrap'>");
+                _ChequePayble = $("<div class='VA009-popfrm-wrap' style='height:auto;'>");
                 _chequedata = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
                     + "</select>"
@@ -1344,7 +1344,7 @@
                 ChequePayDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePayment"));
                 ChequePayDialog.setWidth("80%");
                 //VA230:Remove outer scroll bar
-                ChequePayDialog.setHeight(window.innerHeight - 75);
+                //ChequePayDialog.setHeight(window.innerHeight - 75);
                 ChequePayDialog.setEnableResize(true);
                 ChequePayDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
@@ -2443,7 +2443,7 @@
                         $POP_Consolidate.attr('disabled', 'disabled');
                         $POPtxtCheckNumber.val("");
                         for (var i = 0; i < chqpaygrd.records.length; i++) {
-                            if (chqpaygrd.records[i]['TransactionType'] == "Order") {
+                            if (chqpaygrd.records[i]['TransactionType'] == "Order" || chqpaygrd.records[i]['TransactionType'] == "GL Journal") {
                                 VIS.ADialog.info("VA009_CannotPrintOrder");
                                 $POp_cmbPaySelectn.val("M");
                                 return false;
@@ -4090,7 +4090,7 @@
                 divAmountCtrlWrap.append(cashAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
                 $cash = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
                 //var _Cash = "";
-                _Cash = $("<div class='VA009-popfrm-wrap'>");
+                _Cash = $("<div class='VA009-popfrm-wrap' style='height:auto;'>");
 
                 cashData = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
@@ -4150,7 +4150,7 @@
                     CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
                 CashDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                CashDialog.setHeight(window.innerHeight - 120);
+              //CashDialog.setHeight(window.innerHeight - 120);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
@@ -5074,7 +5074,7 @@
                 var TotalAPC = 0, TotalAPI = 0;
                 $batch = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:395px !important'>");
                 var _batch = "";
-                _batch += "<div class='VA009-popfrm-wrap'>"
+                _batch += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
@@ -5157,7 +5157,7 @@
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                BatchDialog.setHeight(window.innerHeight - 80);
+               //BatchDialog.setHeight(window.innerHeight - 80);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
                 $POP_BtnChkDetails.hide();
@@ -5993,7 +5993,7 @@
                 $bsyDiv[0].style.visibility = "visible";
                 $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
                 var _split = "";
-                _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                _split += "<div class='VA009-popform-data input-group vis-input-wrap' style='height:auto;'><div class='vis-control-wrap'>"
                     + "<input type='text' step='any' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
                     + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
@@ -6466,7 +6466,7 @@
                 $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:350px !important'>");
                 //var _b2b = "";
                 //_b2b.append(divAmount);
-                _b2b = $("<div class='VA009-popfrm-wrap'>");
+                _b2b = $("<div class='VA009-popfrm-wrap' style='height:auto;'>");
                 _b2bdata = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
                     + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
@@ -6539,7 +6539,7 @@
                 $b2b.append(_b2b);
 
                 //1052-- create note div and buttons to display after the creation of payment
-                $resultb2b = $("<div>"
+                $resultb2b = $("<div style='min-height:75px !important'>"
                     + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label>"
                     + "</div>");
                 $resltbtns = $("<button class='ui-button' id='VA009_CreateNew_" + $self.windowNo + "'style = 'float: right; margin-right: 12px; margin-bottom:12px; visibility:hidden;display:none;'>" + VIS.Msg.getMsg("CreateNew") + "</button>"
@@ -6550,7 +6550,7 @@
                 b2bDialog.setContent($b2b);
                 b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
                 //1052--set height to remove scroll bar
-                b2bDialog.setHeight(window.innerHeight - 220)
+                //b2bDialog.setHeight(window.innerHeight - 220);
                 b2bDialog.setWidth("60%");
                 b2bDialog.setEnableResize(true);
                 b2bDialog.setModal(true);
@@ -7084,8 +7084,8 @@
                                 $successNote.text(MsgReturn.success);
                                 $successNote.css('visibility', 'visible');
                                 b2bDialog.setContent($resultb2b);
-                                b2bDialog.setHeight(window.innerHeight - 385)
-                                b2bDialog.setWidth("47%");
+                              //  b2bDialog.setHeight(window.innerHeight - 385);
+                                b2bDialog.setWidth("32%");
                                 b2bDialog.show();
                                 b2bDialog.hidebuttons();
                                 $createNew.css({ 'visibility': 'visible', 'display': 'block' });
@@ -7137,7 +7137,7 @@
                         $POP_ARTargetDocType.val("");
 
                         b2bDialog.setContent($b2b);
-                        b2bDialog.setHeight(window.innerHeight - 180)
+                        //b2bDialog.setHeight(window.innerHeight - 180);
                         b2bDialog.setWidth("60%");
                         b2bDialog.setEnableResize(true);
                         b2bDialog.setModal(true);
@@ -7618,8 +7618,8 @@
                 var manualDialog = new VIS.ChildDialog();
                 manualDialog.setContent($payManual);
                 manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
-                manualDialog.setHeight(window.innerHeight - 120);
-                manualDialog.setWidth("70%");
+               // manualDialog.setHeight(window.innerHeight - 120);
+                manualDialog.setWidth("65%");
                 manualDialog.setEnableResize(true);
                 manualDialog.setModal(true);
                 manualDialog.show();
