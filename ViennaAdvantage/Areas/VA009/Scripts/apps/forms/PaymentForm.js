@@ -665,7 +665,7 @@
             //Bank TO Bank
             $PayBankToBank.on("click", function (e) {
                 //bug176:for bank to bank transfer if any schedule is selected then donot let open the dialog 
-                if (SlctdPaymentIds.length > 0) {
+                if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                     VIS.ADialog.info("VA009_PlzNotSelctSch");
                 }
                 else {
