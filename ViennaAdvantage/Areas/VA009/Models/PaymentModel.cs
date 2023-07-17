@@ -7327,11 +7327,11 @@ namespace VA009.Models
                                     {
                                         if (Line_MaxCount > 0)
                                         {
-                                            total_LineCount = total_LineCount + 1;
+                                            //total_LineCount = total_LineCount + 1;
                                             loc = BpLoc.Find(x => x.BP_ID == loc.BP_ID &&
                                       x.BP_Loc_ID == loc.BP_Loc_ID &&
                                       x.Total_Lines_Count < Line_MaxCount);
-                                            loc.Total_Lines_Count = total_LineCount;
+                                            loc.Total_Lines_Count = loc.Total_Lines_Count + 1;
                                         }
                                         continue;
                                     }
@@ -7450,11 +7450,11 @@ namespace VA009.Models
                                     {
                                         if (Line_MaxCount > 0)
                                         {
-                                            total_LineCount = total_LineCount + 1;
+                                            //total_LineCount = total_LineCount + 1;
                                             loc = BpLoc.Find(x => x.BP_ID == loc.BP_ID &&
                                       x.BP_Loc_ID == loc.BP_Loc_ID &&
                                       x.Total_Lines_Count < Line_MaxCount);
-                                            loc.Total_Lines_Count = total_LineCount;
+                                            loc.Total_Lines_Count = loc.Total_Lines_Count + 1;
                                         }
                                         continue;
                                     }
@@ -7593,14 +7593,22 @@ namespace VA009.Models
             }
             catch (Exception e)
             {
-                trx.Rollback();
+                if (trx != null)
+                {
+                    trx.Rollback();
+                }
                 ex.Append(e.Message);
                 _log.Info(e.Message);
+
             }
             finally
             {
-                trx.Commit();
-                trx.Close();
+                if (trx != null)
+                {
+                    trx.Commit();
+                    trx.Close();
+                    trx = null;
+                }
             }
 
             if (docno.Length > 0)

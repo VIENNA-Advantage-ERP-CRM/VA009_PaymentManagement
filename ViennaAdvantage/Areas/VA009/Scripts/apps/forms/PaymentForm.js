@@ -35,6 +35,9 @@
         var $TransactionType, $TransactionTypeSelected;
         var $FromDate, $ToDate;
         var SlctdOrderPaymentIds = [];
+        /* VIS_427 DevOps id:2238 Variable defined to execute 
+         function for making checkbox true  of selected schedules */
+        var isReset = false;  
         //end
         //By Manjot For Batch Functionality 1/8/17
         var batchObjInv = [];
@@ -144,6 +147,14 @@
             noPages = 1;
         }
 
+        /*VIS_427 DevOps id:2238 Function to clear total amount*/
+        function clearamtid() {
+            SelectallInvIds = [];
+            SelectallOrdIds = [];
+            SelectallJournalIds = [];
+            $totalAmt.text(0);
+            $totalAmt.data('ttlamt', parseFloat(0));
+        }
         //******************
         //Custom Design of Paymnet Form
         //******************
@@ -310,6 +321,7 @@
                 resetPaging();
                 // loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
+                clearamtid();
             });
             $OrgSelected.on("click", function (e) {
 
@@ -334,6 +346,7 @@
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
+                    clearamtid();
                 }
             });
 
@@ -359,6 +372,7 @@
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
+                    clearamtid();
                 }
             });
 
@@ -385,6 +399,7 @@
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
+                clearamtid();
             });
             $PayMSelected.on("click", function (e) {
 
@@ -409,6 +424,7 @@
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
+                    clearamtid(); //calling function to clear the total amt
                 }
             });
 
@@ -435,6 +451,7 @@
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
+                clearamtid(); //calling function to clear the total amt
             });
             $statusSelected.on("click", function (e) {
 
@@ -457,6 +474,7 @@
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
+                    clearamtid(); //calling function to clear the total amt
                 }
             });
             // by Amit - 16-11-2016
@@ -491,6 +509,7 @@
                     _WhrTransType += "" + transtypes[i] + "";
                 }
                 loadPaymetsAll();
+                clearamtid(); //calling function to clear the total amt
             });
             $TransactionTypeSelected.on("click", function (e) {
 
@@ -514,6 +533,7 @@
                     pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
+                    clearamtid(); //calling function to clear the total amt
                 }
             });
             //end
@@ -536,6 +556,7 @@
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
+                clearamtid(); //calling function to clear the total amt
             });
 
             //used blur incase of change to avoid cal the event immediatly when press change the single character
@@ -556,6 +577,7 @@
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
+                clearamtid(); //calling function to clear the total amt
             });
 
             $divPayment.on("scroll", paymentScroll);
@@ -665,7 +687,7 @@
             //Bank TO Bank
             $PayBankToBank.on("click", function (e) {
                 //bug176:for bank to bank transfer if any schedule is selected then donot let open the dialog 
-                if (SlctdPaymentIds.length > 0) {
+                if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                     VIS.ADialog.info("VA009_PlzNotSelctSch");
                 }
                 else {
@@ -697,6 +719,7 @@
                 pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                 resetPaging();
                 loadPaymetsAll();
+                clearamtid(); //calling function to clear the total amt
             });
 
             $DueDateSelected.on("click", function (e) {
@@ -734,6 +757,7 @@
                     resetPaging();
                     loadPaymetsAll();
                     $SrchTxtBox.val('');
+                    isReset = true; /*VIS_427 DevOps id:2238 Assigned value as true to mark chekbox checked*/
                 }
             });
 
@@ -745,6 +769,7 @@
                 resetPaging();
                 loadPaymetsAll();
                 $SrchTxtBox.val('');
+                isReset = true; /*VIS_427 DevOps id:2238 Assigned value as true to mark chekbox checked*/
             });
 
             $CR_Tab.on("click", function (e) {
@@ -779,19 +804,19 @@
 
             $selectall.on("click", function (e) {
                 var target = $(e.target);
-                $totalAmt.text(0);
-                $totalAmt.data('ttlamt', parseFloat(0));
+                    $totalAmt.text(0);
+                    $totalAmt.data('ttlamt', parseFloat(0));
                 if (e.target.type == 'checkbox') {
                     if (target.prop("checked") == true) {
                         $divPayment.find(':checkbox').not(":disabled").prop('checked', true);
                         var v = [];
                         //clear the records from the array
-                        SlctdPaymentIds = [];
-                        SlctdOrderPaymentIds = [];
-                        SlctdJournalPaymentIds = [];
-                        batchObjInv = [];
-                        batchObjOrd = [];
-                        batchObjJournal = [];
+                            SlctdPaymentIds = [];
+                            SlctdOrderPaymentIds = [];
+                            SlctdJournalPaymentIds = [];
+                            batchObjInv = [];
+                            batchObjOrd = [];
+                            batchObjJournal = [];
                         for (var i = 0; i < SelectallInvIds.length; i++) {
                             v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallInvIds[i] + ']'))[0];
                             if (!v.target == false) {
@@ -872,8 +897,9 @@
             SlctdPaymentIds = [];
             SlctdOrderPaymentIds = [];
             SlctdJournalPaymentIds = [];
-            $totalAmt.text(0);
-            $totalAmt.data('ttlamt', parseFloat(0));
+            //$totalAmt.text(0);
+            //$totalAmt.data('ttlamt', parseFloat(0));
+            clearamtid(); //calling function to clear the total amt
         };
         //******************
         //EventHandling
@@ -1047,17 +1073,17 @@
                 }
                 //if user click on inside div class "VA009-payment-wrap" this condition will execute
                 else if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked")) {
-                    $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
-                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
-                    $selectall.prop('checked', false);
-                    SlctdPaymentIds = [];
-                    SlctdOrderPaymentIds = [];
-                    SlctdJournalPaymentIds = [];
-                    batchObjInv = [];
-                    batchObjOrd = [];
-                    batchObjJournal = [];
-                    $totalAmt.text(0);
-                    $totalAmt.data('ttlamt', parseFloat(0));
+                        $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
+                        $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
+                        $selectall.prop('checked', false);
+                        SlctdPaymentIds = [];
+                        SlctdOrderPaymentIds = [];
+                        SlctdJournalPaymentIds = [];
+                        batchObjInv = [];
+                        batchObjOrd = [];
+                        batchObjJournal = [];
+                        $totalAmt.text(0);
+                        $totalAmt.data('ttlamt', parseFloat(0));
                 }
                 else {
                     $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
@@ -1141,8 +1167,9 @@
             batchObjInv = [];
             batchObjOrd = [];
             batchObjJournal = [];
-            $totalAmt.text(0);
-            $totalAmt.data('ttlamt', parseFloat(0));
+            clearamtid();
+            //$totalAmt.text(0);
+            //$totalAmt.data('ttlamt', parseFloat(0));
         };
 
         function getFormattednumber(value, precision) {
@@ -1255,7 +1282,7 @@
                 divAmount.append($divchequeAmtCtrlWrp);
                 $divchequeAmtCtrlWrp.append(cheqAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
                 $chequePayble = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:450px !important'>");
-                _ChequePayble = $("<div class='VA009-popfrm-wrap'>");
+                _ChequePayble = $("<div class='VA009-popfrm-wrap' style='height:auto;'>");
                 _chequedata = $("<div class='VA009-popCheck-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
                     + "</select>"
@@ -1344,7 +1371,7 @@
                 ChequePayDialog.setTitle(VIS.Msg.getMsg("VA009_LoadChequePayment"));
                 ChequePayDialog.setWidth("80%");
                 //VA230:Remove outer scroll bar
-                ChequePayDialog.setHeight(window.innerHeight - 75);
+                //ChequePayDialog.setHeight(window.innerHeight - 75);
                 ChequePayDialog.setEnableResize(true);
                 ChequePayDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
@@ -2443,7 +2470,7 @@
                         $POP_Consolidate.attr('disabled', 'disabled');
                         $POPtxtCheckNumber.val("");
                         for (var i = 0; i < chqpaygrd.records.length; i++) {
-                            if (chqpaygrd.records[i]['TransactionType'] == "Order") {
+                            if (chqpaygrd.records[i]['TransactionType'] == "Order" || chqpaygrd.records[i]['TransactionType'] == "GL Journal") {
                                 VIS.ADialog.info("VA009_CannotPrintOrder");
                                 $POp_cmbPaySelectn.val("M");
                                 return false;
@@ -2804,6 +2831,7 @@
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    clearamtid();
                     $bsyDiv[0].style.visibility = "hidden";
                     VIS.ADialog.info("", null, result, null);
                     //w2alert(result.toString());
@@ -2820,6 +2848,7 @@
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    clearamtid();
                     $bsyDiv[0].style.visibility = "hidden";
                     if (result != "") {
                         VIS.ADialog.info("", null, result, null);
@@ -4046,6 +4075,7 @@
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    clearamtid();
                     $bsyDiv[0].style.visibility = "hidden";
                     VIS.ADialog.info("", null, result, null);
                     //w2alert(result.toString());
@@ -4090,7 +4120,7 @@
                 divAmountCtrlWrap.append(cashAmount.getControl().attr('placeholder', ' ').attr('data-placeholder', '')).append(lblAmount);
                 $cash = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:385px !important'>");
                 //var _Cash = "";
-                _Cash = $("<div class='VA009-popfrm-wrap'>");
+                _Cash = $("<div class='VA009-popfrm-wrap' style='height:auto;'>");
 
                 cashData = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
@@ -4150,7 +4180,7 @@
                     CashDialog.setTitle(VIS.Msg.getMsg("VA009_LoadCashPayment"));
                 CashDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                CashDialog.setHeight(window.innerHeight - 120);
+              //CashDialog.setHeight(window.innerHeight - 120);
                 CashDialog.setEnableResize(true);
                 CashDialog.setModal(true);
                 if (SlctdPaymentIds.toString() != "" || SlctdOrderPaymentIds.toString() != "" || SlctdJournalPaymentIds.toString() != "") {
@@ -4956,6 +4986,7 @@
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    clearamtid();
                     $bsyDiv[0].style.visibility = "hidden";
                     //VIS.ADialog.info("", null, result, null);
                     // changed info message window to Error message window according to requirement
@@ -5074,7 +5105,7 @@
                 var TotalAPC = 0, TotalAPI = 0;
                 $batch = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:395px !important'>");
                 var _batch = "";
-                _batch += "<div class='VA009-popfrm-wrap'>"
+                _batch += "<div class='VA009-popfrm-wrap' style='height:auto;'>"
 
                     + "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
@@ -5157,7 +5188,7 @@
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
                 //VA230:Remove outer scroll bar
-                BatchDialog.setHeight(window.innerHeight - 80);
+               //BatchDialog.setHeight(window.innerHeight - 80);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
                 $POP_BtnChkDetails.hide();
@@ -5946,6 +5977,7 @@
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    clearamtid();
                     $bsyDiv[0].style.visibility = "hidden";
                     if (DocNumber != "") {
                         w2confirm(VIS.Msg.getMsg('VA009_GenPaymentFile'))
@@ -5993,7 +6025,7 @@
                 $bsyDiv[0].style.visibility = "visible";
                 $split = $("<div class='VA009-popform-content vis-formouterwrpdiv' style='min-height:333px !important'>");
                 var _split = "";
-                _split += "<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
+                _split += "<div class='VA009-popform-data input-group vis-input-wrap' style='height:auto;'><div class='vis-control-wrap'>"
                     + "<input type='text' step='any' id='VA009_POP_TxtSplitAmt_" + $self.windowNo + "'  placeholder=' ' data-placeholder=''>"
                     + "<label>" + VIS.Msg.getMsg("VA009_lblSplitAmt") + "</label></div>"
                     + "  <a tabindex='' class='btn VA009-blueBtn' id='VA009_btnSplitAmt_" + $self.windowNo + "' style='margin-top: 0px !important; margin-left: 5px;'>Split Schedule</a> </div>"
@@ -6367,6 +6399,7 @@
                     $selectall.prop('checked', false);
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    clearamtid();
                     $bsyDiv[0].style.visibility = "hidden";
                     VIS.ADialog.info(result);
                 };
@@ -6466,7 +6499,7 @@
                 $b2b = $("<div class='VA009-popform-content vis-forms-container vis-formouterwrpdiv' style='min-height:350px !important'>");
                 //var _b2b = "";
                 //_b2b.append(divAmount);
-                _b2b = $("<div class='VA009-popfrm-wrap'>");
+                _b2b = $("<div class='VA009-popfrm-wrap' style='height:auto;'>");
                 _b2bdata = $("<div class='VA009-popform-data input-group vis-input-wrap'><div class='vis-control-wrap'>"
                     + "<select id='VA009_POP_cmbOrg_" + $self.windowNo + "'>"
                     + "</select><label>" + VIS.Msg.getMsg("VA009_Org") + "</label>"
@@ -6539,7 +6572,7 @@
                 $b2b.append(_b2b);
 
                 //1052-- create note div and buttons to display after the creation of payment
-                $resultb2b = $("<div>"
+                $resultb2b = $("<div style='min-height:75px !important'>"
                     + "<label style='color:red; visibility: hidden;' id='VA009_Note" + $self.windowNo + "'>Please Select Org.</label>"
                     + "</div>");
                 $resltbtns = $("<button class='ui-button' id='VA009_CreateNew_" + $self.windowNo + "'style = 'float: right; margin-right: 12px; margin-bottom:12px; visibility:hidden;display:none;'>" + VIS.Msg.getMsg("CreateNew") + "</button>"
@@ -6550,7 +6583,7 @@
                 b2bDialog.setContent($b2b);
                 b2bDialog.setTitle(VIS.Msg.getMsg("VA009_BankToBankTransfer"));
                 //1052--set height to remove scroll bar
-                b2bDialog.setHeight(window.innerHeight - 220)
+                //b2bDialog.setHeight(window.innerHeight - 220);
                 b2bDialog.setWidth("60%");
                 b2bDialog.setEnableResize(true);
                 b2bDialog.setModal(true);
@@ -7084,8 +7117,8 @@
                                 $successNote.text(MsgReturn.success);
                                 $successNote.css('visibility', 'visible');
                                 b2bDialog.setContent($resultb2b);
-                                b2bDialog.setHeight(window.innerHeight - 385)
-                                b2bDialog.setWidth("47%");
+                              //  b2bDialog.setHeight(window.innerHeight - 385);
+                                b2bDialog.setWidth("32%");
                                 b2bDialog.show();
                                 b2bDialog.hidebuttons();
                                 $createNew.css({ 'visibility': 'visible', 'display': 'block' });
@@ -7137,7 +7170,7 @@
                         $POP_ARTargetDocType.val("");
 
                         b2bDialog.setContent($b2b);
-                        b2bDialog.setHeight(window.innerHeight - 180)
+                        //b2bDialog.setHeight(window.innerHeight - 180);
                         b2bDialog.setWidth("60%");
                         b2bDialog.setEnableResize(true);
                         b2bDialog.setModal(true);
@@ -7618,8 +7651,8 @@
                 var manualDialog = new VIS.ChildDialog();
                 manualDialog.setContent($payManual);
                 manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
-                manualDialog.setHeight(window.innerHeight - 120);
-                manualDialog.setWidth("70%");
+               // manualDialog.setHeight(window.innerHeight - 120);
+                manualDialog.setWidth("65%");
                 manualDialog.setEnableResize(true);
                 manualDialog.setModal(true);
                 manualDialog.show();
@@ -8168,6 +8201,7 @@
                             pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; SlctdJournalPaymentIds = []; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
                             resetPaging();
                             loadPaymetsAll();
+                            clearamtid();
                             $bsyDiv[0].style.visibility = "hidden";
                             //VIS.ADialog.info("", null, result, "");
                             File_Para = 'M';
@@ -8556,6 +8590,7 @@
                     }
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    isReset = true; /*VIS_427 DevOps id:2238 Assigned value as true to mark chekbox checked*/
                 }
             }
         };
@@ -8677,6 +8712,7 @@
                 resetPaging();
                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                 loadPaymetsAll();
+                clearamtid();
                 $bsyDiv[0].style.visibility = "hidden";
             }
             catch (e) {
@@ -8752,7 +8788,7 @@
                 for (var i in data.paymentdata) {
                     id = id + 1;
                     if (data.paymentdata[i].TransactionType == "Invoice") {
-                        SelectallInvIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallInvIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
+                       SelectallInvIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallInvIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
                     }
                     else if (data.paymentdata[i].TransactionType == "Order") {
                         SelectallOrdIds.indexOf(data.paymentdata[i].C_InvoicePaySchedule_ID) === -1 ? SelectallOrdIds.push(data.paymentdata[i].C_InvoicePaySchedule_ID) : console.log("This item already exists");
@@ -8953,12 +8989,33 @@
             }
             $BP.val("");
             if (!($selectall.is(":checked"))) {
-                $totalAmt.text(0);
-                $totalAmt.data('ttlamt', parseFloat(0));
+                /*VIS_427 Devops_ID:2238  Commented in order to restrict amount 
+                 to not zero  on scrolling down of design*/
+                //$totalAmt.text(0);
+               // $totalAmt.data('ttlamt', parseFloat(0));  
+            }
+            /* VIS_427 Devops_ID:2238 called the function */
+            if (isReset) {
+                isReset = false;
+                Checkboxtrue();
             }
             $bsyDiv[0].style.visibility = "hidden";
         };
         //End 
+
+        /* VIS_427 Devops_ID:2238 Created the function in order to mark 
+        checkbox true on search and scroll*/
+        function Checkboxtrue() {
+            for (var i = 0; i < SlctdPaymentIds.length; i++) {
+                $('.VA009-payment-list').find('div .row').find('input[data-uid=' + SlctdPaymentIds[i] + ']').prop('checked', true);
+            }
+            for (var i = 0; i < SlctdOrderPaymentIds.length; i++) {
+                $('.VA009-payment-list').find('div .row').find('input[data-uid=' + SlctdOrderPaymentIds[i] + ']').prop('checked', true);
+            }
+            for (var i = 0; i < SlctdJournalPaymentIds.length; i++) {
+                $('.VA009-payment-list').find('div .row').find('input[data-uid=' + SlctdJournalPaymentIds[i] + ']').prop('checked', true);
+            }
+        }
 
         /**VA230:Convert search amount to dot format */
         function convertSearchAmountToDotFormat() {
@@ -9350,7 +9407,7 @@
             $togglebtn = null, $lbdata = null, $lbmain = null, $divPayment = null, $BP = null, $BPSelected = null, $divBank = null;
             pgNo = null, pgSize = null, PAGESIZE = null, $CR_Tab = null, $CP_Tab = null, $UCR_Tab = null, $UCP_Tab = null, Pay_ID = null;
             isloaded = null, _WhereQuery = null, $divcashbk = null;
-            orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null; SlctdJournalPaymentIds = null;
+            orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null; SlctdJournalPaymentIds = null; SelectallInvIds = null; SelectallOrdIds = null; SelectallJournalIds = null;
             paymntIds = null, statusIds = null;
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
