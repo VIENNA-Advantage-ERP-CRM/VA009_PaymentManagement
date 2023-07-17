@@ -35,6 +35,7 @@
         var $TransactionType, $TransactionTypeSelected;
         var $FromDate, $ToDate;
         var SlctdOrderPaymentIds = [];
+        var isReset = false;
         //end
         //By Manjot For Batch Functionality 1/8/17
         var batchObjInv = [];
@@ -754,6 +755,7 @@
                     resetPaging();
                     loadPaymetsAll();
                     $SrchTxtBox.val('');
+                    isReset = true;
                 }
             });
 
@@ -765,6 +767,7 @@
                 resetPaging();
                 loadPaymetsAll();
                 $SrchTxtBox.val('');
+                isReset = true;
             });
 
             $CR_Tab.on("click", function (e) {
@@ -799,19 +802,19 @@
 
             $selectall.on("click", function (e) {
                 var target = $(e.target);
-                $totalAmt.text(0);
-                $totalAmt.data('ttlamt', parseFloat(0));
+                    $totalAmt.text(0);
+                    $totalAmt.data('ttlamt', parseFloat(0));
                 if (e.target.type == 'checkbox') {
                     if (target.prop("checked") == true) {
                         $divPayment.find(':checkbox').not(":disabled").prop('checked', true);
                         var v = [];
                         //clear the records from the array
-                        SlctdPaymentIds = [];
-                        SlctdOrderPaymentIds = [];
-                        SlctdJournalPaymentIds = [];
-                        batchObjInv = [];
-                        batchObjOrd = [];
-                        batchObjJournal = [];
+                            SlctdPaymentIds = [];
+                            SlctdOrderPaymentIds = [];
+                            SlctdJournalPaymentIds = [];
+                            batchObjInv = [];
+                            batchObjOrd = [];
+                            batchObjJournal = [];
                         for (var i = 0; i < SelectallInvIds.length; i++) {
                             v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallInvIds[i] + ']'))[0];
                             if (!v.target == false) {
@@ -1068,17 +1071,17 @@
                 }
                 //if user click on inside div class "VA009-payment-wrap" this condition will execute
                 else if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked")) {
-                    $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
-                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
-                    $selectall.prop('checked', false);
-                    SlctdPaymentIds = [];
-                    SlctdOrderPaymentIds = [];
-                    SlctdJournalPaymentIds = [];
-                    batchObjInv = [];
-                    batchObjOrd = [];
-                    batchObjJournal = [];
-                    $totalAmt.text(0);
-                    $totalAmt.data('ttlamt', parseFloat(0));
+                        $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
+                        $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
+                        $selectall.prop('checked', false);
+                        SlctdPaymentIds = [];
+                        SlctdOrderPaymentIds = [];
+                        SlctdJournalPaymentIds = [];
+                        batchObjInv = [];
+                        batchObjOrd = [];
+                        batchObjJournal = [];
+                        $totalAmt.text(0);
+                        $totalAmt.data('ttlamt', parseFloat(0));
                 }
                 else {
                     $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
@@ -8585,6 +8588,7 @@
                     }
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
+                    isReset = true;
                 }
             }
         };
@@ -8985,11 +8989,29 @@
             if (!($selectall.is(":checked"))) {
                 //VIS_427 Devops_ID:2238  Commented in order to restrict amount to not zero  on scrolling down of design
                 //$totalAmt.text(0);
-               // $totalAmt.data('ttlamt', parseFloat(0));
+               // $totalAmt.data('ttlamt', parseFloat(0));  
+            }
+            //VIS_427 Devops_ID:2238 called the function
+            if (isReset) {
+                isReset = false;
+                Checkboxtrue();
             }
             $bsyDiv[0].style.visibility = "hidden";
         };
         //End 
+
+        //VIS_427 Devops_ID:2238  Created the function in order to mark checkbox true on search
+        function Checkboxtrue() {
+            for (var i = 0; i < SlctdPaymentIds.length; i++) {
+                $('.VA009-payment-list').find('div .row').find('input[data-uid=' + SlctdPaymentIds[i] + ']').prop('checked', true);
+            }
+            for (var i = 0; i < SlctdOrderPaymentIds.length; i++) {
+                $('.VA009-payment-list').find('div .row').find('input[data-uid=' + SlctdOrderPaymentIds[i] + ']').prop('checked', true);
+            }
+            for (var i = 0; i < SlctdJournalPaymentIds.length; i++) {
+                $('.VA009-payment-list').find('div .row').find('input[data-uid=' + SlctdJournalPaymentIds[i] + ']').prop('checked', true);
+            }
+        }
 
         /**VA230:Convert search amount to dot format */
         function convertSearchAmountToDotFormat() {
