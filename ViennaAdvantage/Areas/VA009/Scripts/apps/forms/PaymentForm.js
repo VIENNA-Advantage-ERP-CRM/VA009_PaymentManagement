@@ -35,7 +35,9 @@
         var $TransactionType, $TransactionTypeSelected;
         var $FromDate, $ToDate;
         var SlctdOrderPaymentIds = [];
-        var isReset = false;
+        /* VIS_427 DevOps id:2238 Variable defined to execute 
+         function for making checkbox true  of selected schedules */
+        var isReset = false;  
         //end
         //By Manjot For Batch Functionality 1/8/17
         var batchObjInv = [];
@@ -145,7 +147,7 @@
             noPages = 1;
         }
 
-        //VIS_427 DevOps id:2238 Function to clear total amount
+        /*VIS_427 DevOps id:2238 Function to clear total amount*/
         function clearamtid() {
             SelectallInvIds = [];
             SelectallOrdIds = [];
@@ -755,7 +757,7 @@
                     resetPaging();
                     loadPaymetsAll();
                     $SrchTxtBox.val('');
-                    isReset = true;
+                    isReset = true; /*VIS_427 DevOps id:2238 Assigned value as true to mark chekbox checked*/
                 }
             });
 
@@ -767,7 +769,7 @@
                 resetPaging();
                 loadPaymetsAll();
                 $SrchTxtBox.val('');
-                isReset = true;
+                isReset = true; /*VIS_427 DevOps id:2238 Assigned value as true to mark chekbox checked*/
             });
 
             $CR_Tab.on("click", function (e) {
@@ -8588,7 +8590,7 @@
                     }
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                     loadPaymetsAll();
-                    isReset = true;
+                    isReset = true; /*VIS_427 DevOps id:2238 Assigned value as true to mark chekbox checked*/
                 }
             }
         };
@@ -8987,11 +8989,12 @@
             }
             $BP.val("");
             if (!($selectall.is(":checked"))) {
-                //VIS_427 Devops_ID:2238  Commented in order to restrict amount to not zero  on scrolling down of design
+                /*VIS_427 Devops_ID:2238  Commented in order to restrict amount 
+                 to not zero  on scrolling down of design*/
                 //$totalAmt.text(0);
                // $totalAmt.data('ttlamt', parseFloat(0));  
             }
-            //VIS_427 Devops_ID:2238 called the function
+            /* VIS_427 Devops_ID:2238 called the function */
             if (isReset) {
                 isReset = false;
                 Checkboxtrue();
@@ -9000,7 +9003,8 @@
         };
         //End 
 
-        //VIS_427 Devops_ID:2238  Created the function in order to mark checkbox true on search
+        /* VIS_427 Devops_ID:2238 Created the function in order to mark 
+        checkbox true on search and scroll*/
         function Checkboxtrue() {
             for (var i = 0; i < SlctdPaymentIds.length; i++) {
                 $('.VA009-payment-list').find('div .row').find('input[data-uid=' + SlctdPaymentIds[i] + ']').prop('checked', true);
