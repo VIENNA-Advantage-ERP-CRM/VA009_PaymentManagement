@@ -536,7 +536,7 @@ namespace ViennaAdvantage.Common
                 }
             }
             //Get Payment Data Order By DueDate
-            sql.Replace(sql.ToString(), "SELECT * FROM ( " + sql.ToString() + " ) t ORDER BY t.va009_plannedduedate");
+            sql.Replace(sql.ToString(), "SELECT * FROM ( " + sql.ToString() + " ) t ORDER BY t.va009_plannedduedate, t.C_InvoicePaySchedule_ID ");
 
             return sql.ToString();
         }
