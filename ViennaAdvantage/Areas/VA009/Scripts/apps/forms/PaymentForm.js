@@ -311,11 +311,24 @@
                 SlctdJournalPaymentIds = jQuery.grep(SlctdJournalPaymentIds, function (value) {
                     return value != DeslctPaymt_ID;
                 });
+                batchObjInv = jQuery.grep(batchObjInv, function (value) {
+                    return value.ID != DeslctPaymt_ID;
+                });
+                batchObjOrd = jQuery.grep(batchObjOrd, function (value) {
+                    return value.ID != DeslctPaymt_ID;
+                });
+                batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
+                    return value.ID != DeslctPaymt_ID;
+                });
                 var baseAmt = VIS.Utility.Util.getValueOfDecimal($(bpchecked[i]).attr("data-baseamt")).toFixed(2);
                 amt = amt - baseAmt;
             }
             $totalAmt.data('ttlamt', parseFloat(amt, 2));
             $totalAmt.text(getFormattednumber(amt, 2));
+            if (amt = 0.00) {
+                $totalAmt.text(0);
+                $totalAmt.data('ttlamt', parseFloat(0))
+            }
             $('.VA009-payment-list').find('div .row').find('input[data-bpid=' + BP_id + ']').prop('checked', false);
             isReset = true;
         }
@@ -399,7 +412,8 @@
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
-                  //  pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
+                    pgNo = 1; SelectallInvIds = []; SelectallOrdIds = []; SelectallJournalIds = [];
+                    //SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
                     resetPaging();
                     loadPaymetsAll();
                     //clearamtid();
@@ -9447,7 +9461,7 @@
             pgNo = null, pgSize = null, PAGESIZE = null, $CR_Tab = null, $CP_Tab = null, $UCR_Tab = null, $UCP_Tab = null, Pay_ID = null;
             isloaded = null, _WhereQuery = null, $divcashbk = null;
             orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null; SlctdJournalPaymentIds = null; SelectallInvIds = null; SelectallOrdIds = null; SelectallJournalIds = null;
-            paymntIds = null, statusIds = null; BP_id = null;
+            paymntIds = null, statusIds = null; BP_id = null; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
             popupgrddata = null;
