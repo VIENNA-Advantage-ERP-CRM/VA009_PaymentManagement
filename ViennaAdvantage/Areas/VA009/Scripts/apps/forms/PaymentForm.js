@@ -322,6 +322,7 @@
                 });
                 var baseAmt = VIS.Utility.Util.getValueOfDecimal($(bpchecked[i]).attr("data-baseamt")).toFixed(2);
                 amt = amt - baseAmt;
+                $('.VA009-payment-list').find('div .row').find('input[data-uid=' + DeslctPaymt_ID + ']').prop('checked', false);
             }
             $totalAmt.data('ttlamt', parseFloat(amt, 2));
             $totalAmt.text(getFormattednumber(amt, 2));
@@ -329,7 +330,7 @@
                 $totalAmt.text(0);
                 $totalAmt.data('ttlamt', parseFloat(0))
             }
-            $('.VA009-payment-list').find('div .row').find('input[data-bpid=' + BP_id + ']').prop('checked', false);
+            /*$('.VA009-payment-list').find('div .row').find('input[data-bpid=' + BP_id + ']').prop('checked', false);*/
             isReset = true;
         }
         //******************
@@ -8788,8 +8789,10 @@
                             ids: item.C_BPartner_ID
                         }
                     }));
-                    $(self.div).autocomplete("search", "");
-                    $(self.div).trigger("focus");
+                    //$($self.div).autocomplete("search", "");
+                    //$($self.div).trigger("focus");
+                    $($BP).autocomplete("search", "");
+                    $($BP).trigger("focus");
                 }
             });
         };
