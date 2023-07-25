@@ -41,6 +41,8 @@
         /* VIS_427 DevOps id: 2247 Varibale Defined to get those Business Partner 
          id Which user Unselect from left pannel*/
         var BP_id = null;
+        var BusinessPartnerIds = []; //VIS_427 DevOps id: 2247 Array defined to get the selected Records of Business partner
+        var SlctdBpId = []; //VIS_427 DevOps id: 2247 Array defined to get the unselected Records of Business partner
         //end
         //By Manjot For Batch Functionality 1/8/17
         var batchObjInv = [];
@@ -156,6 +158,7 @@
             SelectallInvIds = [];
             SelectallOrdIds = [];
             SelectallJournalIds = [];
+            BusinessPartnerIds = [];
             $totalAmt.text(0);
             $totalAmt.data('ttlamt', parseFloat(0));
         }
@@ -298,10 +301,18 @@
         /* VIS_427 DevOps id:2247 Handeled amount issue when user unselect the Business Partner 
          From left pannel*/
         function BpPartnerClear() {
-            var bpchecked = $('.VA009-payment-list').find('div .row').find('input[data-bpid=' + BP_id + ']:checked');
+            /*VIS_427 DevOps id:2247 Adding those Business partner records which are unselected from 
+             left div*/
+            SlctdBpId = jQuery.grep(BusinessPartnerIds, function (value) {
+                return value.BP.bpid == BP_id;
+            });
             var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
-            for (var i = 0; i < bpchecked.length; i++) {
-                var DeslctPaymt_ID = $(bpchecked[i]).attr("data-uid");
+            for (var i = 0; i < SlctdBpId.length; i++) {
+                var DeslctPaymt_ID = SlctdBpId[i].BP.uid;
+                //removing records after unselecting the business partner
+                BusinessPartnerIds = jQuery.grep(BusinessPartnerIds, function (value) {
+                    return value.BP.uid != DeslctPaymt_ID;
+                });
                 SlctdPaymentIds = jQuery.grep(SlctdPaymentIds, function (value) {
                     return value != DeslctPaymt_ID;
                 });
@@ -320,7 +331,7 @@
                 batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
                     return value.ID != DeslctPaymt_ID;
                 });
-                var baseAmt = VIS.Utility.Util.getValueOfDecimal($(bpchecked[i]).attr("data-baseamt")).toFixed(2);
+                var baseAmt = SlctdBpId[i].BP.baseamt;
                 amt = amt - baseAmt;
             }
             $totalAmt.data('ttlamt', parseFloat(amt, 2));
@@ -329,6 +340,7 @@
                 $totalAmt.text(0);
                 $totalAmt.data('ttlamt', parseFloat(0))
             }
+            SlctdBpId = []; //Clearing the array 
             $('.VA009-payment-list').find('div .row').find('input[data-bpid=' + BP_id + ']').prop('checked', false);
             isReset = true;
         }
@@ -862,6 +874,7 @@
                             SlctdPaymentIds = [];
                             SlctdOrderPaymentIds = [];
                             SlctdJournalPaymentIds = [];
+                            BusinessPartnerIds = [];
                             batchObjInv = [];
                             batchObjOrd = [];
                             batchObjJournal = [];
@@ -888,6 +901,7 @@
                         SlctdPaymentIds = [];
                         SlctdOrderPaymentIds = [];
                         SlctdJournalPaymentIds = [];
+                        BusinessPartnerIds = [];
                         $divPayment.find(':checkbox').prop('checked', false);
                         $selectall.find(':checkbox').prop('checked', false);
                         //removing the background color for unselected records
@@ -989,14 +1003,17 @@
                     //Edit By Amit - 18-11-2016
                     if (target.data("name") == "Invoice") {
                         SlctdPaymentIds.push(target.data("uid"));
+                        BusinessPartnerIds.push({ "BP": target.data() }); //VIS_427 Adding the records into array on selection
                         batchObjInv.push({ "ID": target.data("uid"), "PM": target.data() });
                     }
                     else if (target.data("name") == "Order") {
                         SlctdOrderPaymentIds.push(target.data("uid"));
+                        BusinessPartnerIds.push({ "BP": target.data() }); //VIS_427 Adding the records into array on selection
                         batchObjOrd.push({ "ID": target.data("uid"), "PM": target.data() });
                     }
                     else {
                         SlctdJournalPaymentIds.push(target.data("uid"));
+                        BusinessPartnerIds.push({ "BP": target.data() }); //VIS_427 Adding the records into array on selection
                         batchObjJournal.push({ "ID": target.data("uid"), "PM": target.data() });
                     }
                     //when max payment records selected at that time need to checkall checkbox true.
@@ -1039,6 +1056,9 @@
                     batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
                         return value.ID != DeslctPaymt_ID;
                     });
+                    BusinessPartnerIds = jQuery.grep(BusinessPartnerIds, function (value) {
+                        return value.BP.uid != DeslctPaymt_ID;
+                    });
                     record_ID = 0;
                     var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(2);
                     amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
@@ -1078,6 +1098,7 @@
                         batchObjInv = [];
                         batchObjOrd = [];
                         batchObjJournal = [];
+                        BusinessPartnerIds = [];
                         $totalAmt.text(0);
                         $totalAmt.data('ttlamt', parseFloat(0));
                     }
@@ -1094,16 +1115,20 @@
                         batchObjInv = [];
                         batchObjOrd = [];
                         batchObjJournal = [];
+                        BusinessPartnerIds = [];
                         if (inputTag.dataset["name"] == "Invoice") {
                             SlctdPaymentIds.push(record_ID);
+                            BusinessPartnerIds.push({ "BP": inputTag.dataset });
                             batchObjInv.push({ "ID": record_ID, "PM": inputTag.dataset });
                         }
                         else if (inputTag.dataset["name"] == "Order") {
                             SlctdOrderPaymentIds.push(record_ID);
+                            BusinessPartnerIds.push({ "BP": inputTag.dataset });
                             batchObjOrd.push({ "ID": record_ID, "PM": inputTag.dataset });
                         }
                         else {
                             SlctdJournalPaymentIds.push(record_ID);
+                            BusinessPartnerIds.push({ "BP": inputTag.dataset });
                             batchObjJournal.push({ "ID": record_ID, "PM": inputTag.dataset });
                         }
                         var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
@@ -1130,6 +1155,7 @@
                         batchObjInv = [];
                         batchObjOrd = [];
                         batchObjJournal = [];
+                        BusinessPartnerIds = [];
                         $totalAmt.text(0);
                         $totalAmt.data('ttlamt', parseFloat(0));
                 }
@@ -1152,14 +1178,17 @@
                     batchObjJournal = [];
                     if (inputTag.dataset["name"] == "Invoice") {
                         SlctdPaymentIds.push(record_ID);
+                        BusinessPartnerIds.push({ "BP": inputTag.dataset });
                         batchObjInv.push({ "ID": record_ID, "PM": inputTag.dataset });
                     }
                     else if (inputTag.dataset["name"] == "Order") {
                         SlctdOrderPaymentIds.push(record_ID);
+                        BusinessPartnerIds.push({ "BP": inputTag.dataset });
                         batchObjOrd.push({ "ID": record_ID, "PM": inputTag.dataset });
                     }
                     else {
                         SlctdJournalPaymentIds.push(record_ID);
+                        BusinessPartnerIds.push({ "BP": inputTag.dataset });
                         batchObjJournal.push({ "ID": record_ID, "PM": inputTag.dataset });
                     }
                     var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
@@ -8788,8 +8817,10 @@
                             ids: item.C_BPartner_ID
                         }
                     }));
-                    $(self.div).autocomplete("search", "");
-                    $(self.div).trigger("focus");
+                    //$($self.div).autocomplete("search", "");
+                    //$($self.div).trigger("focus");
+                    $($BP).autocomplete("search", "");
+                    $($BP).trigger("focus");
                 }
             });
         };
@@ -9461,7 +9492,7 @@
             pgNo = null, pgSize = null, PAGESIZE = null, $CR_Tab = null, $CP_Tab = null, $UCR_Tab = null, $UCP_Tab = null, Pay_ID = null;
             isloaded = null, _WhereQuery = null, $divcashbk = null;
             orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null; SlctdJournalPaymentIds = null; SelectallInvIds = null; SelectallOrdIds = null; SelectallJournalIds = null;
-            paymntIds = null, statusIds = null; BP_id = null; batchObjInv = []; batchObjOrd = []; batchObjJournal = [];
+            paymntIds = null, statusIds = null; BP_id = null; batchObjInv = []; batchObjOrd = []; batchObjJournal = []; BusinessPartnerIds = null;
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
             $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
             popupgrddata = null;
