@@ -302,7 +302,7 @@
          From left pannel*/
         function BpPartnerClear() {
             /*VIS_427 DevOps id:2247 Adding those Business partner records which are unselected from 
-             left div*/
+              left div*/
             SlctdBpId = jQuery.grep(BusinessPartnerIds, function (value) {
                 return value.BP.bpid == BP_id;
             });
@@ -336,10 +336,6 @@
             }
             $totalAmt.data('ttlamt', parseFloat(amt, 2));
             $totalAmt.text(getFormattednumber(amt, 2));
-            if (amt = 0.00) {
-                $totalAmt.text(0);
-                $totalAmt.data('ttlamt', parseFloat(0))
-            }
             SlctdBpId = []; //Clearing the array 
             $('.VA009-payment-list').find('div .row').find('input[data-bpid=' + BP_id + ']').prop('checked', false);
             isReset = true;
@@ -421,6 +417,12 @@
                         $BPSelected.find("ul").remove();
                     }
                     BpPartnerClear(); // VIS_427 DevOps id: 2247 Called function
+                    //VIS_427 Handelled amount issue when user select record and click on payment list div
+                    var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
+                    if (amt == 0.00) {
+                        $totalAmt.text(0);
+                        $totalAmt.data('ttlamt', parseFloat(0));
+                    }
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
@@ -1019,7 +1021,10 @@
                     //when max payment records selected at that time need to checkall checkbox true.
                     var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
                     var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
-                    if (countRecords == selRecords) {
+                    //VIS_427 Handeled issue for select all check box
+                    var checkedrecords = $(".VA009-payment-list").find("input[type=checkbox]:checked").length;
+                    var uncheckedrecords = $(".VA009-payment-list").find("input[type=checkbox]:not(:checked)").length;
+                    if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
                         $selectall.prop('checked', true);
                     }
                     record_ID = target.data("uid");
@@ -1133,7 +1138,10 @@
                         }
                         var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
                         var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
-                        if (countRecords == selRecords) {
+                        //VIS_427 Handeled issue for select all check box
+                        var checkedrecords = $(".VA009-payment-list").find("input[type=checkbox]:checked").length;
+                        var uncheckedrecords = $(".VA009-payment-list").find("input[type=checkbox]:not(:checked)").length;
+                        if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
                             $selectall.prop('checked', true);
                         }
                         var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]);
@@ -1176,6 +1184,7 @@
                     batchObjInv = [];
                     batchObjOrd = [];
                     batchObjJournal = [];
+                    BusinessPartnerIds = [];
                     if (inputTag.dataset["name"] == "Invoice") {
                         SlctdPaymentIds.push(record_ID);
                         BusinessPartnerIds.push({ "BP": inputTag.dataset });
@@ -1193,7 +1202,10 @@
                     }
                     var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
                     var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
-                    if (countRecords == selRecords) {
+                    //VIS_427 Handeled issue for select all check box
+                    var checkedrecords = $(".VA009-payment-list").find("input[type=checkbox]:checked").length;
+                    var uncheckedrecords = $(".VA009-payment-list").find("input[type=checkbox]:not(:checked)").length;
+                    if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
                         $selectall.prop('checked', true);
                     }
                     var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]);
@@ -7548,6 +7560,7 @@
                                                                 $selectall.prop('checked', false);
                                                                 //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
                                                                 loadPaymetsAll();
+                                                                clearamtid();
                                                                 $bsyDiv[0].style.visibility = "hidden";
                                                                 VIS.ADialog.info("", null, result, "");
                                                             },
