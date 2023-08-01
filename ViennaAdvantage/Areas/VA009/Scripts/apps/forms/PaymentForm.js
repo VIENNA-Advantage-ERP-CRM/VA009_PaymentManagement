@@ -709,7 +709,7 @@
 
             $Spliticon.on("click", function (e) {
                 if (SlctdJournalPaymentIds.length > 0) {
-                    VIS.ADialog.info("VA009_JournalRecordCantSelected");
+                    VIS.ADialog.info("VA009_JournalRecordCantSplitted");
                 }
                 else if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0) {
                     if (SlctdPaymentIds.length == 1 && SlctdOrderPaymentIds.length == 0) {
