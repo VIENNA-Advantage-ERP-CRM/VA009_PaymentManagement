@@ -858,17 +858,16 @@ namespace ViennaAdvantage.Process
                                 string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                 if (!String.IsNullOrEmpty(result))
                                 {
-                                    Get_TrxName().Rollback();
+
                                     //Remove Payment reference if payment is not completed
-                                    if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = NULL WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"])) > 0)
+                                    if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = NULL WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID()) > 0)
                                     {
-                                        DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = NULL WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
+                                        DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = NULL WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
                                     }
-
-                                    log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
-
                                     DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
 
+                                    log.Log(Level.SEVERE, "Batch Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
+                                    Get_TrxName().Rollback();
                                     msg = result;
 
                                 }
@@ -1114,7 +1113,7 @@ namespace ViennaAdvantage.Process
                                         //Remove Paymenmt reference if Payment is not completed
                                         DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = null WHERE VA009_BatchLineDetails_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID"]));
 
-                                        log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
+                                        log.Log(Level.SEVERE, "Batch Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
 
                                         //delete Payment Document in Drafetd Stage 
                                         DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
