@@ -858,7 +858,7 @@ namespace ViennaAdvantage.Process
                                 string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                 if (!String.IsNullOrEmpty(result))
                                 {
-
+                                     Get_TrxName().Rollback();
                                     //Remove Payment reference if payment is not completed
                                     if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = NULL WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID()) > 0)
                                     {
@@ -867,7 +867,7 @@ namespace ViennaAdvantage.Process
                                     DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
 
                                     log.Log(Level.SEVERE, "Batch Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
-                                    Get_TrxName().Rollback();
+                                   
                                     msg = result;
 
                                 }
