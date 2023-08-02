@@ -813,3 +813,11 @@ p.VA009-data-bot:last-child {
     padding-left: 1rem;
 }
 
+.VA009-buttonStyle {
+    float: right;
+    margin-right: 12px;
+    margin-bottom: 12px;
+    visibility: visisble;
+    display: block;
+}
+

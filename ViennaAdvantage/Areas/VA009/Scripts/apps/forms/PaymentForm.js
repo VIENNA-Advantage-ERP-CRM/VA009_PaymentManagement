@@ -35,6 +35,9 @@
         var $TransactionType, $TransactionTypeSelected;
         var $FromDate, $ToDate;
         var SlctdOrderPaymentIds = [];
+        /* VIS_427 DevOps id:2268 Variable defined to execute Zoom Functionalty for batch*/
+        var batchid = 0;
+        var Batchsuccesspay;
         /* VIS_427 DevOps id:2238 Variable defined to execute 
          function for making checkbox true  of selected schedules */
         var isReset = false;
@@ -85,8 +88,11 @@
         //AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment
         var _TargetBaseType = 1;
         var $resultb2b = null;
+        var $batchResult = null;/* VIS_427 DevOps id:2268 Variable defined to execute Zoom Functionalty for batch*/
         var $closeb2b = null;
         var $createNew = null;
+        var $ViewBatch = null;
+        var $cancel = null;
         //varriable to show the message if cheques are not available 
         var _ChequesNotAvailable = false;
         var $btnChequePrint = null, chequePrintParams = [];
@@ -5269,9 +5275,14 @@
 
                     + "<div class='VA009-table-container' style='height:300px;' id='VA009_btnPopupGrid'> </div>"
                     + "</div>";
+                /* VIS_427 DevOps id:2268 Dialog for payment success*/
+                $batchResult = $("<div style='min-height:85px !important'>"
+                    + "<label style='color:black; visibility: hidden;' id='VA009_Note_" + $self.windowNo + "'></label>"
+                    + "</div>");
+                $resltbtns = $("<button class= 'ui-button VA009-buttonStyle' id = 'VA009_Cancel_" + $self.windowNo + "'>" + VIS.Msg.getMsg("Cancel") + "</button>" +
+                    "<button class='ui-button VA009-buttonStyle' id='VA009_ViewBatch_" + $self.windowNo + "'>" + VIS.Msg.getMsg("ViewBatch") + "</button>");
 
                 $batch.append(_batch);
-                Batch_getControls();
                 var BatchDialog = new VIS.ChildDialog();
                 BatchDialog.setContent($batch);
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
@@ -5280,9 +5291,13 @@
                //BatchDialog.setHeight(window.innerHeight - 80);
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
-                $POP_BtnChkDetails.hide();
                 BatchDialog.show();
+                Batch_getControls();
                 BatchGrid_Layout();
+                /* VIS_427 DevOps id:2268 Appended buttons*/
+                $batchResult.append($resltbtns);
+                $ViewBatch = $batchResult.find("#VA009_ViewBatch_" + $self.windowNo);
+                $cancel = $batchResult.find("#VA009_Cancel_" + $self.windowNo);
                 loadgrdBatch(callbackBatch);
                 loadOrg();
                 //Rakesh(VA228):10/Sep/2021 -> Load APP target base doc type
@@ -5394,6 +5409,7 @@
                     $pop_cmbCurrencyType = $batch.find("#VA009_POP_cmbCurrencyType_" + $self.windowNo);
                     $POP_cmbOrg = $batch.find("#VA009_POP_cmbOrg_" + $self.windowNo);
                     $POP_cmbOrg.addClass('vis-ev-col-mandatory');
+                    $successNoteofbatch = $batchResult.find("#VA009_Note_" + $self.windowNo);
                     //added new button to show check details if payment method is cheque
                     $POP_BtnChkDetails = $batch.find("#VA009_btnCheckDetails_" + $self.windowNo);
                     if ($CP_Tab.hasClass('VA009-active-tab') && ($('option:selected', $POP_PayMthd).attr('PaymentBaseType') == "S"))
@@ -6057,7 +6073,9 @@
 
                 function callbackBatchPay(result) {
                     result = JSON.parse(result);
+                    result = result.split(',');/* VIS_427 DevOps id:2268 Splitted the string*/
                     DocNumber = "";
+                    batchid = parseInt(result[1]);
                     $divPayment.find('.VA009-payment-wrap').remove();
                     $divBank.find('.VA009-right-data-main').remove();
                     $divBank.find('.VA009-accordion').remove();
@@ -6078,13 +6096,33 @@
                             })
                             .no(function () {
                                 $bsyDiv[0].style.visibility = "hidden";
-                                VIS.ADialog.info("", null, result, "");
+                                VIS.ADialog.info("", null, result[0], "");
                             });
                     }
                     else {
-                        VIS.ADialog.info("", null, result, "");
+                        if (result != null) {
+                            /* VIS_427 DevOps id:2268 Created child dialog for payment success*/
+                            Batchsuccesspay = new VIS.ChildDialog();
+                            $successNoteofbatch.text(result[0]);
+                            $successNoteofbatch.css('visibility', 'visible');
+                            Batchsuccesspay.setContent($batchResult);
+                            Batchsuccesspay.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
+                            Batchsuccesspay.setWidth("36%");
+                            Batchsuccesspay.show();
+                            Batchsuccesspay.hidebuttons();  
+                        }
                     }
                 };
+                /* VIS_427 DevOps id:2268 Zoom functionality added to zoom batch window*/
+                $ViewBatch.on("click", function () {
+                    if (batchid > 0) {
+                        zoomToWindow(batchid, "VA009_PaymentBatch", "VA009_Batch_ID");
+                    }
+                    Batchsuccesspay.close();
+                });
+                $cancel.on("click", function () {
+                    Batchsuccesspay.close();
+                });
 
                 BatchDialog.onCancelCLick = function () {
                     w2ui['BatchGrid'].clear();

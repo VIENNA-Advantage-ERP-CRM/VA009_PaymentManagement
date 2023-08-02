@@ -7560,6 +7560,8 @@ namespace VA009.Models
                                 docno.Append(".");
 
                             docno.Append(_batchComp.GetDocumentNo());
+                            docno.Append(",");
+                            docno.Append(BtachId[j]); //VIS_427 Batchid added for zoom
                             if (paymethodDetails["VA009_PaymentRule"].ToString().Equals("M"))
                             {
                                 if (Util.GetValueOfBool(paymethodDetails["VA009_InitiatePay"].ToString()))
