@@ -821,3 +821,12 @@ p.VA009-data-bot:last-child {
     display: block;
 }
 
+.VA009-HeightStyle {
+    min-height: 85px !important;
+}
+
+.VA009-FontStyle {
+    color: black;
+    visibility: hidden;
+}
+

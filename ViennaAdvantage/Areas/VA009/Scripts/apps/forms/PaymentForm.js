@@ -5276,8 +5276,8 @@
                     + "<div class='VA009-table-container' style='height:300px;' id='VA009_btnPopupGrid'> </div>"
                     + "</div>";
                 /* VIS_427 DevOps id:2268 Dialog for payment success*/
-                $batchResult = $("<div style='min-height:85px !important'>"
-                    + "<label style='color:black; visibility: hidden;' id='VA009_Note_" + $self.windowNo + "'></label>"
+                $batchResult = $("<div class='VA009-HeightStyle'>"
+                    + "<label class='VA009-FontStyle' id='VA009_Note_" + $self.windowNo + "'></label>"
                     + "</div>");
                 $resltbtns = $("<button class= 'ui-button VA009-buttonStyle' id = 'VA009_Cancel_" + $self.windowNo + "'>" + VIS.Msg.getMsg("Cancel") + "</button>" +
                     "<button class='ui-button VA009-buttonStyle' id='VA009_ViewBatch_" + $self.windowNo + "'>" + VIS.Msg.getMsg("ViewBatch") + "</button>");
