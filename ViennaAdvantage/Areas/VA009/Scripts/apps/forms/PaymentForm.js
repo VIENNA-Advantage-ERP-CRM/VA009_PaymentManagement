@@ -93,6 +93,7 @@
         var $createNew = null;
         var $ViewBatch = null;
         var $cancel = null;
+        var precision = 2; /* VIS_427 DevOps id:2289 Variable defined for precision */
         //varriable to show the message if cheques are not available 
         var _ChequesNotAvailable = false;
         var $btnChequePrint = null, chequePrintParams = [];
@@ -1034,15 +1035,17 @@
                         $selectall.prop('checked', true);
                     }
                     record_ID = target.data("uid");
-                    var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(2);
-                    amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
-                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(target.data("baseamt")).toFixed(2);
+                    /* VIS_427 DevOps id:2289 getting value according to precision */
+                    precision = target.data("precision");
+                    var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(precision);
+                    amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
+                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(target.data("baseamt")).toFixed(precision);
                     if (target.data("docbasetype") == "ARC" || target.data("docbasetype") == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
                     var actualAmt = VIS.Utility.Util.getValueOfDecimal(amt) + VIS.Utility.Util.getValueOfDecimal(baseAmt);
-                    $totalAmt.data('ttlamt', parseFloat(actualAmt, 2));
-                    $totalAmt.text(getFormattednumber(actualAmt, 2));
+                    $totalAmt.data('ttlamt', parseFloat(actualAmt, precision));
+                    $totalAmt.text(getFormattednumber(actualAmt, precision));
                 }
                 else {
                     $selectall.prop('checked', false);
@@ -1071,15 +1074,17 @@
                         return value.BP.uid != DeslctPaymt_ID;
                     });
                     record_ID = 0;
-                    var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(2);
-                    amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
-                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(target.data("baseamt")).toFixed(2);
+                    /* VIS_427 DevOps id:2289 getting value according to precision */
+                    precision = target.data("precision");
+                    var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.text()).toFixed(precision);
+                    amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
+                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(target.data("baseamt")).toFixed(precision);
                     if (target.data("docbasetype") == "ARC" || target.data("docbasetype") == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
                     var actualAmt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
-                    $totalAmt.data('ttlamt', parseFloat(actualAmt, 2));
-                    $totalAmt.text(getFormattednumber(actualAmt, 2));
+                    $totalAmt.data('ttlamt', parseFloat(actualAmt, precision));
+                    $totalAmt.text(getFormattednumber(actualAmt, precision));
                     //end
                 }
             }
@@ -1150,12 +1155,14 @@
                         if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
                             $selectall.prop('checked', true);
                         }
-                        var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]);
+                        /* VIS_427 DevOps id:2289 getting value according to precision */
+                        precision = VIS.Utility.Util.getValueOfInt(inputTag.dataset["precision"]);
+                        var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]).toFixed(precision);
                         if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
                             baseAmt = (-1 * baseAmt);
                         }
-                        $totalAmt.data('ttlamt', parseFloat(baseAmt, 2));
-                        $totalAmt.text(getFormattednumber(baseAmt, 2));
+                        $totalAmt.data('ttlamt', parseFloat(baseAmt, precision));
+                        $totalAmt.text(getFormattednumber(baseAmt, precision));
                     }
                 }
                 //if user click on inside div class "VA009-payment-wrap" this condition will execute
@@ -1214,12 +1221,14 @@
                     if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
                         $selectall.prop('checked', true);
                     }
-                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]);
+                    precision = VIS.Utility.Util.getValueOfInt(inputTag.dataset["precision"]);
+                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]).toFixed(precision);
                     if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
-                    $totalAmt.data('ttlamt', parseFloat(baseAmt, 2));
-                    $totalAmt.text(getFormattednumber(baseAmt, 2));
+                    /* VIS_427 DevOps id:2289 getting value according to precision */
+                    $totalAmt.data('ttlamt', parseFloat(baseAmt, precision));
+                    $totalAmt.text(getFormattednumber(baseAmt,precision));
                 }
             }
         };
@@ -5280,7 +5289,7 @@
                     + "<label class='VA009-FontStyle' id='VA009_Note_" + $self.windowNo + "'></label>"
                     + "</div>");
                 $resltbtns = $("<button class= 'ui-button VA009-buttonStyle' id = 'VA009_Cancel_" + $self.windowNo + "'>" + VIS.Msg.getMsg("Cancel") + "</button>" +
-                    "<button class='ui-button VA009-buttonStyle' id='VA009_ViewBatch_" + $self.windowNo + "'>" + VIS.Msg.getMsg("ViewBatch") + "</button>");
+                    "<button class='ui-button VA009-buttonStyle' id='VA009_ViewBatch_" + $self.windowNo + "'>" + VIS.Msg.getMsg("VA009_ViewBatch") + "</button>");
 
                 $batch.append(_batch);
                 var BatchDialog = new VIS.ChildDialog();
@@ -8963,7 +8972,7 @@
                     dsgn = '<div class="VA009-payment-wrap" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '"> <div class="row" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '">' +
                         '<div class="col-md-4 col-sm-4 width-sm-35 VA009-padd-right-0"> <input type="checkbox" class="VA009-clckd-checkbx" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID
                         + '" data-BaseAmt="' + data.paymentdata[i].BaseAmt + '" data-NAME="' + data.paymentdata[i].TransactionType + '" data-bpid="' + data.paymentdata[i].C_BPartner_ID + '" data-PaymentRule="' + data.paymentdata[i].PaymentRule
-                        + '" data-PaymentType="' + data.paymentdata[i].PaymentType + '" data-PaymentTriggerBy="' + data.paymentdata[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.paymentdata[i].PaymwentBaseType
+                        + '" data-PaymentType="' + data.paymentdata[i].PaymentType + '" data-precision="' + data.paymentdata[i].precision + '" data-PaymentTriggerBy="' + data.paymentdata[i].PaymentTriggerBy + '" data-PaymwentBaseType="' + data.paymentdata[i].PaymwentBaseType
                         + '" data-DocBaseType="' + data.paymentdata[i].DocBaseType + '" data-CurrencyCode="' + data.paymentdata[i].CurrencyCode + '"  alt="' + VIS.Msg.getMsg("VA009_Select") + '" title="' + VIS.Msg.getMsg("VA009_Select")
                         + '" ' + (data.paymentdata[i].IsHoldPayment == "Y" ? "disabled" : "") + '>' +
                         '<div class="VA009-pay-left">' +
@@ -9545,7 +9554,8 @@
             orgids = null, bpids = null, SlctdPaymentIds = null; SlctdOrderPaymentIds = null; SlctdJournalPaymentIds = null; SelectallInvIds = null; SelectallOrdIds = null; SelectallJournalIds = null;
             paymntIds = null, statusIds = null; BP_id = null; batchObjInv = []; batchObjOrd = []; batchObjJournal = []; BusinessPartnerIds = null;
             _WhrOrg = null, _WhrPayMtd = null, _Whr_BPrtnr = null, _WhrStatus = null;
-            $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null;
+            $SelectedDiv = null, $chkicon = null, $cashicon = null, $batchicon = null, $Spliticon = null; precision = null; batchid = null;
+            Batchsuccesspay = null; $ViewBatch = null; $cancel = null; $batchResult = null;
             popupgrddata = null;
             CheueRecevableGrid = null, chqrecgrd = null, $SrchTxtBox = null, $btnChequePrint = null, chequePrintParams = null;
         };
