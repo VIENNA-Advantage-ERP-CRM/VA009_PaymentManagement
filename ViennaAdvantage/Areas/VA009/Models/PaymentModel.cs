@@ -3455,7 +3455,7 @@ namespace VA009.Models
         public string getCheckNo(int C_BankAccount_ID, int VA009_PaymentMethod_ID)
         {
             string checkNo = string.Empty;
-            checkNo = Util.GetValueOfString(DB.ExecuteScalar(" SELECT CurrentNext FROM C_BankAccountDoc WHERE C_BankAccount_ID = " + C_BankAccount_ID + " AND IsActive='Y' AND VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID));
+            checkNo = Util.GetValueOfString(DB.ExecuteScalar(" SELECT CurrentNext FROM C_BankAccountDoc WHERE C_BankAccount_ID = " + C_BankAccount_ID + " AND IsActive='Y' AND EndChkNumber >= CurrentNext AND VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID));
             return checkNo;
         }
 
