@@ -3455,7 +3455,7 @@
 
                         onEditField: function (event) {
                             if (event.column == 6 || event.column == 8 || event.column == 9) {
-                                if (chqrecgrd.get(event.recid).TransactionType == 'Order' || chqpaygrd.get(event.recid).TransactionType == 'GL Journal') {
+                                if (chqrecgrd.get(event.recid).TransactionType == 'Order' || chqrecgrd.get(event.recid).TransactionType == 'GL Journal') {
                                     event.isCancelled = true;
                                 }
                             }
