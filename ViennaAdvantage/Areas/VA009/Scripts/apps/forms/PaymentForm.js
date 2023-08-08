@@ -8049,12 +8049,15 @@
 
                         function callbackgetCheckNo(dr) {
                             $POP_ChkNo.val('');
-                            if (dr != null) {
+                            if (dr != "") {
                                 $POP_ChkNo.val(dr);
                                 //store current next cheque number and compare it before payment creation
                                 currentNextChequeNo = dr;
                             }
-                        }
+                            else {
+                                VIS.ADialog.info("VA009_CheckNotFount");
+                            }
+                        }                                                   
                     } else {
                         $POP_ChkNo.val('');
                         currentNextChequeNo = "";
