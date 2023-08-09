@@ -8055,7 +8055,7 @@
                                 currentNextChequeNo = dr;
                             }
                             else {
-                                VIS.ADialog.info("VA009_CheckNotFount");
+                                VIS.ADialog.info("VA009_CheckNotFound");
                             }
                         }                                                   
                     } else {
