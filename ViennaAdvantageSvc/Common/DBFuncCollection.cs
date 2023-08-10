@@ -49,12 +49,12 @@ namespace ViennaAdvantage.Common
                 if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
                 {
                     //Table Name is case sensitive must follow Camel format
-                    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
                          t.C_InvoicePaySchedule_ID,  t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,  t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,
                          t.va009_plannedduedate, t.VA009_FollowupDate,  t.VA009_RecivedAmt,  t.DueAmt, t.VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  
                          t.ISO_CODE, t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
                     //Log Warnings handled
-                    string query = @"SELECT pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
+                    string query = @"SELECT CY.StdPrecision,pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
                          pm.VA009_PaymentMethod_ID, pm.VA009_name as VA009_PaymentMethod,pm.va009_paymentbasetype,pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger,
                          cs.duedate as va009_plannedduedate,
                          cs.VA009_PlannedDueDate as VA009_FollowupDate,inv.VA009_PaidAmount AS VA009_RecivedAmt,
@@ -127,12 +127,12 @@ namespace ViennaAdvantage.Common
                 if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
                 {
                     //Table Name is case sensitive must follow Camel format
-                    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
                         t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
                         t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
                         t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
                     //Log Warnings handled
-                    string query = @" SELECT pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
+                    string query = @" SELECT CY.StdPrecision,pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
                         cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
                         pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
                         0 AS VA009_RecivedAmt, 
@@ -206,14 +206,14 @@ namespace ViennaAdvantage.Common
                 if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
                 {
                     //Table Name is case sensitive must follow Camel format
-                    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  
                         t.c_bp_group,  t.C_InvoicePaySchedule_ID, t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,
                         t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
                         t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.DueAmt AS VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,
                         t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,
                         t.DueAmt AS GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
                     //Log Warnings handled
-                    string query = $@" SELECT '' AS VA009_PaymentMode, gl.C_BPartner_ID, g.GL_Journal_ID AS c_invoice_id, g.DocumentNo, 
+                    string query = $@" SELECT cy.StdPrecision,'' AS VA009_PaymentMode, gl.C_BPartner_ID, g.GL_Journal_ID AS c_invoice_id, g.DocumentNo, 
                                         cb.name AS C_Bpartner, cb.c_bp_group_id, cbg.name AS c_bp_group, gl.GL_JournalLine_ID AS C_InvoicePaySchedule_ID,
                                         0 AS VA009_PaymentMethod_ID, null AS VA009_PaymentMethod, '' AS va009_paymentbasetype, 
                                        '' AS VA009_PaymentRule, '' AS VA009_PaymentType, '' AS VA009_PaymentTrigger, g.DateAcct AS va009_plannedduedate,
@@ -294,12 +294,12 @@ namespace ViennaAdvantage.Common
                 if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
                 {
                     //Table Name is case sensitive must follow Camel format
-                    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
                          t.C_InvoicePaySchedule_ID,  t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,  t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,
                          t.va009_plannedduedate, t.VA009_FollowupDate,  t.VA009_RecivedAmt,  t.DueAmt, t.VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  
                          t.ISO_CODE, t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
                     //Log Warnings handled
-                    string query = @"SELECT pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
+                    string query = @"SELECT CY.StdPrecision,pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
                          pm.VA009_PaymentMethod_ID, pm.VA009_name as VA009_PaymentMethod,pm.va009_paymentbasetype,pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger,
                          cs.duedate as va009_plannedduedate,
                          cs.VA009_PlannedDueDate as VA009_FollowupDate,inv.VA009_PaidAmount AS VA009_RecivedAmt,
@@ -373,12 +373,12 @@ namespace ViennaAdvantage.Common
                 if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
                 {
                     //Table Name is case sensitive must follow Camel format
-                    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
                         t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
                         t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
                         t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
                     //Log Warnings handled
-                    string query = @" SELECT pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
+                    string query = @" SELECT CY.StdPrecision,pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
                         cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
                         pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
                         0 AS VA009_RecivedAmt, 
@@ -452,14 +452,14 @@ namespace ViennaAdvantage.Common
                 if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
                 {
                     //Table Name is case sensitive must follow Camel format
-                    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  
                         t.c_bp_group,  t.C_InvoicePaySchedule_ID, t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,
                         t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
                         t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.DueAmt AS VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,
                         t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,
                         t.DueAmt AS GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
                     //Log Warnings handled
-                    string query = $@" SELECT '' AS VA009_PaymentMode, gl.C_BPartner_ID, g.GL_Journal_ID AS c_invoice_id, g.DocumentNo, 
+                    string query = $@" SELECT cy.StdPrecision,'' AS VA009_PaymentMode, gl.C_BPartner_ID, g.GL_Journal_ID AS c_invoice_id, g.DocumentNo, 
                                         cb.name AS C_Bpartner, cb.c_bp_group_id, cbg.name AS c_bp_group, gl.GL_JournalLine_ID AS C_InvoicePaySchedule_ID,
                                         0 AS VA009_PaymentMethod_ID, null AS VA009_PaymentMethod, '' AS va009_paymentbasetype, 
                                        '' AS VA009_PaymentRule, '' AS VA009_PaymentType, '' AS VA009_PaymentTrigger, g.DateAcct AS va009_plannedduedate,

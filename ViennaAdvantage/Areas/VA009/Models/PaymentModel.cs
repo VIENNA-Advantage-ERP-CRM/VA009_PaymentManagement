@@ -330,6 +330,7 @@ namespace VA009.Models
                 {
                     PaymentData _payData = new PaymentData();
                     _payData.C_BPartner_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
+                    _payData.precision = Util.GetValueOfInt(ds.Tables[0].Rows[i]["StdPrecision"]);  // VIS_427 DevOps id:2289 getting value of precision at load of payment 
                     _payData.C_BP_Group_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_Group_ID"]);
                     _payData.VA009_PaymentMode = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentMode"]);
                     _payData.C_InvoicePaySchedule_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]);
@@ -860,7 +861,7 @@ namespace VA009.Models
                                         _pay.SetDiscountAmt(PaymentData[0].Discount);
                                         _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
                                     }
-                                }
+                                }                                
 
                                 _pay.SetC_Currency_ID(GetPaymentCurrency(ct, Util.GetValueOfInt(PaymentData[0].C_BankAccount_ID)));
                                 _pay.SetC_ConversionType_ID(PaymentData[0].CurrencyType);
@@ -3464,7 +3465,7 @@ namespace VA009.Models
         public string getCheckNo(int C_BankAccount_ID, int VA009_PaymentMethod_ID)
         {
             string checkNo = string.Empty;
-            checkNo = Util.GetValueOfString(DB.ExecuteScalar(" SELECT CurrentNext FROM C_BankAccountDoc WHERE C_BankAccount_ID = " + C_BankAccount_ID + " AND IsActive='Y' AND VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID));
+            checkNo = Util.GetValueOfString(DB.ExecuteScalar(" SELECT CurrentNext FROM C_BankAccountDoc WHERE C_BankAccount_ID = " + C_BankAccount_ID + " AND IsActive='Y' AND EndChkNumber >= CurrentNext AND VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID));
             return checkNo;
         }
 
@@ -7570,6 +7571,8 @@ namespace VA009.Models
                                 docno.Append(".");
 
                             docno.Append(_batchComp.GetDocumentNo());
+                            docno.Append(",");
+                            docno.Append(BtachId[j]); //VIS_427 Batchid added for zoom
                             if (paymethodDetails["VA009_PaymentRule"].ToString().Equals("M"))
                             {
                                 if (Util.GetValueOfBool(paymethodDetails["VA009_InitiatePay"].ToString()))
@@ -7832,7 +7835,8 @@ namespace VA009.Models
         public decimal TotalAPI { get; set; }
         public decimal TotalAPC { get; set; }
         public bool IsAPCGreater { get; set; }
-        public bool IsAPCExists { get; set; }
+        public bool IsAPCExists { get; set; }       
+        public int precision { get; set; }    //VIS_427 DevOps id:2289 defined property to get value for precision 
     }
     public class BPDetails
     {
