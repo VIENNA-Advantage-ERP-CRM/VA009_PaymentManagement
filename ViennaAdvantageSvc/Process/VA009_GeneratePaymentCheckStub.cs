@@ -709,7 +709,7 @@ namespace ViennaAdvantage.Process
                             {
                                 Get_TrxName().Commit();
                                 MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_TrxName());
-                                string result = null;// CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
+                                string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                 if (!String.IsNullOrEmpty(result))
                                 {
                                     Get_TrxName().Rollback();
