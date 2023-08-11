@@ -756,16 +756,8 @@ namespace ViennaAdvantage.Process
                             
                         }
                         #endregion
-// =========================================================End of code For Consolidate is True============================================= 
-
-
                     }
-                    else
-                        return msg = Msg.GetMsg(GetCtx(), "VA009_LinesNotAvailable");
-
-                   
-
-
+                    
 
                     if (paymentDocumentNo != "" || allocationDocumentNo != "")
                     {
