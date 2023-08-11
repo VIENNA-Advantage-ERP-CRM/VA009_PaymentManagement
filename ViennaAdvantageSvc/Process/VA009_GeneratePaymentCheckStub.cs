@@ -1,17 +1,27 @@
-﻿using System;
-using System.Collections;
+﻿
+/********************************************************
+ * Project Name   : VAdvantage
+ * Class Name     : VA009_GeneratePaymentCheckStub
+ * Purpose        : Payment Amendment
+ * Class Used     : ProcessEngine.SvrProcess
+ * Chronological    Development
+ * Created         : 11-Aug-2023
+ * Task ID        : 2319
+  ******************************************************/
+
+
+using System;
+
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using VAdvantage.Classes;
-using VAdvantage.Common;
-using VAdvantage.Process;
+
 using VAdvantage.Model;
 using VAdvantage.DataBase;
-using VAdvantage.SqlExec;
+
 using VAdvantage.Utility;
 using System.Data;
-using System.Data.SqlClient;
+
 using VAdvantage.Logging;
 using VAdvantage.ProcessEngine;
 using ViennaAdvantage.Model;
@@ -23,18 +33,19 @@ namespace ViennaAdvantage.Process
     {
         #region Variables
         string IsBankresponse = "N";
-        //string msg = "VA009_PymentSaved";
+        
         string msg = String.Empty;
         String checkMsg = String.Empty;
         StringBuilder docNos = new StringBuilder();
         StringBuilder sql = new StringBuilder();
-        int countresponse = 0;
+       
         string invDocNo = "";
         string PaymentBaseType = "";
         MVA009BatchLineDetails batchLineDetails = null;
         MVA009BatchLines batchLines = null;
 
         private List<int> payment = new List<int>();
+
         private List<int> listBatchLineDetails = new List<int>();
         private List<int> viewAllocationId = new List<int>();
         private string tenderType = string.Empty;
@@ -56,7 +67,6 @@ namespace ViennaAdvantage.Process
         List<int> bpids = new List<int>();
         private int allocationId = 0;
 
-        Dictionary<int, VA009_AllocateDetailsForLastPayment> AreadyCreatedPayment =null;
         #endregion
 
         protected override void Prepare()
@@ -73,27 +83,23 @@ namespace ViennaAdvantage.Process
                 {
                     IsBankresponse = Util.GetValueOfString(para[i].GetParameter());
                 }
-                //else if (name.Equals("C_Currency_ID"))
-                //{
-                //    currency_ID = Util.GetValueOfInt(para[i].GetParameter());
-                //}
-
             }
         }
-
+        /// Task ID : 2319
+        /// <summary>
+        /// This method use to create Payments from Batch Window for Invoice, Order and GL Journal type schedule batch
+        /// </summary>
+        /// Date : 11-Aug-2023
+        /// <returns>List of Payment Number</returns>
         protected override string DoIt()
         {
-            //Check Bank Response
-            //            sql.Append(@"SELECT count(bd.VA009_BankResponse) FROM va009_batchlinedetails bd INNER JOIN va009_batchlines bl ON bl.va009_batchlines_id=bd.va009_batchlines_id
-            //                          WHERE bl.va009_batch_id=" + GetRecord_ID() + " AND bd.VA009_BankResponse='IP' AND bd.AD_Client_ID = " + GetAD_Client_ID() + " Group by bd.VA009_BankResponse ");
-            //            countresponse = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
             bool isPaymentAlreadyGenerated = CheckPaymentStatus();
             if (!isPaymentAlreadyGenerated)
             {
                 sql.Clear();
                 try
                 {
-                    //Rakesh(VA228):Fetched discount amount from Batch detail line instead of invoice and order pay schedule on 17/Sep/2021 as discussed with Ranvir
+                    // Updated by Task ID : 2319
                     sql.Append(@"SELECT T.C_ConversionType_ID,
                                T.c_bankaccount_id, 
                                T.c_bpartner_id,
@@ -168,13 +174,10 @@ namespace ViennaAdvantage.Process
                                WHERE  NVL(bl.c_payment_id , 0) = 0 
                                       AND NVL(bld.c_payment_id , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
-                                        AND bl.IsActive='Y'  /*Added by Mukesh to minimize code debugging*/
+                                      AND bl.IsActive='Y' 
                                       AND  b.va009_batch_id    =" + GetRecord_ID());
-                    // if (IsBankresponse == "Y")
-                    //    sql.Append(" AND bld.va009_bankresponse='RE' ORDER BY bl.c_bpartner_id ASC ");
-                    // else if (IsBankresponse == "N")
-                    // sql.Append(" ORDER BY bld.va009_batchlines_id ,  bl.c_bpartner_id ASC ");   
-                    //Added by Arpit TO Create Payment against Order as well as Invoice on 14the Dec,2016
+
+                    
                     sql.Append(@" UNION SELECT bld.C_ConversionType_ID,b.c_bankaccount_id, 
                                bl.c_bpartner_id, 
                                odr.C_BPartner_Location_ID AS DocBPLocation, 
@@ -215,6 +218,7 @@ namespace ViennaAdvantage.Process
                                WHERE  NVL(bl.c_payment_id , 0) = 0 
                                       AND NVL(bld.c_payment_id , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
+                                      AND bl.IsActive='Y'
                                       AND  b.va009_batch_id    =" + GetRecord_ID());
 
                     //VIS_427 DevOps TaskId: 2156 added query for Gl journalline
@@ -264,6 +268,7 @@ namespace ViennaAdvantage.Process
                                WHERE NVL(bl.C_Payment_ID , 0) = 0 
                                  AND NVL(bld.C_Payment_ID , 0) = 0 
                                       AND NVL(bld.C_AllocationHdr_ID , 0) = 0 
+                                        AND bl.IsActive='Y'
                                       AND  b.VA009_Batch_ID=" + GetRecord_ID());
 
                     sql.Append(")T");
@@ -271,16 +276,15 @@ namespace ViennaAdvantage.Process
                         sql.Append(" AND T.va009_bankresponse='RE' ORDER BY T.c_bpartner_id, T.VA009_paymentmethod_ID  ASC ");
                     else if (IsBankresponse == "N")
                         sql.Append(" ORDER BY T.va009_batchlines_id ,  T.c_bpartner_id , T.VA009_paymentmethod_ID ASC, VA009_ConvertedAmt DESC  ");
-                    //Changes --Changed above queries to get Invoice Amount from Invoice Schedule/Order Schedule to convert the amount on same day when payment is generating
-                    //else if (IsBankresponse == "Y" && countresponse > 0)
-                    //    return Msg.GetMsg(GetCtx(), "VA009_AllResponseNotAvailable");
+
 
                     DataSet ds = DB.ExecuteDataset(sql.ToString(), null, Get_TrxName());
+                    Dictionary<int, VA009_PaymetDetailsForLastTransaction> lastBatchLine = new Dictionary<int, VA009_PaymetDetailsForLastTransaction>();
 
                     MVA009Batch _batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
 
                     currencyTo_ID = Util.GetValueOfInt(_batch.Get_Value("C_Currency_ID"));
-                    //Rakesh(VA228):Set ConversionTypeId
+                    
                     _ConversionType_ID = _batch.GetC_ConversionType_ID();
                     int counting = ds.Tables[0].Rows.Count;
                     if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -331,7 +335,7 @@ namespace ViennaAdvantage.Process
                                         {
                                             if (Util.GetValueOfInt(dSet.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]) > 0)
                                             {
-                                                //(1052)Update invoicepayschedule
+                                               
                                                 int count = DB.ExecuteQuery("UPDATE C_InvoicePaySchedule SET VA009_ExecutionStatus='Y' WHERE C_InvoicePaySchedule_ID="
                                                 + Util.GetValueOfInt(dSet.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]));
                                                 if (count <= 0)
@@ -339,18 +343,7 @@ namespace ViennaAdvantage.Process
                                                     return ErrorMessage();
                                                 }
                                             }
-                                            #region When Order Pay Shcedule will handled then this method will be called
-                                            /*
-                                        else if(Util.GetValueOfInt(dSet.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]) > 0)
-                                        {
-                                           String eMsg= SetOrderScheduleExecutionStatus(dSet, i);
-                                           if (!String.IsNullOrEmpty(eMsg))
-                                           {
-                                               return eMsg;
-                                           }
-                                        }
-                                             */
-                                            #endregion
+                                           
                                         }
                                         if (i == dSet.Tables[0].Rows.Count - 1)
                                         {
@@ -379,13 +372,11 @@ namespace ViennaAdvantage.Process
                         if (_batch.IsVA009_Consolidate() == true)
                         {
 
-                            // Get all last Batch lines having Customer and thier added by Mukesh @20230730
-                            Dictionary<int, VA009_PaymetDetailsForLastTransaction> lastBatchLine = GetLastBatchLine(ds,_batch.GetVA009_Batch_ID());
+                            // Get all last Batch lines having Customer and thier added by Task ID : 2319  @ 20230730
+                            lastBatchLine = GetLastBatchLine(_batch.GetVA009_Batch_ID());
 
 
-                            AreadyCreatedPayment = new Dictionary<int, VA009_AllocateDetailsForLastPayment>();
-                            //Issue ID In Google Sheet: SI_0673 --> While generating payment from Payment Schedule Batch, "Consolidate Payment" checkbox is true & there are multiple Payment method on payment batch lines, System creates single payment record for all schedules.
-                            int c_currency_id = 0; int Bpartner_ID = 0; int C_Payment_ID = 0, batchline_id = 0, allocationHeader = 0, VA009_PaymentMethod_ID = 0;
+                             int c_currency_id = 0; int Bpartner_ID = 0; int C_Payment_ID = 0, batchline_id = 0, VA009_PaymentMethod_ID = 0;
 
                             // Check the total amount of API-APC must be greater than 0 to create payment otherwise skip the payment creation.
                             Dictionary<int, VA009_BPDataCheckStub> batchInfo = CheckAPIandAPCAmt(ds, _batch.GetVA009_PaymentMethod_ID());
@@ -450,184 +441,20 @@ namespace ViennaAdvantage.Process
                                 }
                                 discountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]);
                                 DueAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
-                                //Rakesh(VA228):Get converted amount
+                                //Get converted amount
                                 _ConvertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
 
-                                #region Create View Allocation Header and line when the Due Amount on Batch line = 0
-                                //(1052) Donot create allocations in case of order
-                                if (c_currency_id == BlineDetailCur_ID &&
-                                    Bpartner_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) &&
-                                   batchline_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]) &&
-                                    Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_DueAmount"]) == 0
-                                    && VA009_PaymentMethod_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]) &&
-                                     Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) == 0)
-                                {
-                                    MAllocationLine alloclne = new MAllocationLine(GetCtx(), 0, Get_TrxName());
-                                    alloclne.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
-                                    alloclne.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    alloclne.SetC_AllocationHdr_ID(allocationHeader);
-                                    alloclne.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
-                                    //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline to set value in allocationline
-                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
-                                    {
-                                        alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                        alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                    }
-                                    else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
-                                    {
-                                        alloclne.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
-                                    }
-                                    //to set document date of batch header on all payments and allocations
-                                    alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
-                                    alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                    alloclne.SetDiscountAmt(discountAmt);
-                                    if (!alloclne.Save(Get_TrxName()))
-                                    {
-                                        msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
-                                        ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
-                                        SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-                                                            GetRecord_ID(), ppE.ToString());
-                                        Get_TrxName().Rollback();
-                                        payment.Clear();
-                                        viewAllocationId.Clear();
-                                        allocationDocumentNo = string.Empty;
-                                        paymentDocumentNo = string.Empty;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        // set Allocation ID on Batch Line Details
-                                        batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
-                                        batchLineDetails.SetC_AllocationHdr_ID(allocationHeader);
-                                        if (!batchLineDetails.Save(Get_TrxName()))
-                                        {
-                                            Get_TrxName().Rollback();
-                                        }
-                                    }
-                                }
-                                else if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_DueAmount"]) == 0 &&
-                                    Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) == 0)
-                                {
-                                    MAllocationHdr allocHdr = new MAllocationHdr(GetCtx(), 0, Get_TrxName());
-                                    allocHdr.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
-                                    allocHdr.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    //Rakesh(VA228):to set account date of batch header on all payments and allocations
-                                    allocHdr.SetDateAcct(_batch.GetDateAcct());
-                                    allocHdr.SetDateTrx(_batch.GetVA009_DocumentDate());
-                                    //allocHdr.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-                                    allocHdr.SetC_Currency_ID(BlineDetailCur_ID);
-                                    //Rakesh(VA228):Set ConversionType_ID
-                                    allocHdr.SetC_ConversionType_ID(_ConversionType_ID);
-                                    allocHdr.SetDocStatus("DR");
-                                    allocHdr.SetDocAction("CO");
-                                    if (!allocHdr.Save(Get_TrxName()))
-                                    {
-                                        msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
-                                        ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
-                                        SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-                                                            GetRecord_ID(), ppE.ToString());
-                                        Get_TrxName().Rollback();
-                                        payment.Clear();
-                                        viewAllocationId.Clear();
-                                        allocationDocumentNo = string.Empty;
-                                        paymentDocumentNo = string.Empty;
-                                        break;
-                                    }
-                                    else
-                                    {
-                                        if (!viewAllocationId.Contains(allocHdr.GetC_AllocationHdr_ID()))
-                                        {
-                                            viewAllocationId.Add(allocHdr.GetC_AllocationHdr_ID());
-                                        }
-                                        MAllocationLine alloclne = new MAllocationLine(GetCtx(), 0, Get_TrxName());
-                                        alloclne.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
-                                        alloclne.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                        alloclne.SetC_AllocationHdr_ID(allocHdr.GetC_AllocationHdr_ID());
-                                        alloclne.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
-                                        //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
-                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
-                                        {
-                                            alloclne.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                            alloclne.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                        }
-                                        else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
-                                        {
-                                            alloclne.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
-                                        }
-                                        //to set document date of batch header on all payments and allocations
-                                        alloclne.SetDateTrx(_batch.GetVA009_DocumentDate());
-                                        alloclne.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                        alloclne.SetDiscountAmt(discountAmt);
-                                        if (!alloclne.Save(Get_TrxName()))
-                                        {
-                                            msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
-                                            ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
-                                            SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-                                                                GetRecord_ID(), ppE.ToString());
-                                            Get_TrxName().Rollback();
-                                            payment.Clear();
-                                            viewAllocationId.Clear();
-                                            allocationDocumentNo = string.Empty;
-                                            paymentDocumentNo = string.Empty;
-                                            break;
-                                        }
-                                        else
-                                        {
-                                            c_currency_id = BlineDetailCur_ID;//Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]);
-                                            Bpartner_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]);
-                                            VA009_PaymentMethod_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]);
-                                            batchline_id = Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]);
-                                            allocationHeader = allocHdr.GetC_AllocationHdr_ID();
-                                            allocationDocumentNo += allocHdr.GetDocumentNo() + " , ";
-
-                                            #region Commented Code
-                                            // set Allocation ID on Batch Line 
-                                            //batchLines = new MVA009BatchLines(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]), Get_Trx());
-                                            //batchLineDetails.SetC_AllocationHdr_ID(allocationHeader);
-                                            //batchLines.Save();
-                                            #endregion
-
-                                            // set Allocation ID on Batch Line Details
-                                            batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
-                                            batchLineDetails.SetC_AllocationHdr_ID(allocationHeader);
-                                            if (!batchLineDetails.Save(Get_TrxName()))
-                                            {
-                                                Get_TrxName().Rollback();
-                                            }
-                                        }
-                                    }
-                                }
-                                #endregion
-
                                 #region Create a new entry of payment Allocate against same payment and the condition
-                                //else if (c_currency_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) &&
-                                else if ((c_currency_id == BlineDetailCur_ID) &&
+                                
+                                if ((c_currency_id == BlineDetailCur_ID) &&
                                 Bpartner_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]) &&
                                 batchline_id == Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]) &&
                                     VA009_PaymentMethod_ID == Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]) &&
                                     Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) == 0)
                                 {
-                                    MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
-                                    PayAlocate.SetC_Payment_ID(C_Payment_ID);
-                                    //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
-                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
-                                    {
-                                        PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                        PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                    }
-                                    else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
-                                    {
-                                        PayAlocate.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
-                                    }
+                                    // Task ID 2319 : create payment allocation before save the object @20230811
+                                    MPaymentAllocate PayAlocate = CreatePaymentAllocation(ds, i, C_Payment_ID, lastBatchLine, false);
 
-                                    PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                    PayAlocate.SetDiscountAmt(discountAmt);
-                                    PayAlocate.SetInvoiceAmt(DueAmount);
-
-                                    PayAlocate.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
-                                    PayAlocate.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    PayAlocate.SetWriteOffAmt(0);
-                                    PayAlocate.SetOverUnderAmt(0);
                                     if (!PayAlocate.Save(Get_TrxName()))
                                     {
                                         msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved");
@@ -645,6 +472,11 @@ namespace ViennaAdvantage.Process
                                     {
                                         batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
                                         batchLineDetails.SetC_Payment_ID(C_Payment_ID);
+
+                                        //Task ID 2319 : Add Ref Payment ID at Batch Line Details window for last Payment  @20230810
+                                        if (lastBatchLine != null && lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
+                                            batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", C_Payment_ID);
+
                                         if (!batchLineDetails.Save(Get_TrxName()))
                                         {
                                             Get_TrxName().Rollback();
@@ -660,7 +492,7 @@ namespace ViennaAdvantage.Process
                                     if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
                                     {
                                         //to set document date of batch header on all payments and allocations
-                                        //Rakesh(VA228):Replaced due amount with converted amount
+                                        //Replaced due amount with converted amount
                                         checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, _ConvertedAmt, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
                                         if (checkMsg != "")
                                         {
@@ -674,13 +506,34 @@ namespace ViennaAdvantage.Process
                                         _pay.SetC_DocType_ID(C_Doctype_ID);
                                         _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
                                         _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                        //Rakesh(VA228):to set account date of batch header on all payments and allocations
+                                        
                                         _pay.SetDateAcct(_batch.GetDateAcct());
                                         _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
                                         _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
                                         _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
-                                        //set converted amount
-                                        _pay.SetPayAmt(_ConvertedAmt);
+                                        _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
+                                        _pay.SetC_Currency_ID(BlineDetailCur_ID);
+                                        //Set ConversionType_ID
+                                        _pay.SetC_ConversionType_ID(_ConversionType_ID);
+
+                                        ///Task ID 2319 : Code added For last Batch Line 
+                                        if (lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
+                                        {
+                                            _pay.SetIsReconciled(false);
+                                 
+                                        }
+                                        else
+                                        {
+                                            _pay.SetIsReconciled(true);
+                                            _pay.SetIsAllocated(true);
+                                            _pay.SetProcessed(true);
+                                            _pay.SetDocAction(MPayment.DOCACTION_Void);
+                                            _pay.SetDocStatus(MPayment.DOCSTATUS_Voided);
+                                        }
+                                        _pay.Set_ValueNoCheck("VA009_BatchLineAmt", Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_DueAmount"]));  ///Task ID : 2319 Added Batch Line Amount @20230808
+
+                                        // End of code 
+
                                         #region to set bank account of business partner and name on batch line
                                         //to set value of routing number and account number of batch lines 
                                         if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) > 0)
@@ -698,7 +551,7 @@ namespace ViennaAdvantage.Process
                                         }
                                         else
                                         {
-                                            //T.C_BP_BankAccount_ID,//T.swiftcode,//T.Acctnumber,//T.AcctName
+                                            
                                             _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
                                             //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
                                             if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) == 0)
@@ -709,10 +562,6 @@ namespace ViennaAdvantage.Process
                                         }
                                         #endregion
                                         _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
-                                        //_pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-                                        _pay.SetC_Currency_ID(BlineDetailCur_ID);
-                                        //Rakesh(VA228):Set ConversionType_ID
-                                        _pay.SetC_ConversionType_ID(_ConversionType_ID);
                                         _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
                                         tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"select VA009_PAYMENTBASETYPE from VA009_PAYMENTMETHOD where VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
                                         if (tenderType == "K")          // Credit Card
@@ -726,8 +575,6 @@ namespace ViennaAdvantage.Process
                                         else if (tenderType == "S")    // Check
                                         {
                                             _pay.SetTenderType("K");
-                                            //Arpit In Case of Payment is of check type then we insert Check Date + Check Number
-                                            _pay.SetCheckDate(_batch.GetDateAcct());//Changed to account date from system date
                                             checkMsg = UpdateCheckNoOnPayment(ds, i, _pay);
                                             if (checkMsg != "")
                                             {
@@ -774,18 +621,17 @@ namespace ViennaAdvantage.Process
                                     else
                                     {
 
-                                        if (!payment.Contains(_pay.GetC_Payment_ID()))
+                                        //Task ID 2319 : Update Last Payment ID in lastBatchLine
+                                        if (lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
                                         {
+                                            VA009_PaymetDetailsForLastTransaction vA009_PaymetDetailsForLastTransaction = lastBatchLine[(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]))];
+                                            vA009_PaymetDetailsForLastTransaction.C_Payment_ID = _pay.GetC_Payment_ID();
+                                            /// Add only those Payment only have to completed
                                             payment.Add(_pay.GetC_Payment_ID());
                                         }
 
-                                        // Add Payment Details by Mukesh @20230729
-                                        VA009_AllocateDetailsForLastPayment vA009_AllocateDetailsForLastPayment =
-                                            new VA009_AllocateDetailsForLastPayment(_pay.GetC_BPartner_ID(), _pay.GetC_BPartner_Location_ID(),
-                                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]), _pay.GetC_Payment_ID());
-                                        AreadyCreatedPayment.Add(_pay.GetC_BPartner_ID(), vA009_AllocateDetailsForLastPayment);
 
-                                        //c_currency_id = Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]);
+                                        ;
                                         c_currency_id = BlineDetailCur_ID;
                                         Bpartner_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]);
                                         VA009_PaymentMethod_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]);
@@ -795,27 +641,9 @@ namespace ViennaAdvantage.Process
 
                                         if (_pay.GetC_Order_ID() == 0)
                                         {
-                                            //Donot create payment allocate in  case of Order.
-                                            MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
-                                            PayAlocate.SetC_Payment_ID(C_Payment_ID);
-                                            //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
-                                            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
-                                            {
-                                                PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                                PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                            }
-                                            else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
-                                            {
-                                                PayAlocate.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
-                                            }
+                                            // create payment allocation before save the object @20230811
+                                            MPaymentAllocate PayAlocate = CreatePaymentAllocation(ds, i, C_Payment_ID, lastBatchLine, false);
 
-                                            PayAlocate.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
-                                            PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
-                                            PayAlocate.SetInvoiceAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["dueamt"]));
-                                            PayAlocate.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
-                                            PayAlocate.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                            PayAlocate.SetWriteOffAmt(0);
-                                            PayAlocate.SetOverUnderAmt(0);
                                             if (!PayAlocate.Save(Get_TrxName()))
                                             {
                                                 string val = "";
@@ -842,6 +670,11 @@ namespace ViennaAdvantage.Process
                                             {
                                                 batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
                                                 batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
+
+                                                //Task ID 2319 : Add Ref Payment ID at Batch Line Details window for last Payment @20230810
+                                                if (lastBatchLine != null && lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
+                                                    batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", C_Payment_ID);
+
                                                 batchLineDetails.Save(Get_TrxName());
 
                                                 batchLines = new MVA009BatchLines(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]), Get_Trx());
@@ -857,6 +690,11 @@ namespace ViennaAdvantage.Process
                                             //update bacth line and batch line detail
                                             batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
                                             batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
+
+                                            //Task ID 2319 : Add Ref Payment ID at Batch Line Details window for last Payment @20230810
+                                            if (lastBatchLine != null && lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
+                                                batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", _pay.GetC_Payment_ID());
+
                                             if (!batchLineDetails.Save(Get_TrxName()))
                                             {
                                                 Get_TrxName().Rollback();
@@ -867,25 +705,27 @@ namespace ViennaAdvantage.Process
                                 #endregion
 
                             }
+
+                            /// Task ID 2319 : Create Allocate for Last Payment @20230810
+                            List<MPaymentAllocate> mPaymentAllocates = CreateAllocateForLastPayment(lastBatchLine);
+
                             // Complete the Consolidate Records of payment
                             for (int i = 0; i < payment.Count(); i++)
                             {
                                 Get_TrxName().Commit();
                                 MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_TrxName());
-                                // Added by Mukesh Regarding Not required to complete the process for now @20230728
-                                string result = null;// CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
+                                string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                 if (!String.IsNullOrEmpty(result))
                                 {
                                     Get_TrxName().Rollback();
                                     //Remove Payment reference if payment is not completed
-                                    if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = NULL WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"])) > 0)
+                                    if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = NULL, VA009_Payment_ID=NULL WHERE VA009_Payment_ID = " + completePayment.GetC_Payment_ID()) > 0)
                                     {
-                                        DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = NULL WHERE VA009_BatchLines_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]));
+                                        DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID = NULL WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
                                     }
+                                    DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
 
                                     log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
-
-                                    DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
 
                                     msg = result;
 
@@ -904,7 +744,7 @@ namespace ViennaAdvantage.Process
                                     //VIS323 DevOpsId- 1719 Set Allocation on Batch Line Details
                                     //Handled multiple allocation to multiple invoice against Different Vendor/Customer.
                                     sql.Clear();
-                                    sql.Append(@"Select AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
+                                    sql.Append(@"SELECT AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
                                                     INNER JOIN C_AllocationHdr AH ON
                                                     AH.C_AllocationHdr_ID=AL.C_AllocationHdr_ID
                                                     WHERE AH.Processed='Y'
@@ -914,243 +754,23 @@ namespace ViennaAdvantage.Process
                                     allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
                                     sql.Clear();
                                     sql.Append(@"UPDATE VA009_BatchLineDetails SET C_AllocationHdr_ID
-                                                =" + allocationId + " WHERE C_Payment_ID=" + completePayment.GetC_Payment_ID());
+                                                =" + allocationId + " WHERE VA009_Payment_ID=" + completePayment.GetC_Payment_ID());
                                     DB.ExecuteQuery(sql.ToString(), null, Get_TrxName());
                                 }
                             }
-                            // Complete the Consolidate Records of View allocation 
-                            for (int i = 0; i < viewAllocationId.Count(); i++)
-                            {
-                                MAllocationHdr completeAllocation = new MAllocationHdr(GetCtx(), viewAllocationId[i], Get_Trx());
-                                if (completeAllocation.CompleteIt() == "CO")
-                                {
-                                    completeAllocation.SetDocStatus("CO");
-                                    completeAllocation.SetDocAction("CL");
-                                    completeAllocation.Save(Get_TrxName());
-                                }
-                            }
+                            
                         }
                         #endregion
-// =========================================================End of code For Consolidate is True========================By Mukesh @020230729================================ 
-                        
-                        #region Consolidate = false
-                        else if (_batch.IsVA009_Consolidate() == false)
-                        {
-                            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-                            {
-                                PaymentBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PAYMENTBASETYPE"]);
-                                if (((Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_APCREDITMEMO) ||
-                                    Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]).Equals(MDocBaseType.DOCBASETYPE_ARINVOICE)) &&
-                                    PaymentBaseType.Equals(MVA009PaymentMethod.VA009_PAYMENTBASETYPE_Check)) || PaymentBaseType.Equals("P"))
-                                {
-                                    //Payment should not be crteated if Payment Method is check and APC/AR Invoice
-                                    invDocNo += "," + Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
-                                    continue;
-                                }
-                                BlineDetailCur_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Currency_ID"]);
-                                if (currencyTo_ID > 0)
-                                {
-                                    BlineDetailCur_ID = currencyTo_ID;
-                                    //Getting the Currency From Window
-                                }
-                                discountAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]);
-                                DueAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
-                                //Rakesh(VA228):Get converted amount
-                                _ConvertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]);
+// =========================================================End of code For Consolidate is True============================================= 
 
-                                _pay = new MPayment(GetCtx(), 0, Get_TrxName());
-                                if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]) != 0)
-                                {
-                                    //to set document date of batch header on all payments and allocations
-                                    //Rakesh(VA228):Replaced due amount with converted amount
-                                    checkMsg = CreatePaymentAgainstOrders(ds, i, _pay, discountAmt, _ConvertedAmt, BlineDetailCur_ID, _batch.GetVA009_DocumentDate(), _batch.GetDateAcct());
-                                    if (checkMsg != "")
-                                    {
-                                        return checkMsg;
-                                    }
-                                }
-                                else
-                                {
-                                    int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]));
-                                    _pay.SetC_DocType_ID(C_Doctype_ID);
-                                    //VIS_427 DevOps TaskId: 2156 added Check for Gl journalline
-                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
-                                    {
-                                        _pay.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
-                                        _pay.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
-                                    }
-                                    else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
-                                    {
-                                        _pay.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
-                                    }
-                                    _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
-                                    _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-                                    //Rakesh(VA228):to set account date of batch header on all payments and allocations
-                                    _pay.SetDateAcct(_batch.GetDateAcct());
-                                    _pay.SetDateTrx(_batch.GetVA009_DocumentDate());
-                                    _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
-                                    _pay.SetC_BPartner_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]));
-                                    #region to set bank account of business partner and name on batch line
-                                    //to set value of routing number and account number of batch lines 
-                                    if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) > 0)
-                                    {
-                                        DataSet ds1 = new DataSet();
-                                        ds1 = DB.ExecuteDataset(@" SELECT a_name, RoutingNo, AccountNo FROM 
-                                                  C_BP_BankAccount WHERE C_BP_BankAccount_ID = " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
-                                        if (ds1.Tables != null && ds1.Tables.Count > 0 && ds1.Tables[0].Rows.Count > 0)
-                                        {
-                                            _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
-                                            _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds1.Tables[0].Rows[0]["a_name"]));
-                                            _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["RoutingNo"]));
-                                            _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds1.Tables[0].Rows[0]["AccountNo"]));
-                                        }
-                                    }
-                                    else
-                                    {
-                                        //T.C_BP_BankAccount_ID,//T.swiftcode,//T.Acctnumber,//T.AcctName
-                                        _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]));
-                                        //if partner bank account is not present then set null because constraint null is on ther payment table and it will not allow to save zero.
-                                        if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BP_BankAccount_ID"]) == 0)
-                                            _pay.Set_ValueNoCheck("C_BP_BankAccount_ID", null);
-                                        _pay.Set_ValueNoCheck("A_Name", Util.GetValueOfString(ds.Tables[0].Rows[i]["AcctName"]));
-                                        _pay.Set_ValueNoCheck("RoutingNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["swiftcode"]));
-                                        _pay.Set_ValueNoCheck("AccountNo", Util.GetValueOfString(ds.Tables[0].Rows[i]["Acctnumber"]));
-                                    }
-                                    #endregion
-                                    _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
 
-                                    _pay.SetDiscountAmt(discountAmt);
-                                    _pay.SetPayAmt(_ConvertedAmt);
-
-                                    //_pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-                                    _pay.SetC_Currency_ID(BlineDetailCur_ID);
-                                    //Rakesh(VA228):Set ConversionType_ID
-                                    _pay.SetC_ConversionType_ID(_ConversionType_ID);
-                                    _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
-                                    tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"select VA009_PAYMENTBASETYPE from VA009_PAYMENTMETHOD where VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
-                                    if (tenderType == "K")          // Credit Card
-                                    {
-                                        _pay.SetTenderType("C");
-                                    }
-                                    else if (tenderType == "D")   // Direct Debit
-                                    {
-                                        _pay.SetTenderType("D");
-                                    }
-                                    else if (tenderType == "S")    // Check
-                                    {
-                                        _pay.SetTenderType("K");
-                                        //Arpit In Case of Payment is of check type then we insert Check Date + Check Number
-                                        _pay.SetCheckDate(_batch.GetDateAcct());
-                                        String checkMsg = UpdateCheckNoOnPayment(ds, i, _pay);
-                                        if (checkMsg != "")
-                                        {
-                                            Get_TrxName().Rollback();
-                                            msg = Msg.GetMsg(GetCtx(), checkMsg);
-                                            MBankAccount ba = new MBankAccount(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]), Get_TrxName());
-                                            //Want space between the Message and AccountNo
-                                            return msg + " : " + ba.GetAccountNo();
-                                        }
-                                    }
-                                    else if (tenderType == "T")    // Direct Deposit
-                                    {
-                                        _pay.SetTenderType("A");
-                                    }
-                                    else
-                                    {
-                                        _pay.SetTenderType("A");
-                                    }
-                                }
-                                SetVA009_Batch_ID(_pay, GetRecord_ID());
-                                if (!_pay.Save(Get_TrxName()))
-                                {
-                                    ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
-                                    SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-                                                        GetRecord_ID(), ppE.ToString());
-                                    Rollback();
-                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved") + ": " + ppE.ToString();
-
-                                    allocationDocumentNo = string.Empty;
-                                    paymentDocumentNo = string.Empty;
-                                    break;
-                                }
-                                else
-                                {
-
-                                    paymentDocumentNo += _pay.GetDocumentNo() + " , ";
-                                    batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_TrxName());
-                                    batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
-                                    batchLineDetails.Save(Get_TrxName());
-                                    #region Commented
-                                    //if (_pay.GetDocStatus() == "CO" || _pay.GetDocStatus() == "CL" || _pay.GetDocStatus() == "VO" || _pay.GetDocStatus() == "RE")
-                                    //{
-                                    //    string docNo = _pay.GetDocumentNo();
-                                    //    Get_TrxName().Rollback();
-                                    //    msg = Msg.GetMsg(GetCtx(), "VA009_AlreadyCreated");
-                                    //    msg += ":" + docNo;
-                                    //}
-                                    #endregion
-                                    Get_TrxName().Commit();
-                                    MPayment completePayment = new MPayment(GetCtx(), batchLineDetails.GetC_Payment_ID(), Get_Trx());
-
-                                    // Added by Mukesh Regarding Not required to complete the process for now @20230728
-                                    string result = null; // CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
-                                    if (string.IsNullOrEmpty(result))
-                                    {
-                                        if (docNos.Length > 1)
-                                        {
-                                            docNos.Append(", ").Append(_pay.GetDocumentNo());
-                                        }
-                                        else
-                                        {
-                                            docNos.Append(_pay.GetDocumentNo());
-                                        }
-
-                                        //to Set Allocation ID on Batch Line Details
-                                        sql.Clear();
-                                        sql.Append(@"Select AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
-                                                    INNER JOIN C_AllocationHdr AH ON
-                                                    AH.C_AllocationHdr_ID=AL.C_AllocationHdr_ID
-                                                    WHERE AH.Processed='Y'
-                                                    AND AH.DocStatus   IN ('CO','CL')
-                                                    AND AL.C_Payment_ID =" + _pay.GetC_Payment_ID());
-                                        try
-                                        {
-                                            allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
-                                            batchLineDetails.SetC_AllocationHdr_ID(allocationId);
-                                            if (!batchLineDetails.Save(Get_TrxName()))
-                                            {
-                                                return ErrorMessage();
-                                            }
-                                        }
-                                        catch (Exception ex)
-                                        {
-                                            Get_TrxName().Rollback();
-                                            return ex.Message;
-                                        }
-                                    }
-                                    else
-                                    {
-                                        Get_TrxName().Rollback();
-
-                                        //Remove Paymenmt reference if Payment is not completed
-                                        DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = null WHERE VA009_BatchLineDetails_ID= " + Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLineDetails_ID"]));
-
-                                        log.Log(Level.SEVERE, "Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
-
-                                        //delete Payment Document in Drafetd Stage 
-                                        DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
-
-                                        msg = result;
-
-                                    }
-                                }
-                            }
-                        }
-
-                        #endregion
                     }
                     else
                         return msg = Msg.GetMsg(GetCtx(), "VA009_LinesNotAvailable");
+
+                   
+
+
 
                     if (paymentDocumentNo != "" || allocationDocumentNo != "")
                     {
@@ -1218,88 +838,168 @@ namespace ViennaAdvantage.Process
             return msg;
         }
 
+
+        /// Task ID : 2319
         /// <summary>
-        /// Added by Mukesh @20230730
+        /// This method filtered all batch line ids for those we have to create Payment Allocation respective payment which are associated in lastBatchLine Dictionary
+        /// </summary>
+        /// <param name="lastBatchLine"></param>
+        /// <returns>List of Payment Allocate Object</returns>
+        private List<MPaymentAllocate> CreateAllocateForLastPayment(Dictionary<int, VA009_PaymetDetailsForLastTransaction> lastBatchLine)
+        {
+            List<MPaymentAllocate> mPaymentAllocates = null;
+            if (lastBatchLine != null && lastBatchLine.Count() > 0)
+            {
+                mPaymentAllocates = new List<MPaymentAllocate>();
+                foreach (var batchLines in lastBatchLine)
+                {
+
+                    Int32 batchLineId = batchLines.Key;
+                    VA009_PaymetDetailsForLastTransaction vA009_PaymetDetailsForLastTransaction = batchLines.Value;
+                    Int32 C_BpartnerId = vA009_PaymetDetailsForLastTransaction.C_BPartner_ID;
+                    Int32 C_Payment_ID = vA009_PaymetDetailsForLastTransaction.C_Payment_ID;
+                    Int32 VA009_PaymentLocation_ID = vA009_PaymetDetailsForLastTransaction.C_BPartnerLocation_ID;
+
+                    if (C_Payment_ID > 0)
+                    {
+                        sql.Clear();
+                        sql.Append($" SELECT bld.C_Invoice_ID AS C_Invoice_ID, bld.c_invoicepayschedule_id AS c_invoicepayschedule_id, " +
+                                    " bld.GL_JournalLine_ID AS GL_JournalLine_ID, bld.discountamt AS discountamt, " +
+                                    " bld.va009_batchlines_id AS va009_batchlines_id, bld.VA009_ConvertedAmt AS VA009_ConvertedAmt, " +
+                                    " bld.dueamt AS dueamt, bld.ad_client_id AS ad_client_id, bld.ad_org_id AS ad_org_id, bld.va009_batchlinedetails_ID AS va009_batchlinedetails_ID " +
+                                    " FROM VA009_BatchLineDetails bld " +
+                                    " INNER JOIN VA009_BatchLines bl ON (bld.VA009_BatchLines_ID = bl.VA009_BatchLines_ID) " +
+                                    " WHERE bld.VA009_BatchLines_ID != " + batchLineId + " AND BL.C_BPartner_ID = " + C_BpartnerId +
+                                    " AND BL.VA009_PAYMENTLOCATION_ID = " + VA009_PaymentLocation_ID +
+                                    " AND BL.VA009_Batch_ID = " + GetRecord_ID() + " AND BL.IsActive = 'Y'");
+
+                        DataSet ds = DB.ExecuteDataset(sql.ToString(), null, Get_TrxName());
+
+                        if (ds != null && ds.Tables[0].Rows.Count > 0)
+                        {
+                            for (Int32 i = 0; i < ds.Tables[0].Rows.Count; i++)
+                            {
+                                MPaymentAllocate PayAlocate = CreatePaymentAllocation(ds, i, C_Payment_ID, null, true);
+
+                                if (!PayAlocate.Save(Get_TrxName()))
+                                {
+                                    string val = "";
+                                    ValueNamePair ppE = VLogger.RetrieveError();
+                                    if (ppE != null)
+                                    {
+                                        val = ppE.GetValue();
+                                        if (string.IsNullOrEmpty(val))
+                                        {
+                                            val = ppE.GetName();
+                                        }
+                                    }
+                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved") + ":" + val;
+                                    SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
+                                    Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]), GetRecord_ID(), ppE.ToString());
+                                    Get_TrxName().Rollback();
+                                    payment.Clear();
+                                    viewAllocationId.Clear();
+                                    allocationDocumentNo = string.Empty;
+                                    paymentDocumentNo = string.Empty;
+                                    break;
+                                }
+                                else
+                                {
+
+                                   MVA009BatchLineDetails batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
+                                    batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", C_Payment_ID);
+                                    if (!batchLineDetails.Save(Get_TrxName()))
+                                    {
+                                        Get_TrxName().Rollback();
+                                    }
+                                    mPaymentAllocates.Add(PayAlocate);
+                                }
+                            }
+                        }
+                    }
+                }// End of For loop
+            }/// End of condition
+            return mPaymentAllocates;
+        }
+
+        /// Task ID : 2319
+        /// <summary>
+        /// This method use to create Payment Allocate record with existing payment Id
         /// </summary>
         /// <param name="ds"></param>
+        /// <param name="i"></param>
+        /// <param name="C_Payment_ID"></param>
+        /// <param name="lastBatchLine"></param>
+        /// <param name="isLastPayment"></param>
+        /// <returns> Object of MPaymentAllocate</returns>
+        private MPaymentAllocate CreatePaymentAllocation(DataSet ds, int i, int C_Payment_ID, Dictionary<int, VA009_PaymetDetailsForLastTransaction> lastBatchLine, Boolean isLastPayment)
+        {
+            //Donot create payment allocate in  case of Order.
+            MPaymentAllocate PayAlocate = new MPaymentAllocate(GetCtx(), 0, Get_TrxName());
+            PayAlocate.SetC_Payment_ID(C_Payment_ID);
+            if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]) > 0)
+            {
+                PayAlocate.SetC_Invoice_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoice_id"]));
+                PayAlocate.SetC_InvoicePaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_invoicepayschedule_id"]));
+            }
+            else if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]) > 0)
+            {
+                PayAlocate.Set_Value("GL_JournalLine_ID", Util.GetValueOfInt(ds.Tables[0].Rows[i]["GL_JournalLine_ID"]));
+            }
+
+            PayAlocate.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
+
+            // Task ID : 2319 Below code update as only payamount add for last payment  @20230808
+            if ((lastBatchLine != null && lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]))) || isLastPayment)
+                PayAlocate.SetAmount(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
+            else
+                PayAlocate.SetAmount(0);
+
+            PayAlocate.SetInvoiceAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["dueamt"]));
+            PayAlocate.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
+            PayAlocate.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
+            PayAlocate.SetWriteOffAmt(0);
+            PayAlocate.SetOverUnderAmt(0);
+            return PayAlocate;
+        }
+
+        /// Task ID : 2319
+        /// <summary>
+        ///  This method used to collect last Batch Line ID where we will to create payment with all Batch Line details with same business partner and location  
+        /// </summary>
         /// <param name="getVA009_Batch_ID"></param>
-        /// <returns></returns>
-        private Dictionary<int, VA009_PaymetDetailsForLastTransaction> GetLastBatchLine(DataSet ds, int getVA009_Batch_ID)
+        /// <returns>Dictionary as Key of Last Batch Line Id and Value as Object of VA009_PaymetDetailsForLastTransaction </returns>
+        private Dictionary<int, VA009_PaymetDetailsForLastTransaction> GetLastBatchLine(int getVA009_Batch_ID)
         {
             sql.Clear();
-            Dictionary<int, VA009_PaymetDetailsForLastTransaction> keyValuePairs=new Dictionary<int, VA009_PaymetDetailsForLastTransaction>();
-            
-            sql.Append(@" SELECT MAX(VA009_BatchLines_ID) AS VA009_BatchLines_ID ,C_BPartner_ID,VA009_PAYMENTLOCATION_ID FROM VA009_BatchLines " +
-                            " WHERE VA009_Batch_ID="+ getVA009_Batch_ID+" AND ISAcTive='Y' "+
-                            " GROUP BY C_BPartner_ID, VA009_PAYMENTLOCATION_ID");
+            Dictionary<int, VA009_PaymetDetailsForLastTransaction> keyValuePairs = new Dictionary<int, VA009_PaymetDetailsForLastTransaction>();
+
+            sql.Append(@" SELECT MAX(VA009_BatchLines_ID) AS VA009_BatchLines_ID ,C_BPartner_ID,VA009_PAYMENTLOCATION_ID , VA009_PAYMENTLOCATION_ID FROM VA009_BatchLines " +
+                            " WHERE VA009_Batch_ID=" + getVA009_Batch_ID + " AND ISAcTive='Y' " +
+                            " GROUP BY C_BPartner_ID, VA009_PAYMENTLOCATION_ID , VA009_PAYMENTLOCATION_ID");
 
             DataSet dSet = DB.ExecuteDataset(sql.ToString(), null, Get_TrxName());
-
 
             if (dSet != null && dSet.Tables[0].Rows.Count > 0)
             {
                 for (Int32 i = 0; i < dSet.Tables[0].Rows.Count; i++)
                 {
-                    Int32 VA009_BatchLines_ID =Util.GetValueOfInt(dSet.Tables[0].Rows[i]["VA009_BatchLines_ID"]);
+                    Int32 VA009_BatchLines_ID = Util.GetValueOfInt(dSet.Tables[0].Rows[i]["VA009_BatchLines_ID"]);
                     VA009_PaymetDetailsForLastTransaction vA009_PaymetDetailsForLastTransaction = new VA009_PaymetDetailsForLastTransaction();
                     vA009_PaymetDetailsForLastTransaction.C_BPartner_ID = Util.GetValueOfInt(dSet.Tables[0].Rows[i]["C_BPartner_ID"]);
-                    vA009_PaymetDetailsForLastTransaction.C_BPartnerLocation_ID= Util.GetValueOfInt(dSet.Tables[0].Rows[i]["VA009_PAYMENTLOCATION_ID"]);
+                    vA009_PaymetDetailsForLastTransaction.C_BPartnerLocation_ID = Util.GetValueOfInt(dSet.Tables[0].Rows[i]["VA009_PAYMENTLOCATION_ID"]);
                     keyValuePairs.Add(VA009_BatchLines_ID, vA009_PaymetDetailsForLastTransaction);
                 }
             }
-
-            // get All VA009_BatchLinesDetails except all Batch line Id
-            try { 
-            if (ds != null && ds.Tables[0].Rows.Count > 0)
-            {
-                for (Int32 i = 0; i < ds.Tables[0].Rows.Count; i++)
-                {
-                    Int32 VA009_BatchLines_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_BatchLines_ID"]);
-                    Int32 c_bpartner_id = Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]);
-                    Int32 C_BPartner_Location_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]);
-                    if (!keyValuePairs.ContainsKey(VA009_BatchLines_ID))
-                    {
-                            // if (batchInfo[Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])].isAPIPositive == false)
-                            
-                        VA009_PaymetDetailsForLastTransaction vA009_PaymetDetailsForLastTransaction = keyValuePairs[VA009_BatchLines_ID];
-                        if (vA009_PaymetDetailsForLastTransaction.C_BPartner_ID == c_bpartner_id &&
-                            vA009_PaymetDetailsForLastTransaction.C_BPartnerLocation_ID == C_BPartner_Location_ID)
-                        {
-                            List<Int32> listData = vA009_PaymetDetailsForLastTransaction.VA009_BatchLinesList;
-
-                            if (listData.Count > 0)
-                            {
-                                listData.Add(Util.GetValueOfInt(dSet.Tables[0].Rows[i]["va009_batchlinedetails_ID"]));
-                            }
-                            else
-                            {
-                                List<Int32> newlist = new List<Int32>();
-                                newlist.Add(Util.GetValueOfInt(dSet.Tables[0].Rows[i]["va009_batchlinedetails_ID"]));
-                                vA009_PaymetDetailsForLastTransaction.VA009_BatchLinesList = newlist;
-                            }
-                        }
-
-                    }
-                }
-            }
-            }
-            catch (Exception e)
-            {
-                Get_TrxName().Rollback();
-                e = VLogger.RetrieveException();
-                
-            }
-
-
             return keyValuePairs;
         }
 
+        /// Task ID : 2319
         /// <summary>
         /// Set Payment Schedule Batch ID on Payment
         /// </summary>
         /// <param name="Payment">Payment Object</param>
         /// <param name="VA009_Batch_ID">Batch ID</param>
-        /// <write>VIS_045 - 04-April-2023 - Devops Task ID = 2061</write>
         private void SetVA009_Batch_ID(MPayment Payment, int VA009_Batch_ID)
         {
             if (Payment != null && Payment.Get_ColumnIndex("VA009_Batch_ID") >= 0)
@@ -1308,6 +1008,7 @@ namespace ViennaAdvantage.Process
             }
         }
 
+        ///  Task ID : 2319
         /// <summary> Obsolete method because plenty of cases for order payment Schedule
         /// Set Execution Status In Case of Order Payment Schedule
         /// </summary> Set Order Schedule Execution Status
@@ -1323,7 +1024,11 @@ namespace ViennaAdvantage.Process
             }
             return "";
         }
-
+        /// Task ID : 2319
+        /// <summary>
+        /// Get error message
+        /// </summary>
+        /// <returns>Message</returns>
         private string ErrorMessage()
         {
             Get_TrxName().Rollback();
@@ -1331,12 +1036,14 @@ namespace ViennaAdvantage.Process
             ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
             return msg;
         }
+        /// Task ID : 2319
         /// <summary>
         /// Update Check NO for the Payment in Case of Check Type Method
         /// </summary>
         /// <param name="ds"></param>
         /// <param name="i"></param>
         /// <param name="_pay"></param>
+        /// <returns>String message</returns>
         private String UpdateCheckNoOnPayment(DataSet ds, int i, MPayment _pay)
         {
             sql.Clear();
@@ -1356,8 +1063,6 @@ namespace ViennaAdvantage.Process
                 if (BAcctDoc.GetCurrentNext() > 0)
                 {
                     //not required to set checkno from here
-                    //_pay.SetCheckNo(Util.GetValueOfString(BAcctDoc.GetCurrentNext()));
-                    // CurrtNxtUpdated = true;
                 }
                 else
                 {
@@ -1371,12 +1076,13 @@ namespace ViennaAdvantage.Process
             }
             return "";
         }
+        /// Task ID : 2319
         /// <summary>
         /// Get Document Base Type based on Sales Transaction and Return Transction
         /// </summary>
         /// <param name="issotrx"></param>
         /// <param name="isreturntrx"></param>
-        /// <returns></returns>
+        /// <returns>DocBasetype ID Integer value</returns>
         public int GetDocbaseType(string issotrx, string isreturntrx)
         {
             string Docbasetype = string.Empty;
@@ -1390,29 +1096,31 @@ namespace ViennaAdvantage.Process
             else if (issotrx == "Y" && isreturntrx == "Y")
                 Docbasetype = "APP";
 
-            int DocType_ID = Util.GetValueOfInt(DB.ExecuteScalar("Select  dt.c_doctype_id  From C_doctype DT inner join c_docbasetype DBT On dt.docbasetype=dbt.docbasetype where dbt.docbasetype='" + Docbasetype + "' AND dt.IsActive = 'Y' AND (DT.ad_org_id = " + GetAD_Org_ID() + " or  DT.ad_org_id = 0) AND DT.AD_Client_ID = " + GetAD_Client_ID()));
+            int DocType_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT  dt.c_doctype_id  FROM C_doctype DT INNER JOIN c_docbasetype DBT ON dt.docbasetype=dbt.docbasetype WHERE dbt.docbasetype='" + Docbasetype + "' AND dt.IsActive = 'Y' AND (DT.ad_org_id = " + GetAD_Org_ID() + " OR  DT.ad_org_id = 0) AND DT.AD_Client_ID = " + GetAD_Client_ID()));
             return DocType_ID;
         }
 
+        /// Task ID : 2319
         /// <summary>
         ///Get Document Type Based on Document Base Type 
         /// </summary>
         /// <param name="docbasetype"></param>
-        /// <returns></returns>
+        /// <returns>Doc Type int value</returns>
         public int GetDocumnetType(string docbasetype)
         {
             if (docbasetype == "ARI")
                 docbasetype = "ARR";
             else if (docbasetype == "API")
                 docbasetype = "APP";
-            else if (docbasetype == "ARC" || docbasetype == "SOO") // with reverse entry //When AR Credit & sales order done by rakesh assigned by ranvir
+            else if (docbasetype == "ARC" || docbasetype == "SOO") // with reverse entry //When AR Credit & sales order 
                 docbasetype = "ARR";
-            else if (docbasetype == "APC" || docbasetype == "POO") // with reverse entry //When AP Credit & purchase order done by rakesh assigned by ranvir
+            else if (docbasetype == "APC" || docbasetype == "POO") // with reverse entry //When AP Credit & purchase order 
                 docbasetype = "APP";
-            int DocType_ID = Util.GetValueOfInt(DB.ExecuteScalar("Select  min(dt.c_doctype_id)  From C_doctype DT inner join c_docbasetype DBT On dt.docbasetype=dbt.docbasetype where dbt.docbasetype='" + docbasetype + "' AND dt.IsActive = 'Y' AND (DT.ad_org_id = " + GetAD_Org_ID() + " or  DT.ad_org_id = 0) AND DT.AD_Client_ID = " + GetAD_Client_ID()));
+            int DocType_ID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT  min(dt.c_doctype_id)  FROM C_doctype DT INNER JOIN c_docbasetype DBT ON dt.docbasetype=dbt.docbasetype WHERE dbt.docbasetype='" + docbasetype + "' AND dt.IsActive = 'Y' AND (DT.ad_org_id = " + GetAD_Org_ID() + " OR  DT.ad_org_id = 0) AND DT.AD_Client_ID = " + GetAD_Client_ID()));
             return DocType_ID;
         }
 
+        /// Task ID : 2319
         /// <summary>
         /// Saving data against Payment Batch in Log window if we get error while processing  
         /// </summary>
@@ -1420,6 +1128,7 @@ namespace ViennaAdvantage.Process
         /// <param name="OrgId"></param>
         /// <param name="BatchId"></param>
         /// <param name="ErrorMsg"></param>
+        /// <return>Void</return>
         public void SavePaymentBachLog(int ClientId, int OrgId, int BatchId, string ErrorMsg)
         {
             MVA009PaymentBatchLog paymentBatchLog = new MVA009PaymentBatchLog(GetCtx(), 0, Get_Trx());
@@ -1431,6 +1140,7 @@ namespace ViennaAdvantage.Process
             paymentBatchLog.Save(Get_TrxName());
         }
 
+        /// Task ID : 2319
         /// <summary>
         /// Saving data against Payment Batch in Log window if we get error while processing  
         /// </summary>
@@ -1439,6 +1149,7 @@ namespace ViennaAdvantage.Process
         /// <param name="BatchId"></param>
         /// <param name="paymentDocumentNo"></param>
         /// <param name="allocationDocumentNo"></param>
+        /// /// <return>Void</return>
         public void SaveRecordPaymentBachLog(int ClientId, int OrgId, int BatchId, string paymentDocumentNo, string allocationDocumentNo)
         {
             MVA009PaymentBatchLog paymentBatchLog = new MVA009PaymentBatchLog(GetCtx(), 0, Get_Trx());
@@ -1461,9 +1172,11 @@ namespace ViennaAdvantage.Process
             paymentBatchLog.Save(Get_TrxName());
         }
 
-        ///<Summary>
+        ///Task ID : 2319
+        /// <Summary>
         ///check weather payment already generated against this batch or not
         ///<Summary>
+        ///<return>Boolean</return>
         public bool CheckPaymentStatus()
         {
             sql.Clear();
@@ -1495,9 +1208,10 @@ namespace ViennaAdvantage.Process
             return false;
         }
 
-        //Following method added by Arpit to create Payment For diffrent orders
+        /// Task ID : 2319
         /// <summary>
         /// Save Payment record in Case when Data Is having Order Payment Schedule
+        /// Following method added by Arpit to create Payment For diffrent orders
         /// </summary>
         /// <param name="ds">dataset</param>
         /// <param name="i">recordnumber</param>
@@ -1505,17 +1219,15 @@ namespace ViennaAdvantage.Process
         /// <param name="discAmt">dicsount amount</param>
         /// <param name="dueAmt">Due amount</param>
         /// <param name="dateAcct">Account Date</param>
-        /// <returns></returns>
+        /// <returns>String value</returns>
         public String CreatePaymentAgainstOrders(DataSet ds, int i, MPayment _pay, decimal discAmt, decimal dueAmt, int currencyTo_ID, DateTime? docdate, DateTime? dateAcct)
         {
-            //MPayment _pay = new MPayment(GetCtx(), 0, Get_TrxName());
             int C_Doctype_ID = GetDocumnetType(Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]));
             _pay.SetC_DocType_ID(C_Doctype_ID);
             _pay.SetC_Order_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Order_ID"]));
             _pay.SetVA009_OrderPaySchedule_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_OrderPaySchedule_ID"]));
             _pay.SetAD_Client_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]));
             _pay.SetAD_Org_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]));
-            //Rakesh(VA228):to set account date of batch header on all payments and allocations
             _pay.SetDateAcct(dateAcct);
             _pay.SetDateTrx(docdate);
             _pay.SetC_BankAccount_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bankaccount_id"]));
@@ -1546,16 +1258,12 @@ namespace ViennaAdvantage.Process
             }
             #endregion
             _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
-            //_pay.SetDiscountAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["discountamt"]));
             _pay.SetDiscountAmt(discAmt);
-            //_pay.SetPayAmt(Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["VA009_ConvertedAmt"]));
             _pay.SetPayAmt(dueAmt);
-            //_pay.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
             _pay.SetC_Currency_ID(BlineDetailCur_ID);
-            //Rakesh(VA228):Set ConversionType_ID
             _pay.SetC_ConversionType_ID(_ConversionType_ID);
             _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
-            tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"select VA009_PAYMENTBASETYPE from VA009_PAYMENTMETHOD where VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
+            tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PAYMENTBASETYPE FROM VA009_PAYMENTMETHOD WHERE VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
             if (tenderType == "K")          // Credit Card
             {
                 _pay.SetTenderType("C");
@@ -1586,28 +1294,14 @@ namespace ViennaAdvantage.Process
             {
                 _pay.SetTenderType("A");
             }
-            //_pay.SetDocStatus("CO");
-            //_pay.SetDocAction("CL");
-            //if (!_pay.Save(Get_TrxName()))
-            //{
-            //    msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved");
-            //    ValueNamePair ppE = VAdvantage.Logging.VLogger.RetrieveError();
-            //    SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
-            //                        GetRecord_ID(), ppE.ToString());
-            //    Rollback();
-            //}
-            //else
-            //{
-            //    //To set Payment's ID on batch Line Details
-            //    MVA009BatchLineDetails BatchDetLines = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_TrxName());
-            //    BatchDetLines.SetC_Payment_ID(_pay.Get_ID());
-            //    BatchDetLines.Save(Get_TrxName());
-            //}
+            
             return "";
 
         }
 
 
+        /// Task ID : 2319
+        /// Following method added by Arpit to create Payment For diffrent orders
         /// <summary>
         /// Mehtod added to complete and reverse the document and execute the workflow as well
         /// </summary>
@@ -1691,6 +1385,7 @@ namespace ViennaAdvantage.Process
             return result;
         }
 
+        ///  Task ID : 2319
         /// <summary>
         /// To get the amount of API and APC
         /// </summary>
@@ -1732,31 +1427,11 @@ namespace ViennaAdvantage.Process
             return batchInfo;
         }
 
-        // Get Last Batch Line Id and list of all BatchLine Details Id where I have create payment for all payment Allocate
-        // 
-        public Dictionary<int, VA009_AllocateDetailsForLastPayment> GetLastBatchLineToCreateAllocate(DataSet ds, int PayMethodID)
-        {
-            Dictionary<int, VA009_AllocateDetailsForLastPayment> batchInfo = new Dictionary<int, VA009_AllocateDetailsForLastPayment>();
-            VA009_AllocateDetailsForLastPayment bp = null; int batchLineID = 0;
-
-            for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
-            {
-                batchLineID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]);
-                if (!batchInfo.ContainsKey(batchLineID))
-                {
-                    batchInfo.Add(batchLineID, bp);
-                }
-
-            }
-            return batchInfo;
-        }
-
     }
-
-
-
-
-    //Class defiend to hold the data against BP
+    ///  Task ID : 2319
+    /// <summary>
+    /// Class defiend to hold the data against BP
+    /// </summary>
     public class VA009_BPDataCheckStub
     {
         public decimal TotalAPI { get; set; }
@@ -1764,24 +1439,10 @@ namespace ViennaAdvantage.Process
         public bool isAPIPositive { get; set; }
     }
 
-    /// Added Code by Mukesh @20230729
-    /// 
-
-    public class VA009_AllocateDetailsForLastPayment
-    {
-        public VA009_AllocateDetailsForLastPayment() { }
-        public VA009_AllocateDetailsForLastPayment(int C_BPartner_ID, int C_BPartnerLocation_ID, int VA009_BatchLines_ID, int C_Payment_ID) {
-            this.C_BPartner_ID = C_BPartner_ID;
-            this.C_BPartnerLocation_ID = C_BPartnerLocation_ID;
-            this.VA009_BatchLines_ID = VA009_BatchLines_ID;
-            this.C_Payment_ID = C_Payment_ID;
-
-        }
-        public Int32 C_BPartner_ID { get; set; }
-        public Int32 C_BPartnerLocation_ID { get; set; }
-        public Int32 VA009_BatchLines_ID { get; set; }
-        public Int32 C_Payment_ID { get; set; }
-    }
+    /// Task ID : 2319
+    /// <summary>
+    /// This class hold the values of batch line 
+    /// </summary>
 
     public class VA009_PaymetDetailsForLastTransaction
     {
@@ -1794,17 +1455,5 @@ namespace ViennaAdvantage.Process
         public Int32 C_BPartner_ID { get; set; }
         public Int32 C_BPartnerLocation_ID { get; set; }
         public Int32 C_Payment_ID { get; set; }
-        public List<Int32> VA009_BatchLinesList { get; set; }
     }
-
-
 }
-
-
-
-
-
-
-
-
-
