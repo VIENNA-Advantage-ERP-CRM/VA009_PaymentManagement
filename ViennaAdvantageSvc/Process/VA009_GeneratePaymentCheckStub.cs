@@ -286,7 +286,6 @@ namespace ViennaAdvantage.Process
                     currencyTo_ID = Util.GetValueOfInt(_batch.Get_Value("C_Currency_ID"));
                     
                     _ConversionType_ID = _batch.GetC_ConversionType_ID();
-                    int counting = ds.Tables[0].Rows.Count;
                     if (ds != null && ds.Tables[0].Rows.Count > 0)
                     {
                         #region Update Payment Execution true on Invoice Payment Schedule
@@ -470,17 +469,16 @@ namespace ViennaAdvantage.Process
                                     }
                                     else
                                     {
-                                        batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
-                                        batchLineDetails.SetC_Payment_ID(C_Payment_ID);
 
-                                        //Task ID 2319 : Add Ref Payment ID at Batch Line Details window for last Payment  @20230810
+                                        DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET  C_Payment_ID=" + C_Payment_ID + " WHERE VA009_BatchLineDetails_ID = " +
+                                                Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), null, Get_TrxName());
+
+                                        //Task ID 2319 : Add Ref Payment ID at Batch Line Details window for last Payment @20230810
                                         if (lastBatchLine != null && lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
-                                            batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", C_Payment_ID);
-
-                                        if (!batchLineDetails.Save(Get_TrxName()))
                                         {
-                                            Get_TrxName().Rollback();
-                                        }
+                                            DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET VA009_Payment_ID=" + C_Payment_ID + " WHERE VA009_BatchLineDetails_ID = " +
+                                             Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), null, Get_TrxName());
+                                        }                      
                                     }
                                 }
                                 #endregion
@@ -563,7 +561,7 @@ namespace ViennaAdvantage.Process
                                         #endregion
                                         _pay.SetC_BPartner_Location_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"]));
                                         _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
-                                        tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"select VA009_PAYMENTBASETYPE from VA009_PAYMENTMETHOD where VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
+                                        tenderType = Util.GetValueOfString(Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentBasetype"]));
                                         if (tenderType == "K")          // Credit Card
                                         {
                                             _pay.SetTenderType("C");
@@ -630,8 +628,6 @@ namespace ViennaAdvantage.Process
                                             payment.Add(_pay.GetC_Payment_ID());
                                         }
 
-
-                                        ;
                                         c_currency_id = BlineDetailCur_ID;
                                         Bpartner_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_bpartner_id"]);
                                         VA009_PaymentMethod_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]);
@@ -668,39 +664,38 @@ namespace ViennaAdvantage.Process
                                             }
                                             else
                                             {
-                                                batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
-                                                batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
+                                                DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET  C_Payment_ID=" + _pay.GetC_Payment_ID() + " WHERE VA009_BatchLineDetails_ID = " +
+                                                Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), null, Get_TrxName());
 
                                                 //Task ID 2319 : Add Ref Payment ID at Batch Line Details window for last Payment @20230810
                                                 if (lastBatchLine != null && lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
-                                                    batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", C_Payment_ID);
-
-                                                batchLineDetails.Save(Get_TrxName());
-
-                                                batchLines = new MVA009BatchLines(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]), Get_Trx());
-                                                batchLines.SetC_Payment_ID(_pay.GetC_Payment_ID());
-                                                if (!batchLines.Save(Get_TrxName()))
                                                 {
-                                                    Get_TrxName().Rollback();
+                                                    DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET  VA009_Payment_ID=" + C_Payment_ID + " WHERE VA009_BatchLineDetails_ID = " +
+                                                     Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), null, Get_TrxName());
                                                 }
+
+                                                DB.ExecuteQuery("UPDATE VA009_BatchLines SET C_Payment_ID=" + _pay.GetC_Payment_ID() + " WHERE VA009_BatchLines_ID = " +
+                                                Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"]), null, Get_TrxName());
+
+                                                
                                             }
                                         }
                                         else
                                         {
-                                            //update bacth line and batch line detail
-                                            batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
-                                            batchLineDetails.SetC_Payment_ID(_pay.GetC_Payment_ID());
+
+                                            DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET  C_Payment_ID=" + C_Payment_ID + " WHERE VA009_BatchLineDetails_ID = " +
+                                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), null, Get_TrxName());
 
                                             //Task ID 2319 : Add Ref Payment ID at Batch Line Details window for last Payment @20230810
                                             if (lastBatchLine != null && lastBatchLine.ContainsKey(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlines_id"])))
-                                                batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", _pay.GetC_Payment_ID());
-
-                                            if (!batchLineDetails.Save(Get_TrxName()))
                                             {
-                                                Get_TrxName().Rollback();
+                                            DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET  VA009_Payment_ID=" + _pay.GetC_Payment_ID() + " WHERE VA009_BatchLineDetails_ID = " +
+                                            Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), null, Get_TrxName());
+                                               
                                             }
+                                            
                                         }
-                                    }
+                                   }
                                 }
                                 #endregion
 
@@ -714,7 +709,7 @@ namespace ViennaAdvantage.Process
                             {
                                 Get_TrxName().Commit();
                                 MPayment completePayment = new MPayment(GetCtx(), payment[i], Get_TrxName());
-                                string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
+                                string result = null;// CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                 if (!String.IsNullOrEmpty(result))
                                 {
                                     Get_TrxName().Rollback();
@@ -741,7 +736,7 @@ namespace ViennaAdvantage.Process
                                         docNos.Append(completePayment.GetDocumentNo());
                                     }
 
-                                    //VIS323 DevOpsId- 1719 Set Allocation on Batch Line Details
+                                    //Task 2319 :  Set Allocation on Batch Line Details
                                     //Handled multiple allocation to multiple invoice against Different Vendor/Customer.
                                     sql.Clear();
                                     sql.Append(@"SELECT AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
@@ -906,12 +901,8 @@ namespace ViennaAdvantage.Process
                                 else
                                 {
 
-                                   MVA009BatchLineDetails batchLineDetails = new MVA009BatchLineDetails(GetCtx(), Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), Get_Trx());
-                                    batchLineDetails.Set_ValueNoCheck("VA009_Payment_ID", C_Payment_ID);
-                                    if (!batchLineDetails.Save(Get_TrxName()))
-                                    {
-                                        Get_TrxName().Rollback();
-                                    }
+                                    DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET  VA009_Payment_ID=" + C_Payment_ID + " WHERE VA009_BatchLineDetails_ID = " + 
+                                        Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_batchlinedetails_ID"]), null, Get_TrxName());
                                     mPaymentAllocates.Add(PayAlocate);
                                 }
                             }
@@ -1263,7 +1254,7 @@ namespace ViennaAdvantage.Process
             _pay.SetC_Currency_ID(BlineDetailCur_ID);
             _pay.SetC_ConversionType_ID(_ConversionType_ID);
             _pay.SetVA009_PaymentMethod_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"]));
-            tenderType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PAYMENTBASETYPE FROM VA009_PAYMENTMETHOD WHERE VA009_PAYMENTMETHOD_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["va009_paymentmethod_id"])));
+            tenderType = Util.GetValueOfString(Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentBasetype"]));
             if (tenderType == "K")          // Credit Card
             {
                 _pay.SetTenderType("C");
