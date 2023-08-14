@@ -5288,10 +5288,12 @@
                 $batchResult = $("<div>"
                     + "<label class='VA009-FontStyle mb-3' id='VA009_Note_" + $self.windowNo + "'></label>"
                     + "</div>");
-                $resltbtns = $("<div class='d-flex align-items-center justify-content-end'>" +
+                $resltbtns = $("<div class='VA009-ButtonDivStyle'>"+
+                    "<div class='d-flex align-items-center justify-content-end'>" +
                     "<button class='ui-button mr-3' id='VA009_ViewBatch_" + $self.windowNo + "'>" + VIS.Msg.getMsg("VA009_ViewBatch")+"</button>" +
                     "<button class= 'ui-button' id ='VA009_Cancel_" + $self.windowNo + "'>" + VIS.Msg.getMsg("Cancel") + "</button >" +
-                   "</div >"
+                    "</div >" +
+                    "</div>"
                     );
 
                 $batch.append(_batch);
