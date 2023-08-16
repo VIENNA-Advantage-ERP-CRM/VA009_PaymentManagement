@@ -3465,7 +3465,7 @@ namespace VA009.Models
         public string getCheckNo(int C_BankAccount_ID, int VA009_PaymentMethod_ID)
         {
             string checkNo = string.Empty;
-            checkNo = Util.GetValueOfString(DB.ExecuteScalar(" SELECT CurrentNext FROM C_BankAccountDoc WHERE C_BankAccount_ID = " + C_BankAccount_ID + " AND IsActive='Y' AND EndChkNumber >= CurrentNext AND VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID));
+            checkNo = Util.GetValueOfString(DB.ExecuteScalar(" SELECT CurrentNext FROM C_BankAccountDoc WHERE C_BankAccount_ID = " + C_BankAccount_ID + " AND IsActive='Y' AND EndChkNumber >= CurrentNext AND VA009_PaymentMethod_ID = " + VA009_PaymentMethod_ID +" ORDER BY Priority"));
             return checkNo;
         }
 
@@ -4075,7 +4075,7 @@ namespace VA009.Models
             //handled the logs
             string sql = @"SELECT bd.CurrentNext FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
              WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID + "AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
-             " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID();
+             " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() +" ORDER BY bd.Priority";
 
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             return Util.GetValueOfInt(DB.ExecuteScalar(sql));
