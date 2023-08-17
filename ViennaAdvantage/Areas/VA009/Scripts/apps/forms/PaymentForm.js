@@ -821,6 +821,9 @@
                     pgNo = 1;
                     resetPaging();
                     loadPaymetsAll();
+                    SelectallJournalIds = [];
+                    SelectallInvIds = [];
+                    SelectallOrdIds = [];
                     /* VIS_427 DevOps id: 2246 Commented The line In order to
                      get schedules according to Searched Value*/
                    // $SrchTxtBox.val('');
@@ -835,6 +838,9 @@
                 pgNo = 1;
                 resetPaging();
                 loadPaymetsAll();
+                SelectallJournalIds = [];
+                SelectallInvIds = [];
+                SelectallOrdIds = [];
                 /* VIS_427 DevOps id: 2246 Commented The line In order to
                     get schedules according to Searched Value*/
                // $SrchTxtBox.val('');
