@@ -93,6 +93,7 @@
     <Compile Include="Process\VA009_CustomerPaymentRpt.cs" />
     <Compile Include="Process\VA009_DownloadAllHO.cs" />
     <Compile Include="Process\VA009_DownloadDoc.cs" />
+    <Compile Include="Process\VA009_GeneratePaymentCheckStub.cs" />
     <Compile Include="Process\VA009_Generate_Payment.cs" />
     <Compile Include="Process\VA009_PaymentProcessorCall.cs">
       <SubType>Code</SubType>

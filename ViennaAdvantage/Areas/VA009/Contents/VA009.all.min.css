@@ -1,4 +1,4 @@
-﻿/***version 2.1.1.0*/
+﻿/***version 2.1.3.0*/
 /*body{
 	margin: 0;
 	padding: 0;	
@@ -37,7 +37,6 @@
     border: 0px;
     margin: 0;
 }*/
-
 .VA009-Duedate-span {
     cursor: pointer;
     padding: 1%;
@@ -1014,6 +1013,19 @@ p.VA009-data-bot:last-child {
         .VA009-popFormInn label:last-child {
             padding-left: 1rem;
         }
+
+.VA009-FontStyle {
+    color: black;
+    font-weight: normal;
+    visibility: hidden;
+}
+
+.VA009-ButtonDivStyle {
+    min-height: 70px;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
 
 
 /* RTL CSS*/
