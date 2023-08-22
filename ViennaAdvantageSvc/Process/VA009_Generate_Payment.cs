@@ -750,7 +750,15 @@ namespace ViennaAdvantage.Process
                                                 val = ppE.GetName();
                                             }
                                         }
-                                        msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved") + ":" + val;
+                                        if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARI" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
+                                        {
+
+                                            msg = Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck");
+                                        }
+                                        else
+                                        {
+                                            msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved") + ":" + val;
+                                        }
 
                                         SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
                                         Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]), GetRecord_ID(), ppE.ToString());
@@ -811,7 +819,15 @@ namespace ViennaAdvantage.Process
                                                         val = ppE.GetName();
                                                     }
                                                 }
-                                                msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved") + ":" + val;
+                                                if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARI" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
+                                                {
+
+                                                    msg = Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck");
+                                                }
+                                                else
+                                                {
+                                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentAllocateNotSaved") + ":" + val;
+                                                }
                                                 SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]),
                                                 Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]), GetRecord_ID(), ppE.ToString());
                                                 Get_TrxName().Rollback();
@@ -858,7 +874,7 @@ namespace ViennaAdvantage.Process
                                 string result = CompleteOrReverse(GetCtx(), completePayment.GetC_Payment_ID(), 149, "CO");
                                 if (!String.IsNullOrEmpty(result))
                                 {
-                                     Get_TrxName().Rollback();
+                                    Get_TrxName().Rollback();
                                     //Remove Payment reference if payment is not completed
                                     if (DB.ExecuteQuery("UPDATE VA009_BatchLineDetails SET C_Payment_ID = NULL WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID()) > 0)
                                     {
@@ -867,7 +883,7 @@ namespace ViennaAdvantage.Process
                                     DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + completePayment.GetC_Payment_ID());
 
                                     log.Log(Level.SEVERE, "Batch Payment Not Completed " + completePayment.GetDocumentNo() + " " + result);
-                                   
+
                                     msg = result;
 
                                 }
@@ -1047,7 +1063,15 @@ namespace ViennaAdvantage.Process
                                     SavePaymentBachLog(Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_client_id"]), Util.GetValueOfInt(ds.Tables[0].Rows[i]["ad_org_id"]),
                                                         GetRecord_ID(), ppE.ToString());
                                     Rollback();
-                                    msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved") + ": " + ppE.ToString();
+                                    if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARI" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
+                                    {
+
+                                        msg = Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck");
+                                    }
+                                    else
+                                    {
+                                        msg = Msg.GetMsg(GetCtx(), "VA009_PymentNotSaved") + ": " + ppE.ToString();
+                                    }
 
                                     allocationDocumentNo = string.Empty;
                                     paymentDocumentNo = string.Empty;
@@ -1142,7 +1166,7 @@ namespace ViennaAdvantage.Process
                         BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT " + DBFuncCollection.ListAggregationName(" LISTAGG(NAME, ',') WITHIN GROUP (ORDER BY NAME) ") + "" +
                                                          " AS NAMES FROM C_BPARTNER WHERE C_Bpartner_ID IN  (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
 
-                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_APCValue") + " " + BpNames + ". ";
+                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck") + " " + BpNames + ". ";
                     }
 
                     if (!string.IsNullOrEmpty(invDocNo))
@@ -1265,6 +1289,11 @@ namespace ViennaAdvantage.Process
                 {
                     return "VA009_NoCurNxtForAcctNo";
                 }
+            }
+            else if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARI" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
+            {
+
+                return "VA009_CantGenPaymentForCheck";
             }
             else
             {
