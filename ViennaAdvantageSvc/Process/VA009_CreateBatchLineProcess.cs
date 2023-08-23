@@ -110,6 +110,7 @@ namespace ViennaAdvantage.Process
             MVA009Batch batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
             MVA009BatchLineDetails lineDetail = null;
             MVA009BatchLines line = null;
+            bool isCount = false; //VIS_427 Bug id 2323 defined variable 
 
             // Delete Lines if selected as true
             if (deleteBatchLine)
@@ -138,7 +139,7 @@ namespace ViennaAdvantage.Process
             string _baseType = null;
 
             _sql.Clear();
-            _sql.Append(@"SELECT 'INVOICE' as Type,cp.ad_client_id, cp.ad_org_id,ci.c_invoice_id,CI.C_Bpartner_ID, cp.c_invoicepayschedule_id, 
+            _sql.Append(@"SELECT * FROM (SELECT 'INVOICE' as Type,cp.ad_client_id, cp.ad_org_id,ci.c_invoice_id,CI.C_Bpartner_ID, cp.c_invoicepayschedule_id, 
                           cp.duedate, C_BP_BankAccount_ID,null as AccountType, cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,
                           ci.c_currency_id , doc.DocBaseType, CI.C_ConversionType_ID, 
                           CASE WHEN (bpLoc.IsPayFrom = 'Y' AND doc.DocBaseType IN ('ARI' , 'ARC')) THEN  CI.C_BPartner_Location_ID
@@ -242,6 +243,8 @@ namespace ViennaAdvantage.Process
                 _sql.Append(" ORDER BY C_BPartner_ID ASC , DocbaseType ");
             }
 
+            _sql.Append(")t ORDER BY t.C_BPartner_ID ASC ,t.C_BPartner_Location_ID,t.DocbaseType");
+
             DataSet ds = DB.ExecuteDataset(_sql.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -255,6 +258,12 @@ namespace ViennaAdvantage.Process
                     if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]) == 0)
                     {
                         continue;
+                    }
+                   // Bug id 2323 set the boolean value false when business partener is not same and location is different
+                    if (i > 0 && (_BPartner != Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) ||
+                        Util.GetValueOfInt(ds.Tables[0].Rows[i - 1]["C_BPartner_Location_ID"]) != Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"])))
+                    {
+                        isCount = false;
                     }
 
                     // to set value of routing number and account number of batch lines 
@@ -326,6 +335,19 @@ namespace ViennaAdvantage.Process
                         DataSet dsBatchLine = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
                         if (dsBatchLine != null && dsBatchLine.Tables[0].Rows.Count > 0)
                         {
+                            /*VIS_427 Bug id 2323 Handled the batch line count issue which is defined on bank account window
+                            in order to get batch line detalis according to that count*/
+                            if (!isCount)
+                            {
+                                string sql = @"SELECT COUNT(VA009_BatchLineDetails_ID) FROM VA009_BatchLineDetails WHERE VA009_BatchLines_ID="
+                                                + Util.GetValueOfInt(dsBatchLine.Tables[0].Rows[0]["VA009_BatchLines_ID"]);
+                                int BatchDetailCount = Util.GetValueOfInt(DB.ExecuteScalar(sql, null, Get_Trx()));
+                                if (BatchDetailCount > 0)
+                                {
+                                    isCount = true;
+                                    Total_Lines_Count = BatchDetailCount;
+                                }
+                            }
                             DataRow dr = dsBatchLine.Tables[0].Rows[0];
                             line = new MVA009BatchLines(GetCtx(), dr, Get_TrxName());
                             //if line found then add batchlinedetail agaisnt same line otherwise create new line
