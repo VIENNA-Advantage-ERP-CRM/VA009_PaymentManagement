@@ -750,6 +750,7 @@ namespace ViennaAdvantage.Process
                                                 val = ppE.GetName();
                                             }
                                         }
+                                        //VIS_427 Bug id 2322 message issue when docbasetype is ARI or ARC
                                         if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARI" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
                                         {
 
@@ -819,6 +820,7 @@ namespace ViennaAdvantage.Process
                                                         val = ppE.GetName();
                                                     }
                                                 }
+                                                //VIS_427 Bug id 2322 message issue when docbasetype is ARI or ARC
                                                 if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARI" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
                                                 {
 
@@ -1166,7 +1168,7 @@ namespace ViennaAdvantage.Process
                         BpNames = Util.GetValueOfString(DB.ExecuteScalar(" SELECT " + DBFuncCollection.ListAggregationName(" LISTAGG(NAME, ',') WITHIN GROUP (ORDER BY NAME) ") + "" +
                                                          " AS NAMES FROM C_BPARTNER WHERE C_Bpartner_ID IN  (" + msgAPC_API.ToString() + ")", null, Get_Trx()));
 
-                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_CantGenPaymentForCheck") + " " + BpNames + ". ";
+                        msg += " " + Msg.GetMsg(GetCtx(), "VA009_APCValue") + " " + BpNames + ". ";
                     }
 
                     if (!string.IsNullOrEmpty(invDocNo))
@@ -1290,6 +1292,7 @@ namespace ViennaAdvantage.Process
                     return "VA009_NoCurNxtForAcctNo";
                 }
             }
+            //VIS_427 Bug id 2322 message issue when docbasetype is ARI or ARC
             else if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARI" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC")
             {
 

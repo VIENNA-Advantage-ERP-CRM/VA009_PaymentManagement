@@ -110,7 +110,7 @@ namespace ViennaAdvantage.Process
             MVA009Batch batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
             MVA009BatchLineDetails lineDetail = null;
             MVA009BatchLines line = null;
-            bool isCount = false;
+            bool isCount = false; //VIS_427 Bug id 2323 defined variable 
 
             // Delete Lines if selected as true
             if (deleteBatchLine)
@@ -259,7 +259,7 @@ namespace ViennaAdvantage.Process
                     {
                         continue;
                     }
-
+                   // Bug id 2323 set the boolean value false when business partener is not same and location is different
                     if (i > 0 && (_BPartner != Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]) ||
                         Util.GetValueOfInt(ds.Tables[0].Rows[i - 1]["C_BPartner_Location_ID"]) != Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_Location_ID"])))
                     {
@@ -335,6 +335,8 @@ namespace ViennaAdvantage.Process
                         DataSet dsBatchLine = DB.ExecuteDataset(_sql.ToString(), null, Get_Trx());
                         if (dsBatchLine != null && dsBatchLine.Tables[0].Rows.Count > 0)
                         {
+                            /*VIS_427 Bug id 2323 Handled the batch line count issue which is defined on bank account window
+                            in order to get batch line detalis according to that count*/
                             if (!isCount)
                             {
                                 string sql = @"SELECT COUNT(VA009_BatchLineDetails_ID) FROM VA009_BatchLineDetails WHERE VA009_BatchLines_ID="

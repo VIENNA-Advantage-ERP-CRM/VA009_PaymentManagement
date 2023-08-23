@@ -1794,7 +1794,7 @@
                                         //}
 
                                         chqpaygrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
-                                        //VIS_427 BugId 2325 not allowing user to enter more writeof amount than pay amount 
+                                        //VIS_427 BugId 2325 not allowing user to enter more writeof amount than converted amount 
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
@@ -1807,6 +1807,7 @@
                                             if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                                 if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                     chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                     //VIS_427 BugId 2325 handled over under to not be negative
                                                     if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                         VIS.ADialog.error("MoreScheduleAmount");
                                                         chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -1818,6 +1819,7 @@
                                                 }
                                                 else {
                                                     chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                    //VIS_427 BugId 2325 handled Received to not be negative
                                                     if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                         VIS.ADialog.error("MoreScheduleAmount");
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -1835,6 +1837,7 @@
                                                 if (chqpaygrd.get(event.recid).changes.Discount == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled over under to not be negative
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -1846,6 +1849,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Recieved to not be negative for payable
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -1859,6 +1863,7 @@
                                                 else if (chqpaygrd.get(event.recid).changes.Discount == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled over under to not be negative
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -1870,6 +1875,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + chqpaygrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -1883,6 +1889,7 @@
                                                 else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled over under to not be negative
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -1895,6 +1902,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -1908,6 +1916,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled over under to not be negative
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -1920,6 +1929,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -2053,7 +2063,7 @@
                                         //}
 
                                         chqpaygrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
-                                        //VIS_427 BugId 2325 not allowing user to enter more Discount amount than pay amount 
+                                        //VIS_427 BugId 2325 not allowing user to enter more Discount amount than converted amount 
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
@@ -2068,6 +2078,7 @@
                                             if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                                 if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                     chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                    //VIS_427 BugId 2325 handled overunder to not be negative when user changes discount
                                                     if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                         VIS.ADialog.error("MoreScheduleAmount");
                                                         chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -2079,6 +2090,7 @@
                                                 }
                                                 else {
                                                     chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqpaygrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                    //VIS_427 BugId 2325 handled Received to not be negative when user changes discount
                                                     if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                         VIS.ADialog.error("MoreScheduleAmount");
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -2096,6 +2108,7 @@
                                                 if (chqpaygrd.get(event.recid).changes.Writeoff == undefined && chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -2107,6 +2120,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -2120,6 +2134,7 @@
                                                 else if (chqpaygrd.get(event.recid).changes.Writeoff == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -2131,6 +2146,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -2144,6 +2160,7 @@
                                                 else if (chqpaygrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -2156,6 +2173,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -2169,6 +2187,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -2180,6 +2199,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes discount
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = chqpaygrd.records[event.index]['VA009_RecivedAmt'];
@@ -3784,7 +3804,7 @@
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
                                         chqrecgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
-                                        //VIS_427 BugId 2325 not allowing user to enter more writeof amount than recived amount 
+                                        //VIS_427 BugId 2325 not allowing user to enter more writeof amount than converted amount 
                                         if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
@@ -3804,6 +3824,7 @@
                                                 if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -3815,6 +3836,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -3828,6 +3850,7 @@
                                                 else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -3839,12 +3862,21 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
+                                                        if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
+                                                            VIS.ADialog.error("MoreScheduleAmount");
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
+                                                            chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
+                                                        }
+                                                        else {
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
+                                                        }
                                                     }
                                                 }
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -3856,6 +3888,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -3869,6 +3902,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -3880,6 +3914,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -3941,6 +3976,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -3953,6 +3989,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -3971,6 +4008,7 @@
                                                 if (chqrecgrd.get(event.recid).changes.Discount == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -3983,6 +4021,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -3996,6 +4035,7 @@
                                                 else if (chqrecgrd.get(event.recid).changes.Discount == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4008,6 +4048,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + chqrecgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4021,6 +4062,7 @@
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4033,6 +4075,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4046,6 +4089,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4058,6 +4102,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes writeoff
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4086,7 +4131,7 @@
                                         //}
 
                                         chqrecgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
-                                        //VIS_427 BugId 2325 not allowing user to enter more discount amount than received amount 
+                                        //VIS_427 BugId 2325 not allowing user to enter more discount amount than converted amount 
                                         if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
@@ -4106,6 +4151,7 @@
                                                 if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4118,6 +4164,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4131,6 +4178,7 @@
                                                 else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4142,6 +4190,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4155,6 +4204,7 @@
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4167,6 +4217,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4180,6 +4231,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4192,6 +4244,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4253,6 +4306,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4265,6 +4319,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled Received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4283,6 +4338,7 @@
                                                 if (chqrecgrd.get(event.recid).changes.Writeoff == undefined && chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4295,6 +4351,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4308,6 +4365,7 @@
                                                 else if (chqrecgrd.get(event.recid).changes.Writeoff == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4320,6 +4378,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + chqrecgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4333,6 +4392,7 @@
                                                 else if (chqrecgrd.get(event.recid).changes.OverUnder == undefined) {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4345,6 +4405,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -4358,6 +4419,7 @@
                                                 else {
                                                     if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['OverUnder']) > 0) {
                                                         chqrecgrd.get(event.recid).changes.OverUnder = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqrecgrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.records[event.index]['Writeoff']))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.OverUnder = chqrecgrd.records[event.index]['OverUnder'];
@@ -4370,6 +4432,7 @@
                                                     }
                                                     else {
                                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.records[event.index]['ConvertedAmt'] - (event.value_new + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.OverUnder) + VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(event.recid).changes.Writeoff))).toFixed(stdPrecision);
+                                                        //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = chqrecgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5285,6 +5348,7 @@
                                         if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.OverUnder = Cashgrd.records[event.index]['OverUnder'];
@@ -5297,6 +5361,7 @@
                                             }
                                             else {
                                                 w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                 //VIS_427 BugId 2325 handled received to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5311,6 +5376,7 @@
 
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                 //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.OverUnder = Cashgrd.records[event.index]['OverUnder'];
@@ -5323,6 +5389,7 @@
                                             }
                                             else {
                                                 w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                 //VIS_427 BugId 2325 handled received to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5336,6 +5403,7 @@
                                         else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                 //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.records[event.index]['Writeoff'] = event.value_original;
@@ -5347,6 +5415,7 @@
                                             }
                                             else {
                                                 w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                 //VIS_427 BugId 2325 handled received to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5360,6 +5429,7 @@
                                         else {
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Discount'])).toFixed(stdPrecision);
+                                                 //VIS_427 BugId 2325 handled overunder to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.OverUnder = Cashgrd.records[event.index]['OverUnder'];
@@ -5372,6 +5442,7 @@
                                             }
                                             else {
                                                 Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Discount))).toFixed(stdPrecision);
+                                                 //VIS_427 BugId 2325 handled received to not be negative when user changes writeoff
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5445,6 +5516,7 @@
                                         if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.OverUnder = Cashgrd.records[event.index]['OverUnder'];
@@ -5457,6 +5529,7 @@
                                             }
                                             else {
                                                 w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5470,6 +5543,7 @@
                                         else if (Cashgrd.get(event.recid).changes.Writeoff == undefined) {
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                  //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.OverUnder = Cashgrd.records[event.index]['OverUnder'];
@@ -5482,6 +5556,7 @@
                                             }
                                             else {
                                                 w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5495,6 +5570,7 @@
                                         else if (Cashgrd.get(event.recid).changes.OverUnder == undefined) {
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.OverUnder = Cashgrd.records[event.index]['OverUnder'];
@@ -5507,6 +5583,7 @@
                                             }
                                             else {
                                                 w2ui.CashGrid.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + Cashgrd.records[event.index]['OverUnder'] + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled received to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
@@ -5520,6 +5597,7 @@
                                         else {
                                             if (VIS.Utility.Util.getValueOfDecimal((Cashgrd.records[event.index]['OverUnder'])) > 0) {
                                                 w2ui.CashGrid.get(event.recid).changes.OverUnder = (Cashgrd.records[event.index]['ConvertedAmt'] - (event.value_new + Cashgrd.records[event.index]['VA009_RecivedAmt'] + Cashgrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.OverUnder = Cashgrd.records[event.index]['OverUnder'];
@@ -5532,6 +5610,7 @@
                                             }
                                             else {
                                                 Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).ConvertedAmt) - (event.value_new + parseFloat(Cashgrd.get(event.recid).OverUnder) + VIS.Utility.Util.getValueOfDecimal(Cashgrd.get(event.recid).Writeoff))).toFixed(stdPrecision);
+                                                //VIS_427 BugId 2325 handled overunder to not be negative when user changes Discount
                                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Cashgrd.records[event.index]['VA009_RecivedAmt'];
