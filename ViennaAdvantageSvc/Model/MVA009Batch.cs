@@ -199,17 +199,36 @@ namespace ViennaAdvantage.Model
             }
 
             //VIS_045 -> DevOps task ID: 2035 -> 28/March/2023 
-            //to check if payment method is CHECK then skip otherwise set these values
-            string _baseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT VA009_PaymentBaseType FROM VA009_PaymentMethod WHERE 
-                                VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null, Get_TrxName()));
-            if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
+            //to check if payment method is CHECK / Cash then skip otherwise set these values
+            string _baseType = string.Empty;
+            string VA009_PaymentTrigger = string.Empty;
+            DataSet dsPaymentMethod = DB.ExecuteDataset(@"SELECT VA009_PaymentBaseType, VA009_PaymentTrigger FROM VA009_PaymentMethod WHERE 
+                                VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null, Get_Trx());
+            if (dsPaymentMethod != null && dsPaymentMethod.Tables.Count > 0 && dsPaymentMethod.Tables[0].Rows.Count > 0)
             {
-                // to check whether partner bank account and account name is selected on batch line or not
-                if (Util.GetValueOfInt(DB.ExecuteScalar($@"SELECT COUNT(VA009_BatchLines_ID) FROM VA009_BatchLines
-                         WHERE C_BP_BankAccount_ID IS NULL AND A_Name IS NULL AND VA009_Batch_ID = {GetVA009_Batch_ID()}", null, null)) > 0)
+                _baseType = Util.GetValueOfString(dsPaymentMethod.Tables[0].Rows[0]["VA009_PaymentBaseType"]);
+                VA009_PaymentTrigger = Util.GetValueOfString(dsPaymentMethod.Tables[0].Rows[0]["VA009_PaymentTrigger"]);
+
+                if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
                 {
-                    _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
-                    return DocActionVariables.STATUS_INVALID;
+                    // VIS_045 --> DevOps Task: 2344 -- When Payment Method is Direct Debit and Trigger by is Pull by Receipient then check bank account detail for Customer / vendor both
+                    // when not found, then system will not complete the record and give message
+                    if (_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_DirectDebit) &&
+                        VA009_PaymentTrigger.Equals(X_VA009_PaymentMethod.VA009_PAYMENTTRIGGER_PullByRecipient))
+                    {
+                        if (Util.GetValueOfInt(DB.ExecuteScalar($@"SELECT COUNT(VA009_BatchLines_ID) FROM VA009_BatchLines
+                         WHERE C_BP_BankAccount_ID IS NULL AND A_Name IS NULL AND VA009_Batch_ID = {GetVA009_Batch_ID()}", null, Get_Trx())) > 0)
+                        {
+                            _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
+                            return DocActionVariables.STATUS_INVALID;
+                        }
+                    }
+                    // VIS_045 --> DevOps Task: 2344 -- for Other Payment Method, system will check bank account detail for vendor 
+                    else if (!CheckBankAccountDetail("APP"))
+                    {
+                        _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
+                        return DocActionVariables.STATUS_INVALID;
+                    }
                 }
             }
 
@@ -217,6 +236,41 @@ namespace ViennaAdvantage.Model
             if (!DOCACTION_Complete.Equals(GetDocAction()))
                 SetDocAction(DOCACTION_Complete);
             return DocActionVariables.STATUS_INPROGRESS;
+        }
+
+        /// <summary>
+        /// This function is used to check Vendor Bank Account Detail exists on Batch Line Detail or not
+        /// </summary>
+        /// <param name="DocBaseType">Document Base Type</param>
+        /// <writer>VIS_045 - 25 August 2023</writer>
+        /// <Task>DevOps Task: 2344</Task>
+        /// <returns>False, when Bank Account Detail not exist</returns>
+        public bool CheckBankAccountDetail(string DocBaseType)
+        {
+            if (Util.GetValueOfInt(DB.ExecuteScalar($@"SELECT COUNT(*) from (
+                    SELECT DISTINCT
+                    CASE WHEN NVL(bld.C_Invoice_ID, 0) > 0 AND io.DocBaseType IN ( 'ARI', 'ARC') THEN 'ARR'
+                    WHEN NVL(bld.C_Invoice_ID, 0) > 0 AND io.DocBaseType IN ( 'API', 'APC') THEN 'APP'
+                    WHEN NVL(bld.C_Order_ID, 0) > 0 AND io.DocBaseType = 'SOO' THEN 'ARR'
+                    WHEN NVL(bld.C_Order_ID, 0) > 0 AND io.DocBaseType = 'POO' THEN 'APP'
+                    WHEN NVL(bld.GL_JournalLine_ID, 0) > 0 AND ev.AccountType = 'A' THEN 'ARR'
+                    WHEN NVL(bld.GL_JournalLine_ID, 0) > 0 AND ev.AccountType = 'L' THEN 'APP'
+                    END AS DocBaseType, bl.C_BP_BankAccount_ID, bl.A_Name
+                    FROM VA009_BatchLineDetails bld
+                    INNER JOIN VA009_BatchLines bl ON (bl.VA009_BatchLines_ID = bld.VA009_BatchLines_ID) 
+                    INNER JOIN VA009_Batch b ON (b.VA009_Batch_ID = bl.VA009_Batch_ID)
+                    LEFT JOIN C_Invoice i ON (i.C_Invoice_ID = bld.C_Invoice_ID)
+                    LEFT JOIN C_DocType id ON (id.C_Doctype_ID = i.C_Doctype_ID)
+                    LEFT JOIN C_Order o ON (o.C_Order_ID = bld.C_Order_ID)
+                    LEFT JOIN C_DocType io ON (io.C_Doctype_ID = i.C_Doctype_ID)
+                    LEFT JOIN GL_JournalLine jl ON (jl.GL_JournalLine_ID = bld.GL_JournalLine_ID)
+                    LEFT JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = jl.Account_ID)
+                    WHERE b.VA009_Batch_ID = {GetVA009_Batch_ID()})t
+                    WHERE {(string.IsNullOrEmpty(DocBaseType) ? "" : $"DocBaseType = {GlobalVariable.TO_STRING(DocBaseType)} AND ")} (NVL(C_BP_BankAccount_ID , 0) = 0 AND A_Name IS NULL) ", null, null)) > 0)
+            {
+                return false;
+            }
+            return true;
         }
 
         public bool ProcessIt(string action)
