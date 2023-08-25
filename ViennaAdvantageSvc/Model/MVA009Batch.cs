@@ -203,32 +203,32 @@ namespace ViennaAdvantage.Model
             string _baseType = string.Empty;
             string VA009_PaymentTrigger = string.Empty;
             DataSet dsPaymentMethod = DB.ExecuteDataset(@"SELECT VA009_PaymentBaseType, VA009_PaymentTrigger FROM VA009_PaymentMethod WHERE 
-                                VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null, Get_TrxName());
+                                VA009_PaymentMethod_ID=" + GetVA009_PaymentMethod_ID(), null, Get_Trx());
             if (dsPaymentMethod != null && dsPaymentMethod.Tables.Count > 0 && dsPaymentMethod.Tables[0].Rows.Count > 0)
             {
                 _baseType = Util.GetValueOfString(dsPaymentMethod.Tables[0].Rows[0]["VA009_PaymentBaseType"]);
                 VA009_PaymentTrigger = Util.GetValueOfString(dsPaymentMethod.Tables[0].Rows[0]["VA009_PaymentTrigger"]);
-            }
 
-            if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
-            {
-                // VIS_045 --> DevOps Task: 2344 -- When Payment Method is Direct Debit and Trigger by is Pull by Receipient then check bank account detail for Customer / vendor both
-                // when not found, then system will not complete the record and give message
-                if (_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_DirectDebit) &&
-                    VA009_PaymentTrigger.Equals(X_VA009_PaymentMethod.VA009_PAYMENTTRIGGER_PullByRecipient))
+                if (_baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Check && _baseType != X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_Cash)
                 {
-                    if (Util.GetValueOfInt(DB.ExecuteScalar($@"SELECT COUNT(VA009_BatchLines_ID) FROM VA009_BatchLines
+                    // VIS_045 --> DevOps Task: 2344 -- When Payment Method is Direct Debit and Trigger by is Pull by Receipient then check bank account detail for Customer / vendor both
+                    // when not found, then system will not complete the record and give message
+                    if (_baseType.Equals(X_VA009_PaymentMethod.VA009_PAYMENTBASETYPE_DirectDebit) &&
+                        VA009_PaymentTrigger.Equals(X_VA009_PaymentMethod.VA009_PAYMENTTRIGGER_PullByRecipient))
+                    {
+                        if (Util.GetValueOfInt(DB.ExecuteScalar($@"SELECT COUNT(VA009_BatchLines_ID) FROM VA009_BatchLines
                          WHERE C_BP_BankAccount_ID IS NULL AND A_Name IS NULL AND VA009_Batch_ID = {GetVA009_Batch_ID()}", null, Get_Trx())) > 0)
+                        {
+                            _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
+                            return DocActionVariables.STATUS_INVALID;
+                        }
+                    }
+                    // VIS_045 --> DevOps Task: 2344 -- for Other Payment Method, system will check bank account detail for vendor 
+                    else if (!CheckBankAccountDetail("APP"))
                     {
                         _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
                         return DocActionVariables.STATUS_INVALID;
                     }
-                }
-                // VIS_045 --> DevOps Task: 2344 -- for Other Payment Method, system will check bank account detail for vendor 
-                else if (!CheckBankAccountDetail("APP"))
-                {
-                    _processMsg = Msg.GetMsg(GetCtx(), "VA009_FillBankAcctName");
-                    return DocActionVariables.STATUS_INVALID;
                 }
             }
 
