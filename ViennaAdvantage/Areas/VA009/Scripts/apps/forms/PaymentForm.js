@@ -2732,13 +2732,13 @@
                         });
                         if (result != null) {
                             //VIS_427 1st check is populated to current nex field
-                            $POP_txtChqNo.val(VIS.Utility.Util.getValueOfInt(result[0]["currentnext"]));
-                            autocheckCtrl = result[0]["chknoautocontrol"];// Value handled for true/false
+                            $POP_txtChqNo.val(VIS.Utility.Util.getValueOfInt(result[0]["Currentnext"]));
+                            autocheckCtrl = result[0]["Chknoautocontrol"];// Value handled for true/false
                             for (i = 0; result.length > 0; i++) {
-                                //VIS_427 variable deined to get all check numbers to array which starts from current next to end check number according to result set
-                                var checkdifference = VIS.Utility.Util.getValueOfInt(result[i]["endchknumber"]) - VIS.Utility.Util.getValueOfInt(result[i]["currentnext"]);
+                                //VIS_427 variable defined to get all check numbers to array which starts from current next to end check number according to result set
+                                var checkdifference = VIS.Utility.Util.getValueOfInt(result[i]["Endchknumber"]) - VIS.Utility.Util.getValueOfInt(result[i]["Currentnext"]);
                                 for (j = 0; j <= checkdifference; j++) {
-                                    chknumbers.push(VIS.Utility.Util.getValueOfInt(result[i]["currentnext"]) + j);
+                                    chknumbers.push(VIS.Utility.Util.getValueOfInt(result[i]["Currentnext"]) + j);
                                 }
                             }
 
@@ -2756,7 +2756,7 @@
                 });
 
                 $POPtxtCheckNumber.on("change", function () {
-                    //VIS_427 Bug id 2339 cleared the  check number field in grid 
+                    //VIS_427 Bug id 2339 cleared the  check number field on the grid 
                     for (var k = 0; k < chqpaygrd.records.length; k++) {
                         chqpaygrd.records[k]['CheckNumber'] = '';
                         chqpaygrd.refreshCell(chqpaygrd.records[k].recid, "CheckNumber");
@@ -2771,12 +2771,10 @@
                         if (removedcheck.length > 0) {
                             /*VIS_427 Bug id 2339 getting those check which are loaded on grid when user change check number field so that
                             if user again use those check they can again appear on grid if payment not done*/
-                            for (i = 0; i < removedcheck.length; i++) {
-                                chknumbers.push(removedcheck[i]);
+                            for (i = removedcheck.length - 1; i >= 0; i--) {
+                                chknumbers.unshift(removedcheck[i]);
                             }
-                            chknumbers.sort(function (a, b) { return a - b; });
                             removedcheck = [];
-
                         }
                         for (var i = 0; i < chqpaygrd.records.length; i++) {
                             if (cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"]) < 0) {
@@ -2786,29 +2784,25 @@
                                     chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt($POPtxtCheckNumber.val());
                                     //VIS_427 Handled case for auto check funtinality otherwise the system should generate check as earlier
                                     if (autocheckCtrl == "Y") {
-                                        removedcheck = jQuery.grep(chknumbers, function (value) {
-                                            return value <= VIS.Utility.Util.getValueOfInt(chqpaygrd.records[i]['CheckNumber']);
-                                        });
-                                        chknumbers = jQuery.grep(chknumbers, function (value) {
-                                            return value > VIS.Utility.Util.getValueOfInt(chqpaygrd.records[i]['CheckNumber']);
-                                        });
+                                        //VIS_427 Bug id 2339 Storing check numbers upto the check number entered by user and which are also loaded on the grid
+                                        removedcheck = chknumbers.slice(0, chknumbers.indexOf(chqpaygrd.records[i]['CheckNumber']) + 1);
+                                        //VIS_427 Bug id 2339 Storing check numbers from the check number entered by user
+                                        chknumbers = chknumbers.slice(chknumbers.indexOf(chqpaygrd.records[i]['CheckNumber']) + 1);
                                     }
                                     else {
                                         chknumbers.push($POPtxtCheckNumber.val());
                                     }
                                 }
                                 else {
-                                    //VIS_427 When all check allocated and no check left for next schedule then populated message
+                                    //VIS_427 Bug id 2339 When all check allocated and no check left for next schedule then populated message
                                     if (chknumbers.length == 0) {
                                         VIS.ADialog.info(("VA009_CheckNotAligned"));
                                         return false;
                                     }
                                     if (autocheckCtrl == "Y") {
-                                        chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - chknumbers.length]);
+                                        chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt(chknumbers[0]);
                                         removedcheck.push(chqpaygrd.records[i]['CheckNumber']);
-                                        chknumbers = jQuery.grep(chknumbers, function (value) {
-                                            return value != VIS.Utility.Util.getValueOfInt(chqpaygrd.records[i]['CheckNumber']);
-                                        });
+                                        chknumbers= chknumbers.slice(chknumbers.indexOf(chqpaygrd.records[i]['CheckNumber']) + 1);
                                     }
                                     else {
                                         chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1;

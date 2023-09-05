@@ -222,7 +222,8 @@ namespace VA009.Controllers
         public ActionResult GetBankAccountCheckNo(int BankAccount, int PaymentMethod)
         {
             Ctx ct = Session["ctx"] as Ctx;
-            return Json(JsonConvert.SerializeObject(PaymentModel.GetBankAccountCheckNo(BankAccount, PaymentMethod, ct)), JsonRequestBehavior.AllowGet);
+            PaymentModel _payMdl = new PaymentModel();
+            return Json(JsonConvert.SerializeObject(_payMdl.GetBankAccountCheckNo(BankAccount, PaymentMethod, ct)), JsonRequestBehavior.AllowGet);
         }
 
         //Added by Bharat on 01/June/2017

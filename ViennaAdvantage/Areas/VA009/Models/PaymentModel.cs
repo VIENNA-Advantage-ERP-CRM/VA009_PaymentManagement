@@ -4060,7 +4060,7 @@ namespace VA009.Models
         /// <param name="ct">Context</param>
         /// <writer>1052</writer>
         /// <returns>CurrentNextCheckNo</returns>
-        public static List<CheckNoDetails> GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
+        public List<CheckNoDetails> GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
         {
             //handled the logs
             //VIS_427 Bug id 2339 handeled query to get check number
@@ -4078,10 +4078,10 @@ namespace VA009.Models
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     obj = new CheckNoDetails();
-                    obj.chknoautocontrol = Util.GetValueOfString(ds.Tables[0].Rows[i]["ChkNoAutoControl"]);
-                    obj.currentnext = Util.GetValueOfString(ds.Tables[0].Rows[i]["CurrentNext"]);
-                    obj.endchknumber = Util.GetValueOfString(ds.Tables[0].Rows[i]["EndChkNumber"]);
-                    obj.priority = Util.GetValueOfString(ds.Tables[0].Rows[i]["Priority"]);
+                    obj.Chknoautocontrol = Util.GetValueOfString(ds.Tables[0].Rows[i]["ChkNoAutoControl"]);
+                    obj.Currentnext = Util.GetValueOfString(ds.Tables[0].Rows[i]["CurrentNext"]);
+                    obj.Endchknumber = Util.GetValueOfString(ds.Tables[0].Rows[i]["EndChkNumber"]);
+                    obj.Priority = Util.GetValueOfString(ds.Tables[0].Rows[i]["Priority"]);
                     lstdtls.Add(obj);
                 }
                 return lstdtls;
@@ -7979,9 +7979,9 @@ namespace VA009.Models
     //VIS_427 Bug id 2339 created class with properties
     public class CheckNoDetails
     {
-        public string currentnext { get; set; }
-        public string chknoautocontrol { get; set; }
-        public string endchknumber { get; set; }
-        public string priority { get; set; }
+        public string Currentnext { get; set; }
+        public string Chknoautocontrol { get; set; }
+        public string Endchknumber { get; set; }
+        public string Priority { get; set; }
     }
 }
