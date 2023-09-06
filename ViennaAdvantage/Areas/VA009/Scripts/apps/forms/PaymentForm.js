@@ -317,7 +317,7 @@
             SlctdBpId = jQuery.grep(BusinessPartnerIds, function (value) {
                 return value.BP.bpid == BP_id;
             });
-            var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(2);
+            var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
             for (var i = 0; i < SlctdBpId.length; i++) {
                 var DeslctPaymt_ID = SlctdBpId[i].BP.uid;
                 //removing records after unselecting the business partner
@@ -342,11 +342,12 @@
                 batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
                     return value.ID != DeslctPaymt_ID;
                 });
-                var baseAmt = SlctdBpId[i].BP.baseamt;
+                precision = SlctdBpId[i].BP.precision;
+                var baseAmt = SlctdBpId[i].BP.baseamt.toFixed(precision);
                 amt = amt - baseAmt;
             }
-            $totalAmt.data('ttlamt', parseFloat(amt, 2));
-            $totalAmt.text(getFormattednumber(amt, 2));
+            $totalAmt.data('ttlamt', parseFloat(amt, precision));
+            $totalAmt.text(getFormattednumber(amt, precision));
             SlctdBpId = []; //Clearing the array 
             $('.VA009-payment-list').find('div .row').find('input[data-bpid=' + BP_id + ']').prop('checked', false);
             isReset = true;
@@ -1177,22 +1178,46 @@
                 }
                 //if user click on inside div class "VA009-payment-wrap" this condition will execute
                 else if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked")) {
-                    $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
-                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
-                    $selectall.prop('checked', false);
-                    SlctdPaymentIds = [];
-                    SlctdOrderPaymentIds = [];
-                    SlctdJournalPaymentIds = [];
-                    batchObjInv = [];
-                    batchObjOrd = [];
-                    batchObjJournal = [];
-                    BusinessPartnerIds = [];
-                    $totalAmt.text(0);
-                    $totalAmt.data('ttlamt', parseFloat(0));
+                   // $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
+                    //VIS_427 Handled condition when user click the payment div to mark the particular selected record uncheck not all records
+                    target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked", false);
+                    target.parents(".VA009-payment-wrap").removeClass("VA009-payment-wrap-selctd");
+                    var inputTag = target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx")[0];
+                    record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
+                    SlctdPaymentIds = jQuery.grep(SlctdPaymentIds, function (value) {
+                        return value != record_ID;
+                    });
+                    SlctdOrderPaymentIds = jQuery.grep(SlctdOrderPaymentIds, function (value) {
+                        return value != record_ID;
+                    });
+                    SlctdJournalPaymentIds = jQuery.grep(SlctdJournalPaymentIds, function (value) {
+                        return value != record_ID;
+                    });
+                    batchObjInv = jQuery.grep(batchObjInv, function (value) {
+                        return value.ID != record_ID;
+                    });
+                    batchObjOrd = jQuery.grep(batchObjOrd, function (value) {
+                        return value.ID != record_ID;
+                    });
+                    batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
+                        return value.ID != record_ID;
+                    });
+                    BusinessPartnerIds = jQuery.grep(BusinessPartnerIds, function (value) {
+                        return value.BP.uid != record_ID;
+                    });
+                   
+                    /* VIS_427 getting value according to precision */
+                    precision = VIS.Utility.Util.getValueOfInt(inputTag.dataset["precision"]);
+                    var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
+                    var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]).toFixed(precision);
+                    if (target.data("docbasetype") == "ARC" || target.data("docbasetype") == "APC") {
+                        baseAmt = (-1 * baseAmt);
+                    }
+                    var amt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
+                    $totalAmt.data('ttlamt', parseFloat(amt, precision));
+                    $totalAmt.text(getFormattednumber(amt, precision));
                 }
                 else {
-                    $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
-                    $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
                     if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("disabled") == true) {
                         //(1052)hold payment case : donot select record
                         return;
@@ -1200,14 +1225,7 @@
                     target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked", true);
                     target.parents(".VA009-payment-wrap").addClass("VA009-payment-wrap-selctd");
                     var inputTag = target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx")[0];
-                    record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
-                    SlctdPaymentIds = [];
-                    SlctdOrderPaymentIds = [];
-                    SlctdJournalPaymentIds = [];
-                    batchObjInv = [];
-                    batchObjOrd = [];
-                    batchObjJournal = [];
-                    BusinessPartnerIds = [];
+                    record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);                   
                     if (inputTag.dataset["name"] == "Invoice") {
                         SlctdPaymentIds.push(record_ID);
                         BusinessPartnerIds.push({ "BP": inputTag.dataset });
@@ -1232,13 +1250,16 @@
                         $selectall.prop('checked', true);
                     }
                     precision = VIS.Utility.Util.getValueOfInt(inputTag.dataset["precision"]);
+                    var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
                     var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]).toFixed(precision);
+                    
                     if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
-                    /* VIS_427 DevOps id:2289 getting value according to precision */
-                    $totalAmt.data('ttlamt', parseFloat(baseAmt, precision));
-                    $totalAmt.text(getFormattednumber(baseAmt,precision));
+                    amt = VIS.Utility.Util.getValueOfDecimal(amt) + VIS.Utility.Util.getValueOfDecimal(baseAmt);
+                    /* VIS_427 getting value according to precision */
+                    $totalAmt.data('ttlamt', parseFloat(amt, precision));
+                    $totalAmt.text(getFormattednumber(amt,precision));
                 }
             }
         };
