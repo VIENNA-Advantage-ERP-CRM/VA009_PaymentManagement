@@ -4229,11 +4229,12 @@ namespace VA009.Models
 
             // Show currency Code with Bank Account
             //handled logs
-            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount acct INNER JOIN C_Currency cu ON (acct.C_Currency_ID = cu.C_Currency_ID)");
+            //VIS_427 Handled query to get precision
+            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision FROM C_BankAccount acct INNER JOIN C_Currency cu ON (acct.C_Currency_ID = cu.C_Currency_ID)");
             if (c_Bank_ID == 0)
             {
                 qry.Clear();
-                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount ba INNER JOIN C_Bank B ON (b.C_Bank_ID=ba.C_Bank_ID)
+                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision FROM C_BankAccount ba INNER JOIN C_Bank B ON (b.C_Bank_ID=ba.C_Bank_ID)
                             INNER JOIN C_Currency cu ON (ba.C_Currency_ID = cu.C_Currency_ID)");
             }
 
@@ -4275,6 +4276,7 @@ namespace VA009.Models
                     Dictionary<string, object> obj = new Dictionary<string, object>();
                     obj["C_BankAccount_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][0]);
                     obj["AccountNo"] = Util.GetValueOfString(ds.Tables[0].Rows[i][1]);
+                    obj["Precision"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][2]);
                     retDic.Add(obj);
                 }
             }
