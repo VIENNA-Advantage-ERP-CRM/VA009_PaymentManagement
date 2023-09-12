@@ -1116,33 +1116,49 @@
                 //if user click on div class "VA009-payment-wrap" this condition will execute
                 if (target.parents(".VA009-payment-wrap").find(".VA009-clckd-checkbx").prop("checked") == undefined) {
                     if (target.find(".VA009-clckd-checkbx").prop("checked")) {
-                        $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
-                        $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
-                        $selectall.prop('checked', false);
-                        SlctdPaymentIds = [];
-                        SlctdOrderPaymentIds = [];
-                        SlctdJournalPaymentIds = [];
-                        batchObjInv = [];
-                        batchObjOrd = [];
-                        batchObjJournal = [];
-                        BusinessPartnerIds = [];
-                        $totalAmt.text(0);
-                        $totalAmt.data('ttlamt', parseFloat(0));
+                        //VIS_427 Handled condition when user click the payment div to mark the particular selected record uncheck not all records
+                        target.find(':checkbox').not(":disabled").prop('checked', false);
+                        target.removeClass("VA009-payment-wrap-selctd");
+                        var inputTag = target.find(".VA009-clckd-checkbx")[0];
+                        record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
+                        SlctdPaymentIds = jQuery.grep(SlctdPaymentIds, function (value) {
+                            return value != record_ID;
+                        });
+                        SlctdOrderPaymentIds = jQuery.grep(SlctdOrderPaymentIds, function (value) {
+                            return value != record_ID;
+                        });
+                        SlctdJournalPaymentIds = jQuery.grep(SlctdJournalPaymentIds, function (value) {
+                            return value != record_ID;
+                        });
+                        batchObjInv = jQuery.grep(batchObjInv, function (value) {
+                            return value.ID != record_ID;
+                        });
+                        batchObjOrd = jQuery.grep(batchObjOrd, function (value) {
+                            return value.ID != record_ID;
+                        });
+                        batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
+                            return value.ID != record_ID;
+                        });
+                        BusinessPartnerIds = jQuery.grep(BusinessPartnerIds, function (value) {
+                            return value.BP.uid != record_ID;
+                        });
+
+                        /* VIS_427 getting value according to precision */
+                        precision = VIS.Utility.Util.getValueOfInt(inputTag.dataset["precision"]);
+                        var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
+                        var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]).toFixed(precision);
+                        if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
+                            baseAmt = (-1 * baseAmt);
+                        }
+                        var amt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
+                        $totalAmt.data('ttlamt', parseFloat(amt, precision));
+                        $totalAmt.text(getFormattednumber(amt, precision));
                     }
                     else {
-                        $divPayment.find(':checkbox').not(":disabled").prop('checked', false);
-                        $divPayment.find('.VA009-payment-wrap').removeClass("VA009-payment-wrap-selctd");
-                        target.find(".VA009-clckd-checkbx").prop("checked", true);
+                        target.find(':checkbox').not(":disabled").prop('checked', true);
                         target.addClass("VA009-payment-wrap-selctd");
                         var inputTag = target.find(".VA009-clckd-checkbx")[0];
                         record_ID = VIS.Utility.Util.getValueOfInt(inputTag.dataset["uid"]);
-                        SlctdPaymentIds = [];
-                        SlctdOrderPaymentIds = [];
-                        SlctdJournalPaymentIds = [];
-                        batchObjInv = [];
-                        batchObjOrd = [];
-                        batchObjJournal = [];
-                        BusinessPartnerIds = [];
                         if (inputTag.dataset["name"] == "Invoice") {
                             SlctdPaymentIds.push(record_ID);
                             BusinessPartnerIds.push({ "BP": inputTag.dataset });
@@ -1166,14 +1182,17 @@
                         if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
                             $selectall.prop('checked', true);
                         }
-                        /* VIS_427 DevOps id:2289 getting value according to precision */
                         precision = VIS.Utility.Util.getValueOfInt(inputTag.dataset["precision"]);
+                        var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
                         var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]).toFixed(precision);
+
                         if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
                             baseAmt = (-1 * baseAmt);
                         }
-                        $totalAmt.data('ttlamt', parseFloat(baseAmt, precision));
-                        $totalAmt.text(getFormattednumber(baseAmt, precision));
+                        amt = VIS.Utility.Util.getValueOfDecimal(amt) + VIS.Utility.Util.getValueOfDecimal(baseAmt);
+                        /* VIS_427 getting value according to precision */
+                        $totalAmt.data('ttlamt', parseFloat(amt, precision));
+                        $totalAmt.text(getFormattednumber(amt, precision));
                     }
                 }
                 //if user click on inside div class "VA009-payment-wrap" this condition will execute
@@ -1210,7 +1229,7 @@
                     precision = VIS.Utility.Util.getValueOfInt(inputTag.dataset["precision"]);
                     var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
                     var baseAmt = VIS.Utility.Util.getValueOfDecimal(inputTag.dataset["baseamt"]).toFixed(precision);
-                    if (target.data("docbasetype") == "ARC" || target.data("docbasetype") == "APC") {
+                    if (inputTag.dataset["docbasetype"] == "ARC" || inputTag.dataset["docbasetype"] == "APC") {
                         baseAmt = (-1 * baseAmt);
                     }
                     var amt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
@@ -1736,6 +1755,9 @@
                                                         chqpaygrd.get(event.recid).OverUnder = 0;
                                                     }
                                                     else {
+                                                        if (VIS.Utility.Util.getValueOfDecimal(event.value_original).toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
+                                                            return false;
+                                                        }
                                                         chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new);
                                                         chqpaygrd.get(event.recid).OverUnder = (chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision);
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
@@ -1753,6 +1775,9 @@
                                                         chqpaygrd.get(event.recid).OverUnder = 0;
                                                     }
                                                     else {
+                                                        if (VIS.Utility.Util.getValueOfDecimal(event.value_original).toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
+                                                            return false;
+                                                        }
                                                         // changed by Bharat
                                                         chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                                         chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
@@ -1832,7 +1857,7 @@
                                             if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                                 if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                     chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
-                                                     //VIS_427 BugId 2325 handled over under to not be negative
+                                                    //VIS_427 BugId 2325 handled over under to not be negative
                                                     if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                         VIS.ADialog.error("MoreScheduleAmount");
                                                         chqpaygrd.get(event.recid).changes.OverUnder = chqpaygrd.records[event.index]['OverUnder'];
@@ -1840,7 +1865,8 @@
                                                         chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                     }
                                                     else {
-                                                        chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                     }
                                                 }
                                                 else {
@@ -1853,7 +1879,8 @@
                                                         chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                     }
                                                     else {
-                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                     }
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
@@ -1872,7 +1899,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
                                                         }
                                                     }
                                                     else {
@@ -1885,7 +1913,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -1900,7 +1929,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }                                                       
                                                     }
                                                     else {
@@ -1913,7 +1943,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -1928,7 +1959,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                         chqpaygrd.refreshCell(event.recid, "OverUnder");
                                                     }
@@ -1942,7 +1974,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -1957,7 +1990,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                         
                                                     }
@@ -1971,7 +2005,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -2121,7 +2156,8 @@
                                                         chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                     }
                                                     else {
-                                                        chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                        chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                     }
                                                 }
                                                 else {
@@ -2134,7 +2170,8 @@
                                                         chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                     }
                                                     else {
-                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                     }
                                                 }
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
@@ -2153,7 +2190,8 @@
                                                             chqpaygrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -2166,7 +2204,8 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -2181,7 +2220,8 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -2194,7 +2234,8 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -2209,7 +2250,8 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                         
                                                     }
@@ -2223,7 +2265,8 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -2238,7 +2281,8 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -2251,7 +2295,8 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -2789,6 +2834,8 @@
                         $POPtxtCheckNumber.removeClass('vis-ev-col-mandatory');
                         CheuePaybleGrid = $chequePayble.find("#VA009_btnPopupGrid");
                         var cBPartnerIds = [];
+                        var cbpartner = null;
+                        var cbpartnerrecord = []; //VIS_427 array defined to store records in form of object
                         if (removedcheck.length > 0) {
                             /*VIS_427 Bug id 2339 getting those check which are loaded on grid when user change check number field so that
                             if user again use those check they can again appear on grid if payment not done*/
@@ -2798,11 +2845,14 @@
                             removedcheck = [];
                         }
                         for (var i = 0; i < chqpaygrd.records.length; i++) {
+                            cbpartner = {}; //VIS_427 initialised the object
                             if (cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"]) < 0) {
                                 cBPartnerIds.push(chqpaygrd.records[i]["C_BPartner_ID"]);
+                                cbpartner.C_BPartner_ID=chqpaygrd.records[i]["C_BPartner_ID"]; //Assigned business partner to object
                                 //chknumbers.push($POPtxtCheckNumber.val());
                                 if (i == 0) {
                                     chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt($POPtxtCheckNumber.val());
+                                    cbpartner.checknumber = chqpaygrd.records[i]['CheckNumber']; //Assigned check number to same business partner
                                     //VIS_427 Handled case for auto check funtinality otherwise the system should generate check as earlier
                                     if (autocheckCtrl == "Y") {
                                         //VIS_427 Bug id 2339 Storing check numbers upto the check number entered by user and which are also loaded on the grid
@@ -2810,7 +2860,7 @@
                                         //VIS_427 Bug id 2339 Storing check numbers from the check number entered by user
                                         chknumbers = chknumbers.slice(chknumbers.indexOf(chqpaygrd.records[i]['CheckNumber']) + 1);
                                     }
-                                    else {
+                                    else {      
                                         chknumbers.push($POPtxtCheckNumber.val());
                                     }
                                 }
@@ -2829,11 +2879,22 @@
                                         chqpaygrd.records[i]['CheckNumber'] = VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1;
                                         chknumbers.push(VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1);
                                     }
+                                    cbpartner.checknumber = chqpaygrd.records[i]['CheckNumber'];
+
                                 }
+                                cbpartnerrecord.push(cbpartner);// pushed to object records to array
                                 //$POPtxtCheckNumber.val(VIS.Utility.Util.getValueOfInt(chknumbers[chknumbers.length - 1]) + 1);
                             }
                             else if (cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"]) > -1) {
-                                chqpaygrd.records[i]['CheckNumber'] = chknumbers[cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"])];
+                                // If Business Partner Id is similar in both the arrays then it will get the index
+                                var index = 0;
+                                for (var l = 0; l <= cbpartnerrecord.length; l++) {
+                                    if (cbpartnerrecord[l].C_BPartner_ID === cBPartnerIds[cBPartnerIds.indexOf(chqpaygrd.records[i]["C_BPartner_ID"])]) {
+                                        index = l;
+                                        break;
+                                    }
+                                }
+                                chqpaygrd.records[i]['CheckNumber'] = cbpartnerrecord[index].checknumber;
                             }
                             else
                                 console.log("Skip");
@@ -3855,6 +3916,9 @@
                                                         chqrecgrd.get(event.recid).OverUnder = 0;
                                                     }
                                                     else {
+                                                        if (VIS.Utility.Util.getValueOfDecimal(event.value_original).toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
+                                                            return false;
+                                                        }
                                                         chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                                         chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
@@ -3873,6 +3937,9 @@
                                                         chqrecgrd.get(event.recid).OverUnder = 0;
                                                     }
                                                     else {
+                                                        if (VIS.Utility.Util.getValueOfDecimal(event.value_original).toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
+                                                            return false;
+                                                        }
                                                         chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                                         chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
@@ -3931,7 +3998,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
                                                     }
@@ -3945,7 +4013,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -3960,7 +4029,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
                                                     }
@@ -3974,7 +4044,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -3989,7 +4060,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
                                                     }
@@ -4003,7 +4075,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4018,7 +4091,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
                                                     }
@@ -4032,7 +4106,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4095,7 +4170,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
@@ -4110,7 +4186,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4130,7 +4207,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "OverUnder")
                                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
@@ -4145,7 +4223,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4160,7 +4239,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
@@ -4175,7 +4255,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4190,7 +4271,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                     }
@@ -4204,7 +4286,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4219,7 +4302,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                     }
@@ -4233,7 +4317,8 @@
                                                             chqrecgrd.records[event.index]['Writeoff'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4283,7 +4368,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                     }
                                                     else {
@@ -4296,7 +4382,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4311,7 +4398,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
                                                         }
                                                     }
                                                     else {
@@ -4324,7 +4412,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
                                                         }
                                                     }
                                                 }
@@ -4339,7 +4428,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = (chqrecgrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -4352,7 +4442,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -4367,7 +4458,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = (chqrecgrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -4380,7 +4472,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -4443,7 +4536,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = (chqrecgrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -4456,7 +4550,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -4476,7 +4571,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = (chqrecgrd.get(event.recid).changes.OverUnder);
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                     }
@@ -4490,7 +4586,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -4505,7 +4602,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = (chqrecgrd.get(event.recid).changes.OverUnder);
                                                         }
                                                         chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                     }
@@ -4519,7 +4617,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -4534,7 +4633,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = (chqrecgrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -4547,7 +4647,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -4562,7 +4663,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.get(event.recid).changes.OverUnder = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
+                                                            chqrecgrd.records[event.index]['OverUnder'] = (chqrecgrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -4575,7 +4677,8 @@
                                                             chqrecgrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                         }
                                                     }
                                                 }
@@ -5354,6 +5457,9 @@
 
                                     if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
                                         if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                            if (VIS.Utility.Util.getValueOfDecimal(event.value_original).toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
+                                                return false;
+                                            }
                                             Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                             if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                 VIS.ADialog.error("MoreScheduleAmount");
@@ -5365,6 +5471,9 @@
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                         }
                                         else {
+                                            if (VIS.Utility.Util.getValueOfDecimal(event.value_original).toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
+                                                return false;
+                                            }
                                             Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                             if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                 VIS.ADialog.error("MoreScheduleAmount");
@@ -5398,6 +5507,9 @@
                                     }
                                     else if (event.value_new < Cashgrd.records[event.index]['ConvertedAmt']) {
                                         if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
+                                            if (VIS.Utility.Util.getValueOfDecimal(event.value_original).toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
+                                                return false;
+                                            }
                                             Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                             if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                                 VIS.ADialog.error("MoreScheduleAmount");
@@ -5493,7 +5605,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Writeoff");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5506,7 +5619,8 @@
                                                     Cashgrd.records[event.index]['Writeoff'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -5523,7 +5637,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Writeoff");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5536,7 +5651,8 @@
                                                     Cashgrd.records[event.index]['Writeoff'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -5551,7 +5667,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Writeoff");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5564,7 +5681,8 @@
                                                     Cashgrd.records[event.index]['Writeoff'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -5580,7 +5698,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Writeoff");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5593,7 +5712,8 @@
                                                     Cashgrd.records[event.index]['Writeoff'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -5669,7 +5789,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Discount");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5682,7 +5803,8 @@
                                                     Cashgrd.records[event.index]['Discount'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -5698,7 +5820,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Discount");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5711,7 +5834,8 @@
                                                     Cashgrd.records[event.index]['Discount'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -5727,7 +5851,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Discount");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5740,7 +5865,8 @@
                                                     Cashgrd.records[event.index]['Discount'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -5756,7 +5882,8 @@
                                                     Cashgrd.refreshCell(event.recid, "Discount");
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.get(event.recid).changes.OverUnder = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
+                                                    Cashgrd.records[event.index]['OverUnder'] = (Cashgrd.get(event.recid).changes.OverUnder);
                                                 }
                                             }
                                             else {
@@ -5769,7 +5896,8 @@
                                                     Cashgrd.records[event.index]['Discount'] = event.value_original;
                                                 }
                                                 else {
-                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
+                                                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 }
                                             }
                                         }
@@ -7295,7 +7423,7 @@
                         _data["AD_Org_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['AD_Org_ID'];
                         _data["AD_Client_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['AD_Client_ID'];
                         _data["C_Currency_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_Currency_ID'];
-                        _data["DueAmt"] = SplitAMt.toFixed(2);
+                        _data["DueAmt"] = SplitAMt.toFixed(precision); //Restricted Due amount according to precision
                         _data["C_InvoicePaySchedule_ID"] = Splitgrd.get(Splitgrd.getSelection()[0])['C_InvoicePaySchedule_ID'];
                         _data["DueDate"] = Splitgrd.get(Splitgrd.getSelection()[0])['DueDate'];
                         //add DateAcct to Compare the Edited DueDate with Account Date because User Can't able to select Previous Date than AcctDate
@@ -7308,7 +7436,7 @@
                         if (DueAmt - TotalUpdatedAmt > 0) {
 
                             var amt = DueAmt - TotalUpdatedAmt;
-                            Splitgrd.get(Splitgrd.getSelection()[0]).DueAmt = amt.toFixed(2);
+                            Splitgrd.get(Splitgrd.getSelection()[0]).DueAmt = amt.toFixed(precision);
                         }
                     }
                     //Splitgrd.clear();
@@ -7458,6 +7586,7 @@
                 var $From_cmbBank, $cmbCurrencyType, $paymentMthd, $cmbCurrencies, $txtAmt, txtAmount, $txtCheckNo, $checkDate, $getNextChkno, $btnPanel;
                 var $trnsDate, $acctDate;
                 var $isPayment, $isReceipt;
+                var stdPrecision=2;// Variable assigned to store precision 
                 var organizationids = [];
                 var divAmount, format = null;
                 lblAmount = $("<label>");
@@ -7783,6 +7912,11 @@
                             $From_cmbBank.addClass('vis-ev-col-mandatory');
                             _loadFunctions.LoadTargetDocTypeB2B($POP_APTargetDocType, 2, 0);
                         }
+                        //Getting precision on selection of bank account from bank
+                        stdPrecision = $('#VA009_POP_cmbFromBank_' + $self.windowNo).find(':selected').attr('precision')
+                        if (stdPrecision == null || stdPrecision == 0) {
+                            stdPrecision = 2;
+                        }
                         //VA230:Get checkno
                         getCheckNo();
                     });
@@ -7806,7 +7940,7 @@
                         }
                         else {
                             $cmbCurrencies.addClass('vis-ev-col-mandatory');
-                        }
+                        }                       
                     });
 
                     // change the color if the value is change other than 0
@@ -8011,7 +8145,7 @@
                         if (dr != null) {
                             if (dr.length > 0) {
                                 for (var i in dr) {
-                                    $cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                                    $cmbBankAccount.append("<option precision=" + VIS.Utility.Util.getValueOfInt(dr[i].Precision) + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
                                 }
                             }
                         }
@@ -8061,7 +8195,8 @@
                 //reset for Amount Field...
                 this.vetoablechange = function (evt) {
                     if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
-                        txtAmount.setValue(evt.newValue);
+                        //Restricted the amount value according to precision after decimal
+                        txtAmount.setValue(evt.newValue.toFixed(stdPrecision)); 
                     }
                 };
 
@@ -8516,6 +8651,7 @@
 
             Pay_ManualDialogBP: function () {
                 var payAmount;
+                var stdPrecision = 2;//Variable defined to get precision
                 lblAmount = $("<label>");
                 payAmount = new VIS.Controls.VAmountTextBox("VA009_cmbAmt_" + $self.windowNo + "", false, false, true, 50, 100, VIS.DisplayType.Amount, VIS.Msg.getMsg("Amount"));//for amount textbox control
                 lblAmount.append(VIS.Msg.getMsg("Amount"));
@@ -8734,7 +8870,7 @@
                             if (dr != null) {
                                 if (dr.length > 0) {
                                     for (var i in dr) {
-                                        $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                                        $POP_cmbBankAccount.append("<option precision=" + VIS.Utility.Util.getValueOfInt(dr[i].Precision) + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
                                     }
                                 }
                             }
@@ -8747,6 +8883,11 @@
                         }
                         else {
                             $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+                        }
+                        //Getting precision on selection of bank account 
+                        stdPrecision = $('#VA009_POP_cmbBankAccount_' + $self.windowNo).find(':selected').attr('precision')
+                        if (stdPrecision == null || stdPrecision == 0) {
+                            stdPrecision = 2;
                         }
                         getCheckNo();
                     });
@@ -9046,7 +9187,7 @@
                 };
                 this.vetoablechange = function (evt) {
                     if (evt.propertyName == "VA009_cmbAmt_" + $self.windowNo + "") {
-                        payAmount.setValue(evt.newValue);
+                        payAmount.setValue(evt.newValue.toFixed(stdPrecision));
                     }
                 };
                 function payManualDispose() {
