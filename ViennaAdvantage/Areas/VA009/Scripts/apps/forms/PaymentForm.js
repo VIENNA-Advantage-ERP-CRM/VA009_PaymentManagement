@@ -1715,11 +1715,11 @@
                                         stdPrecision = 2;
                                     }
                                     //VIS_427 Handled Value formating to dot if amount has comma
-                                    chqpaygrd.records[event.index]['ConvertedAmt'] = parseFloat(convertAmountToDotFormat(chqpaygrd.records[event.index]['ConvertedAmt']));
-                                    chqpaygrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(convertAmountToDotFormat(chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                    chqpaygrd.records[event.index]['OverUnder'] = parseFloat(convertAmountToDotFormat(chqpaygrd.records[event.index]['OverUnder']));
-                                    chqpaygrd.records[event.index]['Writeoff'] = parseFloat(convertAmountToDotFormat(chqpaygrd.records[event.index]['Writeoff']));
-                                    chqpaygrd.records[event.index]['Discount'] = parseFloat(convertAmountToDotFormat(chqpaygrd.records[event.index]['Discount']));
+                                    chqpaygrd.records[event.index]['ConvertedAmt'] = format.GetConvertedNumber(chqpaygrd.records[event.index]['ConvertedAmt'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqpaygrd.records[event.index]['VA009_RecivedAmt'] = format.GetConvertedNumber(chqpaygrd.records[event.index]['VA009_RecivedAmt'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqpaygrd.records[event.index]['OverUnder'] = format.GetConvertedNumber(chqpaygrd.records[event.index]['OverUnder'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqpaygrd.records[event.index]['Writeoff'] = format.GetConvertedNumber(chqpaygrd.records[event.index]['Writeoff'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqpaygrd.records[event.index]['Discount'] = format.GetConvertedNumber(chqpaygrd.records[event.index]['Discount'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
                                     //Received Amount
                                     if (event.column == 6) {
                                         if (event.value_new == "") {
@@ -1744,9 +1744,9 @@
                                             return;
                                         }
                                         //handled value according to precision so that value stay same after refresh
-                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
-                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = convertAmountToDotFormat(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
-                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = format.GetConvertedNumber(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt, dotFormatter);
+                                        chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                             if (event.value_new < chqpaygrd.records[event.index]['ConvertedAmt']) {
@@ -1763,8 +1763,8 @@
                                                         if (event.value_original.toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
                                                             return false;
                                                         }
-                                                        chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new);
-                                                        chqpaygrd.get(event.recid).OverUnder = (chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
+                                                        chqpaygrd.get(event.recid).OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).changes.Discount = 0;
                                                     }
@@ -1785,7 +1785,7 @@
                                                         }
                                                         // changed by Bharat
                                                         chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqpaygrd.records[event.index]['OverUnder'] = chqpaygrd.get(event.recid).changes.OverUnder;
+                                                        chqpaygrd.records[event.index]['OverUnder'] = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
                                                         //chqpaygrd.get(event.recid).OverUnder = VIS.Utility.Util.getValueOfDecimal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).Writeoff = 0;
@@ -1862,9 +1862,9 @@
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
                                          //handled value according to precision so that value stay same after refresh
-                                        chqpaygrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
-                                        chqpaygrd.get(event.recid).changes.Writeoff = convertAmountToDotFormat(chqpaygrd.get(event.recid).changes.Writeoff);
-                                        chqpaygrd.get(event.recid).changes.Writeoff = parseFloat(chqpaygrd.get(event.recid).changes.Writeoff).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                        chqpaygrd.records[event.index]['Writeoff'] = event.value_new;
+                                        chqpaygrd.get(event.recid).changes.Writeoff = format.GetConvertedNumber(chqpaygrd.get(event.recid).changes.Writeoff, dotFormatter);
+                                        chqpaygrd.get(event.recid).changes.Writeoff = (chqpaygrd.get(event.recid).changes.Writeoff).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         //VIS_427 BugId 2325 not allowing user to enter more writeof amount than converted amount 
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
@@ -2143,15 +2143,17 @@
                                         }
                                          //VIS_427 handled value according to precision so that value stay same after refresh
                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt >= 0) {
-                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.OverUnder = parseFloat(chqpaygrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.Discount = parseFloat(chqpaygrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.get(event.recid).changes.OverUnder = parseFloat(chqpaygrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.records[event.index]['Discount'] = chqpaygrd.records[event.index]['Discount'];
+                                            chqpaygrd.get(event.recid).changes.Discount = parseFloat(chqpaygrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         }
                                         if (chqpaygrd.get(event.recid).changes.OverUnder >= 0) {
-                                            chqpaygrd.get(event.recid).changes.OverUnder = parseFloat(chqpaygrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.Discount = parseFloat(chqpaygrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqpaygrd.get(event.recid).changes.OverUnder = parseFloat(chqpaygrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.records[event.index]['Discount'] = chqpaygrd.records[event.index]['Discount'];
+                                            chqpaygrd.get(event.recid).changes.Discount = parseFloat(chqpaygrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
                                         }
                                     }
                                     //discount
@@ -2168,9 +2170,9 @@
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
                                          //handled value according to precision so that value stay same after refresh
-                                        chqpaygrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
-                                        chqpaygrd.get(event.recid).changes.Discount = convertAmountToDotFormat(chqpaygrd.get(event.recid).changes.Discount);
-                                        chqpaygrd.get(event.recid).changes.Discount = parseFloat(chqpaygrd.get(event.recid).changes.Discount).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                        chqpaygrd.records[event.index]['Discount'] = event.value_new;
+                                        chqpaygrd.get(event.recid).changes.Discount = format.GetConvertedNumber(chqpaygrd.get(event.recid).changes.Discount, dotFormatter);
+                                        chqpaygrd.get(event.recid).changes.Discount = (chqpaygrd.get(event.recid).changes.Discount).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         //VIS_427 BugId 2325 not allowing user to enter more Discount amount than converted amount 
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
@@ -2320,7 +2322,7 @@
                                                             chqpaygrd.records[event.index]['Discount'] = event.value_original;
                                                         }
                                                         else {
-                                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
+                                                            chqpaygrd.get(event.recid).changes.OverUnder = Math.abs(chqpaygrd.get(event.recid).changes.OverUnder);
                                                             chqpaygrd.records[event.index]['OverUnder'] = (chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
@@ -2449,15 +2451,17 @@
                                         }
                                          //handled value according to precision so that value stay same after refresh
                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt >= 0) {
-                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.Overunder = parseFloat(chqpaygrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.Writeoff = parseFloat(chqpaygrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.get(event.recid).changes.OverUnder = parseFloat(chqpaygrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.records[event.index]['Writeoff'] = chqpaygrd.records[event.index]['Writeoff'];
+                                            chqpaygrd.get(event.recid).changes.Writeoff = parseFloat(chqpaygrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         }
                                         if (chqpaygrd.get(event.recid).changes.OverUnder >= 0) {
-                                            chqpaygrd.get(event.recid).changes.OverUnder = parseFloat(chqpaygrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqpaygrd.get(event.recid).changes.Writeoff = parseFloat(chqpaygrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqpaygrd.get(event.recid).changes.OverUnder = parseFloat(chqpaygrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqpaygrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqpaygrd.records[event.index]['Writeoff'] = chqpaygrd.records[event.index]['Writeoff']
+                                            chqpaygrd.get(event.recid).changes.Writeoff = parseFloat(chqpaygrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
                                         }
                                     }
 
@@ -3897,11 +3901,11 @@
                                         stdPrecision = 2;
                                     }
                                     //Handled value for comma
-                                    chqrecgrd.records[event.index]['ConvertedAmt'] = parseFloat(convertAmountToDotFormat(chqrecgrd.records[event.index]['ConvertedAmt']));
-                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(convertAmountToDotFormat(chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                    chqrecgrd.records[event.index]['OverUnder'] = parseFloat(convertAmountToDotFormat(chqrecgrd.records[event.index]['OverUnder']));
-                                    chqrecgrd.records[event.index]['Writeoff'] = parseFloat(convertAmountToDotFormat(chqrecgrd.records[event.index]['Writeoff']));
-                                    chqrecgrd.records[event.index]['Discount'] = parseFloat(convertAmountToDotFormat(chqrecgrd.records[event.index]['Discount']));
+                                    chqrecgrd.records[event.index]['ConvertedAmt'] = format.GetConvertedNumber(chqrecgrd.records[event.index]['ConvertedAmt'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = format.GetConvertedNumber(chqrecgrd.records[event.index]['VA009_RecivedAmt'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqrecgrd.records[event.index]['OverUnder'] = format.GetConvertedNumber(chqrecgrd.records[event.index]['OverUnder'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqrecgrd.records[event.index]['Writeoff'] = format.GetConvertedNumber(chqrecgrd.records[event.index]['Writeoff'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                                    chqrecgrd.records[event.index]['Discount'] = format.GetConvertedNumber(chqrecgrd.records[event.index]['Discount'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
                                     //Received Amount
                                     if (event.column == 6) {
                                         if (event.value_new == "") {
@@ -3926,9 +3930,9 @@
                                             return;
                                         }
                                          //handled value according to precision so that value stay same after refresh
-                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
-                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = convertAmountToDotFormat(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt);
-                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = format.GetConvertedNumber(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt, dotFormatter);
+                                        chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
@@ -3936,12 +3940,12 @@
                                             if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                                 if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
                                                     chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                    chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
                                                     chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                    chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                    chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
                                                     chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                     chqrecgrd.get(event.recid).Writeoff = 0;
                                                 }
@@ -3979,7 +3983,7 @@
                                                             return false;
                                                         }
                                                         chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                        chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                         chqrecgrd.get(event.recid).Writeoff = 0;
                                                         chqrecgrd.get(event.recid).changes.Discount = 0;
@@ -4000,7 +4004,7 @@
                                                             return false;
                                                         }
                                                         chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
-                                                        chqrecgrd.records[event.index]['OverUnder'] = chqrecgrd.get(event.recid).changes.OverUnder;
+                                                        chqrecgrd.records[event.index]['OverUnder'] = Math.abs(chqrecgrd.get(event.recid).changes.OverUnder);
                                                         chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                         chqrecgrd.get(event.recid).Writeoff = 0;
                                                         chqrecgrd.get(event.recid).changes.Discount = 0;
@@ -4042,9 +4046,9 @@
                                         //else if (event.value_new.toString().contains(',')) {
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
-                                        chqrecgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
-                                        chqrecgrd.get(event.recid).changes.Writeoff = convertAmountToDotFormat(chqrecgrd.get(event.recid).changes.Writeoff);
-                                        chqrecgrd.get(event.recid).changes.Writeoff = parseFloat(chqrecgrd.get(event.recid).changes.Writeoff).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                        chqrecgrd.records[event.index]['Writeoff'] = event.value_new;
+                                        chqrecgrd.get(event.recid).changes.Writeoff = format.GetConvertedNumber(chqrecgrd.get(event.recid).changes.Writeoff, dotFormatter);
+                                        chqrecgrd.get(event.recid).changes.Writeoff = (chqrecgrd.get(event.recid).changes.Writeoff).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         //VIS_427 BugId 2325 not allowing user to enter more writeof amount than converted amount 
                                         if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
@@ -4404,15 +4408,17 @@
                                         }
                                          //handled value according to precision so that value stay same after refresh
                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt >= 0) {
-                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.Discount = parseFloat(chqrecgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.records[event.index]['Discount'] = chqrecgrd.records[event.index]['Discount'];
+                                            chqrecgrd.get(event.recid).changes.Discount = parseFloat(chqrecgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         }
                                         if (chqrecgrd.get(event.recid).changes.OverUnder >= 0) {
-                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.Discount = parseFloat(chqrecgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.records[event.index]['Discount'] = chqrecgrd.records[event.index]['Discount'];
+                                            chqrecgrd.get(event.recid).changes.Discount = parseFloat(chqrecgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
                                         }
                                     }
                                     //discount
@@ -4429,8 +4435,8 @@
                                         //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                         //}
                                          //handled value according to precision so that value stay same after refresh
-                                        chqrecgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
-                                        chqrecgrd.get(event.recid).changes.Discount = convertAmountToDotFormat(chqrecgrd.get(event.recid).changes.Discount);
+                                        chqrecgrd.records[event.index]['Discount'] = event.value_new;
+                                        chqrecgrd.get(event.recid).changes.Discount = format.GetConvertedNumber(chqrecgrd.get(event.recid).changes.Discount, dotFormatter);
                                         chqrecgrd.get(event.recid).changes.Discount = parseFloat(chqrecgrd.get(event.recid).changes.Discount).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         //VIS_427 BugId 2325 not allowing user to enter more discount amount than converted amount 
@@ -4781,15 +4787,17 @@
                                         }
                                          //handled value according to precision so that value stay same after refresh
                                         if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt >= 0) {
-                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.Writeoff = parseFloat(chqrecgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.records[event.index]['Writeoff'] = chqrecgrd.records[event.index]['Writeoff'];
+                                            chqrecgrd.get(event.recid).changes.Writeoff = parseFloat(chqrecgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                         }
                                         if (chqrecgrd.get(event.recid).changes.OverUnder >= 0) {
-                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                            chqrecgrd.get(event.recid).changes.Writeoff = parseFloat(chqrecgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                            chqrecgrd.get(event.recid).changes.OverUnder = parseFloat(chqrecgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(chqrecgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                            chqrecgrd.records[event.index]['Writeoff'] = chqrecgrd.records[event.index]['Writeoff'];
+                                            chqrecgrd.get(event.recid).changes.Writeoff = parseFloat(chqrecgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
                                         }
                                     }
 
@@ -5531,11 +5539,11 @@
                             if (event.column == 1)
                                 Cashgrd.records[event.index]['Description'] = event.value_new;
                             //Handled value for comma seperation
-                            Cashgrd.records[event.index]['ConvertedAmt'] = parseFloat(convertAmountToDotFormat(Cashgrd.records[event.index]['ConvertedAmt']));
-                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(convertAmountToDotFormat(Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                            Cashgrd.records[event.index]['OverUnder'] = parseFloat(convertAmountToDotFormat(Cashgrd.records[event.index]['OverUnder']));
-                            Cashgrd.records[event.index]['Writeoff'] = parseFloat(convertAmountToDotFormat(Cashgrd.records[event.index]['Writeoff']));
-                            Cashgrd.records[event.index]['Discount'] = parseFloat(convertAmountToDotFormat(Cashgrd.records[event.index]['Discount']));
+                            Cashgrd.records[event.index]['ConvertedAmt'] = format.GetConvertedNumber(Cashgrd.records[event.index]['ConvertedAmt'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = format.GetConvertedNumber(Cashgrd.records[event.index]['VA009_RecivedAmt'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                            Cashgrd.records[event.index]['OverUnder'] = format.GetConvertedNumber(Cashgrd.records[event.index]['OverUnder'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                            Cashgrd.records[event.index]['Writeoff'] = format.GetConvertedNumber(Cashgrd.records[event.index]['Writeoff'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
+                            Cashgrd.records[event.index]['Discount'] = format.GetConvertedNumber(Cashgrd.records[event.index]['Discount'].toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision }), dotFormatter);
                             //Received Amount
                             if (event.column == 5) {
                                 if (event.value_new == "") {
@@ -5558,9 +5566,9 @@
                                     Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                     return;
                                 }
-                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new.toFixed(stdPrecision);
-                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = convertAmountToDotFormat(Cashgrd.get(event.recid).changes.VA009_RecivedAmt);
-                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                Cashgrd.records[event.index]['VA009_RecivedAmt'] = event.value_new;
+                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = format.GetConvertedNumber(Cashgrd.get(event.recid).changes.VA009_RecivedAmt, dotFormatter);
+                                Cashgrd.get(event.recid).changes.VA009_RecivedAmt = (Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                 Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
@@ -5626,7 +5634,7 @@
                                                 VIS.ADialog.error("MoreScheduleAmount");
                                             }
                                             else {
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                                Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
                                             }
                                             Cashgrd.get(event.recid).changes.Writeoff = 0;
                                             Cashgrd.get(event.recid).Writeoff = 0;
@@ -5639,7 +5647,7 @@
                                                 VIS.ADialog.error("MoreScheduleAmount");
                                             }
                                             else {
-                                                Cashgrd.records[event.index]['OverUnder'] = Cashgrd.get(event.recid).changes.OverUnder;
+                                                Cashgrd.records[event.index]['OverUnder'] = Math.abs(Cashgrd.get(event.recid).changes.OverUnder);
                                             }
                                         }
                                         Cashgrd.get(event.recid).changes.Discount = 0;
@@ -5684,8 +5692,8 @@
                                 //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                 //}
                                  //handled value according to precision so that value stay same after refresh
-                                Cashgrd.records[event.index]['Writeoff'] = event.value_new.toFixed(stdPrecision);
-                                Cashgrd.get(event.recid).changes.Writeoff = convertAmountToDotFormat(Cashgrd.get(event.recid).changes.Writeoff);
+                                Cashgrd.records[event.index]['Writeoff'] = event.value_new;
+                                Cashgrd.get(event.recid).changes.Writeoff = format.GetConvertedNumber(Cashgrd.get(event.recid).changes.Writeoff, dotFormatter);
                                 Cashgrd.get(event.recid).changes.Writeoff = parseFloat(Cashgrd.get(event.recid).changes.Writeoff).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
 
@@ -5850,15 +5858,17 @@
                                 }
                                  //handled value according to precision so that value stay same after refresh
                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt >= 0) {
-                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.Discount = parseFloat(Cashgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.records[event.index]['Discount'] = Cashgrd.records[event.index]['Discount'];
+                                    Cashgrd.get(event.recid).changes.Discount = parseFloat(Cashgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                 }
                                 if (Cashgrd.get(event.recid).changes.OverUnder >= 0) {
-                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.Discount = parseFloat(Cashgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.records[event.index]['Discount'] = Cashgrd.records[event.index]['Discount'];
+                                    Cashgrd.get(event.recid).changes.Discount = parseFloat(Cashgrd.records[event.index]['Discount']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
                                 }
                             }
                             //discount
@@ -5875,9 +5885,9 @@
                                 //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                 //}
                                  //handled value according to precision so that value stay same after refresh
-                                Cashgrd.records[event.index]['Discount'] = event.value_new.toFixed(stdPrecision);
-                                Cashgrd.get(event.recid).changes.Discount = convertAmountToDotFormat(Cashgrd.get(event.recid).changes.Discount);
-                                Cashgrd.get(event.recid).changes.Discount = parseFloat(Cashgrd.get(event.recid).changes.Discount).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                Cashgrd.records[event.index]['Discount'] = event.value_new;
+                                Cashgrd.get(event.recid).changes.Discount = format.GetConvertedNumber(Cashgrd.get(event.recid).changes.Discount, dotFormatter);
+                                Cashgrd.get(event.recid).changes.Discount = Cashgrd.get(event.recid).changes.Discount.toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
 
                                 if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
@@ -6051,15 +6061,17 @@
                                 }
                                  //handled value according to precision so that value stay same after refresh
                                 if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt >= 0) {
-                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.Writeoff = parseFloat(Cashgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.records[event.index]['OverUnder']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.records[event.index]['Writeoff'] = Cashgrd.records[event.index]['Writeoff'];
+                                    Cashgrd.get(event.recid).changes.Writeoff = parseFloat(Cashgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
 
                                 }
                                 if (Cashgrd.get(event.recid).changes.OverUnder >= 0) {
-                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
-                                    Cashgrd.get(event.recid).changes.Writeoff = parseFloat(Cashgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision })
+                                    Cashgrd.get(event.recid).changes.OverUnder = parseFloat(Cashgrd.get(event.recid).changes.OverUnder).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.get(event.recid).changes.VA009_RecivedAmt = parseFloat(Cashgrd.records[event.index]['VA009_RecivedAmt']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
+                                    Cashgrd.records[event.index]['Writeoff'] = Cashgrd.records[event.index]['Writeoff'];
+                                    Cashgrd.get(event.recid).changes.Writeoff = parseFloat(Cashgrd.records[event.index]['Writeoff']).toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision });
                                 }
                             }
 
@@ -7509,11 +7521,11 @@
                     }
                     var DueAmt = Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt'];
                     //VIS_427 Handled value for comma seperated
-                    var SplitAMt = parseFloat(convertAmountToDotFormat($TxtSplitAmt.val()));
+                    var SplitAMt = format.GetConvertedNumber($TxtSplitAmt.val(), dotFormatter);
                     SplitAMt = SplitAMt.toLocaleString(window.navigator.language, { minimumFractionDigits: precision })
-                    SplitAMt = convertAmountToDotFormat(SplitAMt);
+                    SplitAMt = format.GetConvertedNumber(SplitAMt, dotFormatter);
                     if (SplitAMt != "") {
-                        SplitAMt = parseFloat(SplitAMt);
+                        SplitAMt = SplitAMt;
                         // IF Value in Negative 
                         if (DueAmt < 0) {
                             DueAmt = -1 * DueAmt;
@@ -7558,9 +7570,9 @@
                     //Splitgrd.selectAll();
                     //VIS_427 Handled value for comma seperated
                     var DueAmt = Splitgrd.get(Splitgrd.getSelection()[0])['DueAmt'];
-                    var SplitAMt = parseFloat(convertAmountToDotFormat($TxtSplitAmt.val()));
+                    var SplitAMt = format.GetConvertedNumber($TxtSplitAmt.val(), dotFormatter);
                     SplitAMt = SplitAMt.toLocaleString(window.navigator.language, { minimumFractionDigits: precision });
-                    SplitAMt = parseFloat(convertAmountToDotFormat(SplitAMt));
+                    SplitAMt = format.GetConvertedNumber(SplitAMt, dotFormatter);
                     // IF Value in Negative 
                     if (DueAmt < 0) {
                         DueAmt = -1 * DueAmt;
