@@ -1679,31 +1679,33 @@
                             chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field] = checkcommaordot(event, chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field]);
                             var _value = format.GetFormatAmount(chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field], "init", dotFormatter);
                             chqpaygrd.records[event.index][chqpaygrd.columns[event.column].field] = format.GetConvertedString(_value, dotFormatter);
-                            id = event.recid;
-                            $("#grid_CheuePaybleGrid_" + $self.windowNo + "_rec_" + id).keydown(function (event) {
-                                if (!dotFormatter && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
-                                    return false;
-                                }
-                                else if (dotFormatter && event.keyCode == 188) { // . separator
-                                    return false;
-                                }
-                                if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
-                                    if (event.target.value.indexOf('.') > -1) {
-                                        event.target.value = event.target.value.replace('.', '');
+                            if (event.column == 8 || event.column == 9 || event.column == 6) {
+                                id = event.recid;
+                                $("#grid_CheuePaybleGrid_" + $self.windowNo + "_rec_" + id).keydown(function (event) {
+                                    if (!dotFormatter && (event.keyCode == 190 || event.keyCode == 110)) {// , separator
+                                        return false;
                                     }
-                                }
-                                else if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
-                                    if (event.target.value.indexOf(',') > -1) {
-                                        event.target.value = event.target.value.replace(',', '');
+                                    else if (dotFormatter && event.keyCode == 188) { // . separator
+                                        return false;
                                     }
-                                }
-                                if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
-                                    (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
-                                    && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
-                                    && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
-                                    return false;
-                                }
-                            });
+                                    if (event.target.value.contains(".") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                        if (event.target.value.indexOf('.') > -1) {
+                                            event.target.value = event.target.value.replace('.', '');
+                                        }
+                                    }
+                                    else if (event.target.value.contains(",") && (event.which == 110 || event.which == 190 || event.which == 188)) {
+                                        if (event.target.value.indexOf(',') > -1) {
+                                            event.target.value = event.target.value.replace(',', '');
+                                        }
+                                    }
+                                    if (event.keyCode != 8 && event.keyCode != 9 && (event.keyCode < 37 || event.keyCode > 40) &&
+                                        (event.keyCode < 48 || event.keyCode > 57) && (event.keyCode < 96 || event.keyCode > 105)
+                                        && event.keyCode != 109 && event.keyCode != 189 && event.keyCode != 110
+                                        && event.keyCode != 144 && event.keyCode != 188 && event.keyCode != 190) {
+                                        return false;
+                                    }
+                                });
+                            }
                         
                         // };
                     },
@@ -1716,11 +1718,11 @@
                                         stdPrecision = 2;
                                     }
                                     //VIS_427 Handled Value formating to dot if amount has comma
-                                    chqpaygrd.records[event.index]['ConvertedAmt'] = parseFloat(checkcommaordotval(chqpaygrd.records[event.index]['ConvertedAmt'], chqpaygrd.records[event.index]['ConvertedAmt']));
-                                    chqpaygrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(checkcommaordotval(chqpaygrd.records[event.index]['VA009_RecivedAmt'], chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                    chqpaygrd.records[event.index]['OverUnder'] = parseFloat(checkcommaordotval(chqpaygrd.records[event.index]['OverUnder'], chqpaygrd.records[event.index]['OverUnder']));
-                                    chqpaygrd.records[event.index]['Writeoff'] = parseFloat(checkcommaordotval(chqpaygrd.records[event.index]['Writeoff'], chqpaygrd.records[event.index]['Writeoff']));
-                                    chqpaygrd.records[event.index]['Discount'] = parseFloat(checkcommaordotval(chqpaygrd.records[event.index]['Discount'], chqpaygrd.records[event.index]['Discount']));
+                                    chqpaygrd.records[event.index]['ConvertedAmt'] = parseFloat(checkCommaOrDotVal(chqpaygrd.records[event.index]['ConvertedAmt']));
+                                    chqpaygrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(checkCommaOrDotVal(chqpaygrd.records[event.index]['VA009_RecivedAmt']));
+                                    chqpaygrd.records[event.index]['OverUnder'] = parseFloat(checkCommaOrDotVal(chqpaygrd.records[event.index]['OverUnder']));
+                                    chqpaygrd.records[event.index]['Writeoff'] = parseFloat(checkCommaOrDotVal(chqpaygrd.records[event.index]['Writeoff']));
+                                    chqpaygrd.records[event.index]['Discount'] = parseFloat(checkCommaOrDotVal(chqpaygrd.records[event.index]['Discount']));
                                     if (event.column == 6) {
                                         if (event.value_new == "") {
                                             event.value_new = 0;
@@ -1733,19 +1735,17 @@
                                             event.value_original = format.GetConvertedNumber(event.value_original, dotFormatter);
                                         }
 
-                                        //else if (event.value_new.toString().contains(',')) {
-                                        //    event.value_new = parseFloat(event.value_new.repla
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, event.value_new);
-                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                             chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             return;
                                         }
                                         //handled value according to precision so that value stay same after refresh
                                         chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
 
                                         if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
                                             if (event.value_new < chqpaygrd.records[event.index]['ConvertedAmt']) {
@@ -1765,7 +1765,7 @@
                                                         }
                                                         chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - parseFloat(event.value_new)).toFixed(stdPrecision);
                                                         chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, chqpaygrd.get(event.recid).changes.OverUnder);
-                                                        chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                        chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.OverUnder);
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).changes.Discount = 0;
                                                     }
@@ -1787,7 +1787,7 @@
                                                         chqpaygrd.get(event.recid).changes.OverUnder = ((chqpaygrd.records[event.index]['ConvertedAmt']) - parseFloat(event.value_new)).toFixed(stdPrecision);
                                                         // changed by Bharat
                                                         chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, chqpaygrd.get(event.recid).changes.OverUnder);
-                                                        chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                        chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.OverUnder);
                                              
                                                         chqpaygrd.get(event.recid).changes.Writeoff = 0;
                                                         chqpaygrd.get(event.recid).Writeoff = 0;
@@ -1810,12 +1810,13 @@
                                                 chqpaygrd.get(event.recid).Discount = 0;
                                                 chqpaygrd.get(event.recid).Writeoff = 0;
                                                 chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, parseFloat(event.value_new));
-                                                chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                 chqpaygrd.refreshCell(event.recid, "OverUnder");
                                                 chqpaygrd.refreshCell(event.recid, "Discount");
                                                 chqpaygrd.refreshCell(event.recid, "Writeoff");
                                                 chqpaygrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                             }
+                                                //Identified by VIS_427 That this else if condition will not execute as we already handled it
                                             else if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                                 if (chqpaygrd.records[event.index]['ConvertedAmt'] < 0) {
                                                     chqpaygrd.get(event.recid).changes.OverUnder = 0;
@@ -1854,18 +1855,19 @@
                                         //}
                                         //handled value according to precision so that value stay same after refresh
                                         chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                                        chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));                                  
+                                        chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.Writeoff);                                  
 
                                         //VIS_427 BugId 2325 not allowing user to enter more writeof amount than converted amount 
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.Writeoff);
                                             chqpaygrd.refreshCell(event.recid, "Writeoff");
                                             return;
                                         }
                                         if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                            //Identified by VIS_427 That this if condition will not execute as we already handled it
                                             if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                                 if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.records[event.index]['OverUnder']) > 0) {
                                                     chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).Discount))).toFixed(stdPrecision);
@@ -1878,7 +1880,7 @@
                                                     }
                                                     else {
                                                         chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.get(event.recid).changes.OverUnder));
-                                                        chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                        chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.OverUnder);
                                                     }
                                                 }
                                                 else {
@@ -1907,13 +1909,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.OverUnder);
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.Writeoff);
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.OverUnder);
                                                         }
                                                     }
                                                     else {
@@ -1922,13 +1924,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt);
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal(chqpaygrd.get(event.recid).changes.Writeoff);
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -1939,13 +1941,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Writeoff));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         }
                                                     }
                                                     else {
@@ -1954,13 +1956,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Writeoff));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -1971,13 +1973,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Writeoff));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         }
                                                         chqpaygrd.refreshCell(event.recid, "OverUnder");
                                                     }
@@ -1987,13 +1989,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Writeoff));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -2004,13 +2006,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Writeoff));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         }
 
                                                     }
@@ -2020,13 +2022,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                             chqpaygrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Writeoff'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Writeoff), (chqpaygrd.get(event.recid).changes.Writeoff));
+                                                            chqpaygrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Writeoff));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -2157,21 +2159,22 @@
                                         //}
                                         //handled value according to precision so that value stay same after refresh
                                         chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                                        chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                        chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
 
                                         //VIS_427 BugId 2325 not allowing user to enter more Discount amount than converted amount 
                                         if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
                                             VIS.ADialog.error("MoreScheduleAmount");
                                             event.value_new = event.value_original;
                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_new);
-                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                             chqpaygrd.refreshCell(event.recid, "Discount");
                                             return;
                                         }
 
                                         if (chqpaygrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqpaygrd.records[event.index]['PaymwentBaseType'] == "APP") {
-
+                                            //Identified by VIS_427 That this if condition will not execute as we have already handled it
                                             if (event.value_new > chqpaygrd.records[event.index]['ConvertedAmt']) {
+                                                //Identified by VIS_427 That this if condition will not execute as we already handled it
                                                 if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(event.recid).changes.OverUnder) > 0) {
                                                     chqpaygrd.get(event.recid).changes.OverUnder = (chqpaygrd.records[event.index]['ConvertedAmt'] - (event.value_new + chqpaygrd.records[event.index]['VA009_RecivedAmt'] + chqpaygrd.records[event.index]['Writeoff'])).toFixed(stdPrecision);
                                                     //VIS_427 BugId 2325 handled overunder to not be negative when user changes discount
@@ -2212,13 +2215,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         }
                                                     }
                                                     else {
@@ -2227,13 +2230,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -2244,13 +2247,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         }
                                                     }
                                                     else {
@@ -2259,13 +2262,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -2276,13 +2279,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         }
 
                                                     }
@@ -2292,13 +2295,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -2309,13 +2312,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.OverUnder < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqpaygrd.records[event.index]['OverUnder']));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['OverUnder'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.OverUnder), (chqpaygrd.get(event.recid).changes.OverUnder));
+                                                            chqpaygrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.OverUnder));
                                                         }
                                                     }
                                                     else {
@@ -2324,13 +2327,13 @@
                                                         if (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                             VIS.ADialog.error("MoreScheduleAmount");
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqpaygrd.records[event.index]['VA009_RecivedAmt']));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                             chqpaygrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                            chqpaygrd.records[event.index]['Discount'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.Discount), (chqpaygrd.get(event.recid).changes.Discount));
+                                                            chqpaygrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.Discount));
                                                         }
                                                         else {
                                                             chqpaygrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqpaygrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt), (chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                            chqpaygrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqpaygrd.get(event.recid).changes.VA009_RecivedAmt));
                                                         }
                                                     }
                                                 }
@@ -3883,11 +3886,11 @@
                                 stdPrecision = 2;
                             }
                             //Handled value for comma
-                            chqrecgrd.records[event.index]['ConvertedAmt'] = parseFloat(checkcommaordotval(chqrecgrd.records[event.index]['ConvertedAmt'], chqrecgrd.records[event.index]['ConvertedAmt']));
-                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(checkcommaordotval(chqrecgrd.records[event.index]['VA009_RecivedAmt'], chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                            chqrecgrd.records[event.index]['OverUnder'] = parseFloat(checkcommaordotval(chqrecgrd.records[event.index]['OverUnder'], chqrecgrd.records[event.index]['OverUnder']));
-                            chqrecgrd.records[event.index]['Writeoff'] = parseFloat(checkcommaordotval(chqrecgrd.records[event.index]['Writeoff'], chqrecgrd.records[event.index]['Writeoff']));
-                            chqrecgrd.records[event.index]['Discount'] = parseFloat(checkcommaordotval(chqrecgrd.records[event.index]['Discount'], chqrecgrd.records[event.index]['Discount']));
+                            chqrecgrd.records[event.index]['ConvertedAmt'] = parseFloat(checkCommaOrDotVal(chqrecgrd.records[event.index]['ConvertedAmt']));
+                            chqrecgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(checkCommaOrDotVal(chqrecgrd.records[event.index]['VA009_RecivedAmt']));
+                            chqrecgrd.records[event.index]['OverUnder'] = parseFloat(checkCommaOrDotVal(chqrecgrd.records[event.index]['OverUnder']));
+                            chqrecgrd.records[event.index]['Writeoff'] = parseFloat(checkCommaOrDotVal(chqrecgrd.records[event.index]['Writeoff']));
+                            chqrecgrd.records[event.index]['Discount'] = parseFloat(checkCommaOrDotVal(chqrecgrd.records[event.index]['Discount']));
                             //Received Amount
                             if (event.column == 6) {
                                 if (event.value_new == "") {
@@ -3907,15 +3910,16 @@
                                     VIS.ADialog.error("MoreScheduleAmount");
                                     event.value_new = event.value_original;
                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, event.value_new);
-                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     chqrecgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                                     return;
                                 }
                                 //handled value according to precision so that value stay same after refresh
                                 chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
 
                                 if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "ARR" || chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                    //Identified by VIS_427 That this if condition will not execute as we have already handled it
                                     if (parseFloat(event.value_new) > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                         if (chqrecgrd.records[event.index]['ConvertedAmt'] > 0) {
                                             chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - parseFloat(event.value_new)).toFixed(stdPrecision);
@@ -3941,7 +3945,7 @@
                                         chqrecgrd.get(event.recid).Discount = 0;
                                         chqrecgrd.get(event.recid).Writeoff = 0;
                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, parseFloat(event.value_new));
-                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         chqrecgrd.refreshCell(event.recid, "OverUnder");
                                         chqrecgrd.refreshCell(event.recid, "Discount");
                                         chqrecgrd.refreshCell(event.recid, "Writeoff");
@@ -3963,7 +3967,7 @@
                                                 }
                                                 chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - parseFloat(event.value_new)).toFixed(stdPrecision);
                                                 chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, chqrecgrd.get(event.recid).changes.OverUnder);
-                                                chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                 chqrecgrd.get(event.recid).Writeoff = 0;
                                                 chqrecgrd.get(event.recid).changes.Discount = 0;
@@ -3985,7 +3989,7 @@
                                                 }
                                                 chqrecgrd.get(event.recid).changes.OverUnder = ((chqrecgrd.records[event.index]['ConvertedAmt']) - parseFloat(event.value_new)).toFixed(stdPrecision);
                                                 chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, chqrecgrd.get(event.recid).changes.OverUnder);
-                                                chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 chqrecgrd.get(event.recid).changes.Writeoff = 0;
                                                 chqrecgrd.get(event.recid).Writeoff = 0;
                                                 chqrecgrd.get(event.recid).changes.Discount = 0;
@@ -4007,7 +4011,6 @@
                                     event.value_new = 0;
                                 }
                                 else {
-                                    //  event.value_new = parseFloat(checkcommaordotval(event.value_new, parseFloat(chqrecgrd.records[event.index]['Writeoff'])));
                                     event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
                                     event.value_new = event.value_new.toLocaleString(window.navigator.language, { minimumFractionDigits: stdPrecision, maximumFractionDigits: stdPrecision });
                                     event.value_new = format.GetConvertedNumber(event.value_new, dotFormatter);
@@ -4017,19 +4020,20 @@
                                 //    event.value_new = parseFloat(event.value_new.replace(',', '.'));
                                 //}
                                 chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                                chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                               
                                 //VIS_427 BugId 2325 not allowing user to enter more writeof amount than converted amount 
                                 if (event.value_new > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                     VIS.ADialog.error("MoreScheduleAmount");
                                     event.value_new = event.value_original;
                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_new);
-                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                     chqrecgrd.refreshCell(event.recid, "Writeoff");
                                     return;
                                 }
 
                                 if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                    //Identified by VIS_427 That this if condition will not execute as we already handled it
                                     if (parseFloat(event.value_new) > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((parseFloat(event.value_new) - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
                                         chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
@@ -4043,13 +4047,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
                                             }
@@ -4059,13 +4063,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4076,13 +4080,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
                                             }
@@ -4092,13 +4096,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4109,13 +4113,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
                                             }
@@ -4125,13 +4129,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4142,13 +4146,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
                                             }
@@ -4158,13 +4162,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4223,13 +4227,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
@@ -4240,13 +4244,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4262,13 +4266,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder")
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
@@ -4279,13 +4283,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4296,13 +4300,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));;
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));;
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                                 chqrecgrd.refreshCell(event.recid, "Writeoff");
@@ -4313,13 +4317,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4330,13 +4334,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
@@ -4346,13 +4350,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4363,13 +4367,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
@@ -4379,13 +4383,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Writeoff'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Writeoff), (chqrecgrd.get(event.recid).changes.Writeoff));
+                                                    chqrecgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Writeoff));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4410,7 +4414,7 @@
                                 //}
                                 //handled value according to precision so that value stay same after refresh
                                 chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                                chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                              
 
                                 //VIS_427 BugId 2325 not allowing user to enter more discount amount than converted amount 
@@ -4418,12 +4422,13 @@
                                     VIS.ADialog.error("MoreScheduleAmount");
                                     event.value_new = event.value_original;
                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_new);
-                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                     chqrecgrd.refreshCell(event.recid, "Discount");
                                     return;
                                 }
 
                                 if (chqrecgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                                    //Identified by VIS_427 That this if condition will not execute as we already handled it
                                     if (parseFloat(event.value_new) > chqrecgrd.records[event.index]['ConvertedAmt']) {
                                         chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = ((event.value_new - chqrecgrd.records[event.index]['ConvertedAmt']) * -1).toFixed(stdPrecision);
                                         chqrecgrd.records[event.index]['VA009_RecivedAmt'] = chqrecgrd.get(event.recid).changes.VA009_RecivedAmt;
@@ -4437,13 +4442,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                             }
                                             else {
@@ -4452,13 +4457,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4469,13 +4474,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                             }
                                             else {
@@ -4484,13 +4489,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4501,13 +4506,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                             }
                                             else {
@@ -4516,13 +4521,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4533,13 +4538,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                             }
                                             else {
@@ -4548,13 +4553,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4613,13 +4618,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                             }
                                             else {
@@ -4628,13 +4633,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4650,13 +4655,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
@@ -4666,13 +4671,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4683,13 +4688,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                                 chqrecgrd.refreshCell(event.recid, "OverUnder");
                                             }
@@ -4699,13 +4704,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4716,13 +4721,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                             }
                                             else {
@@ -4731,13 +4736,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -4748,13 +4753,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.OverUnder < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (chqrecgrd.records[event.index]['OverUnder']));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.OverUnder =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['OverUnder'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.OverUnder), (chqrecgrd.get(event.recid).changes.OverUnder));
+                                                    chqrecgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.OverUnder));
                                                 }
                                             }
                                             else {
@@ -4763,13 +4768,13 @@
                                                 if (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                                     VIS.ADialog.error("MoreScheduleAmount");
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (chqrecgrd.records[event.index]['VA009_RecivedAmt']));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                     chqrecgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                                    chqrecgrd.records[event.index]['Discount'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.Discount), (chqrecgrd.get(event.recid).changes.Discount));
+                                                    chqrecgrd.records[event.index]['Discount'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.Discount));
                                                 }
                                                 else {
                                                     chqrecgrd.get(event.recid).changes.VA009_RecivedAmt =  cultureAmtValue(event, Math.abs(chqrecgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt), (chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                                    chqrecgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((chqrecgrd.get(event.recid).changes.VA009_RecivedAmt));
                                                 }
                                             }
                                         }
@@ -5520,11 +5525,11 @@ Cash_Dialog: function () {
                 if (event.column == 1)
                     Cashgrd.records[event.index]['Description'] = event.value_new;
                 //Handled value for comma seperation
-                Cashgrd.records[event.index]['ConvertedAmt'] = parseFloat(checkcommaordotval(Cashgrd.records[event.index]['ConvertedAmt'], Cashgrd.records[event.index]['ConvertedAmt']));
-                Cashgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(checkcommaordotval(Cashgrd.records[event.index]['VA009_RecivedAmt'], Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                Cashgrd.records[event.index]['OverUnder'] = parseFloat(checkcommaordotval(Cashgrd.records[event.index]['OverUnder'], Cashgrd.records[event.index]['OverUnder']));
-                Cashgrd.records[event.index]['Writeoff'] = parseFloat(checkcommaordotval(Cashgrd.records[event.index]['Writeoff'], Cashgrd.records[event.index]['Writeoff']));
-                Cashgrd.records[event.index]['Discount'] = parseFloat(checkcommaordotval(Cashgrd.records[event.index]['Discount'], Cashgrd.records[event.index]['Discount']));
+                Cashgrd.records[event.index]['ConvertedAmt'] = parseFloat(checkCommaOrDotVal(Cashgrd.records[event.index]['ConvertedAmt']));
+                Cashgrd.records[event.index]['VA009_RecivedAmt'] = parseFloat(checkCommaOrDotVal(Cashgrd.records[event.index]['VA009_RecivedAmt']));
+                Cashgrd.records[event.index]['OverUnder'] = parseFloat(checkCommaOrDotVal(Cashgrd.records[event.index]['OverUnder']));
+                Cashgrd.records[event.index]['Writeoff'] = parseFloat(checkCommaOrDotVal(Cashgrd.records[event.index]['Writeoff']));
+                Cashgrd.records[event.index]['Discount'] = parseFloat(checkCommaOrDotVal(Cashgrd.records[event.index]['Discount']));
                 //Received Amount
                 if (event.column == 5) {
                     if (event.value_new == "") {
@@ -5543,17 +5548,17 @@ Cash_Dialog: function () {
                         VIS.ADialog.error("MoreScheduleAmount");
                         event.value_new = event.value_original;
                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, event.value_new);
-                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                         Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
                         return;
                     }
                     Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                    Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
 
                     Cashgrd.refreshCell(event.recid, "VA009_RecivedAmt");
 
                     if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
-
+                        //Identified by VIS_427 That this if condition will not execute as we already handled it
                         if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
                             if (Cashgrd.records[event.index]['ConvertedAmt'] > 0) {
                                 if (event.value_original.toFixed(stdPrecision) == event.value_new.toFixed(stdPrecision)) {
@@ -5575,7 +5580,7 @@ Cash_Dialog: function () {
                                 }
                                 Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                 Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Cashgrd.get(event.recid).changes.OverUnder);
-                                Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                 Cashgrd.get(event.recid).changes.Writeoff = 0;
                                 Cashgrd.get(event.recid).Writeoff = 0;
                             }
@@ -5593,7 +5598,7 @@ Cash_Dialog: function () {
                             Cashgrd.get(event.recid).Discount = 0;
                             Cashgrd.get(event.recid).Writeoff = 0;
                             Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, parseFloat(event.value_new));
-                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                            Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                             Cashgrd.refreshCell(event.recid, "OverUnder");
                             Cashgrd.refreshCell(event.recid, "Discount");
                             Cashgrd.refreshCell(event.recid, "Writeoff");
@@ -5606,7 +5611,7 @@ Cash_Dialog: function () {
                                 }
                                 Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                 Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Cashgrd.get(event.recid).changes.OverUnder);
-                                Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                 Cashgrd.get(event.recid).changes.Writeoff = 0;
                                 Cashgrd.get(event.recid).Writeoff = 0;
                             }
@@ -5615,7 +5620,7 @@ Cash_Dialog: function () {
                                 Cashgrd.get(event.recid).Writeoff = 0;
                                 Cashgrd.get(event.recid).changes.OverUnder = ((Cashgrd.records[event.index]['ConvertedAmt']) - event.value_new).toFixed(stdPrecision);
                                 Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Cashgrd.get(event.recid).changes.OverUnder);
-                                Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                             }
                             Cashgrd.get(event.recid).changes.Discount = 0;
                             Cashgrd.get(event.recid).Discount = 0;
@@ -5641,7 +5646,7 @@ Cash_Dialog: function () {
                         VIS.ADialog.error("MoreScheduleAmount");
                         event.value_new = event.value_original;
                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_new);
-                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                         Cashgrd.refreshCell(event.recid, "Writeoff");
                         return;
                     }
@@ -5650,10 +5655,11 @@ Cash_Dialog: function () {
                     //}
                     //handled value according to precision so that value stay same after refresh
                     Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                    Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                    Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
 
 
                     if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                        //Identified by VIS_427 That this if condition will not execute as we already handled it
                         if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
                             if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
                                 if (Cashgrd.get(event.recid).changes.Discount == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
@@ -5691,13 +5697,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5706,13 +5712,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -5724,13 +5730,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5739,13 +5745,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -5756,13 +5762,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5771,13 +5777,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -5788,13 +5794,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5803,13 +5809,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Writeoff = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Writeoff'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Writeoff), (Cashgrd.get(event.recid).changes.Writeoff));
+                                        Cashgrd.records[event.index]['Writeoff'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Writeoff));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -5834,18 +5840,19 @@ Cash_Dialog: function () {
                     //}
                     //handled value according to precision so that value stay same after refresh
                     Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_new.toFixed(stdPrecision));
-                    Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                    Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
 
                     if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
                         VIS.ADialog.error("MoreScheduleAmount");
                         event.value_new = event.value_original;
                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_new);
-                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                         Cashgrd.refreshCell(event.recid, "Discount");
                         return;
                     }
 
                     if (Cashgrd.records[event.index]['PaymwentBaseType'] == "ARR" || Cashgrd.records[event.index]['PaymwentBaseType'] == "APP") {
+                        //Identified by VIS_427 That this if condition will not execute as we already handled it
                         if (event.value_new > Cashgrd.records[event.index]['ConvertedAmt']) {
                             if (Cashgrd.records[event.index]['ConvertedAmt'] < 0) {
                                 if (Cashgrd.get(event.recid).changes.Writeoff == undefined && Cashgrd.get(event.recid).changes.OverUnder == undefined) {
@@ -5884,13 +5891,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5899,13 +5906,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -5916,13 +5923,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5931,13 +5938,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -5948,13 +5955,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5963,13 +5970,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -5980,13 +5987,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.OverUnder < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, (Cashgrd.records[event.index]['OverUnder']));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.OverUnder = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.OverUnder).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['OverUnder'] = checkcommaordotval((Cashgrd.get(event.recid).changes.OverUnder), (Cashgrd.get(event.recid).changes.OverUnder));
+                                        Cashgrd.records[event.index]['OverUnder'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.OverUnder));
                                     }
                                 }
                                 else {
@@ -5995,13 +6002,13 @@ Cash_Dialog: function () {
                                     if (Cashgrd.get(event.recid).changes.VA009_RecivedAmt < 0) {
                                         VIS.ADialog.error("MoreScheduleAmount");
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, (Cashgrd.records[event.index]['VA009_RecivedAmt']));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                         Cashgrd.get(event.recid).changes.Discount = cultureAmtValue(event, event.value_original);
-                                        Cashgrd.records[event.index]['Discount'] = checkcommaordotval((Cashgrd.get(event.recid).changes.Discount), (Cashgrd.get(event.recid).changes.Discount));
+                                        Cashgrd.records[event.index]['Discount'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.Discount));
                                     }
                                     else {
                                         Cashgrd.get(event.recid).changes.VA009_RecivedAmt = cultureAmtValue(event, Math.abs(Cashgrd.get(event.recid).changes.VA009_RecivedAmt).toFixed(stdPrecision));
-                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkcommaordotval((Cashgrd.get(event.recid).changes.VA009_RecivedAmt), (Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
+                                        Cashgrd.records[event.index]['VA009_RecivedAmt'] = checkCommaOrDotVal((Cashgrd.get(event.recid).changes.VA009_RecivedAmt));
                                     }
                                 }
                             }
@@ -8306,10 +8313,12 @@ B2B_Dialog: function () {
         if (evt.propertyName == "VA009_Amount" + $self.windowNo + "") {
             //Restricted the amount value according to precision after decimal
             var newVal = cultureAmtValue(evt, evt.newValue.toFixed(stdPrecision));
-            newVal = checkcommaordotval(newVal, newVal);
-            if (checkcommaordotval(txtAmount.oldValue, txtAmount.oldValue) == newVal) {
+            newVal = checkCommaOrDotVal(newVal);//VIS_427  Converting value according to culture
+            if (checkCommaOrDotVal(txtAmount.oldValue) == newVal) {
+                //VIS_427 If value is same then set null and then set old value
                 txtAmount.setValue(null);
             }
+            //VIS_427 Set the value here
             txtAmount.setValue(parseFloat(newVal));
         }
     };
@@ -9302,9 +9311,10 @@ Pay_ManualDialogBP: function () {
     this.vetoablechange = function (evt) {
         if (evt.propertyName == "VA009_cmbAmt_" + $self.windowNo + "") {
             //VIS_427 restricted value according to precion after user enter amount
-            var newVal = cultureAmtValue(evt, evt.newValue.toFixed(stdPrecision));
-            newVal = checkcommaordotval(newVal, newVal);
-            if (checkcommaordotval(payAmount.oldValue, payAmount.oldValue) == newVal) {
+            var newVal = cultureAmtValue(evt, evt.newValue.toFixed(stdPrecision)); //VIS_427 Converted amount according to culture 
+            newVal = checkCommaOrDotVal(newVal);
+            if (checkCommaOrDotVal(payAmount.oldValue) == newVal) {
+                //VIS_427 If value is same then set null and then set old value
                 payAmount.setValue(null);
             }
             payAmount.setValue(parseFloat(newVal));
@@ -10618,11 +10628,11 @@ function checkcommaordot(event, val, amt) {
     return event.value_new;
         };
 
-        /*function defined to check value for comma and dot return value in dot seprator*/
-        function checkcommaordotval(val, amt) {
+        /*VIS_427 22/09/2023 function defined to check value for comma and dot return value in dot seprator*/
+        function checkCommaOrDotVal(val) {
             var foundComma = false;
           
-            amount = VIS.Utility.Util.getValueOfString(val);
+            var amount = VIS.Utility.Util.getValueOfString(val);
             if (amount.contains(".")) {
                 foundComma = true;
                 var indices = [];
