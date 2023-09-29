@@ -56,6 +56,8 @@
         var batchObjJournal = [];
         var batchObjOrd = [];
         var $xmlpopGrid = null;
+        //VIS_427 29/09/2023 Defined variable to store Business partner location Id
+        var BpLocationID = 0;
         var MsgReturn = "";
         var $SelectedDiv, $chatDiv, $chkicon, $cashicon, $batchicon, $Spliticon, $PayMannualicon, $PayBankToBank, $table, tableleft;
         var popupgrddata = [], Duedateval = [], datasplit = []; var Payrule = "", DueDateSelected = 99;
@@ -9072,6 +9074,9 @@ Pay_ManualDialogBP: function () {
             loadPaymentMthd();
         });
         $BpartnerControl.fireValueChanged = function () {
+            /*VIS_427 29/09 /2023 Set Old value of control to null so that change event
+             fire if business partner is same*/
+            $BpartnerControl.oldValue = null;
             if ($BpartnerControl.value != null) {
                 $BpartnerControl.getControl().removeClass('vis-ev-col-mandatory');
             }
@@ -9192,16 +9197,20 @@ Pay_ManualDialogBP: function () {
     //    }
     //};
     function loadLocation() {
+         //VIS_427 29/09 /2023 Getting BP location id from Context
+        BpLocationID = VIS.Env.getCtx().getWindowTabContext($self.windowNo, VIS.EnvConstants.TAB_INFO, "C_BPARTNER_LOCATION_ID");
         VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetLocation", { "BP": $BpartnerControl.value }, callbackloadLocation);
         function callbackloadLocation(dr) {
             $POP_cmbLocation.empty();
-            $POP_cmbLocation.append(" <option value = 0></option>");
+           $POP_cmbLocation.append(" <option value = 0></option>");
             if (dr.length > 0) {
                 for (var i in dr) {
-                    $POP_cmbLocation.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Location_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>");
+                        $POP_cmbLocation.append("<option value=" + VIS.Utility.Util.getValueOfString(dr[i].C_Location_ID) + ">" + VIS.Utility.Util.getValueOfString(dr[i].Name) + "</option>"); 
                 }
             }
-            $POP_cmbLocation.prop('selectedIndex', 0);
+            /*VIS_427 29/09 /2023:- When search location in business partner field then the set 
+            default "location id" in business partner location field */
+            $POP_cmbLocation.prop('value', BpLocationID);
         }
     };
     function loadPaymentMthd() {
