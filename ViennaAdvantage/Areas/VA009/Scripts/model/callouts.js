@@ -391,13 +391,13 @@
             return "";
         }
         //VIS_427 Bug ID:2488 :- Defined Variables to get precision of currency present on bank
-        var paramString = null; var stdPrecision = 2;
+        var stdPrecision = 2;
         var colName = mField.getColumnName();
-        paramString = mTab.getValue("C_Currency_ID").toString();
-        var dr = VIS.dataContext.getJSONRecord("MCurrency/GetCurrency", paramString);
+        var dr = VIS.dataContext.getJSONRecord("MCurrency/GetCurrency", Util.getValueOfDecimal(mTab.getValue("C_Currency_ID")));
         if (dr != null) {
             stdPrecision = Util.getValueOfInt(dr["StdPrecision"]);
         }
+
         var C_Order_ID = ctx.getContextAsInt(windowNo, "C_Order_ID");
         var VA009_OrderPaySchedule_ID = ctx.getContextAsInt(windowNo, "VA009_OrderPaySchedule_ID");
         if (C_Order_ID > 0 || VA009_OrderPaySchedule_ID > 0) {
@@ -432,7 +432,7 @@
                 //}
                 //tsDate = VIS.DB.to_date(ts, true);
                 //
-                paramstring = C_Order_ID.toString() + "," + mTab.getValue("DateTrx").toString() + "," + VA009_OrderPaySchedule_ID.toString();
+                var paramstring = C_Order_ID.toString() + "," + mTab.getValue("DateTrx").toString() + "," + VA009_OrderPaySchedule_ID.toString();
                 var dr = VIS.dataContext.getJSONRecord("Pay/GetOpenAmt", paramstring);
                 //var sql = "SELECT C_BPartner_ID,C_Currency_ID,"
                 //    + " ORDEROPEN(C_Order_ID, " + VA009_OrderPaySchedule_ID + ") as ORDEROPEN,"
@@ -528,8 +528,8 @@
                 + ", WriteOff=" + writeOffAmt + ", OverUnderAmt=" + overUnderAmt);
             //	Get Currency Info
             var C_Currency_ID = Util.getValueOfInt(cur);
-            paramString = C_Currency_ID.toString();
-            var currency = VIS.dataContext.getJSONRecord("MCurrency/GetCurrency", paramString);
+            //var paramString = C_Currency_ID.toString();
+            //var currency = VIS.dataContext.getJSONRecord("MCurrency/GetCurrency", paramString);
             //MCurrency currency = MCurrency.Get(ctx, C_Currency_ID);
             var ConvDate = mTab.getValue("DateTrx");
             var C_ConversionType_ID = 0;
@@ -583,19 +583,19 @@
 
                 writeOffAmt = (writeOffAmt * currencyRate);
                 //  currency.GetStdPrecision());//, MidpointRounding.AwayFromZero);
-                mTab.setValue("WriteOffAmt", writeOffAmt.toFixed(currency["StdPrecision"]));
+                mTab.setValue("WriteOffAmt", writeOffAmt.toFixed(stdPrecision));
                 overUnderAmt = (overUnderAmt * currencyRate);
                 //currency.GetStdPrecision());//, MidpointRounding.AwayFromZero);
-                mTab.setValue("OverUnderAmt", overUnderAmt.toFixed(currency["StdPrecision"]));
+                mTab.setValue("OverUnderAmt", overUnderAmt.toFixed(stdPrecision));
 
                 // nnayak - Entered Discount amount should be converted to entered currency 
-                enteredDiscountAmt = (enteredDiscountAmt * currencyRate).toFixed(currency["StdPrecision"]);
+                enteredDiscountAmt = (enteredDiscountAmt * currencyRate).toFixed(stdPrecision);
                 //currency.GetStdPrecision());//, MidpointRounding.AwayFromZero);
                 mTab.setValue("DiscountAmt", enteredDiscountAmt);
 
                 payAmt = (((OrderopenAmt - discountAmt) - writeOffAmt) - overUnderAmt);
-                mTab.setValue("PayAmt", payAmt.toFixed(currency["StdPrecision"]));
-                mTab.setValue("PaymentAmount", payAmt.toFixed(currency["StdPrecision"]));
+                mTab.setValue("PayAmt", payAmt.toFixed(stdPrecision));
+                mTab.setValue("PaymentAmount", payAmt.toFixed(stdPrecision));
                 if (payAmt == (((OrderopenAmt - discountAmt) - writeOffAmt) - overUnderAmt)) {
                     mTab.setValue("DiscountAmt", VIS.Env.ZERO);
                     mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
@@ -618,8 +618,8 @@
             //  PayAmt - calculate write off
             else if (colName == "PayAmt" || colName == "PaymentAmount") {
                 if (mTab.getValue("PayAmt") > OrderopenAmt) {
-                    mTab.setValue("PayAmt", OrderopenAmt.toFixed(currency["StdPrecision"]));
-                    mTab.setValue("PaymentAmount", OrderopenAmt.toFixed(currency["StdPrecision"]));
+                    mTab.setValue("PayAmt", OrderopenAmt.toFixed(stdPrecision));
+                    mTab.setValue("PaymentAmount", OrderopenAmt.toFixed(stdPrecision));
                     mTab.setValue("DiscountAmt", VIS.Env.ZERO);
                     mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
                     mTab.setValue("WriteOffAmt", VIS.Env.ZERO);
@@ -640,9 +640,9 @@
                     //}
                     // now, we have to split order schedule also in case of under payment
                     //mTab.setValue("DiscountAmt", overUnderAmt);
-                    mTab.setValue("OverUnderAmt", overUnderAmt.toFixed(currency["StdPrecision"]));
-                    mTab.setValue("PayAmt", payAmt.toFixed(currency["StdPrecision"]));
-                    mTab.setValue("PaymentAmount", payAmt.toFixed(currency["StdPrecision"]));
+                    mTab.setValue("OverUnderAmt", overUnderAmt.toFixed(stdPrecision));
+                    mTab.setValue("PayAmt", payAmt.toFixed(stdPrecision));
+                    mTab.setValue("PaymentAmount", payAmt.toFixed(stdPrecision));
                 }
             }
             else    //  calculate PayAmt
@@ -653,19 +653,19 @@
                 //if(EnteredDiscountAmt.compareTo(DiscountAmt)<0)
                 discountAmt = enteredDiscountAmt;
                 payAmt = (((OrderopenAmt - discountAmt) - writeOffAmt) - overUnderAmt);
-                mTab.setValue("PayAmt", payAmt.toFixed(currency["StdPrecision"]));
-                mTab.setValue("PaymentAmount", payAmt.toFixed(currency["StdPrecision"]));
-                mTab.setValue("DiscountAmt", discountAmt.toFixed(currency["StdPrecision"]));
+                mTab.setValue("PayAmt", payAmt.toFixed(stdPrecision));
+                mTab.setValue("PaymentAmount", payAmt.toFixed(stdPrecision));
+                mTab.setValue("DiscountAmt", discountAmt.toFixed(stdPrecision));
             }
         }
         //VIS_427 Bug ID:2488 :- Handled value according to precision
         else if (Util.getValueOfInt(mTab.getValue("C_Invoice_ID")) == 0 ||
             Util.getValueOfInt(mTab.getValue("GL_JournalLine_ID")) == 0 || Util.getValueOfInt(mTab.getValue("C_Order_ID")) == 0)
-        {
+        {            
             if (colName == "PaymentAmount") {
-                var changedPaymentVal = value;
-                mTab.setValue("PaymentAmount", changedPaymentVal.toFixed(stdPrecision));
-                mTab.setValue("PayAmt", changedPaymentVal.toFixed(stdPrecision));
+                this.setCalloutActive(true);
+                mTab.setValue("PayAmt", mTab.getValue("PaymentAmount").toFixed(stdPrecision));
+                mTab.setValue("PaymentAmount", mTab.getValue("PayAmt"))
             }
         }
         ctx.setContext(windowNo, "PayAmt", payAmt);
