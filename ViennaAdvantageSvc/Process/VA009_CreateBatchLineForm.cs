@@ -165,7 +165,7 @@ namespace ViennaAdvantage.Process
                 StringBuilder _sql = new StringBuilder();
                 MVA009Batch batch = new MVA009Batch(GetCtx(), batchid, Get_TrxName());
                 //VIS_427 10/10/2023 created object of currency to get stdprecision value
-                MCurrency currency = new MCurrency(GetCtx(), C_Currency_ID, Get_TrxName());
+                MCurrency currency = MCurrency.Get(GetCtx(), C_Currency_ID);
                 MVA009BatchLines line = null;
                 MVA009BatchLineDetails lineDetail = null;
                 decimal dueamt = 0;

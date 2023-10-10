@@ -109,7 +109,7 @@ namespace ViennaAdvantage.Process
             StringBuilder _sql = new StringBuilder();
             MVA009Batch batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
             //VIS_427 10/10/2023 created object of currency to get stdprecision value
-            MCurrency currency = new MCurrency(GetCtx(), batch.GetC_Currency_ID(), Get_TrxName());
+            MCurrency currency = MCurrency.Get(GetCtx(), batch.GetC_Currency_ID());
             MVA009BatchLineDetails lineDetail = null;
             MVA009BatchLines line = null;
             bool isCount = false; //VIS_427 Bug id 2323 defined variable 
