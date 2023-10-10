@@ -6276,6 +6276,8 @@ Batch_OpenDialog: function () {
 Batch_Dialog: function () {
     var InvScheduleLookup = null;
     var BatchGrid, _Cheque_no = "";
+    //VIS_427 10/10/2023 defined the value of precision 
+    var stdPrecision = 2;
     var _C_Bank_ID = 0, _C_BankAccount_ID = 0;
     //Varriables
     var TotalAPC = 0, TotalAPI = 0;
@@ -6649,7 +6651,7 @@ Batch_Dialog: function () {
             $POP_cmbCurrency.append("<option value='0'></option>");
             if (dr.length > 0) {
                 for (var i in dr) {
-                    $POP_cmbCurrency.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + ">" + VIS.Utility.encodeText(dr[i].ISO_Code) + "</option>");
+                    $POP_cmbCurrency.append("<option precision=" + VIS.Utility.Util.getValueOfInt(dr[i].Precision) + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + ">" + VIS.Utility.encodeText(dr[i].ISO_Code) + "</option>");
                 }
                 $POP_cmbCurrency.prop('selectedIndex', 0);
             }
@@ -6709,7 +6711,7 @@ Batch_Dialog: function () {
             if (dr != null) {
                 if (dr.length > 0) {
                     for (var i in dr) {
-                        $POP_cmbBankAccount.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                        $POP_cmbBankAccount.append("<option precision=" + VIS.Utility.Util.getValueOfInt(dr[i].Precision) + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
                     }
                 }
             }
@@ -6723,6 +6725,11 @@ Batch_Dialog: function () {
         }
         else {
             $POP_cmbBankAccount.removeClass('vis-ev-col-mandatory');
+        }
+        //VIS_427 10/10/2023 Get value of precision  on change of bank account 
+        stdPrecision = $('#VA009_POP_cmbBankAccount_' + $self.windowNo).find(':selected').attr('precision')
+        if (stdPrecision == null || stdPrecision == 0) {
+            stdPrecision = 2;
         }
 
         //end
@@ -6823,6 +6830,11 @@ Batch_Dialog: function () {
         }
         else {
             $POP_cmbCurrency.removeClass('vis-ev-col-mandatory');
+        }
+        //VIS_427 10/10/2023 Get value of precision  on change of Currency
+        stdPrecision = $('#VA009_POP_cmbCurrency_' + $self.windowNo).find(':selected').attr('precision')
+        if (stdPrecision == null || stdPrecision == 0) {
+            stdPrecision = 2;
         }
         $.ajax({
             url: VIS.Application.contextUrl + "VA009/Payment/GetConvertedAmtBatch",
@@ -7040,13 +7052,13 @@ Batch_Dialog: function () {
                                         _data["AD_Client_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['AD_Client_ID'];
                                         _data["C_Currency_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_Currency_ID'];
                                         _data["TransactionType"] = BatchGrd.get(BatchGrd.getSelection()[i])['TransactionType'];
-                                        _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'];
+                                        _data["DueAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['DueAmt'].toFixed(stdPrecision);//VIS_427 10/10/2023  restricted the value according to precision 
                                         _data["C_Bank_ID"] = $POP_cmbBank.val();
                                         _data["C_BankAccount_ID"] = $POP_cmbBankAccount.val();
                                         //Rakesh(VA228):Set converion type/discount amount and date assigned by amit done on 17/sep/2021
                                         _data["ConversionTypeId"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConversionTypeId'];
-                                        _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'];
-                                        _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'];
+                                        _data["DiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountAmount'].toFixed(stdPrecision); //VIS_427 10/10/2023  restricted the value according to precision 
+                                        _data["ConvertedDiscountAmount"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedDiscountAmount'].toFixed(stdPrecision); //VIS_427 10/10/2023  restricted the value according to precision 
                                         _data["DiscountDate"] = BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate'] != null ?
                                             VIS.Utility.Util.getValueOfDate(BatchGrd.get(BatchGrd.getSelection()[i])['DiscountDate']) : null;
                                         _data["C_DocType_ID"] = BatchGrd.get(BatchGrd.getSelection()[i])['C_DocType_ID'];
@@ -7061,7 +7073,7 @@ Batch_Dialog: function () {
                                             return false;
                                         }
                                         else
-                                            _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'];
+                                            _data["ConvertedAmt"] = BatchGrd.get(BatchGrd.getSelection()[i])['ConvertedAmt'].toFixed(stdPrecision); //VIS_427 10/10/2023  restricted the value according to precision 
 
                                         if ($overwritepay.prop('checked') == true) {
                                             _data["VA009_PaymentMethod_ID"] = $POP_PayMthd.val();
