@@ -108,6 +108,8 @@ namespace ViennaAdvantage.Process
         {
             StringBuilder _sql = new StringBuilder();
             MVA009Batch batch = new MVA009Batch(GetCtx(), GetRecord_ID(), Get_TrxName());
+            //VIS_427 10/10/2023 created object of currency to get stdprecision value
+            MCurrency currency = MCurrency.Get(GetCtx(), batch.GetC_Currency_ID());
             MVA009BatchLineDetails lineDetail = null;
             MVA009BatchLines line = null;
             bool isCount = false; //VIS_427 Bug id 2323 defined variable 
@@ -517,14 +519,16 @@ namespace ViennaAdvantage.Process
                     if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" ||
                        Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                     {
-                        lineDetail.SetDueAmt(-1 * lineDetail.GetDueAmt());
+                        //VIS_427 10/10/2023  restricted the value according to precision 
+                        lineDetail.SetDueAmt(Math.Round(-1 * lineDetail.GetDueAmt(), currency.GetStdPrecision(),MidpointRounding.AwayFromZero));
                         comvertedamt = (-1 * dueamt);
                         DiscountAmt = Decimal.Negate(DiscountAmt);
 
                     }
                     else
                     {
-                        lineDetail.SetDueAmt(lineDetail.GetDueAmt());
+                        //VIS_427 10/10/2023  restricted the value according to precision 
+                        lineDetail.SetDueAmt(Math.Round(lineDetail.GetDueAmt(), currency.GetStdPrecision(), MidpointRounding.AwayFromZero));
                         comvertedamt = (dueamt);
                     }
 
@@ -541,7 +545,8 @@ namespace ViennaAdvantage.Process
 
                     //Replaced bank currency with invoice currency                    
                     lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
-                    lineDetail.SetVA009_ConvertedAmt(comvertedamt);
+                    //VIS_427 10/10/2023  restricted the value according to precision 
+                    lineDetail.SetVA009_ConvertedAmt(Math.Round(comvertedamt, currency.GetStdPrecision(), MidpointRounding.AwayFromZero));
                     if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) < Util.GetValueOfDateTime(batch.GetDateAcct()))
                     {
                         lineDetail.SetDiscountDate(null);
@@ -550,7 +555,8 @@ namespace ViennaAdvantage.Process
                     else if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) >= Util.GetValueOfDateTime(batch.GetDateAcct()))
                     {
                         lineDetail.SetDiscountDate(Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]));
-                        lineDetail.SetDiscountAmt(DiscountAmt);
+                        //VIS_427 10/10/2023  restricted the value according to precision 
+                        lineDetail.SetDiscountAmt(Math.Round(DiscountAmt, currency.GetStdPrecision(), MidpointRounding.AwayFromZero));
                     }
                     //set the C_BP_BankAccount_ID
                     if (_ds != null && _ds.Tables[0].Rows.Count > 0)

@@ -5575,7 +5575,8 @@ namespace VA009.Models
         public List<Dictionary<string, object>> LoadCurrencies(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT C_Currency_ID, ISO_Code FROM C_Currency WHERE IsActive='Y' AND IsMyCurrency='Y' ";
+            //VIS_427 10/10/2023 Handled Sql to get value of precision
+            string sql = "SELECT C_Currency_ID, ISO_Code, StdPrecision FROM C_Currency WHERE IsActive='Y' AND IsMyCurrency='Y' ";
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_Currency", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY C_Currency_ID";
             DataSet ds = DB.ExecuteDataset(sql);
@@ -5587,6 +5588,7 @@ namespace VA009.Models
                     Dictionary<string, object> obj = new Dictionary<string, object>();
                     obj["C_Currency_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][0]);
                     obj["ISO_Code"] = Util.GetValueOfString(ds.Tables[0].Rows[i][1]);
+                    obj["Precision"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][2]);
                     retDic.Add(obj);
                 }
             }
