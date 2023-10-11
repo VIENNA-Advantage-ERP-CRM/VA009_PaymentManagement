@@ -4070,15 +4070,33 @@ namespace VA009.Models
         /// <param name="ct">Context</param>
         /// <writer>1052</writer>
         /// <returns>CurrentNextCheckNo</returns>
-        public int GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
+        public List<CheckNoDetails> GetBankAccountCheckNo(int bankAccount_ID, int payMethod_ID, Ctx ct)
         {
             //handled the logs
-            string sql = @"SELECT bd.CurrentNext FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
+            //VIS_427 Bug id 2339 handeled query to get check number
+            string sql = @"SELECT bd.CurrentNext,bd.Priority,ba.ChkNoAutoControl,bd.EndChkNumber FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
              WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID + "AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
              " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() +" ORDER BY bd.Priority";
 
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
-            return Util.GetValueOfInt(DB.ExecuteScalar(sql));
+             DataSet ds= DB.ExecuteDataset(sql);
+            //Setting the value to properties which later used in form
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            {
+                List<CheckNoDetails> lstdtls = new List<CheckNoDetails>();
+                CheckNoDetails obj = null;
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    obj = new CheckNoDetails();
+                    obj.Chknoautocontrol = Util.GetValueOfString(ds.Tables[0].Rows[i]["ChkNoAutoControl"]);
+                    obj.Currentnext = Util.GetValueOfString(ds.Tables[0].Rows[i]["CurrentNext"]);
+                    obj.Endchknumber = Util.GetValueOfString(ds.Tables[0].Rows[i]["EndChkNumber"]);
+                    obj.Priority = Util.GetValueOfString(ds.Tables[0].Rows[i]["Priority"]);
+                    lstdtls.Add(obj);
+                }
+                return lstdtls;
+            }
+            return null;
 
         }
 
@@ -4221,11 +4239,12 @@ namespace VA009.Models
 
             // Show currency Code with Bank Account
             //handled logs
-            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount acct INNER JOIN C_Currency cu ON (acct.C_Currency_ID = cu.C_Currency_ID)");
+            //VIS_427 Handled query to get precision
+            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision FROM C_BankAccount acct INNER JOIN C_Currency cu ON (acct.C_Currency_ID = cu.C_Currency_ID)");
             if (c_Bank_ID == 0)
             {
                 qry.Clear();
-                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo FROM C_BankAccount ba INNER JOIN C_Bank B ON (b.C_Bank_ID=ba.C_Bank_ID)
+                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision FROM C_BankAccount ba INNER JOIN C_Bank B ON (b.C_Bank_ID=ba.C_Bank_ID)
                             INNER JOIN C_Currency cu ON (ba.C_Currency_ID = cu.C_Currency_ID)");
             }
 
@@ -4267,6 +4286,7 @@ namespace VA009.Models
                     Dictionary<string, object> obj = new Dictionary<string, object>();
                     obj["C_BankAccount_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][0]);
                     obj["AccountNo"] = Util.GetValueOfString(ds.Tables[0].Rows[i][1]);
+                    obj["Precision"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][2]);
                     retDic.Add(obj);
                 }
             }
@@ -5565,7 +5585,8 @@ namespace VA009.Models
         public List<Dictionary<string, object>> LoadCurrencies(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT C_Currency_ID, ISO_Code FROM C_Currency WHERE IsActive='Y' AND IsMyCurrency='Y' ";
+            //VIS_427 10/10/2023 Handled Sql to get value of precision
+            string sql = "SELECT C_Currency_ID, ISO_Code, StdPrecision FROM C_Currency WHERE IsActive='Y' AND IsMyCurrency='Y' ";
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_Currency", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY C_Currency_ID";
             DataSet ds = DB.ExecuteDataset(sql);
@@ -5577,6 +5598,7 @@ namespace VA009.Models
                     Dictionary<string, object> obj = new Dictionary<string, object>();
                     obj["C_Currency_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][0]);
                     obj["ISO_Code"] = Util.GetValueOfString(ds.Tables[0].Rows[i][1]);
+                    obj["Precision"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][2]);
                     retDic.Add(obj);
                 }
             }
@@ -7967,5 +7989,13 @@ namespace VA009.Models
     {
         public MPayment Payment { get; set; }
         public string BPName_Check { get; set; }
+    }
+    //VIS_427 Bug id 2339 created class with properties
+    public class CheckNoDetails
+    {
+        public string Currentnext { get; set; }
+        public string Chknoautocontrol { get; set; }
+        public string Endchknumber { get; set; }
+        public string Priority { get; set; }
     }
 }

@@ -164,6 +164,8 @@ namespace ViennaAdvantage.Process
             {
                 StringBuilder _sql = new StringBuilder();
                 MVA009Batch batch = new MVA009Batch(GetCtx(), batchid, Get_TrxName());
+                //VIS_427 10/10/2023 created object of currency to get stdprecision value
+                MCurrency currency = MCurrency.Get(GetCtx(), C_Currency_ID);
                 MVA009BatchLines line = null;
                 MVA009BatchLineDetails lineDetail = null;
                 decimal dueamt = 0;
@@ -504,26 +506,30 @@ namespace ViennaAdvantage.Process
                         }
                         if (Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "APC" || Util.GetValueOfString(ds.Tables[0].Rows[i]["DocBaseType"]) == "ARC")
                         {
-                            lineDetail.SetDueAmt(-1 * dueamt);
+                            //VIS_427 10/10/2023  restricted the value according to precision 
+                            lineDetail.SetDueAmt(Math.Round(-1 * dueamt, currency.GetStdPrecision(),MidpointRounding.AwayFromZero));
                             convertedAmt = (-1 * convertedAmt);
                             discountamt = (-1 * discountamt);
                         }
                         else
                         {
-                            lineDetail.SetDueAmt(dueamt);
+                            //VIS_427 10/10/2023  restricted the value according to precision 
+                            lineDetail.SetDueAmt(Math.Round(dueamt, currency.GetStdPrecision(), MidpointRounding.AwayFromZero));
                         }
                         //Set discount amount
                         if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) >= Util.GetValueOfDateTime(batch.GetDateAcct()))
                         {
                             lineDetail.SetDiscountDate(Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]));
-                            lineDetail.SetDiscountAmt(discountamt);
+                            //VIS_427 10/10/2023  restricted the value according to precision 
+                            lineDetail.SetDiscountAmt(Math.Round(discountamt, currency.GetStdPrecision(), MidpointRounding.AwayFromZero));
                         }
                         else
                         {
                             lineDetail.SetDiscountDate(null);
                             lineDetail.SetDiscountAmt(0);
                         }
-                        lineDetail.SetVA009_ConvertedAmt(convertedAmt);
+                        //VIS_427 10/10/2023  restricted the value according to precision 
+                        lineDetail.SetVA009_ConvertedAmt(Math.Round(convertedAmt, currency.GetStdPrecision(), MidpointRounding.AwayFromZero));
 
                         // set Invoice currency
                         lineDetail.SetC_Currency_ID(Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]));
