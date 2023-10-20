@@ -3128,18 +3128,19 @@
                                         _data["C_DocType_ID"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['C_DocType_ID'];
                                         _data["DocBaseType"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['DocBaseType'];
                                         //validate zero also, if the value is zero it will ask to enter the recieved amount
-                                        if (VIS.Utility.Util.getValueOfDecimal(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
-                                            _data["VA009_RecivedAmt"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'];
+                                        //VIS_427 20/10/2023 Checking the value if  it is comma seperated then converted the value into dot
+                                        if (VIS.Utility.Util.getValueOfDecimal(checkCommaOrDotVal(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt'])) != 0) {
+                                            _data["VA009_RecivedAmt"] = checkCommaOrDotVal(chqpaygrd.get(chqpaygrd.getSelection()[i])['VA009_RecivedAmt']);
                                         }
                                         else {
                                             VIS.ADialog.info(("VA009_PLPayAmt"));
                                             chqpaygrd.selectNone();
                                             return false;
                                         }
-
-                                        _data["OverUnder"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['OverUnder'];
-                                        _data["Writeoff"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Writeoff'];
-                                        _data["Discount"] = chqpaygrd.get(chqpaygrd.getSelection()[i])['Discount'];
+                                        //VIS_427 20/10/2023 Checking the value if it is comma seperated then converted the value into dot
+                                        _data["OverUnder"] = checkCommaOrDotVal(chqpaygrd.get(chqpaygrd.getSelection()[i])['OverUnder']);
+                                        _data["Writeoff"] = checkCommaOrDotVal(chqpaygrd.get(chqpaygrd.getSelection()[i])['Writeoff']);
+                                        _data["Discount"] = checkCommaOrDotVal(chqpaygrd.get(chqpaygrd.getSelection()[i])['Discount']);
                                         //Transaction Date
                                         _data["DateTrx"] = VIS.Utility.Util.getValueOfDate($POP_DateTrx.val());
                                         _data["DateAcct"] = VIS.Utility.Util.getValueOfDate($POP_DateAcct.val());
@@ -4930,9 +4931,10 @@
                                             _data["DueAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['DueAmt'];
                                             _data["ConvertedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['ConvertedAmt'];
                                             _data["PaymwentBaseType"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['PaymwentBaseType'];
-                                            _data["OverUnder"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['OverUnder'];
-                                            _data["Discount"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Discount'];
-                                            _data["Writeoff"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['Writeoff'];
+                                            //VIS_427 20/10/2023 Checking the value if  it is comma seperated then converted the value into dot
+                                            _data["OverUnder"] = checkCommaOrDotVal(chqrecgrd.get(chqrecgrd.getSelection()[i])['OverUnder']);
+                                            _data["Discount"] = checkCommaOrDotVal(chqrecgrd.get(chqrecgrd.getSelection()[i])['Discount']);
+                                            _data["Writeoff"] = checkCommaOrDotVal(chqrecgrd.get(chqrecgrd.getSelection()[i])['Writeoff']);
 
                                             _data["From"] = "Rec";
                                             if (chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != null && chqrecgrd.get(chqrecgrd.getSelection()[i])['CheckNumber'] != "")
@@ -4943,8 +4945,9 @@
                                                 return false;
                                             }
                                             //If the VA009_RecivedAmt value is "0" then the below condition will not work
-                                            if (VIS.Utility.Util.getValueOfDecimal(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']) != 0) {
-                                                _data["VA009_RecivedAmt"] = chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                            //VIS_427 20/10/2023 Checking the value if  it is comma seperated then converted the value into dot
+                                            if (VIS.Utility.Util.getValueOfDecimal(checkCommaOrDotVal(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt'])) != 0) {
+                                                _data["VA009_RecivedAmt"] = checkCommaOrDotVal(chqrecgrd.get(chqrecgrd.getSelection()[i])['VA009_RecivedAmt']);
                                             }
                                             else {
                                                 VIS.ADialog.info(("VA009_PLRecivedAmt"));
@@ -6060,9 +6063,10 @@ Cash_Dialog: function () {
                                     //    _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
                                     //}
                                     //else
-                                    if (Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] != null && Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] > 0) {
+                                    //VIS_427 20/10/2023 Checking the value if  it is comma seperated then converted the value into dot
+                                    if (Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'] != null && VIS.Utility.Util.getValueOfDecimal(checkCommaOrDotVal(Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'])) > 0) {
                                         //_data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.VA009_RecivedAmt;
-                                        _data["VA009_RecivedAmt"] = Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt'];
+                                        _data["VA009_RecivedAmt"] = checkCommaOrDotVal(Cashgrd.get(Cashgrd.getSelection()[i])['VA009_RecivedAmt']);
                                     }
                                     else {
                                         VIS.ADialog.info(("VA009_PLRecivedAmt"));
@@ -6073,19 +6077,20 @@ Cash_Dialog: function () {
                                     //    _data["OverUnder"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.OverUnder;
                                     //}
                                     //else {
-                                    _data["OverUnder"] = Cashgrd.get(Cashgrd.getSelection()[i])['OverUnder'];
+                                    //VIS_427 20/10/2023 Checking the value if  it is comma seperated then converted the value into dot
+                                    _data["OverUnder"] = checkCommaOrDotVal(Cashgrd.get(Cashgrd.getSelection()[i])['OverUnder']);
                                     //}
                                     //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff != undefined) {
                                     //    _data["Writeoff"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Writeoff;
                                     //}
                                     //else {
-                                    _data["Writeoff"] = Cashgrd.get(Cashgrd.getSelection()[i])['Writeoff'];
+                                    _data["Writeoff"] = checkCommaOrDotVal(Cashgrd.get(Cashgrd.getSelection()[i])['Writeoff']);
                                     //}
                                     //if (Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount != undefined) {
                                     //    _data["Discount"] = Cashgrd.get(Cashgrd.get(Cashgrd.getSelection()[i])['recid']).changes.Discount;
                                     //}
                                     //else {
-                                    _data["Discount"] = Cashgrd.get(Cashgrd.getSelection()[i])['Discount'];
+                                    _data["Discount"] = checkCommaOrDotVal(Cashgrd.get(Cashgrd.getSelection()[i])['Discount']);
                                     //}
                                     //amit
                                     // Added by Bharat
