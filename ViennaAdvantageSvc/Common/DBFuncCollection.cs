@@ -238,7 +238,9 @@ namespace ViennaAdvantage.Common
                                   INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =gl.AD_Client_ID)
                                   INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  
                                   INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
-                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND gl.VA009_IsAssignedtoBatch = 'N' 
+                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND gl.VA009_IsAssignedtoBatch = 'N'
+                                        AND gl.GL_JournalLine_ID NOT IN ( SELECT al.GL_JournalLine_ID FROM C_AllocationHdr ah INNER JOIN C_AllocationLine al on al.C_AllocationHdr_ID=ah.C_AllocationHdr_ID 
+                                        WHERE ah.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
                                         AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs" , "gl"))
                                         : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs" , "gl")) : ""))} ";
@@ -486,6 +488,8 @@ namespace ViennaAdvantage.Common
                                   INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  
                                   INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
                                   WHERE gl.IsAllocated='N'  AND ev.IsAllocationRelated = 'Y'  AND gl.VA009_IsAssignedtoBatch = 'N' 
+                                        AND gl.GL_JournalLine_ID NOT IN ( SELECT al.GL_JournalLine_ID FROM C_AllocationHdr ah INNER JOIN C_AllocationLine al on al.C_AllocationHdr_ID=ah.C_AllocationHdr_ID 
+                                        WHERE ah.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
                                         AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
                                         : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
