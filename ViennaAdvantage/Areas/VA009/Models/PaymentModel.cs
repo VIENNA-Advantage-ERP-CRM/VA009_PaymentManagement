@@ -7730,7 +7730,8 @@ namespace VA009.Models
                     chkAmount = Util.GetValueOfDecimal(objParam[i].ConvertedAmt);
                     chkNumber = objParam[i].CheckNumber.ToString();
                 }
-                date = Convert.ToDateTime(objParam[i].CheckDate);
+                //VIS_427 07/11/2023 Bug Id:2559 Handled date issue when user click on print check preview button
+                date = (Convert.ToDateTime(objParam[i].CheckDate)).ToLocalTime();
                 sql.Clear();
                 sql.Append(@"INSERT INTO VA009_T_CheckPrintPreview(AD_CLIENT_ID
                             , AD_ORG_ID
