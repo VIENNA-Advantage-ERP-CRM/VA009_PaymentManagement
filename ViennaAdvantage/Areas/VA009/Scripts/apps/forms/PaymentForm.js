@@ -6569,6 +6569,8 @@ Batch_Dialog: function () {
             line["AD_Org_ID"] = rslt[i].AD_Org_ID;
             line["AD_Client_ID"] = rslt[i].AD_Client_ID;
             line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
+            //VIS_427 09/11/2023 Bug Id:2559 Formated date so that it can be used to show when user click print check preview button 
+            line["PrintCheckDate"] = Globalize.format(new Date(), "yyyy-MM-dd");
             line["CheckNumber"] = null;
             line["ValidMonths"] = null;
             line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;
@@ -6946,6 +6948,8 @@ Batch_Dialog: function () {
             line["AD_Org_ID"] = rslt[i].AD_Org_ID;
             line["AD_Client_ID"] = rslt[i].AD_Client_ID;
             line["CheckDate"] = new Date();//new Date().toString('MM/DD/YYYY');
+            //VIS_427 09/11/2023 Bug Id:2559 Formated date so that it can be used to show when user click print check preview button
+            line["PrintCheckDate"] = Globalize.format(new Date(), "yyyy-MM-dd");
             line["CheckNumber"] = null;
             line["ValidMonths"] = null;
             line["VA009_PaymentMethod_ID"] = rslt[i].VA009_PaymentMethod_ID;

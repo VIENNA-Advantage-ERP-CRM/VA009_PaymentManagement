@@ -7731,7 +7731,7 @@ namespace VA009.Models
                     chkNumber = objParam[i].CheckNumber.ToString();
                 }
                 //VIS_427 07/11/2023 Bug Id:2559 Handled date issue when user click on print check preview button
-                date = (Convert.ToDateTime(objParam[i].CheckDate)).ToLocalTime();
+                date = Util.GetValueOfDateTime(objParam[i].PrintCheckDate);
                 sql.Clear();
                 sql.Append(@"INSERT INTO VA009_T_CheckPrintPreview(AD_CLIENT_ID
                             , AD_ORG_ID
@@ -7788,6 +7788,8 @@ namespace VA009.Models
         public decimal ConvertedAmt { get; set; }
         public decimal DueAmt { get; set; }
         public DateTime? CheckDate { get; set; }
+        //VIS_427 Added property to get date
+        public DateTime? PrintCheckDate { get; set; }
         //Date Trx
         public decimal CheckNumber { get; set; }
         public int C_InvoicePaySchedule_ID { get; set; }
