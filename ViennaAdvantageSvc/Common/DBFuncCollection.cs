@@ -43,7 +43,8 @@ namespace ViennaAdvantage.Common
             }
             //when load the Schedules should get Converted Amount based on Schedule ConversionType not the default ConversionType
             //int conversionType_ID = ctx.GetContextAsInt("#C_ConversionType_ID");
-
+            /*VIS_427 28/11/2023 3082 When user is creating the Payment with the reference of either invoice,gl journal and order and Payment is drafted
+            then handled Query to restrict those refrences to not visible on payment form*/
             if (DB.IsOracle())
             {
                 if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
@@ -70,7 +71,12 @@ namespace ViennaAdvantage.Common
                          (cb.C_BPartner_ID=inv.C_BPartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
                          (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
                          (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
-                             whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ('Y','J')"
+                             whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                          AND inv.C_Invoice_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.C_Invoice_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_Invoice_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ('Y','J')"
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
                          + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
@@ -148,7 +154,8 @@ namespace ViennaAdvantage.Common
                         ON (inv.C_DocType_ID=cd.C_DocType_ID)  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=inv.C_Bpartner_ID)  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
                         INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
                         INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
-                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                         AND inv.C_Order_ID NOT IN (SELECT C_Order_ID FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
@@ -242,9 +249,14 @@ namespace ViennaAdvantage.Common
                                   AND gl.GL_JournalLine_ID NOT IN (SELECT NVL(al.GL_JournalLine_ID,0) FROM C_AllocationHdr ah 
                                         INNER JOIN C_AllocationLine al ON (al.C_AllocationHdr_ID=ah.C_AllocationHdr_ID)
                                         WHERE ah.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
+                                  AND  gl.GL_JournalLine_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.GL_JournalLine_ID,0) ELSE COALESCE(C_PaymentAllocate.GL_JournalLine_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) 
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
-                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs" , "gl"))
-                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs" , "gl")) : ""))} ";
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);
@@ -319,7 +331,12 @@ namespace ViennaAdvantage.Common
                          (cb.C_Bpartner_ID=inv.C_Bpartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
                          (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
                          (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
-                             whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
+                          whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279'
+                          AND inv.C_Invoice_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.C_Invoice_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_Invoice_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
                          + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
@@ -397,7 +414,8 @@ namespace ViennaAdvantage.Common
                         ON (inv.C_DocType_ID=cd.C_DocType_ID)  INNER JOIN C_BPartner cb  ON (cb.C_BPartner_ID=inv.C_BPartner_ID)  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
                         INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
                         INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
-                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')"
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                        AND inv.C_Order_ID NOT IN (SELECT C_Order_ID FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
@@ -492,6 +510,11 @@ namespace ViennaAdvantage.Common
                                   AND gl.GL_JournalLine_ID NOT IN (SELECT NVL(al.GL_JournalLine_ID,0) FROM C_AllocationHdr ah 
                                         INNER JOIN C_AllocationLine al ON (al.C_AllocationHdr_ID=ah.C_AllocationHdr_ID)
                                         WHERE ah.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
+                                  AND  gl.GL_JournalLine_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.GL_JournalLine_ID,0)  ELSE COALESCE(C_PaymentAllocate.GL_JournalLine_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
                                         AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
                                         : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
@@ -625,7 +648,7 @@ namespace ViennaAdvantage.Common
             {
                 return @"UPDATE VA009_OrderPaySchedule SET VA009_ExecutionStatus = '" + ExecutionStatus + "' WHERE VA009_OrderPaySchedule_ID = " + VA009_OrderPaySchedule_ID;
             }
-            else if(GL_JournalLine_ID > 0)
+            else if (GL_JournalLine_ID > 0)
             {
                 return $@"UPDATE GL_JournalLine SET VA009_IsAssignedtoBatch = 'N' WHERE GL_JournalLine_ID = " + GL_JournalLine_ID;
             }
