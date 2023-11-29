@@ -22,18 +22,18 @@ using VAdvantage.ProcessEngine;
 
 namespace ViennaAdvantage.Process
 {
-   public class VA009_ReadAllFiles : SvrProcess
+    public class VA009_ReadAllFiles : SvrProcess
     {
         protected override string DoIt()
         {
-           // GetDataTabletFromCSVFile();
+            // GetDataTabletFromCSVFile();
             return "";
             //throw new NotImplementedException();
         }
 
         protected override void Prepare()
         {
-           // throw new NotImplementedException();
+            // throw new NotImplementedException();
         }
 
         public static DataTable GetDataTabletFromCSVFile(string csv_file_path)
@@ -70,13 +70,13 @@ namespace ViennaAdvantage.Process
             catch (Exception ex)
             {
             }
-            if (csvData!= null && csvData.Rows.Count > 0)
+            if (csvData != null && csvData.Rows.Count > 0)
             {
                 for (int i = 0; i < csvData.Rows.Count; i++)
                 {
                     int Batchdtlline_Id = Util.GetValueOfInt(csvData.Rows[i]["BatchDetailID"]);
                     string status = Util.GetValueOfString(csvData.Rows[i]["PaymentStatus"]);
-                    int count=DB.ExecuteQuery("UPDATE va009_batchlinedetails set va009_bankresponse=" + status + " WHERE va009_batchlinedetails_id=" + Batchdtlline_Id, null, null);
+                    int count = DB.ExecuteQuery("UPDATE va009_batchlinedetails set va009_bankresponse=" + GlobalVariable.TO_STRING(status) + " WHERE va009_batchlinedetails_id=" + Batchdtlline_Id, null, null);
                 }
             }
             return csvData;
