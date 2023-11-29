@@ -281,7 +281,7 @@ namespace VA009.Models
             int _Client = Util.GetValueOfInt(paramValue[1].ToString());
             //End Assign parameter
             result = new Dictionary<string, object>();
-            string _sql = "Select VA009_IsMandate From VA009_PaymentMethod Where VA009_PaymentMethod_ID=" + _paymentMethod + "And IsActive ='Y' AND AD_Client_ID=" + _Client;
+            string _sql = "Select VA009_IsMandate From VA009_PaymentMethod Where VA009_PaymentMethod_ID=" + _paymentMethod + " And IsActive ='Y' AND AD_Client_ID=" + _Client;
 
             result["VA009_IsMandate"] = Util.GetValueOfString(DB.ExecuteScalar(_sql));
             return result;

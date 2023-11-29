@@ -76,7 +76,7 @@ namespace ViennaAdvantage.Process
                 {
                     int Batchdtlline_Id = Util.GetValueOfInt(csvData.Rows[i]["BatchDetailID"]);
                     string status = Util.GetValueOfString(csvData.Rows[i]["PaymentStatus"]);
-                    int count=DB.ExecuteQuery("UPDATE va009_batchlinedetails set va009_bankresponse=" + status + "WHERE va009_batchlinedetails_id=" + Batchdtlline_Id, null, null);
+                    int count=DB.ExecuteQuery("UPDATE va009_batchlinedetails set va009_bankresponse=" + status + " WHERE va009_batchlinedetails_id=" + Batchdtlline_Id, null, null);
                 }
             }
             return csvData;
