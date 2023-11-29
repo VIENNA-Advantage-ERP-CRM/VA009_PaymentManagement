@@ -617,7 +617,7 @@ namespace VA009.Models
                            INNER JOIN VA009_BatchLines bl ON bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID
                            INNER JOIN VA009_Batch b ON bl.VA009_Batch_ID = b.VA009_Batch_ID INNER JOIN C_Payment p
                            ON p.C_Payment_ID= bld.C_Payment_ID WHERE b.VA009_Batch_ID = " + paymentID + " ) " +
-                           @"AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID  GROUP BY ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
+                           @" AND bp.C_BP_BankAccount_ID=p.C_BP_BankAccount_ID  GROUP BY ba.C_BankAccount_ID,  p.DateAcct,  b.RoutingNo,  p.documentno,p.description,
                            ba.Name, ba.AccountNo, p.payamt, oi.CMS01_BRegNo, cp.CMS01_IsResident, cp.BusinessRegNo,
                            oi.Phone, oi.C_Location_ID, oi.CMS01_BPAddress, bpl.C_Location_ID, bp.A_Name, cp.CMS01_BeneficiaryIDIndicator,
                            bp.AccountNo, p.RoutingNo, p.AccountNo, p.A_Name,

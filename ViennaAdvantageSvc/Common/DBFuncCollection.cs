@@ -254,9 +254,9 @@ namespace ViennaAdvantage.Common
                                   THEN COALESCE(C_Payment.GL_JournalLine_ID,0) ELSE COALESCE(C_PaymentAllocate.GL_JournalLine_ID,0) END 
                                   FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
                                   WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) 
-                                        AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
-                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
-                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
+                                        AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} )
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);
@@ -331,12 +331,12 @@ namespace ViennaAdvantage.Common
                          (cb.C_Bpartner_ID=inv.C_Bpartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
                          (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
                          (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
-                          whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279'
+                          whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279'
                           AND inv.C_Invoice_ID NOT IN (
                                   SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
                                   THEN COALESCE(C_Payment.C_Invoice_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_Invoice_ID,0) END 
                                   FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
-                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
                          + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
@@ -516,8 +516,8 @@ namespace ViennaAdvantage.Common
                                   FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
                                   WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
                                         AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
-                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
-                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? ("AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
                     sql.Append(query);
