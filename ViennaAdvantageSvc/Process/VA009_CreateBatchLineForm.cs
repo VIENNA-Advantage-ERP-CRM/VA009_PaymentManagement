@@ -185,9 +185,9 @@ namespace ViennaAdvantage.Process
                               INNER JOIN C_BPartner BP ON BP.C_Bpartner_ID=CI.C_Bpartner_ID
                               INNER JOIN C_BPartner_Location bpLoc ON (bpLoc.C_BPartner_Location_ID = CI.C_BPartner_Location_ID)
                               WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND cp.IsHoldPayment!='Y'
-                              AND CI.C_Invoice_ID NOT IN (
+                              AND CP.C_InvoicePaySchedule_ID NOT IN (
                               SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
-                              THEN COALESCE(C_Payment.C_Invoice_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_Invoice_ID,0) END 
+                              THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0) ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
                               FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
                               WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
                               AND CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus NOT IN ( 'Y','J') AND CI.AD_Client_ID = " + _AD_Client_ID + " AND CI.AD_Org_ID = " + _AD_Org_ID);

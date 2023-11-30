@@ -72,9 +72,9 @@ namespace ViennaAdvantage.Common
                          (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
                          (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
                              whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
-                          AND inv.C_Invoice_ID NOT IN (
+                          AND cs.C_InvoicePaySchedule_ID NOT IN (
                                   SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
-                                  THEN COALESCE(C_Payment.C_Invoice_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_Invoice_ID,0) END 
+                                  THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
                                   FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
                                   WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ('Y','J')"
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
@@ -155,7 +155,7 @@ namespace ViennaAdvantage.Common
                         INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
                         INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
                             whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
-                         AND inv.C_Order_ID NOT IN (SELECT C_Order_ID FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
+                         AND cs.VA009_OrderPaySchedule_ID NOT IN (SELECT VA009_OrderPaySchedule_ID FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
@@ -332,9 +332,9 @@ namespace ViennaAdvantage.Common
                          (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
                          (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
                           whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279'
-                          AND inv.C_Invoice_ID NOT IN (
+                          AND cs.C_InvoicePaySchedule_ID NOT IN (
                                   SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
-                                  THEN COALESCE(C_Payment.C_Invoice_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_Invoice_ID,0) END 
+                                  THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
                                   FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
                                   WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
@@ -415,7 +415,7 @@ namespace ViennaAdvantage.Common
                         INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
                         INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
                             whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
-                        AND inv.C_Order_ID NOT IN (SELECT C_Order_ID FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
+                        AND cs.VA009_OrderPaySchedule_ID NOT IN (SELECT VA009_OrderPaySchedule_ID FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 

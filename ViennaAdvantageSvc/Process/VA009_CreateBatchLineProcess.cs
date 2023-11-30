@@ -155,9 +155,9 @@ namespace ViennaAdvantage.Process
                           INNER JOIN C_DocType doc ON (doc.C_DocType_ID = CI.C_DocType_ID) 
                           WHERE ci.ispaid='N' AND cp.va009_ispaid='N' AND cp.C_Payment_ID IS NULL AND
                           CI.IsActive = 'Y' and ci.docstatus in ('CO','CL') AND cp.VA009_ExecutionStatus NOT IN ('Y','J')
-                          AND CI.C_Invoice_ID NOT IN (
+                          AND CP.C_InvoicePaySchedule_ID NOT IN (
                           SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
-                          THEN COALESCE(C_Payment.C_Invoice_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_Invoice_ID,0) END 
+                          THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
                           FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
                           WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) 
                           AND cp.IsHoldPayment!='Y'  AND CI.AD_Client_ID = " + batch.GetAD_Client_ID()
