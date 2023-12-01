@@ -336,7 +336,7 @@ namespace ViennaAdvantage.Common
                                   SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
                                   THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
                                   FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
-                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J') "
                          //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
                          + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
