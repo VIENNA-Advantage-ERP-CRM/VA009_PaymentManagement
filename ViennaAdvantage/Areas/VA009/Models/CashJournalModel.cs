@@ -46,6 +46,8 @@ namespace VA009.Models
                             Ops.IsActive = 'Y'
                             AND O.C_Order_ID = " + Order_ID + @"
                             AND NVL(Ops.C_Payment_ID, 0)=0 AND NVL(Ops.C_CashLine_ID, 0)=0
+                            AND ops.VA009_OrderPaySchedule_ID NOT IN (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
+                            AND ops.VA009_ExecutionStatus NOT IN ('Y','J')
                             ORDER BY Ops.DueDate ASC
                             ) t WHERE ROWNUM=1");
             try

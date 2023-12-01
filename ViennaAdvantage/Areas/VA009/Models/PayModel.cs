@@ -166,8 +166,9 @@ namespace VA009.Models
                            + " ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' "
                            + " AND i.C_Order_ID    = " + C_Order_ID
                            + "  AND ips.VA009_OrderPaySchedule_ID NOT IN"
-                           + "(SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0) "
-                           + " ORDER BY ips.duedate ASC) t WHERE rownum=1";
+                           + " (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0 "
+                           + " UNION (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')))"
+                           + " AND ips.VA009_ExecutionStatus NOT IN ('Y','J') ORDER BY ips.duedate ASC) t WHERE rownum=1";
                 DataSet ds = DB.ExecuteDataset(_sql);
 
                 //VA230:Check if no OrderPaySchedule data found
