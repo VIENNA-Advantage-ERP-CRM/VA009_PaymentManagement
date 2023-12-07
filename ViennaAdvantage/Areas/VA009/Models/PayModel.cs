@@ -166,8 +166,9 @@ namespace VA009.Models
                            + " ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' "
                            + " AND i.C_Order_ID    = " + C_Order_ID
                            + "  AND ips.VA009_OrderPaySchedule_ID NOT IN"
-                           + "(SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0) "
-                           + " ORDER BY ips.duedate ASC) t WHERE rownum=1";
+                           + " (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0 "
+                           + " UNION (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')))"
+                           + " AND ips.VA009_ExecutionStatus NOT IN ('Y','J','R') ORDER BY ips.duedate ASC) t WHERE rownum=1";
                 DataSet ds = DB.ExecuteDataset(_sql);
 
                 //VA230:Check if no OrderPaySchedule data found
@@ -281,7 +282,7 @@ namespace VA009.Models
             int _Client = Util.GetValueOfInt(paramValue[1].ToString());
             //End Assign parameter
             result = new Dictionary<string, object>();
-            string _sql = "Select VA009_IsMandate From VA009_PaymentMethod Where VA009_PaymentMethod_ID=" + _paymentMethod + "And IsActive ='Y' AND AD_Client_ID=" + _Client;
+            string _sql = "Select VA009_IsMandate From VA009_PaymentMethod Where VA009_PaymentMethod_ID=" + _paymentMethod + " And IsActive ='Y' AND AD_Client_ID=" + _Client;
 
             result["VA009_IsMandate"] = Util.GetValueOfString(DB.ExecuteScalar(_sql));
             return result;

@@ -321,10 +321,10 @@
             });
             var amt = VIS.Utility.Util.getValueOfDecimal($totalAmt.data('ttlamt')).toFixed(precision);
             for (var i = 0; i < SlctdBpId.length; i++) {
-                var DeslctPaymt_ID = SlctdBpId[i].BP.uid;
+                var DeslctPaymt_ID = VIS.Utility.Util.getValueOfInt(SlctdBpId[i].BP.uid);
                 //removing records after unselecting the business partner
                 BusinessPartnerIds = jQuery.grep(BusinessPartnerIds, function (value) {
-                    return value.BP.uid != DeslctPaymt_ID;
+                    return VIS.Utility.Util.getValueOfInt(value.BP.uid) != DeslctPaymt_ID;
                 });
                 SlctdPaymentIds = jQuery.grep(SlctdPaymentIds, function (value) {
                     return value != DeslctPaymt_ID;
@@ -344,9 +344,9 @@
                 batchObjJournal = jQuery.grep(batchObjJournal, function (value) {
                     return value.ID != DeslctPaymt_ID;
                 });
-                precision = SlctdBpId[i].BP.precision;
-                var baseAmt = SlctdBpId[i].BP.baseamt.toFixed(precision);
-                amt = amt - baseAmt;
+                precision = VIS.Utility.Util.getValueOfInt(SlctdBpId[i].BP.precision);
+                var baseAmt = VIS.Utility.Util.getValueOfDecimal(SlctdBpId[i].BP.baseamt).toFixed(precision);
+                amt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
             }
             $totalAmt.data('ttlamt', parseFloat(amt, precision));
             $totalAmt.text(getFormattednumber(amt, precision));

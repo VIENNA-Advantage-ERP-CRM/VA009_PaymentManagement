@@ -4075,7 +4075,7 @@ namespace VA009.Models
             //handled the logs
             //VIS_427 Bug id 2339 handeled query to get check number
             string sql = @"SELECT bd.CurrentNext,bd.Priority,ba.ChkNoAutoControl,bd.EndChkNumber FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
-             WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID + "AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
+             WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID + " AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
              " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() +" ORDER BY bd.Priority";
 
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
@@ -4270,11 +4270,11 @@ namespace VA009.Models
 
             if (c_Bank_ID == 0)
             {
-                sql = MRole.GetDefault(ct).AddAccessSQL(qry.ToString(), "ba", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO) + "ORDER BY b.Name";
+                sql = MRole.GetDefault(ct).AddAccessSQL(qry.ToString(), "ba", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO) + " ORDER BY b.Name";
             }
             else
             {
-                sql = MRole.GetDefault(ct).AddAccessSQL(qry.ToString(), "acct", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO) + "ORDER BY acct.AccountNo";
+                sql = MRole.GetDefault(ct).AddAccessSQL(qry.ToString(), "acct", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO) + " ORDER BY acct.AccountNo";
             }
 
             DataSet ds = DB.ExecuteDataset(sql);
@@ -7162,7 +7162,7 @@ namespace VA009.Models
             StringBuilder sql = new StringBuilder();
             sql.Append("SELECT C_DocType_ID, Name FROM C_DocType C_DocType WHERE IsActive='Y' AND AD_Org_ID IN" +
                 "((SELECT AD_Org_ID FROM C_BankAccount WHERE C_BankAccount_ID= " + BankAcct_ID + "), 0) " +
-                "AND AD_Client_ID IN(" + ct.GetAD_Client_ID() + ", 0)");
+                " AND AD_Client_ID IN(" + ct.GetAD_Client_ID() + ", 0)");
 
             //AP Receipt 2->AP Payment 3->Cash Journal 4->Batch Payment
             if (BaseType == 1)
