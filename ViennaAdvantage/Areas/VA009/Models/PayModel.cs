@@ -250,7 +250,7 @@ namespace VA009.Models
             int C_INVOICE_ID = Util.GetValueOfInt(paramValue[0].ToString());
             //End Assign parameter
             result = new Dictionary<string, object>();
-            //VIS_427 Handled query to restrict records to not visible if they are drafted against payment and cash journal
+            //VIS_427 BugId 3082 Handled query to restrict records to not visible if they are drafted against payment and cash journal
             string _sql = @"SELECT C_InvoicePaySchedule_ID FROM C_InvoicePaySchedule WHERE C_INVOICE_ID = " + C_INVOICE_ID+
                            @" AND C_InvoicePaySchedule_ID NOT IN (SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID, 0)
                            THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0) ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END
