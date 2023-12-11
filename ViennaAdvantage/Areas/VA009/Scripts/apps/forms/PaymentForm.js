@@ -346,6 +346,10 @@
                 });
                 precision = VIS.Utility.Util.getValueOfInt(SlctdBpId[i].BP.precision);
                 var baseAmt = VIS.Utility.Util.getValueOfDecimal(SlctdBpId[i].BP.baseamt).toFixed(precision);
+                //VIS_427 Handled base amount to be negative if docbasetype is ARC or APC
+                if (SlctdBpId[i].BP.docbasetype == "ARC" || SlctdBpId[i].BP.docbasetype == "APC") {
+                    baseAmt = (-1 * baseAmt);
+                }
                 amt = VIS.Utility.Util.getValueOfDecimal(amt) - VIS.Utility.Util.getValueOfDecimal(baseAmt);
             }
             $totalAmt.data('ttlamt', parseFloat(amt, precision));
