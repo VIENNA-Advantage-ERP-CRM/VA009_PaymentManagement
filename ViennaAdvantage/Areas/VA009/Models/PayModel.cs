@@ -159,12 +159,15 @@ namespace VA009.Models
                 string[] paramValue = fields.ToString().Split(',');
                 //Assign parameter value
                 int C_Order_ID = Util.GetValueOfInt(paramValue[0].ToString());
+                //VIS_427 Handled issue to get the amount of only particular selected order schedule
+                int VA009_OrderPaySchedule_ID = Util.GetValueOfInt(paramValue[1].ToString());
                 //End Assign parameter
 
                 string _sql = "SELECT * FROM   (SELECT ips.VA009_OrderPaySchedule_ID, "
                            + " ips.DueAmt  FROM C_Order i  INNER JOIN VA009_OrderPaySchedule  ips "
                            + " ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' "
                            + " AND i.C_Order_ID    = " + C_Order_ID
+                           + " AND VA009_OrderPaySchedule_ID = "+ VA009_OrderPaySchedule_ID
                            + "  AND ips.VA009_OrderPaySchedule_ID NOT IN"
                            + " (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0 "
                            + " UNION (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')))"
