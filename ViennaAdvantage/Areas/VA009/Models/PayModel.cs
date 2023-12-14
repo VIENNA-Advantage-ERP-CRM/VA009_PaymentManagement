@@ -7,7 +7,7 @@ using VAdvantage.Model;
 using System.Data;
 using VAdvantage.DataBase;
 using System.Data.SqlClient;
-
+using System.Text;
 
 namespace VA009.Models
 {
@@ -109,8 +109,8 @@ namespace VA009.Models
                 string _sql= @"SELECT GL.AmtSourceDr,GL.AmtSourceCr,GL.C_Currency_ID AS C_Currency_ID,El.AccountType," +
                             "(SELECT DocBaseType FROM c_doctype WHERE C_doctype_Id=" + C_DocType_ID+ ") AS docbaseType FROM " +
                             "GL_Journalline GL INNER JOIN C_ELEMENTVALUE El ON GL.Account_ID=El.C_ELEMENTVALUE_ID WHERE" +
-                            " GL.GL_JournalLine_ID=" + GL_JournalLine_ID;                 
-                DataSet ds = DB.ExecuteDataset(_sql,null,null);            
+                            " GL.GL_JournalLine_ID=" + GL_JournalLine_ID;
+                DataSet ds = DB.ExecuteDataset(_sql,null,null);
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
                     retDic = new Dictionary<string, object>();
@@ -119,9 +119,9 @@ namespace VA009.Models
                     {
                         if (Util.GetValueOfDecimal(dr["AmtSourceDr"]) != 0)
                         {
-                             rate = MConversionRate.Convert(ctx, Util.GetValueOfDecimal(dr["AmtSourceDr"]),
-                                 Util.GetValueOfInt(dr["C_Currency_ID"]), C_Currency_ID, AcountDate, C_ConversionType_ID,
-                                 AD_Client_ID, AD_Org_ID);
+                            rate = MConversionRate.Convert(ctx, Util.GetValueOfDecimal(dr["AmtSourceDr"]),
+                                Util.GetValueOfInt(dr["C_Currency_ID"]), C_Currency_ID, AcountDate, C_ConversionType_ID,
+                                AD_Client_ID, AD_Org_ID);
                             retDic["AmtSourceDr"] = rate;
                             retDic["AmtSourceCr"] = 0;
                         }
@@ -133,7 +133,7 @@ namespace VA009.Models
                             retDic["AmtSourceCr"] = rate;
                             retDic["AmtSourceDr"] = 0;
                         }
-                     
+
                         retDic["AccountType"] = Util.GetValueOfString(dr["AccountType"]);
                         retDic["docbaseType"] = Util.GetValueOfString(dr["docbaseType"]);
                     }
@@ -157,29 +157,40 @@ namespace VA009.Models
             {
                 Dictionary<String, object> retDic = null;
                 string[] paramValue = fields.ToString().Split(',');
+                int VA009_OrderPaySchedule_ID = 0;
                 //Assign parameter value
                 int C_Order_ID = Util.GetValueOfInt(paramValue[0].ToString());
+                //VIS_427 Handled issue to get the amount of only particular selected order schedule
+                if (paramValue.Length > 1)
+                {
+                    VA009_OrderPaySchedule_ID = Util.GetValueOfInt(paramValue[1].ToString());
+                }
                 //End Assign parameter
-
-                string _sql = "SELECT * FROM   (SELECT ips.VA009_OrderPaySchedule_ID, "
-                           + " ips.DueAmt  FROM C_Order i  INNER JOIN VA009_OrderPaySchedule  ips "
-                           + " ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' "
-                           + " AND i.C_Order_ID    = " + C_Order_ID
-                           + "  AND ips.VA009_OrderPaySchedule_ID NOT IN"
-                           + " (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0 "
-                           + " UNION (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')))"
-                           + " AND ips.VA009_ExecutionStatus NOT IN ('Y','J','R') ORDER BY ips.duedate ASC) t WHERE rownum=1";
-                DataSet ds = DB.ExecuteDataset(_sql);
+                StringBuilder _sql = new StringBuilder();
+                _sql.Append(@"SELECT * FROM   (SELECT ips.VA009_OrderPaySchedule_ID, 
+                            ips.DueAmt  FROM C_Order i  INNER JOIN VA009_OrderPaySchedule  ips 
+                            ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' 
+                            AND i.C_Order_ID    = " + C_Order_ID);
+                if (VA009_OrderPaySchedule_ID > 0)
+                {
+                    _sql.Append(" AND VA009_OrderPaySchedule_ID = " + VA009_OrderPaySchedule_ID);
+                }
+                _sql.Append(@" AND ips.VA009_OrderPaySchedule_ID NOT IN
+                            (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM VA009_OrderPaySchedule  WHERE C_Payment_Id !=0 
+                             UNION (SELECT NVL(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')))
+                             AND ips.VA009_ExecutionStatus NOT IN ('Y','J','R') ORDER BY ips.duedate ASC) t WHERE rownum=1");
+                DataSet ds = DB.ExecuteDataset(_sql.ToString());
 
                 //VA230:Check if no OrderPaySchedule data found
                 if (ds != null && ds.Tables[0].Rows.Count == 0)
                 {
+                    _sql.Clear();
                     //Get Due amount (GrandTotal-DueAmt) based on orderid when no VA009_OrderPaySchedule_ID found
                     //GrandTotal-Get sum of DueAmt of OrderPaySchedule which are paid
-                    _sql = @"SELECT 0 as VA009_OrderPaySchedule_ID, O.GrandTotal - NVL(SUM(S.DueAmt),0) AS DueAmt FROM C_Order O
+                    _sql.Append(@"SELECT 0 as VA009_OrderPaySchedule_ID, O.GrandTotal - NVL(SUM(S.DueAmt),0) AS DueAmt FROM C_Order O
                                 LEFT JOIN VA009_OrderPaySchedule S ON O.C_Order_ID = S.C_Order_ID AND S.IsActive = 'Y' AND S.VA009_IsPaid='Y'
-                                WHERE O.C_Order_ID=" + C_Order_ID + " GROUP BY O.GrandTotal";
-                    ds = DB.ExecuteDataset(_sql);
+                                WHERE O.C_Order_ID=" + C_Order_ID + " GROUP BY O.GrandTotal");
+                    ds = DB.ExecuteDataset(_sql.ToString());
                 }
 
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
