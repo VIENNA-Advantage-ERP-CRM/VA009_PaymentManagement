@@ -213,12 +213,15 @@
         }
 
 
-        var VA009_OrderPaySchedule_ID = 0;
+        var VA009_OrderPaySchedule_ID = 0; 
         var C_Order_ID = ctx.getContextAsInt(windowNo, "C_Order_ID")
+        //VIS_427 Getting order Schedule id to get accurate amount of that schedule
+        VA009_OrderPaySchedule_ID = Util.getValueOfInt(mTab.getValue("VA009_OrderPaySchedule_ID"));
+        paramString = C_Order_ID.toString() + "," + VA009_OrderPaySchedule_ID.toString();
 
         var dueAmount = 0;
         var _chk = 0;
-        var dr = VIS.dataContext.getJSONRecord("Pay/GetDueAmt", C_Order_ID.toString());
+        var dr = VIS.dataContext.getJSONRecord("Pay/GetDueAmt", paramString);
         //var _sqlAmt = "SELECT * FROM   (SELECT ips.VA009_OrderPaySchedule_ID, "
         //+ " ips.DueAmt  FROM C_Order i  INNER JOIN VA009_OrderPaySchedule  ips "
         //+ " ON (i.C_Order_ID        =ips.C_Order_ID)  WHERE ips.isactive          ='Y' "
