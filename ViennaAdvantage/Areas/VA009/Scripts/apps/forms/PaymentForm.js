@@ -4819,7 +4819,7 @@
             })
             chqrecgrd.hideColumn('recid');
             chqrecgrd.hideColumn('TransactionType');
-            chqrecgrd.hideColumn('C_BPartner_Location_ID', 'C_DocType_ID');
+            chqrecgrd.hideColumn('C_BPartner_Location_ID', 'C_DocType_ID', 'DocBaseType');
         };
 
         function loadgrd(callback) {
