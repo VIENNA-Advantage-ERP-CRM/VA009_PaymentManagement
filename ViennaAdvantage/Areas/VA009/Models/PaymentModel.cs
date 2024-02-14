@@ -5781,7 +5781,16 @@ namespace VA009.Models
                                 //if (isAllocationSaved)
                                 //{
                                 //VIS_427 14/02/2024 DevOpsId 4680 Set Unallocated amount to zero if Is Allocated checkbox is true In Bank to bank transfer
-                                if (DB.ExecuteQuery(" UPDATE C_Payment SET IsAllocated='Y',VAS_UnAllocatedAmount = 0 WHERE C_payment_ID = " + _pay.GetC_Payment_ID(), null, trx) <= 0)
+                                string sql = "";
+                                if (_pay.Get_ColumnIndex("VAS_UnAllocatedAmount") >= 0)
+                                {
+                                    sql=("UPDATE C_Payment SET IsAllocated = 'Y', VAS_UnAllocatedAmount = 0 WHERE C_payment_ID = " + _pay.GetC_Payment_ID());
+                                }
+                                else
+                                {
+                                    sql=("UPDATE C_Payment SET IsAllocated = 'Y' WHERE C_payment_ID = " + _pay.GetC_Payment_ID());
+                                }
+                                if (DB.ExecuteQuery(sql, null, trx) <= 0)
                                 {
                                     trx.Rollback();
                                     DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + _pay.GetC_Payment_ID());
