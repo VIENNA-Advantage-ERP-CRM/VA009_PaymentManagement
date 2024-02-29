@@ -5790,7 +5790,8 @@ namespace VA009.Models
                                 // JID_1340: Set Allocated True of AP Payment and AR receipt in case of Bank to Bank transfer
                                 //if (isAllocationSaved)
                                 //{
-                                if (DB.ExecuteQuery(" UPDATE C_Payment SET IsAllocated='Y' WHERE C_payment_ID = " + _pay.GetC_Payment_ID(), null, trx) <= 0)
+                                //VIS_427 14/02/2024 DevOpsId 4680 Set Unallocated amount to zero if Is Allocated checkbox is true In Bank to bank transfer
+                                if (DB.ExecuteQuery("UPDATE C_Payment SET IsAllocated = 'Y'" + (_pay.Get_ColumnIndex("VAS_UnAllocatedAmount") >= 0 ? " ,VAS_UnAllocatedAmount = 0 " : " ") + "WHERE C_payment_ID = " + _pay.GetC_Payment_ID(), null, trx) <= 0)
                                 {
                                     trx.Rollback();
                                     DB.ExecuteQuery("DELETE FROM C_Payment WHERE C_Payment_ID = " + _pay.GetC_Payment_ID());
