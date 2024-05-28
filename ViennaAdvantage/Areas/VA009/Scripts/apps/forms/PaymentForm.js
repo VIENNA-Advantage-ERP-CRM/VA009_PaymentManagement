@@ -2572,10 +2572,22 @@
             line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
             line["CurrencyCode"] = rslt[i].CurrencyCode;
             line["DueAmt"] = rslt[i].DueAmt;
-            line["VA009_RecivedAmt"] = rslt[i].DueAmt;
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
-            line["Discount"] = "0";
+            // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+            if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
+                line["Discount"] = rslt[i].DiscountAmount;
+            }
+            else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
+                line["Discount"] = rslt[i].Discount2;
+            }
+            else {
+                line["Discount"] = "0";
+            }
+            // VIS_427 BugID 5620 Subtracted discount amount from received amount
+            line["VA009_RecivedAmt"] = rslt[i].DueAmt - line["Discount"];
             line["ConvertedAmt"] = rslt[i].DueAmt;
             line["C_Currency_ID"] = rslt[i].C_Currency_ID;
             line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -2610,10 +2622,29 @@
             line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
             line["CurrencyCode"] = rslt[i].CurrencyCode;
             line["DueAmt"] = rslt[i].DueAmt;
-            line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+          //  line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
-            line["Discount"] = "0";
+           // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+            if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
+                line["Discount"] = rslt[i].ConvertedDiscountAmount;
+            }
+            else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
+                line["Discount"] = rslt[i].ConvertedDiscount2;
+            }
+            else {
+                line["Discount"] = "0";
+            }
+            
+            if (rslt[i].convertedAmt != 0) {
+                line["VA009_RecivedAmt"] = rslt[i].convertedAmt - line["Discount"];
+            }
+            else {
+                line["Discount"] = "0";
+                line["VA009_RecivedAmt"] = "0";
+            }
             line["ConvertedAmt"] = rslt[i].convertedAmt;
             line["C_Currency_ID"] = rslt[i].C_Currency_ID;
             line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -3076,10 +3107,28 @@
             line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
             line["CurrencyCode"] = rslt[i].CurrencyCode;
             line["DueAmt"] = rslt[i].DueAmt;
-            line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+         //   line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
-            line["Discount"] = "0";
+            // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+            if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
+                line["Discount"] = rslt[i].ConvertedDiscountAmount;
+            }
+            else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
+                line["Discount"] = rslt[i].ConvertedDiscount2;
+            }
+            else {
+                line["Discount"] = "0";
+            }
+            if (rslt[i].convertedAmt != 0) {
+                line["VA009_RecivedAmt"] = rslt[i].convertedAmt - line["Discount"];
+            }
+            else {
+                line["Discount"] = "0";
+                line["VA009_RecivedAmt"] = "0";
+            }
             line["ConvertedAmt"] = rslt[i].convertedAmt;
             line["C_Currency_ID"] = rslt[i].C_Currency_ID;
             line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -3734,10 +3783,28 @@
                 line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
                 line["CurrencyCode"] = rslt[i].CurrencyCode;
                 line["DueAmt"] = rslt[i].DueAmt;
-                line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+                //line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
                 line["OverUnder"] = "0";
                 line["Writeoff"] = "0";
-                line["Discount"] = "0";
+                // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].ConvertedDiscountAmount;
+                }
+                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].ConvertedDiscount2;
+                }
+                else {
+                    line["Discount"] = "0";
+                }
+                if (rslt[i].convertedAmt != 0) {
+                    line["VA009_RecivedAmt"] = rslt[i].convertedAmt - line["Discount"];
+                }
+                else {
+                    line["Discount"] = "0";
+                    line["VA009_RecivedAmt"] = "0";
+                }
                 line["ConvertedAmt"] = rslt[i].convertedAmt;
                 line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                 line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -4859,10 +4926,21 @@
                 line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
                 line["CurrencyCode"] = rslt[i].CurrencyCode;
                 line["DueAmt"] = rslt[i].DueAmt;
-                line["VA009_RecivedAmt"] = rslt[i].DueAmt;
                 line["OverUnder"] = "0";
                 line["Writeoff"] = "0";
-                line["Discount"] = "0";
+                // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].DiscountAmount;
+                }
+                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].Discount2;
+                }
+                else {
+                    line["Discount"] = "0";
+                }
+                line["VA009_RecivedAmt"] = rslt[i].DueAmt - line["Discount"];
                 line["ConvertedAmt"] = rslt[i].DueAmt;
                 line["C_Currency_ID"] = rslt[i].C_Currency_ID;
                 line["AD_Org_ID"] = rslt[i].AD_Org_ID;
@@ -5502,8 +5580,40 @@ Cash_Dialog: function () {
             line["PaymwentBaseType"] = rslt[i].PaymwentBaseType;
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
-            line["Discount"] = "0";
-            line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+            // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+            if (rslt[i].ConvertedDiscountAmount == 0 || rslt[i].ConvertedDiscount2 == 0) {
+                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].DiscountAmount;
+                }
+                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].Discount2;
+                }
+                else {
+                    line["Discount"] = "0";
+                }
+            }
+            else{
+                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].ConvertedDiscountAmount;
+                }
+                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                    $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
+                    line["Discount"] = rslt[i].ConvertedDiscount2;
+                }
+                else {
+                    line["Discount"] = "0";
+                }
+            }
+            if (rslt[i].convertedAmt != 0) {
+                line["VA009_RecivedAmt"] = rslt[i].convertedAmt - line["Discount"];
+            }
+            else {
+                line["Discount"] = "0";
+                line["VA009_RecivedAmt"] = "0";
+            }
             //VA230:Set TransactionType
             line["TransactionType"] = rslt[i].TransactionType;
             line["DocBaseType"] = rslt[i].DocBaseType;
@@ -6962,7 +7072,16 @@ Batch_Dialog: function () {
             //Rakesh(VA228):Set conversion type
             line["ConversionTypeId"] = rslt[i].ConversionTypeId;
             line["DiscountAmount"] = rslt[i].DiscountAmount;
-            line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
+            if ($POP_DateAcct.val() <= rslt[i].DiscountDate) {
+                line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
+            }
+            else if ($POP_DateAcct.val() <= rslt[i].DiscountDays2) {
+                line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscount2;
+            }
+            else {
+                line["ConvertedDiscountAmount"] = 0;
+            }
+           // line["ConvertedDiscountAmount"] = rslt[i].ConvertedDiscountAmount;
             line["DiscountDate"] = rslt[i].DiscountDate;
             line["TotalAPC"] = rslt[i].TotalAPC;
             line["TotalAPI"] = rslt[i].TotalAPI;

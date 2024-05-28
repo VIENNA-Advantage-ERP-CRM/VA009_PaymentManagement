@@ -443,7 +443,8 @@ namespace VA009.Models
             //Rakesh(VA228):Get convertiontype,discount amount done on date 17/Sep/2021
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             StringBuilder sql = new StringBuilder();
-            sql.Append(@"SELECT inv.C_DocType_ID, pm.VA009_PaymentMode,pm.VA009_PaymentMethod_ID,cb.c_Bpartner_id, 
+            // VIS_427 BugID 5620 fixed query to get the discout amount and discount dates to calculate discount amount
+            sql.Append(@"SELECT inv.C_DocType_ID, pm.VA009_PaymentMode,inv.DateInvoiced,pm.VA009_PaymentMethod_ID,cb.c_Bpartner_id, 
                                 inv.DocumentNo, cb.name AS C_Bpartner,cs.C_Invoice_ID,
                                 cs.C_InvoicePaySchedule_ID,inv.C_Currency_ID,cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2))    
@@ -457,7 +458,7 @@ namespace VA009.Models
                                WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('API' , 'APC')) THEN  bpLoc.VA009_PaymentLocation_ID 
                           END AS C_BPartner_Location_ID, ");
             sql.Append(@" cs.DueDate , 0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID , 'Invoice' AS va009_transactiontype, 
-                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate, '' AS AccountType 
+                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.DiscountDays2 , cs.Discount2, '' AS AccountType
                         FROM C_InvoicePaySchedule cs 
                         INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID = cs.VA009_PaymentMethod_ID 
                         LEFT JOIN C_invoice inv ON inv.C_Invoice_ID = cs.C_invoice_ID 
@@ -471,14 +472,15 @@ namespace VA009.Models
                         INNER JOIN C_Doctype cd ON cs.C_Doctype_ID = cd.C_Doctype_ID 
                         WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID() + " AND cs.C_InvoicePaySchedule_ID IN (" + InvPayids + ")");
 
-            sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
+            sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode,inv.DateInvoiced, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
                           cs.DueDate,  cs.C_InvoicePaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
-                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate");
+                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.discountdays2,
+                          cs.discount2");
             sql.Append(" ,bpLoc.IsPayFrom, inv.C_BPartner_Location_ID, bpLoc.IsRemitTo, bpLoc.VA009_ReceiptLocation_ID, bpLoc.VA009_PaymentLocation_ID");
 
             sql.Append(" UNION ");
 
-            sql.Append(@"SELECT DISTINCT inv.C_DocType_ID, pm.VA009_PaymentMode,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  
+            sql.Append(@"SELECT DISTINCT inv.C_DocType_ID, pm.VA009_PaymentMode,NULL AS DateInvoiced,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  
                                 inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
                                 cs.VA009_OrderPaySchedule_ID As C_InvoicePaySchedule_ID,  inv.C_Currency_ID,  cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('SOO')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) 
@@ -492,7 +494,7 @@ namespace VA009.Models
                                WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('POO')) THEN  bpLoc.VA009_PaymentLocation_ID 
                           END AS C_BPartner_Location_ID, ");
             sql.Append(@" cs.DueDate ,  0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID,  'Order' AS VA009_TransactionType, 
-                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate, '' AS AccountType 
+                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.DiscountDays2 , cs.Discount2, '' AS AccountType 
                         FROM VA009_OrderPaySchedule cs 
                         INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
                         INNER JOIN C_Order inv ON inv.C_Order_ID=cs.C_Order_ID 
@@ -508,7 +510,8 @@ namespace VA009.Models
 
             sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_Order_ID,
                           cs.DueDate,  cs.VA009_OrderPaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
-                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate ");           // Order By Business Partner name not on ID
+                          cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.discountdays2,
+                          cs.discount2  ");           // Order By Business Partner name not on ID
             sql.Append(@" ,bpLoc.IsPayFrom, inv.C_BPartner_Location_ID, bpLoc.IsRemitTo, bpLoc.VA009_ReceiptLocation_ID,
                            bpLoc.VA009_PaymentLocation_ID ");
 
@@ -516,7 +519,7 @@ namespace VA009.Models
             {
                 // Get selected journal ID records
                 sql.Append(" UNION ");
-                sql.Append(@"SELECT 0 AS C_DocType_ID, '' AS VA009_PaymentMode, 0 AS VA009_PaymentMethod_ID, cb.c_Bpartner_id, 
+                sql.Append(@"SELECT 0 AS C_DocType_ID, '' AS VA009_PaymentMode,NULL AS DateInvoiced, 0 AS VA009_PaymentMethod_ID, cb.c_Bpartner_id, 
                                 g.DocumentNo, cb.name AS C_Bpartner,g.GL_Journal_ID,
                                 gl.GL_JournalLine_ID, gl.C_Currency_ID, cc.ISO_CODE, ");
                 sql.Append(@" CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
@@ -529,7 +532,7 @@ namespace VA009.Models
                               loc.C_BPartner_Location_ID DESC) AS C_BPartner_Location_ID, ");
                 sql.Append($@" g.DateAcct ,  0 AS VA009_RecivedAmt,  gl.ad_org_id,  
                                gl.AD_Client_ID,  'GL Journal' AS VA009_TransactionType, 
-                               g.DateAcct, {ctx.GetContextAsInt("#C_ConversionType_ID")}, 0 AS DiscountAmt, null AS DiscountDate, ev.AccountType");
+                               g.DateAcct, {ctx.GetContextAsInt("#C_ConversionType_ID")}, 0 AS DiscountAmt, null AS DiscountDate,NULL AS DiscountDays2 , 0 AS Discount2, ev.AccountType");
                 sql.Append($@"  FROM GL_JournalLine gl
                                   INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
                                   INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
@@ -611,11 +614,20 @@ namespace VA009.Models
                             {
                                 _payData.DiscountAmount = 1 * Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
                             }
+                            if (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["Discount2"]) < 0)
+                            {
+                                _payData.Discount2 = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["Discount2"]);
+                            }
+                            else
+                            {
+                                _payData.Discount2 = 1*Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["Discount2"]);
+                            }
                         }
                         else
                         {
                             _payData.convertedAmt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]);
                             _payData.DiscountAmount = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
+                            _payData.Discount2 = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["Discount2"]);
                         }
                     }
                     else
@@ -654,6 +666,8 @@ namespace VA009.Models
                     //Rakesh(VA228):Set invoice/order conversion type/discount amount on date 17/Sep/2021
                     _payData.ConversionTypeId = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]);
                     _payData.DiscountDate = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]);
+                    _payData.DiscountDays2 = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDays2"]);
+                    _payData.DateInvoiced = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DateInvoiced"]);
                     //end
 
                     _lstChqPay.Add(_payData);
@@ -3490,6 +3504,8 @@ namespace VA009.Models
                     //Rakesh(VA228):Set conversion type
                     _payData.ConversionTypeId = PaymentData[i].ConversionTypeId;
                     _payData.DiscountDate = PaymentData[i].DiscountDate;
+                    _payData.DiscountDays2 = PaymentData[i].DiscountDays2;
+                    _payData.DateInvoiced = PaymentData[i].DateInvoiced;
                     _payData.DueAmt = PaymentData[i].DueAmt;
                     _payData.VA009_RecivedAmt = PaymentData[i].VA009_RecivedAmt;
                     _payData.AD_Org_ID = PaymentData[i].AD_Org_ID;
@@ -3567,6 +3583,7 @@ namespace VA009.Models
                             _payData.PaymwentBaseType = "ARR";
                         }
                         _payData.DiscountAmount = PaymentData[i].DiscountAmount;
+                        _payData.Discount2 = PaymentData[i].Discount2;
 
                         //change by amit
                         if (BankAccount > 0)
@@ -3585,6 +3602,12 @@ namespace VA009.Models
                                     discountAmt = GetConvertedAmt(ctx, PaymentData[i].DiscountAmount, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
                                     _payData.ConvertedDiscountAmount = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
                                 }
+                                if (_payData.Discount2 > 0)
+                                {
+                                    //Get Converted discount amount as per the  selected currency
+                                    discountAmt = GetConvertedAmt(ctx, PaymentData[i].Discount2, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
+                                    _payData.ConvertedDiscount2 = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
+                                }
                             }
                             else
                             {
@@ -3598,6 +3621,12 @@ namespace VA009.Models
                                     //Get Converted discount amount as per the  selected currency
                                     discountAmt = GetConvertedAmt(ctx, PaymentData[i].DiscountAmount, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
                                     _payData.ConvertedDiscountAmount = discountAmt;
+                                }
+                                if (_payData.Discount2 > 0)
+                                {
+                                    //Get Converted discount amount as per the  selected currency
+                                    discountAmt = GetConvertedAmt(ctx, PaymentData[i].Discount2, PaymentData[i].C_Currency_ID, BankAccount, PaymentData[i].AD_Client_ID, _org_Id, CurrencyType, Tocurrency, dateAcct);
+                                    _payData.ConvertedDiscount2 = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
                                 }
                             }
 
@@ -3654,10 +3683,12 @@ namespace VA009.Models
                             if (PaymentData[i].DiscountAmount < 0)
                             {
                                 _payData.DiscountAmount = PaymentData[i].DiscountAmount;
+                                _payData.Discount2 = PaymentData[i].Discount2;
                             }
                             else
                             {
                                 _payData.DiscountAmount = 1 * PaymentData[i].DiscountAmount;
+                                _payData.Discount2 = PaymentData[i].Discount2;
                             }
                         }
                         else
@@ -3862,7 +3893,7 @@ namespace VA009.Models
             List<PaymentData> _lstChqPay = new List<PaymentData>();
             if (PaymentData.Length > 0)
             {
-                decimal convrtedamt = 0;
+                decimal convrtedamt = 0, discountAmt = 0;
 
                 #region GetDocTypes
                 //VA230:Get DocType dataset based on Order or InvoicePaySchedule ids
@@ -3891,10 +3922,15 @@ namespace VA009.Models
                     _payData.CurrencyCode = PaymentData[i].CurrencyCode;
                     _payData.C_Currency_ID = PaymentData[i].C_Currency_ID;
                     _payData.VA009_RecivedAmt = PaymentData[i].VA009_RecivedAmt;
+                    _payData.DiscountDate = PaymentData[i].DiscountDate;
+                    _payData.DiscountDays2 = PaymentData[i].DiscountDays2;
                     _payData.AD_Org_ID = PaymentData[i].AD_Org_ID;
                     _payData.AD_Client_ID = PaymentData[i].AD_Client_ID;
                     _payData.recid = PaymentData[i].C_InvoicePaySchedule_ID;
                     _payData.VA009_PaymentMethod_ID = PaymentData[i].VA009_PaymentMethod_ID;
+                    _payData.DiscountAmount = PaymentData[i].DiscountAmount;
+                    _payData.Discount2 = PaymentData[i].Discount2;
+                    _payData.DateInvoiced = PaymentData[i].DateInvoiced;
                     //VA230:If transaction type is Order then get order doctype and BP LocationID based on OrderId
                     if (!string.IsNullOrEmpty(PaymentData[i].TransactionType) && PaymentData[i].TransactionType.ToUpper() == "ORDER")
                     {
@@ -3925,12 +3961,38 @@ namespace VA009.Models
                             //convrtedamt = -1 * MConversionRate.Convert(ctx, -1 * PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
                             convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
                             convrtedamt = convrtedamt >= 0 ? convrtedamt : -1 * convrtedamt; //on UI will get amount in positive sign
+                            //VIS_427 BugID 5620 Converted discount amount accodimg to currency 
+                            if (_payData.DiscountAmount > 0)
+                            {
+                                //Get Converted discount amount as per the  selected currency
+                                discountAmt = MConversionRate.Convert(ctx, PaymentData[i].DiscountAmount, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
+                                _payData.ConvertedDiscountAmount = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
+                            }
+                            if (_payData.Discount2 > 0)
+                            {
+                                //Get Converted discount amount as per the  selected currency
+                                discountAmt = MConversionRate.Convert(ctx, PaymentData[i].Discount2, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
+                                _payData.ConvertedDiscount2 = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
+                            }
                         }
                         else
                         {
                             //modified according to user selected AcctDate and BankAccount Org_ID
                             //convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, DateTime.Now, CurrencyType, PaymentData[i].AD_Client_ID, PaymentData[i].AD_Org_ID);
                             convrtedamt = MConversionRate.Convert(ctx, PaymentData[i].DueAmt, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
+                            // VIS_427 BugID 5620 Converted discount amount accodimg to currency
+                            if (_payData.DiscountAmount > 0)
+                            {
+                                //Get Converted discount amount as per the  selected currency
+                                discountAmt = MConversionRate.Convert(ctx, PaymentData[i].DiscountAmount, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
+                                _payData.ConvertedDiscountAmount = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
+                            }
+                            if (_payData.Discount2 > 0)
+                            {
+                                //Get Converted discount amount as per the  selected currency
+                                discountAmt = MConversionRate.Convert(ctx, PaymentData[i].Discount2, PaymentData[i].C_Currency_ID, CurrencyCashBook, dateAcct, CurrencyType, PaymentData[i].AD_Client_ID, org_ID);
+                                _payData.ConvertedDiscount2 = discountAmt >= 0 ? discountAmt : -1 * discountAmt;
+                            }
                         }
                         _payData.convertedAmt = convrtedamt;
                         if (_payData.convertedAmt == 0)
@@ -4515,7 +4577,7 @@ namespace VA009.Models
 
                 int _doctype_ID = 0;
                 int c_currencytype = 0;
-                decimal _dueAmt = 0;
+                decimal _dueAmt = 0, dicountAmt = 0, dicountAmt2 = 0;
                 string[] _result = null;
                 List<MPayment> paymentCreated = new List<MPayment>();
                 //to set currency type 
@@ -4591,18 +4653,56 @@ namespace VA009.Models
                                 ex.Append(Msg.GetMsg(ct, "NoCurrencyConversion") + ": " + _invoice.GetDocumentNo());
                                 _log.Info(ex.ToString());
                             }
+                            if(_payschedule.GetDiscountAmt() > 0)
+                            {
+                                dicountAmt = MConversionRate.Convert(ct, _payschedule.GetDiscountAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
+                            }
+                            if (_payschedule.GetDiscount2() > 0)
+                            {
+                                dicountAmt2 = MConversionRate.Convert(ct, _payschedule.GetDiscount2(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
+                            }
                         }
                         else
                         {
                             _dueAmt = _payschedule.GetDueAmt();
+                            dicountAmt = _payschedule.GetDiscountAmt();
+                            dicountAmt2 = _payschedule.GetDiscount2();
                         }
                         if (_doctype.GetDocBaseType().Equals("APC") || _doctype.GetDocBaseType().Equals("ARC"))
                         {
-                            _pay.SetPayAmt(-1 * _dueAmt);
+                           // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+                            if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                DateAcct <= _payschedule.GetDiscountDate())
+                            {
+                                _pay.SetDiscountAmt(-1 * dicountAmt);
+
+                            }
+                            else if (//_invoice.GetDateInvoiced() <= DateAcct &&
+                                     DateAcct <= _payschedule.GetDiscountDays2())
+                            {
+                                _pay.SetDiscountAmt(-1 * dicountAmt2);
+
+                            }
+                            // VIS_427 BugID 5620 Set Payment Amount subtracting from discount
+                            _pay.SetPayAmt(-1 * (_dueAmt - _pay.GetDiscountAmt()));
                         }
                         else
                         {
-                            _pay.SetPayAmt(_dueAmt);
+                            // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+                            if (//_invoice.GetDateInvoiced() <= DateAcct  &&
+                                DateAcct <= _payschedule.GetDiscountDate())
+                            {
+                                _pay.SetDiscountAmt(dicountAmt);
+
+                            }
+                            else if (//_invoice.GetDateInvoiced() <= DateAcct &&
+                                DateAcct <= _payschedule.GetDiscountDays2())
+                            {
+                                _pay.SetDiscountAmt(dicountAmt2);
+
+                            }
+                            // VIS_427 BugID 5620 Set Payment Amount subtracting from discount
+                            _pay.SetPayAmt(_dueAmt - _pay.GetDiscountAmt());
                         }
 
                         _pay.SetC_DocType_ID(_doctype_ID);
@@ -4680,7 +4780,8 @@ namespace VA009.Models
                     #region Multiple Invoice Schedule
                     else
                     {
-                        decimal _discAmt = 0;
+                        decimal _discAmt = 0, _discAmt2 = 0;
+
                         for (int i = 0; i < invoiceIds.Length; i++)
                         {
                             _payschedule = new MInvoicePaySchedule(ct, Util.GetValueOfInt(invoiceIds[i]), trx);
@@ -4706,6 +4807,7 @@ namespace VA009.Models
                                 {
                                     _dueAmt = MConversionRate.Convert(ct, _payschedule.GetDueAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
                                     _discAmt = MConversionRate.Convert(ct, _payschedule.GetDiscountAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
+                                    _discAmt2 = MConversionRate.Convert(ct, _payschedule.GetDiscount2(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
                                     if (_dueAmt == 0 && _payschedule.GetDueAmt() != 0)
                                     {
                                         //trx.Rollback();
@@ -4726,46 +4828,91 @@ namespace VA009.Models
                                 {
                                     _dueAmt = _payschedule.GetDueAmt();
                                     _discAmt = _payschedule.GetDiscountAmt();
+                                    _discAmt2 = _payschedule.GetDiscount2();
                                 }
                                 if (_doctype.GetDocBaseType() == "APC" || _doctype.GetDocBaseType() == "API")
                                 {
                                     //if (_payschedule.GetDueAmt() < 0)
-                                    if (_dueAmt < 0)
-                                        M_Allocate.SetAmount(-1 * _dueAmt);
-                                    else
-                                        M_Allocate.SetAmount(_dueAmt);
-
                                     //if (_payschedule.GetDiscountAmt() < 0)
-                                    if (_discAmt < 0)
-                                        M_Allocate.SetDiscountAmt(-1 * _discAmt);
-                                    else
-                                        M_Allocate.SetDiscountAmt(_discAmt);
+                                    // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
+                                    if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        DateAcct <= _payschedule.GetDiscountDate())
+                                    {
+                                        _dueAmt = _dueAmt - _discAmt;
+                                        if (_discAmt < 0)
+                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                        else
+                                            M_Allocate.SetDiscountAmt(_discAmt);
+                                    }
+                                    else if(//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        DateAcct <= _payschedule.GetDiscountDays2())
+                                    {
+                                        _dueAmt = _dueAmt - _discAmt2;
+                                        if (_discAmt2 < 0)
+                                            M_Allocate.SetDiscountAmt(-1 * _discAmt2);
+                                        else
+                                            M_Allocate.SetDiscountAmt(_discAmt2);
+                                    }
 
                                     if (_doctype.GetDocBaseType() == "APC")
                                     {
                                         // if (PaymentData[i].OverUnder < 0) commented by manjot suggested by puneet and ashish this works same as on window 16/4/19
 
                                         M_Allocate.SetAmount(-1 * _dueAmt);
-                                        M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDate())
+                                        {
+                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                        }
+                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDays2())
+                                        {
+                                            M_Allocate.SetDiscountAmt(-1 * _discAmt2);
+                                        }
                                     }
                                     else
                                     {
                                         M_Allocate.SetOverUnderAmt(0);
+                                        if (_dueAmt < 0)
+                                            M_Allocate.SetAmount(-1 * _dueAmt);
+                                        else
+                                            M_Allocate.SetAmount(_dueAmt);
                                     }
                                     M_Allocate.SetWriteOffAmt(0);
                                 }
                                 else
                                 {
-
+                                    if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        DateAcct <= _payschedule.GetDiscountDate())
+                                    {
+                                            _dueAmt = _dueAmt - _discAmt;
+                                            M_Allocate.SetDiscountAmt(_discAmt);
+                                    }
+                                    else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        DateAcct <= _payschedule.GetDiscountDays2())
+                                    {
+                                        _dueAmt = _dueAmt - _discAmt2;
+                                        M_Allocate.SetDiscountAmt(_discAmt2);
+                                    }
                                     M_Allocate.SetAmount(_dueAmt);
-                                    M_Allocate.SetDiscountAmt(_discAmt);
                                     M_Allocate.SetOverUnderAmt(0);
                                     M_Allocate.SetWriteOffAmt(0);
 
                                     if (_doctype.GetDocBaseType() == "ARC")
                                     {
+                                        // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
                                         M_Allocate.SetAmount(-1 * _dueAmt);
-                                        M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDate())
+                                        {
+                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                        }
+                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDays2())
+                                        {
+                                            M_Allocate.SetDiscountAmt(-1 * _discAmt2);
+                                        }
+                                        //M_Allocate.SetDiscountAmt(-1 * _discAmt);
                                     }
                                 }
                                 if (!M_Allocate.Save())
@@ -4904,6 +5051,7 @@ namespace VA009.Models
                                     {
                                         _dueAmt = MConversionRate.Convert(ct, _payschedule.GetDueAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
                                         _discAmt = MConversionRate.Convert(ct, _payschedule.GetDiscountAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
+                                        _discAmt2= MConversionRate.Convert(ct, _payschedule.GetDiscount2(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
                                         if (_dueAmt == 0 && _payschedule.GetDueAmt() != 0)
                                         {
                                             //trx.Rollback();
@@ -4923,34 +5071,64 @@ namespace VA009.Models
                                     {
                                         _dueAmt = _payschedule.GetDueAmt();
                                         _discAmt = _payschedule.GetDiscountAmt();
+                                        _discAmt2 = _payschedule.GetDiscount2();
                                     }
 
                                     if (_doctype.GetDocBaseType() == "APC" || _doctype.GetDocBaseType() == "API")
                                     {
+                                        // VIS_427 BugID 5620 Set Discount Amount if applicable based on discountdates
+                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDate())
+                                        {
+                                            if (_discAmt < 0)
+                                                _pay.SetDiscountAmt(-1 * _discAmt);
+                                            else
+                                            {
+                                                _pay.SetDiscountAmt(_discAmt);
+                                            }
+                                        }
+                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDays2())
+                                        {
+                                            if (_discAmt2 < 0)
+                                                _pay.SetDiscountAmt(-1 * _discAmt2);
+                                            else
+                                            {
+                                                _pay.SetDiscountAmt(_discAmt2);
+                                            }
+                                        }
+
+                                        // VIS_427 BugID 5620 Set payment Amount
                                         if (_dueAmt < 0)
-                                            _pay.SetPayAmt(-1 * _dueAmt);
+                                            _pay.SetPayAmt(-1 * (_dueAmt - _pay.GetDiscountAmt()));
                                         else
-                                            _pay.SetPayAmt(_dueAmt);
+                                            _pay.SetPayAmt((_dueAmt - _pay.GetDiscountAmt()));
 
                                         if (_doctype.GetDocBaseType() == "APC")
                                         {
                                             if (_dueAmt > 0)
-                                                _pay.SetPayAmt(-1 * _dueAmt);// -1 Received amount can't be nagative
+                                                _pay.SetPayAmt(-1 * (_dueAmt - _pay.GetDiscountAmt()));
                                             else
-                                                _pay.SetPayAmt(_dueAmt);
-                                        }
-
-                                        if (_discAmt < 0)
-                                            _pay.SetDiscountAmt(-1 * _discAmt);
-                                        else
-                                        {
-                                            _pay.SetDiscountAmt(_discAmt);
+                                                _pay.SetPayAmt((_dueAmt - _pay.GetDiscountAmt()));
                                         }
                                         _pay.SetOverUnderAmt(0);
                                         _pay.SetWriteOffAmt(0);
                                     }
                                     else
                                     {
+                                        // VIS_427 BugID 5620 Set Discount Amount if applicable based on discountdates
+                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDate())
+                                        {
+                                            _dueAmt = _dueAmt - _discAmt;
+                                            _pay.SetDiscountAmt(_discAmt);
+                                        }
+                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDays2())
+                                        {
+                                            _dueAmt = _dueAmt - _discAmt2;
+                                            _pay.SetDiscountAmt(_discAmt2);
+                                        }
                                         if (_doctype.GetDocBaseType() == "ARC")
                                         {
                                             if (_payschedule.GetDueAmt() > 0)
@@ -4959,11 +5137,10 @@ namespace VA009.Models
                                                 _pay.SetPayAmt(_dueAmt);
                                         }
                                         else
-                                        {
+                                        {                                           
                                             _pay.SetPayAmt(_dueAmt);
                                             _pay.SetOverUnderAmt(0);
                                         }
-                                        _pay.SetDiscountAmt(_discAmt);
                                         _pay.SetWriteOffAmt(0);
                                     }
                                     //change by amit
@@ -5028,6 +5205,7 @@ namespace VA009.Models
                                     {
                                         _dueAmt = MConversionRate.Convert(ct, _payschedule.GetDueAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
                                         _discAmt = MConversionRate.Convert(ct, _payschedule.GetDiscountAmt(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
+                                        _discAmt2 = MConversionRate.Convert(ct, _payschedule.GetDiscount2(), _payschedule.GetC_Currency_ID(), _pay.GetC_Currency_ID(), DateAcct, c_currencytype, ct.GetAD_Client_ID(), AD_Org_ID);
                                         if (_dueAmt == 0 && _payschedule.GetDueAmt() != 0)
                                         {
                                             //ex.Append(", " + Msg.GetMsg(ct, "NoCurrencyConversion"));
@@ -5046,41 +5224,89 @@ namespace VA009.Models
                                     {
                                         _dueAmt = _payschedule.GetDueAmt();
                                         _discAmt = _payschedule.GetDiscountAmt();
+                                        _discAmt2 = _payschedule.GetDiscount2();
                                     }
                                     if (_doctype.GetDocBaseType() == "APC" || _doctype.GetDocBaseType() == "API")
                                     {
-                                        if (_dueAmt < 0)
-                                            M_Allocate.SetAmount(-1 * _dueAmt);
-                                        else
-                                            M_Allocate.SetAmount(_dueAmt);
+                                        
 
-                                        if (_payschedule.GetDiscountAmt() < 0)
-                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
-                                        else
-                                            M_Allocate.SetDiscountAmt(_discAmt);
+                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDate())
+                                        {
+                                            _dueAmt = _dueAmt - _discAmt;
+                                            if (_discAmt < 0)
+                                                M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                            else
+                                                M_Allocate.SetDiscountAmt(_discAmt);
+                                        }
+                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDays2())
+                                        {
+                                            _dueAmt = _dueAmt - _discAmt2;
+                                            if (_discAmt2 < 0)
+                                                M_Allocate.SetDiscountAmt(-1 * _discAmt2);
+                                            else
+                                                M_Allocate.SetDiscountAmt(_discAmt2);
+                                        }
 
                                         if (_doctype.GetDocBaseType() == "APC")
                                         {
                                             M_Allocate.SetAmount(-1 * _dueAmt);
-                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                            if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                                DateAcct <= _payschedule.GetDiscountDate())
+                                            {
+                                                M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                            }
+                                            else if(//_invoice.GetDateInvoiced() <= DateAcct && 
+                                                DateAcct <= _payschedule.GetDiscountDays2())
+                                            {
+                                                M_Allocate.SetDiscountAmt(-1 * _discAmt2);
+                                            }
                                         }
                                         else
                                         {
                                             M_Allocate.SetOverUnderAmt(0);
+                                            if (_dueAmt < 0)
+                                                M_Allocate.SetAmount(-1 * _dueAmt);
+                                            else
+                                                M_Allocate.SetAmount(_dueAmt);
                                         }
+                                       
                                         M_Allocate.SetWriteOffAmt(0);
                                     }
                                     else
                                     {
+                                        // VIS_427 BugID 5620 Set Discount Amount if applicable based on discountdates
+                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDate())
+                                        {
+                                            _dueAmt = _dueAmt - _discAmt;
+                                            M_Allocate.SetDiscountAmt(_discAmt);
+                                        }
+                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                            DateAcct <= _payschedule.GetDiscountDays2())
+                                        {
+                                            _dueAmt = _dueAmt - _discAmt2;
+                                            M_Allocate.SetDiscountAmt(_discAmt2);
+                                        }
                                         M_Allocate.SetAmount(_dueAmt);
-                                        M_Allocate.SetDiscountAmt(_discAmt);
+                                       // M_Allocate.SetDiscountAmt(_discAmt);
                                         M_Allocate.SetOverUnderAmt(0);
                                         M_Allocate.SetWriteOffAmt(0);
 
                                         if (_doctype.GetDocBaseType() == "ARC")
                                         {
                                             M_Allocate.SetAmount(-1 * _dueAmt);
-                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
+                                            if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                                DateAcct <= _payschedule.GetDiscountDate())
+                                            {
+                                                M_Allocate.SetDiscountAmt(_discAmt);
+                                            }
+                                            else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                                DateAcct <= _payschedule.GetDiscountDays2())
+                                            {
+                                                M_Allocate.SetDiscountAmt(_discAmt2);
+                                            }
                                         }
                                     }
                                     if (_dueAmt != 0 && !M_Allocate.Save())
@@ -5967,7 +6193,7 @@ namespace VA009.Models
             _btDetal.SetC_Currency_ID(PaymentData.C_Currency_ID);
             _btDetal.SetC_ConversionType_ID(PaymentData.ConversionTypeId);
             //Adjust discount amount from due amount if discount date greater than account date
-            if (_invpaySchdule != null && Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
+            if (_invpaySchdule != null && (Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()) || Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDays2()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct())))
             {
                 convertedAmount = convertedAmount - PaymentData.ConvertedDiscountAmount;
                 if (trxDocBaseType == "ARC" || trxDocBaseType == "APC")
@@ -5985,7 +6211,10 @@ namespace VA009.Models
                     }
                 }
                 _btDetal.SetDiscountAmt(PaymentData.ConvertedDiscountAmount);
+                if(Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDate()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct())) 
                 _btDetal.SetDiscountDate(_invpaySchdule.GetDiscountDate());
+                else if(Util.GetValueOfDateTime(_invpaySchdule.GetDiscountDays2()) >= Util.GetValueOfDateTime(_Bt.GetDateAcct()))
+                    _btDetal.SetDiscountDate(_invpaySchdule.GetDiscountDays2());
             }
             else
             {
@@ -7853,6 +8082,11 @@ namespace VA009.Models
         public bool IsAPCGreater { get; set; }
         public bool IsAPCExists { get; set; }       
         public int precision { get; set; }    //VIS_427 DevOps id:2289 defined property to get value for precision 
+        public decimal DiscountAmt { get; set; }
+        public DateTime? DiscountDays2 { get; set; }
+        public decimal Discount2 { get; set; }
+        public DateTime? DateInvoiced { get; set; }
+        public decimal ConvertedDiscount2 { get; set; }
     }
     public class BPDetails
     {
@@ -7933,6 +8167,11 @@ namespace VA009.Models
         public bool IsOverrideAutoCheck { get; set; }
         public decimal TotalAPC { get; set; }
         public decimal TotalAPI { get; set; }
+        public DateTime? DiscountDays2 { get; set; }
+        public decimal Discount2 { get; set; }
+        public decimal ConvertedDiscount2 { get; set; }
+
+        public DateTime? DateInvoiced { get; set; }
 
         //end
     }
