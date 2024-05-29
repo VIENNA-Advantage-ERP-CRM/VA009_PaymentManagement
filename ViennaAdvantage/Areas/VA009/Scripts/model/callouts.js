@@ -1225,11 +1225,11 @@
                         discount = discount * -1;
                     }
                     //VIS_427 BugID 5620 Handled amount by subtarcting discount with due amount
-                    mTab.setValue("Amount", -1 * (Util.getValueOfDecimal(dr["Dueamt"]) - Util.getValueOfDecimal(dr["discount"])));
-                    mTab.setValue("InvoiceAmt", -1 * (Util.getValueOfDecimal(dr["Dueamt"]) - Util.getValueOfDecimal(dr["discount"])));
+                    mTab.setValue("Amount", -1 * (invoiceOpenAmt - discount));
+                    mTab.setValue("InvoiceAmt", -1 * (invoiceOpenAmt));
                 }
                 mTab.setValue("Amount", invoiceOpenAmt - discount);
-                mTab.setValue("InvoiceAmt", invoiceOpenAmt - discount);
+                mTab.setValue("InvoiceAmt", invoiceOpenAmt);
                 mTab.setValue("DiscountAmt", discount);
                 mTab.setValue("WriteOffAmt", VIS.Env.ZERO);
                 mTab.setValue("OverUnderAmt", VIS.Env.ZERO);
