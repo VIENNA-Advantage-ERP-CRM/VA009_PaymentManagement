@@ -1224,10 +1224,8 @@
                     if (discount > 0) {
                         discount = discount * -1;
                     }
-                    //VIS_427 BugID 5620 Handled amount by subtarcting discount with due amount
-                    mTab.setValue("Amount", -1 * (invoiceOpenAmt - discount));
-                    mTab.setValue("InvoiceAmt", -1 * (invoiceOpenAmt));
                 }
+                //VIS_427 BugID 5620 Handled amount by subtarcting discount with due amount
                 mTab.setValue("Amount", invoiceOpenAmt - discount);
                 mTab.setValue("InvoiceAmt", invoiceOpenAmt);
                 mTab.setValue("DiscountAmt", discount);

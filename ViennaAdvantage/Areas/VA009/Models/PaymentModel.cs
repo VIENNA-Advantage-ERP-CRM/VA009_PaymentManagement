@@ -4671,13 +4671,13 @@ namespace VA009.Models
                         if (_doctype.GetDocBaseType().Equals("APC") || _doctype.GetDocBaseType().Equals("ARC"))
                         {
                            // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-                            if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                            if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                 DateAcct <= _payschedule.GetDiscountDate())
                             {
                                 _pay.SetDiscountAmt(-1 * dicountAmt);
 
                             }
-                            else if (//_invoice.GetDateInvoiced() <= DateAcct &&
+                            else if (/*_invoice.GetDateInvoiced() <= DateAcct &&*/
                                      DateAcct <= _payschedule.GetDiscountDays2())
                             {
                                 _pay.SetDiscountAmt(-1 * dicountAmt2);
@@ -4689,19 +4689,19 @@ namespace VA009.Models
                         else
                         {
                             // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-                            if (//_invoice.GetDateInvoiced() <= DateAcct  &&
+                            if (/*_invoice.GetDateInvoiced() <= DateAcct  &&*/
                                 DateAcct <= _payschedule.GetDiscountDate())
                             {
                                 _pay.SetDiscountAmt(dicountAmt);
 
                             }
-                            else if (//_invoice.GetDateInvoiced() <= DateAcct &&
+                            else if (/*_invoice.GetDateInvoiced() <= DateAcct &&*/
                                 DateAcct <= _payschedule.GetDiscountDays2())
                             {
                                 _pay.SetDiscountAmt(dicountAmt2);
 
                             }
-                            // VIS_427 BugID 5620 Set Payment Amount subtracting from discount
+                            /*VIS_427 BugID 5620 Set Payment Amount subtracting from discount*/
                             _pay.SetPayAmt(_dueAmt - _pay.GetDiscountAmt());
                         }
 
@@ -4835,7 +4835,7 @@ namespace VA009.Models
                                     //if (_payschedule.GetDueAmt() < 0)
                                     //if (_payschedule.GetDiscountAmt() < 0)
                                     // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-                                    if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                    if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                         DateAcct <= _payschedule.GetDiscountDate())
                                     {
                                         _dueAmt = _dueAmt - _discAmt;
@@ -4844,7 +4844,7 @@ namespace VA009.Models
                                         else
                                             M_Allocate.SetDiscountAmt(_discAmt);
                                     }
-                                    else if(//_invoice.GetDateInvoiced() <= DateAcct && 
+                                    else if(/*_invoice.GetDateInvoiced() <= DateAcct &&*/ 
                                         DateAcct <= _payschedule.GetDiscountDays2())
                                     {
                                         _dueAmt = _dueAmt - _discAmt2;
@@ -4859,16 +4859,8 @@ namespace VA009.Models
                                         // if (PaymentData[i].OverUnder < 0) commented by manjot suggested by puneet and ashish this works same as on window 16/4/19
 
                                         M_Allocate.SetAmount(-1 * _dueAmt);
-                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
-                                            DateAcct <= _payschedule.GetDiscountDate())
-                                        {
-                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
-                                        }
-                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
-                                            DateAcct <= _payschedule.GetDiscountDays2())
-                                        {
-                                            M_Allocate.SetDiscountAmt(-1 * _discAmt2);
-                                        }
+                                        M_Allocate.SetDiscountAmt(-1 * M_Allocate.GetDiscountAmt());
+
                                     }
                                     else
                                     {
@@ -4882,13 +4874,13 @@ namespace VA009.Models
                                 }
                                 else
                                 {
-                                    if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                    if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                         DateAcct <= _payschedule.GetDiscountDate())
                                     {
                                             _dueAmt = _dueAmt - _discAmt;
                                             M_Allocate.SetDiscountAmt(_discAmt);
                                     }
-                                    else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                    else if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                         DateAcct <= _payschedule.GetDiscountDays2())
                                     {
                                         _dueAmt = _dueAmt - _discAmt2;
@@ -4902,16 +4894,7 @@ namespace VA009.Models
                                     {
                                         // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
                                         M_Allocate.SetAmount(-1 * _dueAmt);
-                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
-                                            DateAcct <= _payschedule.GetDiscountDate())
-                                        {
-                                            M_Allocate.SetDiscountAmt(-1 * _discAmt);
-                                        }
-                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
-                                            DateAcct <= _payschedule.GetDiscountDays2())
-                                        {
-                                            M_Allocate.SetDiscountAmt(-1 * _discAmt2);
-                                        }
+                                        M_Allocate.SetDiscountAmt(-1 * M_Allocate.GetDiscountAmt());
                                         //M_Allocate.SetDiscountAmt(-1 * _discAmt);
                                     }
                                 }
@@ -5077,7 +5060,7 @@ namespace VA009.Models
                                     if (_doctype.GetDocBaseType() == "APC" || _doctype.GetDocBaseType() == "API")
                                     {
                                         // VIS_427 BugID 5620 Set Discount Amount if applicable based on discountdates
-                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                             DateAcct <= _payschedule.GetDiscountDate())
                                         {
                                             if (_discAmt < 0)
@@ -5087,7 +5070,7 @@ namespace VA009.Models
                                                 _pay.SetDiscountAmt(_discAmt);
                                             }
                                         }
-                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        else if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                             DateAcct <= _payschedule.GetDiscountDays2())
                                         {
                                             if (_discAmt2 < 0)
@@ -5230,7 +5213,7 @@ namespace VA009.Models
                                     {
                                         
 
-                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        if (/*_invoice.GetDateInvoiced() <= DateAcct &&*/ 
                                             DateAcct <= _payschedule.GetDiscountDate())
                                         {
                                             _dueAmt = _dueAmt - _discAmt;
@@ -5239,7 +5222,7 @@ namespace VA009.Models
                                             else
                                                 M_Allocate.SetDiscountAmt(_discAmt);
                                         }
-                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        else if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                             DateAcct <= _payschedule.GetDiscountDays2())
                                         {
                                             _dueAmt = _dueAmt - _discAmt2;
@@ -5252,16 +5235,7 @@ namespace VA009.Models
                                         if (_doctype.GetDocBaseType() == "APC")
                                         {
                                             M_Allocate.SetAmount(-1 * _dueAmt);
-                                            if (//_invoice.GetDateInvoiced() <= DateAcct && 
-                                                DateAcct <= _payschedule.GetDiscountDate())
-                                            {
-                                                M_Allocate.SetDiscountAmt(-1 * _discAmt);
-                                            }
-                                            else if(//_invoice.GetDateInvoiced() <= DateAcct && 
-                                                DateAcct <= _payschedule.GetDiscountDays2())
-                                            {
-                                                M_Allocate.SetDiscountAmt(-1 * _discAmt2);
-                                            }
+                                            M_Allocate.SetDiscountAmt(-1 * M_Allocate.GetDiscountAmt());
                                         }
                                         else
                                         {
@@ -5277,13 +5251,13 @@ namespace VA009.Models
                                     else
                                     {
                                         // VIS_427 BugID 5620 Set Discount Amount if applicable based on discountdates
-                                        if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                             DateAcct <= _payschedule.GetDiscountDate())
                                         {
                                             _dueAmt = _dueAmt - _discAmt;
                                             M_Allocate.SetDiscountAmt(_discAmt);
                                         }
-                                        else if (//_invoice.GetDateInvoiced() <= DateAcct && 
+                                        else if (/*_invoice.GetDateInvoiced() <= DateAcct && */
                                             DateAcct <= _payschedule.GetDiscountDays2())
                                         {
                                             _dueAmt = _dueAmt - _discAmt2;
@@ -5297,16 +5271,7 @@ namespace VA009.Models
                                         if (_doctype.GetDocBaseType() == "ARC")
                                         {
                                             M_Allocate.SetAmount(-1 * _dueAmt);
-                                            if (//_invoice.GetDateInvoiced() <= DateAcct && 
-                                                DateAcct <= _payschedule.GetDiscountDate())
-                                            {
-                                                M_Allocate.SetDiscountAmt(_discAmt);
-                                            }
-                                            else if (//_invoice.GetDateInvoiced() <= DateAcct && 
-                                                DateAcct <= _payschedule.GetDiscountDays2())
-                                            {
-                                                M_Allocate.SetDiscountAmt(_discAmt2);
-                                            }
+                                            M_Allocate.SetDiscountAmt(-1 * M_Allocate.GetDiscountAmt());
                                         }
                                     }
                                     if (_dueAmt != 0 && !M_Allocate.Save())

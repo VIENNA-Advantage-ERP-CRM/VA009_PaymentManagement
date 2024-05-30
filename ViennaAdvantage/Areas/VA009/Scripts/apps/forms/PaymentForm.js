@@ -2575,18 +2575,18 @@
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
             // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-            if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+            if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                 $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
                 line["Discount"] = rslt[i].DiscountAmount;
             }
-            else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+            else if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                 $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
                 line["Discount"] = rslt[i].Discount2;
             }
             else {
                 line["Discount"] = "0";
             }
-            // VIS_427 BugID 5620 Subtracted discount amount from received amount
+            /* VIS_427 BugID 5620 Subtracted discount amount from received amount*/
             line["VA009_RecivedAmt"] = rslt[i].DueAmt - line["Discount"];
             line["ConvertedAmt"] = rslt[i].DueAmt;
             line["C_Currency_ID"] = rslt[i].C_Currency_ID;
@@ -2622,22 +2622,22 @@
             line["C_InvoicePaySchedule_ID"] = rslt[i].C_InvoicePaySchedule_ID;
             line["CurrencyCode"] = rslt[i].CurrencyCode;
             line["DueAmt"] = rslt[i].DueAmt;
-          //  line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
+          /* line["VA009_RecivedAmt"] = rslt[i].convertedAmt;*/
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
-           // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-            if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+           /* VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates*/
+            if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                 $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
                 line["Discount"] = rslt[i].ConvertedDiscountAmount;
             }
-            else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+            else if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                 $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
                 line["Discount"] = rslt[i].ConvertedDiscount2;
             }
             else {
                 line["Discount"] = "0";
             }
-            
+            /*VIS_427 If converted amount not found then set discount and recived amount 0*/
             if (rslt[i].convertedAmt != 0) {
                 line["VA009_RecivedAmt"] = rslt[i].convertedAmt - line["Discount"];
             }
@@ -3110,18 +3110,19 @@
          //   line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
-            // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-            if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+            /* VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates*/
+            if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                 $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
                 line["Discount"] = rslt[i].ConvertedDiscountAmount;
             }
-            else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+            else if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                 $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
                 line["Discount"] = rslt[i].ConvertedDiscount2;
             }
             else {
                 line["Discount"] = "0";
             }
+            /*VIS_427 If converted amount not found then set discount and recived amount 0*/
             if (rslt[i].convertedAmt != 0) {
                 line["VA009_RecivedAmt"] = rslt[i].convertedAmt - line["Discount"];
             }
@@ -3786,18 +3787,19 @@
                 //line["VA009_RecivedAmt"] = rslt[i].convertedAmt;
                 line["OverUnder"] = "0";
                 line["Writeoff"] = "0";
-                // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                /* VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates*/
+                if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].ConvertedDiscountAmount;
                 }
-                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                else if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].ConvertedDiscount2;
                 }
                 else {
                     line["Discount"] = "0";
                 }
+                /*VIS_427 If converted amount not found then set discount and recived amount 0*/
                 if (rslt[i].convertedAmt != 0) {
                     line["VA009_RecivedAmt"] = rslt[i].convertedAmt - line["Discount"];
                 }
@@ -4929,11 +4931,11 @@
                 line["OverUnder"] = "0";
                 line["Writeoff"] = "0";
                 // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].DiscountAmount;
                 }
-                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                else if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].Discount2;
                 }
@@ -5581,12 +5583,12 @@ Cash_Dialog: function () {
             line["OverUnder"] = "0";
             line["Writeoff"] = "0";
             // VIS_427 BugID 5620 Set Discount Amount if applicable based on discount dates
-            if (rslt[i].ConvertedDiscountAmount == 0 || rslt[i].ConvertedDiscount2 == 0) {
-                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+            if (rslt[i].ConvertedDiscountAmount == 0 && rslt[i].ConvertedDiscount2 == 0) {
+                if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].DiscountAmount;
                 }
-                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                else if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].Discount2;
                 }
@@ -5595,11 +5597,11 @@ Cash_Dialog: function () {
                 }
             }
             else{
-                if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDate), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].ConvertedDiscountAmount;
                 }
-                else if (//Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&
+                else if (/*Globalize.format(new Date(rslt[i].DateInvoiced), "yyyy-MM-dd") <= $POP_DateAcct.val() &&*/
                     $POP_DateAcct.val() <= Globalize.format(new Date(rslt[i].DiscountDays2), "yyyy-MM-dd")) {
                     line["Discount"] = rslt[i].ConvertedDiscount2;
                 }
