@@ -173,7 +173,7 @@ namespace ViennaAdvantage.Process
 
                 _sql.Clear();
                 _sql.Append(@"Select 'INVOICE' AS Type,cp.ad_client_id, cp.ad_org_id,CI.C_Bpartner_ID, ci.c_invoice_id, cp.c_invoicepayschedule_id, cp.duedate, 
-                              cp.dueamt, cp.discountdate, cp.discountamt,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, C_BP_BankAccount_ID,null as AccountType
+                              cp.dueamt, cp.discountdate, cp.discountamt,cp.DiscountDays2 , cp.Discount2,cp.va009_paymentmethod_id,ci.c_currency_id , doc.DocBaseType, C_BP_BankAccount_ID,null as AccountType
                              ,CI.C_ConversionType_ID,BP.VA009_BPMandate_id, 
                               CASE WHEN (bpLoc.IsPayFrom = 'Y' AND doc.DocBaseType IN ('ARI' , 'ARC')) THEN  CI.C_BPartner_Location_ID
                                WHEN (bpLoc.IsRemitTo = 'Y' AND doc.DocBaseType IN ('API' , 'APC')) THEN  CI.C_BPartner_Location_ID
@@ -245,7 +245,7 @@ namespace ViennaAdvantage.Process
                               WHEN (ev.AccountType = 'L' AND AmtSourceCr > 0) THEN AmtSourceCr
                               WHEN (ev.AccountType = 'L' AND AmtSourceDr > 0) THEN AmtSourceDr
                               END AS DueAmt
-                              ,NULL AS DiscountDate,0 AS DiscountAmt," + _paymentMethod + @" AS VA009_PaymentMethod_ID,gl.C_Currency_ID,
+                              ,NULL AS DiscountDate,0 AS DiscountAmt,NULL AS DiscountDays2 , 0 AS Discount2," + _paymentMethod + @" AS VA009_PaymentMethod_ID,gl.C_Currency_ID,
                               CASE 
                               WHEN (ev.AccountType = 'A' AND AmtSourceDr >0) THEN 'ARI'
                               WHEN (ev.AccountType = 'A' AND AmtSourceCr >0) THEN 'ARC'
@@ -477,7 +477,14 @@ namespace ViennaAdvantage.Process
                         dueamt = (Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DueAmt"]));
                         convertedAmt = dueamt;
                         //Set discount amount
-                        discountamt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
+                        if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]) >= batch.GetDateAcct())
+                        {
+                            discountamt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountAmt"]);
+                        }
+                        if (Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDays2"]) >= batch.GetDateAcct())
+                        {
+                            discountamt = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["Discount2"]);
+                        }
 
                         //If Invoice currency same as bank or selected currency
                         if (Util.GetValueOfInt(ds.Tables[0].Rows[i]["c_currency_id"]) == C_Currency_ID)
