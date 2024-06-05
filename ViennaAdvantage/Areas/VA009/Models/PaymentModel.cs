@@ -1180,15 +1180,15 @@ namespace VA009.Models
                                                     else
                                                         _pay.SetOverUnderAmt(PaymentData[i].OverUnder);
                                                     // discount amount
-                                                    if (PaymentData[0].Discount > 0)
-                                                        _pay.SetDiscountAmt(Decimal.Negate(PaymentData[0].Discount));
+                                                    if (PaymentData[i].Discount > 0)
+                                                        _pay.SetDiscountAmt(Decimal.Negate(PaymentData[i].Discount));
                                                     else
-                                                        _pay.SetDiscountAmt(PaymentData[0].Discount);
+                                                        _pay.SetDiscountAmt(PaymentData[i].Discount);
                                                     // write-off amount
-                                                    if (PaymentData[0].Writeoff > 0)
-                                                        _pay.SetWriteOffAmt(Decimal.Negate(PaymentData[0].Writeoff));
+                                                    if (PaymentData[i].Writeoff > 0)
+                                                        _pay.SetWriteOffAmt(Decimal.Negate(PaymentData[i].Writeoff));
                                                     else
-                                                        _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
+                                                        _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
                                                 }
                                                 else
                                                 {
@@ -1307,16 +1307,16 @@ namespace VA009.Models
                                                         _pay.SetOverUnderAmt(PaymentData[i].OverUnder);
 
                                                     // discount amount
-                                                    if (PaymentData[0].Discount > 0)
-                                                        _pay.SetDiscountAmt(Decimal.Negate(PaymentData[0].Discount));
+                                                    if (PaymentData[i].Discount > 0)
+                                                        _pay.SetDiscountAmt(Decimal.Negate(PaymentData[i].Discount));
                                                     else
-                                                        _pay.SetDiscountAmt(PaymentData[0].Discount);
+                                                        _pay.SetDiscountAmt(PaymentData[i].Discount);
 
                                                     // write-off amount
-                                                    if (PaymentData[0].Writeoff > 0)
-                                                        _pay.SetWriteOffAmt(Decimal.Negate(PaymentData[0].Writeoff));
+                                                    if (PaymentData[i].Writeoff > 0)
+                                                        _pay.SetWriteOffAmt(Decimal.Negate(PaymentData[i].Writeoff));
                                                     else
-                                                        _pay.SetWriteOffAmt(PaymentData[0].Writeoff);
+                                                        _pay.SetWriteOffAmt(PaymentData[i].Writeoff);
                                                 }
                                                 else
                                                 {
