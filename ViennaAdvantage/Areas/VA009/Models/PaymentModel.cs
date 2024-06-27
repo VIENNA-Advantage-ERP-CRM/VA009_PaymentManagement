@@ -458,9 +458,13 @@ namespace VA009.Models
                                WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('API' , 'APC')) THEN  bpLoc.VA009_PaymentLocation_ID 
                           END AS C_BPartner_Location_ID, ");
             sql.Append(@" cs.DueDate , 0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID , 'Invoice' AS va009_transactiontype, 
-                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.DiscountDays2 , cs.Discount2, '' AS AccountType
+                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.DiscountDays2 , cs.Discount2, '' AS AccountType,
+                          CASE WHEN cs.C_PaySchedule_ID IS NOT NULL THEN psched.Discount ELSE pterm.Discount END AS DiscountPer1,
+                        pterm.Discount2 AS DiscountPer2,cc.StdPrecision
                         FROM C_InvoicePaySchedule cs 
                         INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID = cs.VA009_PaymentMethod_ID 
+                        INNER JOIN C_PaymentTerm pterm ON (pterm.C_PaymentTerm_ID=cs.C_PaymentTerm_ID)
+                        LEFT JOIN  C_PaySchedule psched ON (psched.C_PaySchedule_ID=cs.C_PaySchedule_ID)
                         LEFT JOIN C_invoice inv ON inv.C_Invoice_ID = cs.C_invoice_ID 
                         LEFT JOIN C_BPartner cb ON cb.c_bpartner_id = inv.c_bpartner_id 
                         LEFT JOIN C_BPartner_Location bpLoc ON (bpLoc.C_BPartner_Location_ID = inv.C_BPartner_Location_ID)
@@ -475,7 +479,7 @@ namespace VA009.Models
             sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode,inv.DateInvoiced, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
                           cs.DueDate,  cs.C_InvoicePaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
                           cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.discountdays2,
-                          cs.discount2");
+                          cs.discount2,CASE WHEN cs.C_PaySchedule_ID IS NOT NULL THEN psched.Discount ELSE pterm.Discount END,pterm.Discount2,cc.StdPrecision");
             sql.Append(" ,bpLoc.IsPayFrom, inv.C_BPartner_Location_ID, bpLoc.IsRemitTo, bpLoc.VA009_ReceiptLocation_ID, bpLoc.VA009_PaymentLocation_ID");
 
             sql.Append(" UNION ");
@@ -494,7 +498,8 @@ namespace VA009.Models
                                WHEN (bpLoc.IsRemitTo = 'N' AND cd.DocBaseType IN ('POO')) THEN  bpLoc.VA009_PaymentLocation_ID 
                           END AS C_BPartner_Location_ID, ");
             sql.Append(@" cs.DueDate ,  0 AS VA009_RecivedAmt,  cs.ad_org_id,  cs.AD_Client_ID,  'Order' AS VA009_TransactionType, 
-                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.DiscountDays2 , cs.Discount2, '' AS AccountType 
+                          inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.DiscountDays2 , cs.Discount2, '' AS AccountType,0 AS DiscountPer1
+                          ,0 AS DiscountPer2,cc.StdPrecision
                         FROM VA009_OrderPaySchedule cs 
                         INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
                         INNER JOIN C_Order inv ON inv.C_Order_ID=cs.C_Order_ID 
@@ -511,7 +516,7 @@ namespace VA009.Models
             sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_Order_ID,
                           cs.DueDate,  cs.VA009_OrderPaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
                           cs.AD_Client_ID, cc.ISO_CODE, inv.DateAcct,inv.c_conversiontype_id,cs.DiscountAmt,cs.DiscountDate,cs.discountdays2,
-                          cs.discount2  ");           // Order By Business Partner name not on ID
+                          cs.discount2,cc.StdPrecision ");           // Order By Business Partner name not on ID
             sql.Append(@" ,bpLoc.IsPayFrom, inv.C_BPartner_Location_ID, bpLoc.IsRemitTo, bpLoc.VA009_ReceiptLocation_ID,
                            bpLoc.VA009_PaymentLocation_ID ");
 
@@ -532,7 +537,8 @@ namespace VA009.Models
                               loc.C_BPartner_Location_ID DESC) AS C_BPartner_Location_ID, ");
                 sql.Append($@" g.DateAcct ,  0 AS VA009_RecivedAmt,  gl.ad_org_id,  
                                gl.AD_Client_ID,  'GL Journal' AS VA009_TransactionType, 
-                               g.DateAcct, {ctx.GetContextAsInt("#C_ConversionType_ID")}, 0 AS DiscountAmt, null AS DiscountDate,NULL AS DiscountDays2 , 0 AS Discount2, ev.AccountType");
+                               g.DateAcct, {ctx.GetContextAsInt("#C_ConversionType_ID")}, 0 AS DiscountAmt, null AS DiscountDate,NULL AS DiscountDays2 , 0 AS Discount2, ev.AccountType,0 AS DiscountPer1
+                          ,0 AS DiscountPer2,cy.StdPrecision");
                 sql.Append($@"  FROM GL_JournalLine gl
                                   INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
                                   INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
@@ -571,6 +577,7 @@ namespace VA009.Models
                     _payData.DueDate = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DueDate"]);
                     //Get Account Date
                     _payData.DateAcct = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DateAcct"]);
+                    _payData.precision = Util.GetValueOfInt(ds.Tables[0].Rows[i]["StdPrecision"]);
                     _payData.VA009_PaymentMode = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentMode"]);
                     _payData.VA009_PaymentMethod_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["VA009_PaymentMethod_ID"]);
                     _payData.DocumentNo = Util.GetValueOfString(ds.Tables[0].Rows[i]["DocumentNo"]);
@@ -665,6 +672,8 @@ namespace VA009.Models
 
                     //Rakesh(VA228):Set invoice/order conversion type/discount amount on date 17/Sep/2021
                     _payData.ConversionTypeId = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_ConversionType_ID"]);
+                    _payData.DiscountPer1 = Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountPer1"]);
+                    _payData.DiscountPer2= Util.GetValueOfDecimal(ds.Tables[0].Rows[i]["DiscountPer2"]);
                     _payData.DiscountDate = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDate"]);
                     _payData.DiscountDays2 = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DiscountDays2"]);
                     _payData.DateInvoiced = Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DateInvoiced"]);
@@ -2845,8 +2854,11 @@ namespace VA009.Models
                         schedule.SetVA009_PaymentMethod_ID(_Oldschedule.GetVA009_PaymentMethod_ID());
                         schedule.SetDueDate(PaymentData[i].DueDate);
                         schedule.SetDueAmt(Util.GetValueOfDecimal(PaymentData[i].DueAmt));
-                        schedule.SetDiscountDate(PaymentData[i].DueDate);
-                        schedule.SetDiscountAmt(0);
+                        //VIS_427 Handled discount amount when user split the schedule
+                        schedule.SetDiscountDate(PaymentData[i].DiscountDate);
+                        schedule.SetDiscountDays2(PaymentData[i].DiscountDays2);
+                        schedule.SetDiscountAmt(Math.Round((PaymentData[i].DueAmt * PaymentData[i].DiscountPer1)/100,PaymentData[i].precision,MidpointRounding.AwayFromZero));
+                        schedule.SetDiscount2(Math.Round((PaymentData[i].DueAmt * PaymentData[i].DiscountPer2) / 100, PaymentData[i].precision, MidpointRounding.AwayFromZero));
                         schedule.SetVA009_PlannedDueDate(PaymentData[i].DueDate);
                         schedule.SetVA009_FollowupDate(PaymentData[i].DueDate);
                         schedule.SetVA009_PaymentMode(_Oldschedule.GetVA009_PaymentMode());
@@ -3513,6 +3525,9 @@ namespace VA009.Models
                     _payData.recid = PaymentData[i].C_InvoicePaySchedule_ID;
                     _payData.VA009_PaymentMethod_ID = PaymentData[i].VA009_PaymentMethod_ID;
                     _payData.TransactionType = PaymentData[i].TransactionType;
+                    _payData.precision = PaymentData[i].precision;
+                    _payData.DiscountPer1 = PaymentData[i].DiscountPer1;
+                    _payData.DiscountPer2 = PaymentData[i].DiscountPer2;
 
                     _payData.IsAPCExists = false;
                     int documentId = 0;
@@ -3931,6 +3946,7 @@ namespace VA009.Models
                     _payData.DiscountAmount = PaymentData[i].DiscountAmount;
                     _payData.Discount2 = PaymentData[i].Discount2;
                     _payData.DateInvoiced = PaymentData[i].DateInvoiced;
+                    _payData.precision = PaymentData[i].precision;
                     //VA230:If transaction type is Order then get order doctype and BP LocationID based on OrderId
                     if (!string.IsNullOrEmpty(PaymentData[i].TransactionType) && PaymentData[i].TransactionType.ToUpper() == "ORDER")
                     {
@@ -4017,6 +4033,8 @@ namespace VA009.Models
                         _payData.DueAmt = PaymentData[i].DueAmt;
                     }
                     _payData.TransactionType = PaymentData[i].TransactionType;
+                    _payData.DiscountPer1 = PaymentData[i].DiscountPer1;
+                    _payData.DiscountPer2 = PaymentData[i].DiscountPer2;
                     _lstChqPay.Add(_payData);
                 }
             }
@@ -8052,6 +8070,9 @@ namespace VA009.Models
         public decimal Discount2 { get; set; }
         public DateTime? DateInvoiced { get; set; }
         public decimal ConvertedDiscount2 { get; set; }
+        public decimal DiscountPer1 { get; set; }
+        public decimal DiscountPer2 { get; set; }
+
     }
     public class BPDetails
     {
@@ -8137,6 +8158,9 @@ namespace VA009.Models
         public decimal ConvertedDiscount2 { get; set; }
 
         public DateTime? DateInvoiced { get; set; }
+        public decimal DiscountPer1 { get; set; }
+        public decimal DiscountPer2 { get; set; }
+        public int precision { get; set; }
 
         //end
     }
