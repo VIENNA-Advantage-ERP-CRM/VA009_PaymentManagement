@@ -494,7 +494,7 @@ namespace VA009.Models
 
             sql.Append(" UNION ");
 
-            sql.Append(@"SELECT DISTINCT inv.C_DocType_ID, pm.VA009_PaymentMode,NULL AS DateInvoiced,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  
+            sql.Append(@"SELECT DISTINCT inv.C_DocType_ID, pm.VA009_PaymentMode,CAST(NULL as timestamp) AS DateInvoiced,  pm.VA009_PaymentMethod_ID,  cb.c_Bpartner_id,  
                                 inv.DocumentNo,  cb.name AS C_Bpartner,  cs.C_Order_ID AS C_Invoice_ID,
                                 cs.VA009_OrderPaySchedule_ID As C_InvoicePaySchedule_ID,  inv.C_Currency_ID,  cc.ISO_CODE, ");
             sql.Append(@" CASE WHEN (cd.DOCBASETYPE IN ('SOO')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) 
@@ -534,7 +534,7 @@ namespace VA009.Models
             {
                 // Get selected journal ID records
                 sql.Append(" UNION ");
-                sql.Append(@"SELECT 0 AS C_DocType_ID, '' AS VA009_PaymentMode,NULL AS DateInvoiced, 0 AS VA009_PaymentMethod_ID, cb.c_Bpartner_id, 
+                sql.Append(@"SELECT 0 AS C_DocType_ID, '' AS VA009_PaymentMode,CAST(NULL as timestamp) AS DateInvoiced, 0 AS VA009_PaymentMethod_ID, cb.c_Bpartner_id, 
                                 g.DocumentNo, cb.name AS C_Bpartner,g.GL_Journal_ID,
                                 gl.GL_JournalLine_ID, gl.C_Currency_ID, cc.ISO_CODE, ");
                 sql.Append(@" CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
