@@ -1003,22 +1003,22 @@
 
                 if (TransactionType == "Invoice") {
                     if ($CR_Tab.hasClass('VA009-active-tab')) {
-                        zoomToWindow(InvID, "Invoice (Customer)", "C_Invoice_ID");
+                        zoomToWindow(InvID, "VAS_ARInvoice,Invoice (Customer)", "C_Invoice_ID");
                     }
                     else {
-                        zoomToWindow(InvID, "Invoice (Vendor)", "C_Invoice_ID");
+                        zoomToWindow(InvID, "VAS_APInvoice,Invoice (Vendor)", "C_Invoice_ID");
                     }
                 }
                 else if (TransactionType == "Order") {
                     if ($CR_Tab.hasClass('VA009-active-tab')) {
-                        zoomToWindow(InvID, "Sales Order", "C_Order_ID");
+                        zoomToWindow(InvID, "VAS_SalesOrder,Sales Order", "C_Order_ID");
                     }
                     else {
-                        zoomToWindow(InvID, "Purchase Order", "C_Order_ID");
+                        zoomToWindow(InvID, "VAS_PurchaseOrder,Purchase Order", "C_Order_ID");
                     }
                 }
                 else if (TransactionType == "GL Journal") {
-                    zoomToWindow(InvID, "GL Journal Line", "GL_Journal_ID");
+                    zoomToWindow(InvID, "VAS_GLJournal,GL Journal Line", "GL_Journal_ID");
                 }
                 Pay_ID = 0;
             }
@@ -1113,7 +1113,7 @@
             //if (e.target.className == "VA009-info-icon") {
             else if (target.hasClass("VA009-info-icon")) {
                 infoWinID = target.data("uid");
-                zoomToWindow(infoWinID, "Business Partner Info", "C_BPartner_ID");
+                zoomToWindow(infoWinID, "VAS_BusinessPartnerInfo,Business Partner Info", "C_BPartner_ID");
             }
             //handled record selection from div level
             //select/unselect the payment record when click on anywhere in the row div
