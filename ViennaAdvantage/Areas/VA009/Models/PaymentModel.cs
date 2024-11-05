@@ -4546,7 +4546,16 @@ namespace VA009.Models
         //Added by Bharat on 05/June/2017
         public int GetWindowID(string WindowName, Ctx ct)
         {
-            int windowid = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Window_ID FROM AD_Window WHERE Name = '" + WindowName + "'"));
+            /* VIS_427 Split the window name element 0 will have new screen name and 
+            element 1 will contain old screen name*/
+            string[] windowArr = WindowName.Split(',');
+            string sql = @"SELECT AD_Window_ID FROM AD_Window WHERE Name ='" + windowArr[0] + "'";
+            int windowid = Util.GetValueOfInt(DB.ExecuteScalar(sql));
+            if (windowid == 0)
+            {
+                sql = "SELECT AD_Window_ID FROM AD_Window WHERE Name ='" + windowArr[1] + "'";
+                windowid = Util.GetValueOfInt(DB.ExecuteScalar(sql));
+            }
             return windowid;
         }
 
