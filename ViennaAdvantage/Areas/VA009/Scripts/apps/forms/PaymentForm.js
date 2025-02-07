@@ -10300,12 +10300,12 @@ function loadcallback(result) {
                 dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Planned Due Date">' + VA009_FollowupDate + '</span></div> ';
 
             if (Globalize.format(data.paymentdata[i].VA009_RecivedAmt > 0)) {
-                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString()
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + '<span class="va009-middle-invamt">'+ data.paymentdata[i].CurrencyCode + '</span>'+' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString()
                     + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="' + (_DocType == "ARI" ? VIS.Msg.getMsg("VA009_TotRecAmt") : VIS.Msg.getMsg("VA009_TotPaidAmt")) + '">'
                     + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].VA009_RecivedAmt).toLocaleString() + ' </span></div> ';
             }
             else {
-                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString() + ' </span> </div> ';
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="' + (data.paymentdata[i].TransactionType == "Invoice" ? VIS.Msg.getMsg("InvoiceAmount") : VIS.Msg.getMsg("VA009_OrderAmount")) + '">' + '<span class="va009-middle-invamt">' + data.paymentdata[i].CurrencyCode + '</span>'+ ' ' + parseFloat(data.paymentdata[i].TotalInvAmt).toLocaleString() + ' </span> </div> ';
             }
 
             dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" class="VA009_AddNote" style=" cursor: pointer;"><i class="VA009_AddNoteimg fa fa-list-alt" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" > </i></span> </div> ' +
@@ -10319,7 +10319,7 @@ function loadcallback(result) {
                 dsgn += ' </div></div>';
             }
             dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
-                + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + data.paymentdata[i].CurrencyCode + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span><br> </div> </div> ' +
+                + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + '<span class="va009-middle-amt">' +  data.paymentdata[i].CurrencyCode +'</span>'+ ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span><br> </div> </div> ' +
                 '</div></div></div>';
 
 
@@ -10327,7 +10327,7 @@ function loadcallback(result) {
             //$ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
             if (_SameCurrency == 'N') {
                 $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
-                $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + data.paymentdata[i].BaseCurrencyCode + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span> ');
+                $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + '<span class="va009-middle-amt">' + data.paymentdata[i].BaseCurrencyCode + '</span>'+' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span> ');
             }
         }
 
@@ -10357,7 +10357,7 @@ function loadcallback(result) {
                 $divbnknew = $divBank.find("#VA009_bankdtl_" + data.bankdetails[j].CurrencyCode1);
                 //bnkdiv = '<p class="VA009-data-top"><span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <span class="pull-left"> ' + VIS.Msg.getMsg("VA009_Reconciled") + ' </span> <span class= "' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
                 //+ '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p>';
-                bnkdiv = '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>';
+                bnkdiv = '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span> <p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + '<span class="va009-middle-amt">' + data.bankdetails[j].CurrencyCode1 + '</span>' + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + '<span class="va009-middle-amt">'+ data.bankdetails[j].CurrencyCode1 +'</span>'+ ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>';
                 $divbnknew.append(bnkdiv);
                 TotalAll = TotalAll + data.bankdetails[j].CurrentBalance;
                 TotalUnreAll = TotalUnreAll + data.bankdetails[j].UnreconsiledAmt;
@@ -10374,7 +10374,7 @@ function loadcallback(result) {
                     + '<div id="collapseOne_' + data.bankdetails[j].CurrencyCode1 + '" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne" style="height: auto;">'
                     + '<div class="panel-body" id=VA009_bankdtl_' + data.bankdetails[j].CurrencyCode1 + '>'
                     + '<span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span>'
-                    + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>'
+                    + '<p style="margin-bottom: 0;">' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + '<span class="va009-middle-amt">' + data.bankdetails[j].CurrencyCode1 + '</span>' + ' ' + parseFloat(data.bankdetails[j].CurrentBalance).toLocaleString() + '</span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="' + ULcolorclass + '">' + '<span class="va009-middle-amt">'+ data.bankdetails[j].CurrencyCode1 + '</span>' + ' ' + parseFloat(data.bankdetails[j].UnreconsiledAmt).toLocaleString() + '</a></p>'
                     //+ '<p class="VA009-data-top">  <span class="pull-head"> ' + data.bankdetails[j].BankName + ' ' + data.bankdetails[j].BankAccountNumber + '</span><span class="pull-left">' + VIS.Msg.getMsg("VA009_Reconciled") + '  </span> <span class="' + colorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].CurrentBalance, "N") + '</span> </p>'
                     // + '<p class="VA009-data-bot">  <span class="pull-left">' + VIS.Msg.getMsg("VA009_Unreconciled") + '</span>  <span class="' + ULcolorclass + '">' + data.bankdetails[j].CurrencyCode1 + ' ' + Globalize.format(data.bankdetails[j].UnreconsiledAmt, "N") + '</span>   </p> </div>';
                     + ' </div></div>'
@@ -10417,7 +10417,7 @@ function loadcallback(result) {
             else
                 Ulcolor = 'VA009-color-green';
 
-            $divttlAmtCurr.append('<div class="VA009-panel-head-total"> <div><span class="VA009-head-currency-name">' + BankCurrCode[k] + '</span><span><i class="glyphicon glyphicon-chevron-down pull-right"></i></span></div><p>' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + BankCurrCode[k] + ' ' + parseFloat(TotalAmtBank[k]).toLocaleString() + ' </span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="VA009-color-green">' + BankCurrCode[k] + ' ' + parseFloat(UnReconsiledAmtTotal[k]).toLocaleString() + '</a></p></div>');
+            $divttlAmtCurr.append('<div class="VA009-panel-head-total"> <div><span class="VA009-head-currency-name">' +BankCurrCode[k] + '</span><span><i class="glyphicon glyphicon-chevron-down pull-right"></i></span></div><p>' + VIS.Msg.getMsg("VA009_Reconciled") + ' <span class="' + colorclass + '">' + '<span class="va009-middle-amt">' + BankCurrCode[k] + '</span>' + ' ' + parseFloat(TotalAmtBank[k]).toLocaleString() + ' </span></p> <p>' + VIS.Msg.getMsg("VA009_Unreconciled") + ' <a class="VA009-color-green">' + '<span class="va009-middle-amt">' + BankCurrCode[k] + '</span>' + ' ' + parseFloat(UnReconsiledAmtTotal[k]).toLocaleString() + '</a></p></div>');
         }
         $divBank.append('</div></div>');
 
@@ -10434,7 +10434,7 @@ function loadcallback(result) {
         for (var K in data.Cbk) {
             if (data.Cbk[K].Csb_Amt < 0)
                 colorclass = 'pull-right VA009-color-red';
-            $divcashbk.append('<div class="VA009-right-data">  <p class="VA009-data-top">  <span class="pull-left"> ' + data.Cbk[K].CashBookName + '</span> <span class="' + colorclass + '">' + data.Cbk[K].CBCurrencyCode + ' ' + parseFloat(data.Cbk[K].Csb_Amt).toLocaleString() + '</span>  </p>  </div>');
+            $divcashbk.append('<div class="VA009-right-data">  <p class="VA009-data-top">  <span class="pull-left"> ' + data.Cbk[K].CashBookName + '</span> <span class="' + colorclass + '">' + '<span class="va009-middle-amt">'+data.Cbk[K].CBCurrencyCode + '</span>'+' ' + parseFloat(data.Cbk[K].Csb_Amt).toLocaleString() + '</span>  </p>  </div>');
             colorclass = 'pull-right VA009-color-green';
         }
     }
@@ -10702,10 +10702,10 @@ function batchcallback(data) {
                 dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"><span title="Due Date">' + data.result[i].VA009_DocumentDate + '</span> </div> ';
 
             if (Globalize.format(data.result[i].VA009_RecivedAmt > 0)) {
-                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="Total Recieved Amount">' + data.result[i].CurrencyCode + ' ' + Globalize.format(data.result[i].VA009_RecivedAmt, "N") + ' </span></div> ';
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' +'<span class="va009-middle-amt">'+ data.result[i].ISO_CODE +'</span>' + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> <br> <span class="glyphicon glyphicon-ok play-icon"></span> <span class="VA009-color-gray" title="Total Recieved Amount">' + data.result[i].CurrencyCode + ' ' + Globalize.format(data.result[i].VA009_RecivedAmt, "N") + ' </span></div> ';
             }
             else {
-                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> </div> ';
+                dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span class="VA009-color-gray" title="Invoice Amount">' + '<span class="va009-middle-amt">' + data.result[i].ISO_CODE + '</span>'+ ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + ' </span> </div> ';
             }
 
             dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.result[i].DocumentNo + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.result[i].DocumentNo + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
@@ -10718,7 +10718,7 @@ function batchcallback(data) {
             else {
                 dsgn += ' </div></div>';
             }
-            dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + data.result[i].ISO_CODE + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
+            dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.result[i].DocumentNo + '" data-InvoiceID="' + data.result[i].C_Invoice_ID + '" data-TransactionType ="' + data.result[i].TransactionType + '" alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.result[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.result[i].DocumentNo + '> <span title="Amount Due">' + '<span class="va009-middle-amt">' +  data.result[i].ISO_CODE + '</span>' + ' ' + Globalize.format(data.result[i].VA009_ConvertedAmt, "N") + '</span><br> </div> </div> ' +
                 '</div></div></div>';
 
             $xmlpopGrid.append(dsgn);
