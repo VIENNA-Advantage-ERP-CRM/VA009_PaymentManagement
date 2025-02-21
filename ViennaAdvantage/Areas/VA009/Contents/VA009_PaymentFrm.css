@@ -825,4 +825,12 @@ p.VA009-data-bot:last-child {
     flex-direction: column;
     justify-content: flex-end;
 }
-
+html[dir="rtl"] .va009-middle-amt {
+    float: right;
+    margin-left: 5px;
+}
+html[dir="rtl"] .va009-middle-invamt {
+    float: right;
+    margin-left: 5px;
+    padding-top:2.5px;
+}
