@@ -151,7 +151,7 @@ background: #575757;*/
     -webkit-appearance: none;*/
     }
 
-.row {
+.va009-row {
     margin-right: -8px;
 }
 
@@ -1073,7 +1073,7 @@ html[dir="rtl"] .VA009-padd-right-0 {
     padding-left: 0;
 }
 
-html[dir="rtl"] .VA009-payment-list .row {
+html[dir="rtl"] .VA009-payment-list .va009-row {
     margin-right: -15px;
     margin-left: -8px;
 }
@@ -1111,7 +1111,4 @@ html[dir="rtl"] .VA009-popCheck-data {
 .VA009-popfrmrow .VA009-popCheck-data:not(:only-child):last-child {
     padding-left: 0;
 }
-
-
-
 
