@@ -1,4 +1,4 @@
-﻿/***version 2.1.3.0*/
+﻿/***version 2.2.3.0*/
 /*body{
 	margin: 0;
 	padding: 0;	
@@ -1027,6 +1027,16 @@ p.VA009-data-bot:last-child {
     justify-content: flex-end;
 }
 
+html[dir="rtl"] .va009-middle-amt {
+    float: right;
+    margin-left: 5px;
+}
+
+html[dir="rtl"] .va009-middle-invamt {
+    float: right;
+    margin-left: 5px;
+    padding-top: 2.5px;
+}
 
 /* RTL CSS*/
 html[dir="rtl"] .VA009-right-part > span,
