@@ -14,7 +14,7 @@
     <RootNamespace>ViennaAdvantageWeb</RootNamespace>
     <AssemblyName>ViennaAdvantageWeb</AssemblyName>
     <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
-    <UseIISExpress>true</UseIISExpress>
+    <UseIISExpress>false</UseIISExpress>
     <IISExpressSSLPort />
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
@@ -50,13 +50,11 @@
     <Reference Include="Antlr3.Runtime">
       <HintPath>DLL\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="BaseLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Framework Breakage Dlls\BaseLibrary.dll</HintPath>
+    <Reference Include="BaseLibrary">
+      <HintPath>DLL\BaseLibrary.dll</HintPath>
     </Reference>
-    <Reference Include="CoreLibrary, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Framework Breakage Dlls\CoreLibrary.dll</HintPath>
+    <Reference Include="CoreLibrary">
+      <HintPath>DLL\CoreLibrary.dll</HintPath>
     </Reference>
     <Reference Include="DevExpress.Web.v14.2">
       <HintPath>DLL\DevExpress.Web.v14.2.dll</HintPath>
@@ -84,13 +82,62 @@
     <Reference Include="itextsharp">
       <HintPath>DLL\itextsharp.dll</HintPath>
     </Reference>
-    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.6.0.0\lib\net461\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.2.4\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.2.4\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Bcl.AsyncInterfaces, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.AsyncInterfaces.8.0.0\lib\net462\Microsoft.Bcl.AsyncInterfaces.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.Bcl.HashCode, Version=1.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.Bcl.HashCode.1.1.1\lib\net461\Microsoft.Bcl.HashCode.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
+    <Reference Include="Microsoft.Extensions.DependencyInjection.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.DependencyInjection.Abstractions.8.0.0\lib\net462\Microsoft.Extensions.DependencyInjection.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Extensions.Logging.Abstractions, Version=8.0.0.0, Culture=neutral, PublicKeyToken=adb9793829ddae60, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Extensions.Logging.Abstractions.8.0.0\lib\net462\Microsoft.Extensions.Logging.Abstractions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.JsonWebTokens, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.JsonWebTokens.5.3.0\lib\net461\Microsoft.IdentityModel.JsonWebTokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.5.3.0\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.5.3.0\lib\net461\Microsoft.IdentityModel.Protocols.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Protocols.OpenIdConnect, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Protocols.OpenIdConnect.5.3.0\lib\net461\Microsoft.IdentityModel.Protocols.OpenIdConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.5.3.0\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.4.2.2\lib\net45\Microsoft.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Host.SystemWeb, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Host.SystemWeb.4.2.2\lib\net45\Microsoft.Owin.Host.SystemWeb.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.4.2.2\lib\net45\Microsoft.Owin.Security.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.Cookies, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.Cookies.4.2.2\lib\net45\Microsoft.Owin.Security.Cookies.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OAuth, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OAuth.4.2.2\lib\net45\Microsoft.Owin.Security.OAuth.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Owin.Security.OpenIdConnect, Version=4.2.2.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Owin.Security.OpenIdConnect.4.2.2\lib\net45\Microsoft.Owin.Security.OpenIdConnect.dll</HintPath>
+    </Reference>
+    <Reference Include="ModelLibrary, Version=1.3.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>DLL\ModelLibrary.dll</HintPath>
+    </Reference>
     <Reference Include="Mono.Security">
       <HintPath>DLL\Mono.Security.dll</HintPath>
     </Reference>
@@ -100,14 +147,17 @@
     <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="Npgsql, Version=6.0.4.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
-      <HintPath>..\packages\Npgsql.6.0.4\lib\netstandard2.0\Npgsql.dll</HintPath>
+    <Reference Include="Npgsql, Version=8.0.6.0, Culture=neutral, PublicKeyToken=5d8b90d52f46fda7, processorArchitecture=MSIL">
+      <HintPath>..\packages\Npgsql.8.0.6\lib\netstandard2.0\Npgsql.dll</HintPath>
     </Reference>
     <Reference Include="NPOI">
       <HintPath>DLL\NPOI.dll</HintPath>
     </Reference>
-    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.21.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
-      <HintPath>..\packages\Oracle.ManagedDataAccess.21.5.0\lib\net462\Oracle.ManagedDataAccess.dll</HintPath>
+    <Reference Include="Oracle.ManagedDataAccess, Version=4.122.23.1, Culture=neutral, PublicKeyToken=89b483f429c47342, processorArchitecture=MSIL">
+      <HintPath>..\packages\Oracle.ManagedDataAccess.23.4.0\lib\net472\Oracle.ManagedDataAccess.dll</HintPath>
+    </Reference>
+    <Reference Include="Owin, Version=1.0.0.0, Culture=neutral, PublicKeyToken=f0ebd12fd5e55cc5, processorArchitecture=MSIL">
+      <HintPath>..\packages\Owin.1.0\lib\net40\Owin.dll</HintPath>
     </Reference>
     <Reference Include="PdfSharp">
       <HintPath>DLL\PdfSharp.dll</HintPath>
@@ -119,15 +169,21 @@
     <Reference Include="System.Buffers, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Buffers.4.5.1\lib\net461\System.Buffers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Collections.Immutable, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Collections.Immutable.6.0.0\lib\net461\System.Collections.Immutable.dll</HintPath>
+    <Reference Include="System.Collections.Immutable, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Collections.Immutable.8.0.0\lib\net462\System.Collections.Immutable.dll</HintPath>
     </Reference>
     <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="System.Diagnostics.DiagnosticSource, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.6.0.0\lib\net461\System.Diagnostics.DiagnosticSource.dll</HintPath>
+    <Reference Include="System.Diagnostics.DiagnosticSource, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Diagnostics.DiagnosticSource.8.0.0\lib\net462\System.Diagnostics.DiagnosticSource.dll</HintPath>
     </Reference>
-    <Reference Include="System.Memory, Version=4.0.1.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Memory.4.5.4\lib\net461\System.Memory.dll</HintPath>
+    <Reference Include="System.Formats.Asn1, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Formats.Asn1.8.0.0\lib\net462\System.Formats.Asn1.dll</HintPath>
+    </Reference>
+    <Reference Include="System.IdentityModel.Tokens.Jwt, Version=5.3.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.IdentityModel.Tokens.Jwt.5.3.0\lib\net461\System.IdentityModel.Tokens.Jwt.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Memory, Version=4.0.1.2, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Memory.4.5.5\lib\net461\System.Memory.dll</HintPath>
     </Reference>
     <Reference Include="System.Net.Http.Formatting, Version=5.2.8.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.AspNet.WebApi.Client.5.2.8\lib\net45\System.Net.Http.Formatting.dll</HintPath>
@@ -139,15 +195,16 @@
     <Reference Include="System.Runtime.CompilerServices.Unsafe, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Runtime.CompilerServices.Unsafe.6.0.0\lib\net461\System.Runtime.CompilerServices.Unsafe.dll</HintPath>
     </Reference>
+    <Reference Include="System.Security" />
     <Reference Include="System.Spatial, Version=5.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="System.Text.Encodings.Web, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Encodings.Web.6.0.0\lib\net461\System.Text.Encodings.Web.dll</HintPath>
+    <Reference Include="System.Text.Encodings.Web, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Encodings.Web.8.0.0\lib\net462\System.Text.Encodings.Web.dll</HintPath>
     </Reference>
-    <Reference Include="System.Text.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Text.Json.6.0.0\lib\net461\System.Text.Json.dll</HintPath>
+    <Reference Include="System.Text.Json, Version=8.0.0.5, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Text.Json.8.0.5\lib\net462\System.Text.Json.dll</HintPath>
     </Reference>
-    <Reference Include="System.Threading.Channels, Version=6.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
-      <HintPath>..\packages\System.Threading.Channels.6.0.0\lib\net461\System.Threading.Channels.dll</HintPath>
+    <Reference Include="System.Threading.Channels, Version=8.0.0.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Threading.Channels.8.0.0\lib\net462\System.Threading.Channels.dll</HintPath>
     </Reference>
     <Reference Include="System.Threading.Tasks.Extensions, Version=4.2.0.1, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
       <HintPath>..\packages\System.Threading.Tasks.Extensions.4.5.4\lib\net461\System.Threading.Tasks.Extensions.dll</HintPath>
@@ -191,23 +248,25 @@
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
     <Reference Include="System.Xml.Linq" />
-    <Reference Include="VAModelAD, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Framework Breakage Dlls\VAModelAD.dll</HintPath>
+    <Reference Include="VAModelAD">
+      <HintPath>DLL\VAModelAD.dll</HintPath>
     </Reference>
     <Reference Include="ViennaBase, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Framework Breakage Dlls\ViennaBase.dll</HintPath>
+      <HintPath>DLL\ViennaBase.dll</HintPath>
     </Reference>
-    <Reference Include="VIS">
-      <HintPath>..\..\Framework Breakage Dlls\VIS.dll</HintPath>
-    </Reference>
-    <Reference Include="VISLogic, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="VIS, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\Framework Breakage Dlls\VISLogic.dll</HintPath>
+      <HintPath>DLL\VIS.dll</HintPath>
+    </Reference>
+    <Reference Include="VISLogic">
+      <HintPath>DLL\VISLogic.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\WebGrease.1.6.0\lib\WebGrease.dll</HintPath>
+    </Reference>
+    <Reference Include="XModel">
+      <HintPath>DLL\XModel.dll</HintPath>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -241,1538 +300,6 @@
     <Reference Include="System.Web.Services" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="DLL\Area\ViennaBase\Content\bootstrap-theme.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\bootstrap-theme.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\bootstrap.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\bootstrap.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\custom\custom.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\fontlib\font-awesome.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\fontlib\font-awesome.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\fontlib\glyphicons.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\fontlib\vis-fonts.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\fontawesome-webfont.svg" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\vis-fonts.svg" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\ad-cust.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-grid.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-grid.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-migration-4.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-reboot.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-reboot.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\glyphicons.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\accordion.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\all.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\autocomplete.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\base.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\button.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\core.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\datepicker.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\dialog.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\draggable.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_222222_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_444444_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_454545_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_555555_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_777620_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_777777_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_888888_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_cc0000_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\images\ui-icons_ffffff_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\jquery-ui.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\jquery-ui.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\menu.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\progressbar.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\resizable.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\selectable.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\selectmenu.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\slider.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\sortable.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\spinner.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\tabs.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\theme.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\themes\base\tooltip.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\spectrum.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\animated-overlay.gif" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\close.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-icons_222222_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-icons_454545_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-icons_888888_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery-ui.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.accordion.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.all.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.autocomplete.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.base.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.button.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.core.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.datepicker.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.dialog.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.menu.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.progressbar.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.resizable.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.selectable.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.slider.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.spinner.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.tabs.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.theme.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\jquery.ui.tooltip.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\animated-overlay.gif" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\close.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_flat_0_aaaaaa_40x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_flat_75_ffffff_40x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_glass_55_fbf9ee_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_glass_65_ffffff_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_glass_75_dadada_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_glass_75_e6e6e6_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_glass_95_fef1ec_1x400.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-bg_highlight-soft_75_cccccc_1x100.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-icons_222222_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-icons_2e83ff_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-icons_454545_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-icons_888888_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\images\ui-icons_cd0a0a_256x240.png" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery-ui.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.accordion.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.autocomplete.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.button.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.core.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.datepicker.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.dialog.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.menu.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.progressbar.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.resizable.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.selectable.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.slider.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.spinner.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.tabs.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.theme.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\themes\base\minified\jquery.ui.tooltip.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\Toastr\toastr.min.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\w2ui\w2ui-1.4.3.css" />
-    <Content Include="DLL\Area\ViennaBase\Content\w2ui\w2ui-1.4.3.min.css" />
-    <Content Include="DLL\Area\ViennaBase\fonts\glyphicons-halflings-regular.svg" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\bootstrap.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\bootstrap.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_cs.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_da.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_de.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_en.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_es.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_fi.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_fr.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_hu.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_it.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_ja.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_ko.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_nb.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_nl.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_pl.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_pt.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_ru.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_sk.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_sv.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_th.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_tr.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_zh_CN.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\ActiveXControls\PrintControl_res_zh_TW.cab" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allInOne.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_cs.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_da.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_de.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_en.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_es.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_fi.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_fr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_hu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_it.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_ja.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_ko.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_nb.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_nl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_pl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_pt.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_ru.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_sk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_sv.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_th.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_tr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_zh_CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\allStrings_zh_TW.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\crsmarttag.asp" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\crystalimagehandler.asp" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\css\cedefault.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\css\default.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\css\exception.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\css\prompting.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\html\calendar.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\html\calendarbottom.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\html\calendartop.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\imagehandlerdotnetbridge.aspx" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\buttonl.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\buttonm.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\buttonr.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive100.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive150.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive200.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive250.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive300.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive350.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive400.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortActive50.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover100.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover150.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover200.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover250.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover300.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover350.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover400.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortHover50.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortInactive100.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortInactive150.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortInactive200.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortInactive250.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortInactive300.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortInactive400.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\DownArrowSortInactive50.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive100.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive150.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive200.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive250.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive300.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive350.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive400.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortActive50.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover100.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover150.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover200.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover250.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover300.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover350.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover400.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortHover50.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortInactive100.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortInactive150.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortInactive200.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortInactive250.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortInactive300.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortInactive400.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\images\isort\UpArrowSortInactive50.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\calendar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\calendar_param.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewerinclude.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\api.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ArgumentNormalizer.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\bobjcallback.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ButtonList.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Calendar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Colors.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\common.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\crv.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Dialogs.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\dom.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\encoding.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\event.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\GroupTree.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\GroupTreeListener.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\GroupTreeNode.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\html.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ImageSprites.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\allInOne.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\allInOneBG.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\arrow_button_depressed.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\arrow_button_hover.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\breadcrumbSep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\calendar.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\catalyst.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\clearValues.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\clear_x.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\closePanel.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\delete.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\drill_cursor.cur" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\export.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\filledCircle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\first.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\grouptree_toggle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\hollowCircle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\last.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\leftTriangle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\line.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\logo.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\magnify.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\min.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\next.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\open_parameter_arrow.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\panelHeaderBG.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\panelNavigatorItemHL.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\panelNavigatorItemSelectedBG.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\panel_toggle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\param_datafetching.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\param_dirty.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\param_info.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\param_run.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\param_warning.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\plus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\prev.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\print.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\refresh.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\rightTriangle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\search.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\separator.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\StackedTab.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\style.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_background.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_buttongroup_background.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_buttongroup_left.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_buttongroup_right.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_button_depressed.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_button_hover.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_menuarrow_depressed.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_menuarrow_hover.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_pagenav_buttons.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\toolbar_separator_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\undo.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\up.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\images\WarningPopupTriangle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\initDhtmlLib.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\IOAdapters.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\LeftPanel.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\OptionalParameterUI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\OptionalParameterValueRow.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\PanelHeader.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\PanelNavigator.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\PanelNavigatorItem.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Parameter.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ParameterController.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ParameterDialog.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ParameterInfoRow.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ParameterPanel.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ParameterPanelToolbar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ParameterUI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ParameterValueRow.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\PromptPage.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\RangeField.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ReportAlbum.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ReportPage.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ReportView.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Separator.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\SharedWidgetHolder.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\SignalDisposer.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\StackedPanel.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\StackedTab.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\StateManager.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Statusbar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_cs.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_da.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_de.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_en.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_es.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_fi.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_fr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_hu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_it.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_ja.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_ko.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_nb.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_nl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_pl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_pt.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_ru.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_sk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_sv.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_th.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_tr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_zh_CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\strings_zh_TW.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\TextCombo.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\TextField.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Toolbar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ToolPanel.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\Viewer.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ViewerFlexParameterAdapter.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\ViewerListener.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\crviewer\WarningPopup.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\bolist.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\calendar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\dialog.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\dom.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\empty.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\borders.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\help.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\loading.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\lov.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\min.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\plus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\print.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\print_fe.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\prompt.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\resizepattern.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\bolist.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\button.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\buttonIcons.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\critical_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\dialogelements.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\dialogframe.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\dialogframeleftright.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\dialogframetopbottom.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\dialogtitle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\down.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\iconsep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\information_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\left.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\menus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\node.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\progress.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\resize.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\right.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\scroll_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\sep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\sep_solid.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\style.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\style.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\style_fe.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\tabs.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\up.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\wait01.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\wait02.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_coloredline\warning_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\bolist.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\button.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\buttonIcons.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\critical_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\dialogelements.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\dialogframe.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\dialogframeleftright.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\dialogframetopbottom.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\dialogtitle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\down.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\iconsep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\information_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\left.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\menus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\node.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\progress.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\resize.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\right.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\scroll_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\sep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\sep_solid.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\style.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\style.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\style_fe.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\tabs.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\up.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\wait01.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\wait02.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_corporate\warning_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\bolist.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\button.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\buttonIcons.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\critical_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\dialogelements.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\dialogframe.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\dialogframeleftright.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\dialogframetopbottom.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\dialogtitle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\down.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\iconsep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\information_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\left.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\menus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\node.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\progress.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\resize.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\right.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\scroll_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\sep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\sep_solid.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\style.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\style.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\style_fe.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\tabs.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\up.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\wait01.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\wait02.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_default\warning_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\background_field.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\background_menusel.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\bolist.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\button.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\buttonIcons.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\critical_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\critical_icon.png" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\dialogelements.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\dialogframe.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\dialogframeleftright.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\dialogframetopbottom.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\dialogtitle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\down.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\hgrab.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\horiz_tabs.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\iconsep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\information_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\left.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\menuitem_check.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\menus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\node.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\panemenu.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\panetitle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\progress.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\resize.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\right.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\scroll_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\sep.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\sep_solid.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\style.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\style.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\style_fe.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\tabs.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\toolbar_elements.png" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\up.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\vgrab.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\wait01.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\wait02.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\skin_standard\warning_icon.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\swap.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\transp.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\images\tree.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\cs\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\da\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\de\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\en\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\es\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\fi\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\fr\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\hu\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\it\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\ja\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\ko\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\nb\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\nl\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\pl\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\pt\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\ru\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\sk\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\sv\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\th\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\tr\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\zh_CN\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\language\zh_TW\labels.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\lov.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\menu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\palette.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\prompttree.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\psheet.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\andorwidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\basicDialog.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\blockWhileWait.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\bolist.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\borderswidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\buttons.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\calendar.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\checktree.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\default.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\dim.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\dim_close.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\dim_o.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\dim_open.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\empty.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\eventsDialog.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\fieldswidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\format.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\framezone.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\grabber.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\iconlistpopupwidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\iconscrollmenuwidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\imgtabs.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\inconwidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\infowidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\lov.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\measure.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\measure_o.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\menu.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\navigation.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\palettes.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\pane.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\parent_dialog.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\progressBar.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\prompttree.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\qualif.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\scrolltabs.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\simplelist.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\skinIntl.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\tabs.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\textcombowidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\tooltipwidget.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\treeicons.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\treeview.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\unv_close.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\unv_o.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\unv_open.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\samples\waitDialog.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\treeview.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\validator\default.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\validator\validator_res.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dhtmllib\waitdialog.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\dt_param.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\external\date.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\FlexParameterBridge.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\KeyDownEvent.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\log4javascript\log4javascript.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\log4javascript\log4javascript_stub.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\log4javascript\log4javascript_stub_uncompressed.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\log4javascript\log4javascript_uncompressed.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\log4javascript\main.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\3rdParty.txt" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Async.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Base.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Color.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Controls.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\DateTime.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\DOM.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\DragAndDrop.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Format.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Iter.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\License.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Logging.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\LoggingPane.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\MochiKit.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\MockDOM.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\New.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Signal.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Sortable.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Style.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Test.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\Visual.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\MochiKit\__package__.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\previewerror.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\prompts.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\prompts_param.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\js\swfobject\swfobject.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\parameterUIController-compressed.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\preview.aspx" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\processindicator.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\promptengine-compressed.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\css\promptengine2.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\css\promptengine_default.css" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\html\calendar.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\html\calendarbottom.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\html\calendartop.html" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\addallfield.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\addallfield_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\addfield.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\addfield_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\back.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\background_field.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\back_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\button.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\button_left_normal.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\button_middle_normal.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\button_right_normal.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\calendar.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\cfilter.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\cfilter_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\dialogelements.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\dialogtitle.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\error.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\errormsg.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\filter.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\filter_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\forward.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\forward_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\info.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\infomsg.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\minus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\next.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\next_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\plus.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\prev.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\prev_over.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\resize.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\transp.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\warning.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\images\warningmsg.gif" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\initDhtmlLib.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_calendar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_calendar2.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_prompts.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_prompts2.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_cs.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_da.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_de.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_en.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_es.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_fi.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_fr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_hu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_it.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_ja.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_ko.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_nb.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_nl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_pl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_pt.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_ru.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_sk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_sv.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_th.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_tr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_zh_CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\prompting\js\promptengine_strings_zh_TW.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\urlreporting\activexviewer.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\urlreporting\appletviewer.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\custom\custom.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\downloader.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\FileSaver.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.af-ZA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.af.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.am-ET.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.am.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-AE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-BH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-DZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-EG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-IQ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-JO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-KU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-KW.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-LB.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-LY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-MA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-OM.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-QA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-SA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-SY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-TN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar-YE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ar.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.arn-CL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.arn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.as-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.as.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.az-Cyrl-AZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.az-Cyrl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.az-Latn-AZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.az-Latn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.az.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ba-RU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ba.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.be-BY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.be.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bg-BG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bg.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bn-BD.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bn-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bo-CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bo.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.br-FR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.br.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bs-Cyrl-BA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bs-Cyrl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bs-Latn-BA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bs-Latn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.bs.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ca-ES.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ca.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.co-FR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.co.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.cs-CZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.cs.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.cy-GB.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.cy.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.da-DK.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.da.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.de-AT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.de-CH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.de-DE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.de-LI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.de-LU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.de.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.dsb-DE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.dsb.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.dv-MV.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.dv.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.el-GR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.el.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-029.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-AU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-BZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-CA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-GB.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-IE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-JM.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-MY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-NZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-PH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-SG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-TT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-US.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-ZA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.en-ZW.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-AR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-BO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-CL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-CO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-CR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-DO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-EC.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-ES.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-GT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-HN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-MX.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-NI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-PA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-PE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-PR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-PY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-SV.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-US.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-UY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es-VE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.es.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.et-EE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.et.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.eu-ES.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.eu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fa-IR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fa.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fi-FI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fi.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fil-PH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fil.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fo-FO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fo.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fr-BE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fr-CA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fr-CH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fr-FR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fr-LU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fr-MC.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fy-NL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.fy.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ga-IE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ga.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gd-GB.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gd.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gl-ES.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gsw-FR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gsw.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gu-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.gu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ha-Latn-NG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ha-Latn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ha.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.he-IL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.he.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hi-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hi.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hr-BA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hr-HR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hsb-DE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hsb.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hu-HU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hy-AM.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.hy.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.id-ID.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.id.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ig-NG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ig.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ii-CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ii.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.is-IS.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.is.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.it-CH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.it-IT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.it.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.iu-Cans-CA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.iu-Cans.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.iu-Latn-CA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.iu-Latn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.iu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ja-JP.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ja.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ka-GE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ka.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kk-KZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kl-GL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.km-KH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.km.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kn-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ko-KR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ko.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kok-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.kok.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ky-KG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ky.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lb-LU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lb.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lo-LA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lo.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lt-LT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lt.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lv-LV.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.lv.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mi-NZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mi.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mk-MK.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ml-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ml.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mn-Cyrl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mn-MN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mn-Mong-CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mn-Mong.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.moh-CA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.moh.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mr-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ms-BN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ms-MY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ms.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mt-MT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.mt.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nb-NO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nb.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ne-NP.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ne.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nl-BE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nl-NL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nn-NO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.no.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nso-ZA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.nso.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.oc-FR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.oc.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.or-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.or.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.pa-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.pa.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.pl-PL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.pl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.prs-AF.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.prs.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ps-AF.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ps.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.pt-BR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.pt-PT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.pt.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.qut-GT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.qut.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.quz-BO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.quz-EC.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.quz-PE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.quz.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.rm-CH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.rm.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ro-RO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ro.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ru-RU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ru.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.rw-RW.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.rw.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sa-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sa.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sah-RU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sah.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.se-FI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.se-NO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.se-SE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.se.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.si-LK.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.si.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sk-SK.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sl-SI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sma-NO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sma-SE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sma.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.smj-NO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.smj-SE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.smj.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.smn-FI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.smn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sms-FI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sms.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sq-AL.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sq.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Cyrl-BA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Cyrl-CS.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Cyrl-ME.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Cyrl-RS.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Cyrl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Latn-BA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Latn-CS.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Latn-ME.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Latn-RS.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr-Latn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sv-FI.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sv-SE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sv.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sw-KE.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.sw.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.syr-SY.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.syr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ta-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ta.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.te-IN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.te.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tg-Cyrl-TJ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tg-Cyrl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tg.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.th-TH.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.th.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tk-TM.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tn-ZA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tr-TR.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tr.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tt-RU.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tt.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tzm-Latn-DZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tzm-Latn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.tzm.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ug-CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ug.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.uk-UA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.uk.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ur-PK.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.ur.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.uz-Cyrl-UZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.uz-Cyrl.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.uz-Latn-UZ.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.uz-Latn.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.uz.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.vi-VN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.vi.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.wo-SN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.wo.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.xh-ZA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.xh.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.yo-NG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.yo.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-CHS.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-CHT.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-CN.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-Hans.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-Hant.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-HK.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-MO.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-SG.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh-TW.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zh.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zu-ZA.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.culture.zu.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\cultures\globalize.cultures.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\globalize\globalize.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\handlebars.min.js" />
-    <None Include="DLL\Area\ViennaBase\Scripts\jquery-2.1.0.intellisense.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jquery-2.1.0.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jquery-2.1.0.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jquery-ui-1.10.4.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jquery-ui-1.10.4.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jquery.imgareaselect.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jszip-utils.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jszip.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\bootstrap.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\bootstrap.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-3.4.1.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-3.4.1.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-3.4.1.slim.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-3.4.1.slim.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-migrate-3.1.0.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-migrate-3.1.0.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-ui-1.12.1.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-ui-1.12.1.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper-utils.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper-utils.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\modernizr-2.6.2.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\spectrum.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\Toastr\toastr.min.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\w2ui\w2ui-1.4.3.js" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\w2ui\w2ui-1.4.3.min.js" />
-    <Content Include="DLL\Area\VIS\Content\Login.css" />
-    <Content Include="DLL\Area\VIS\Content\notify.mp3" />
-    <Content Include="DLL\Area\VIS\Content\notify.wav" />
-    <Content Include="DLL\Area\VIS\Content\VIS.all.min.css" />
-    <Content Include="DLL\Area\VIS\Content\VIS.rtl.css" />
-    <Content Include="DLL\Area\VIS\Images\11.png" />
-    <Content Include="DLL\Area\VIS\Images\12.png" />
-    <Content Include="DLL\Area\VIS\Images\21.png" />
-    <Content Include="DLL\Area\VIS\Images\22.png" />
-    <Content Include="DLL\Area\VIS\Images\accent.png" />
-    <Content Include="DLL\Area\VIS\Images\Action.png" />
-    <Content Include="DLL\Area\VIS\Images\add-edit.png" />
-    <Content Include="DLL\Area\VIS\Images\add-new.png" />
-    <Content Include="DLL\Area\VIS\Images\add.png" />
-    <Content Include="DLL\Area\VIS\Images\AddBP16.png" />
-    <Content Include="DLL\Area\VIS\Images\AddKpitoHome.png" />
-    <Content Include="DLL\Area\VIS\Images\adv-delete-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\adv-save-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\archive.png" />
-    <Content Include="DLL\Area\VIS\Images\archivepos.png" />
-    <Content Include="DLL\Area\VIS\Images\arr.png" />
-    <Content Include="DLL\Area\VIS\Images\arrot-up-1.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-down-1-hover.png.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-down-1.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-left-1-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-left-1.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-right-1-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-right-1.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-slider.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow-up-1-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow1.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow2.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow3.png" />
-    <Content Include="DLL\Area\VIS\Images\arrow4.png" />
-    <Content Include="DLL\Area\VIS\Images\athumb-forward.png" />
-    <Content Include="DLL\Area\VIS\Images\attach-close-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\attachment.png" />
-    <Content Include="DLL\Area\VIS\Images\audio.png" />
-    <Content Include="DLL\Area\VIS\Images\barcode.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Account20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\addToCart.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Add_sub16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Amtdimension20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Appointment24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Archive24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\arrow-bottom.png" />
-    <Content Include="DLL\Area\VIS\Images\base\arrow-left-handler.png" />
-    <Content Include="DLL\Area\VIS\Images\base\arrow-left.png" />
-    <Content Include="DLL\Area\VIS\Images\base\arrow-right-handler.png" />
-    <Content Include="DLL\Area\VIS\Images\base\arrow-top.png" />
-    <Content Include="DLL\Area\VIS\Images\base\AttachDocumentFrom24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\AttachDocumentFromX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Attachment24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\AttachmentX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\back16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\backX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\BPartner20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\BtnAction.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Card16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\CardDialog16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Chat24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\ChatX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\check-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\base\CheckRequest16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\close-button.png" />
-    <Content Include="DLL\Area\VIS\Images\base\closeIcon.png" />
-    <Content Include="DLL\Area\VIS\Images\base\confirm-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Copy16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Copy24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\CreateDocument24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\CreateDocumentX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\defpanel.ico" />
-    <Content Include="DLL\Area\VIS\Images\base\defPanel.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Delete-W24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\delete10.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Delete24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\DeleteX24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Down32.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Edit_sub16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\EMail16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Email24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\EmailAttach24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\error-cros.png" />
-    <Content Include="DLL\Area\VIS\Images\base\error-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\base\FaxEMail24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\fieldgrpdown.png" />
-    <Content Include="DLL\Area\VIS\Images\base\File20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Find24.gif" />
-    <Content Include="DLL\Area\VIS\Images\base\Find24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\First16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\FirstX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Folder20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\FormPic.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Help16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Help24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\History24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\icon-home.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Ignore24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\IgnoreX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Import24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\info-cros.png" />
-    <Content Include="DLL\Area\VIS\Images\base\info-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Info20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Info24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\InfoAccount20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\InfoHelp.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Last16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\LastX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Left32.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Letter24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\list.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Location10.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Location20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Locator10.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Locator20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Lock24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\LockX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\logo.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Map16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Mark24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\MarkX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\mt24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Multi16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\MultiX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\New24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\NewX24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Next16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\NextX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\opencart.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageDown16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\PageDownWhite.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageDownX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\PageFirst16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageFirstWhite.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageFirstX16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageLast16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageLastWhite.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageLastX16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageUp16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\PageUpWhite.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PageUpX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\PAttribute20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Payment20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\pContainer.png" />
-    <Content Include="DLL\Area\VIS\Images\base\pencil.png" />
-    <Content Include="DLL\Area\VIS\Images\base\PickOpen20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Preference16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Previous16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\PreviousX16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Print24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Process20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\processPic.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Product20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\RecordAccess24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\RecordAccessX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Refresh24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\RefreshX24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\report-pic.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Report24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\requery.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Request24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Right32.png" />
-    <Content Include="DLL\Area\VIS\Images\base\RoleCenterView24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Save24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\SaveX24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\scan.png" />
-    <Content Include="DLL\Area\VIS\Images\base\sear.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Search24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\select-att.png" />
-    <Content Include="DLL\Area\VIS\Images\base\seprator16.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\seprator24.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\ShowSummaryNodes16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\ShowSummaryNodesX16.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Sms24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Subscribe24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\SubscribeX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Task24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\thumb-back.png" />
-    <Content Include="DLL\Area\VIS\Images\base\thumb-first.png" />
-    <Content Include="DLL\Area\VIS\Images\base\thumb-forward.png" />
-    <Content Include="DLL\Area\VIS\Images\base\thumb-last.png" />
-    <Content Include="DLL\Area\VIS\Images\base\ToLink20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\tri-tackice.png" />
-    <Content Include="DLL\Area\VIS\Images\base\uncheck-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Undo24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Up32.png" />
-    <Content Include="DLL\Area\VIS\Images\base\UploadDocument24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Url20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\ViewDocument24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\ViewDocumentX24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\warning-cros.png" />
-    <Content Include="DLL\Area\VIS\Images\base\warning-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\base\window-default.png" />
-    <Content Include="DLL\Area\VIS\Images\base\winPic.PNG" />
-    <Content Include="DLL\Area\VIS\Images\base\Workflow24.png" />
-    <Content Include="DLL\Area\VIS\Images\base\zoom.png" />
-    <Content Include="DLL\Area\VIS\Images\base\Zoom16.jpg" />
-    <Content Include="DLL\Area\VIS\Images\base\Zoom20.png" />
-    <Content Include="DLL\Area\VIS\Images\base\ZoomAcross24.png" />
-    <Content Include="DLL\Area\VIS\Images\bg-tile.png" />
-    <Content Include="DLL\Area\VIS\Images\book.png" />
-    <Content Include="DLL\Area\VIS\Images\browse.png" />
-    <Content Include="DLL\Area\VIS\Images\bullet.png" />
-    <Content Include="DLL\Area\VIS\Images\busy.gif" />
-    <Content Include="DLL\Area\VIS\Images\cal-1.png" />
-    <Content Include="DLL\Area\VIS\Images\cal-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\cal.png" />
-    <Content Include="DLL\Area\VIS\Images\calendar.png" />
-    <Content Include="DLL\Area\VIS\Images\callout.gif" />
-    <Content Include="DLL\Area\VIS\Images\cancel-18.png" />
-    <Content Include="DLL\Area\VIS\Images\cancel.png" />
-    <Content Include="DLL\Area\VIS\Images\cancel22x22.png" />
-    <Content Include="DLL\Area\VIS\Images\cancelfiles.png" />
-    <Content Include="DLL\Area\VIS\Images\ccc.png" />
-    <Content Include="DLL\Area\VIS\Images\Clear16.png" />
-    <Content Include="DLL\Area\VIS\Images\clock-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\clock-time.png" />
-    <Content Include="DLL\Area\VIS\Images\clock.png" />
-    <Content Include="DLL\Area\VIS\Images\close-file.png" />
-    <Content Include="DLL\Area\VIS\Images\close-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\close.png" />
-    <Content Include="DLL\Area\VIS\Images\comment-icon.jpg" />
-    <Content Include="DLL\Area\VIS\Images\compresed.png" />
-    <Content Include="DLL\Area\VIS\Images\Contact16.png" />
-    <Content Include="DLL\Area\VIS\Images\cre-cardview.png" />
-    <Content Include="DLL\Area\VIS\Images\croswithText.png" />
-    <Content Include="DLL\Area\VIS\Images\csv.png" />
-    <Content Include="DLL\Area\VIS\Images\customize.png" />
-    <Content Include="DLL\Area\VIS\Images\customizepos.png" />
-    <Content Include="DLL\Area\VIS\Images\DefaultProfilePic.png" />
-    <Content Include="DLL\Area\VIS\Images\defult.png" />
-    <Content Include="DLL\Area\VIS\Images\del.png" />
-    <Content Include="DLL\Area\VIS\Images\delete-ico-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\delete-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\delete-icon.jpg" />
-    <Content Include="DLL\Area\VIS\Images\dots.png" />
-    <Content Include="DLL\Area\VIS\Images\down arrow.png" />
-    <Content Include="DLL\Area\VIS\Images\down-arrow.png" />
-    <Content Include="DLL\Area\VIS\Images\download-ico-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\download-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\edit.png" />
-    <Content Include="DLL\Area\VIS\Images\email-attachment.png" />
-    <Content Include="DLL\Area\VIS\Images\email-audio.png" />
-    <Content Include="DLL\Area\VIS\Images\email-cancel.png" />
-    <Content Include="DLL\Area\VIS\Images\email-close.png" />
-    <Content Include="DLL\Area\VIS\Images\email-compresed.png" />
-    <Content Include="DLL\Area\VIS\Images\email-divider.png" />
-    <Content Include="DLL\Area\VIS\Images\email-image.png" />
-    <Content Include="DLL\Area\VIS\Images\email-open.png" />
-    <Content Include="DLL\Area\VIS\Images\email-preview.png" />
-    <Content Include="DLL\Area\VIS\Images\email-Refresh24.png" />
-    <Content Include="DLL\Area\VIS\Images\email-save.png" />
-    <Content Include="DLL\Area\VIS\Images\email-saveas.png" />
-    <Content Include="DLL\Area\VIS\Images\email-saveAttachment.png" />
-    <Content Include="DLL\Area\VIS\Images\email-savepdf.png" />
-    <Content Include="DLL\Area\VIS\Images\email-send.png" />
-    <Content Include="DLL\Area\VIS\Images\excel.png" />
-    <Content Include="DLL\Area\VIS\Images\favicon.ico" />
-    <Content Include="DLL\Area\VIS\Images\favItem.png" />
-    <Content Include="DLL\Area\VIS\Images\folder-open.png" />
-    <Content Include="DLL\Area\VIS\Images\folder.png" />
-    <Content Include="DLL\Area\VIS\Images\forword.png" />
-    <Content Include="DLL\Area\VIS\Images\group-active-user.png" />
-    <Content Include="DLL\Area\VIS\Images\group-add.png" />
-    <Content Include="DLL\Area\VIS\Images\group-close.png" />
-    <Content Include="DLL\Area\VIS\Images\group-edit-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\group-edit.png" />
-    <Content Include="DLL\Area\VIS\Images\group-inactive-user.png" />
-    <Content Include="DLL\Area\VIS\Images\group-info-hover.png" />
-    <Content Include="DLL\Area\VIS\Images\group-info.png" />
-    <Content Include="DLL\Area\VIS\Images\group-save.png" />
-    <Content Include="DLL\Area\VIS\Images\group-search.png" />
-    <Content Include="DLL\Area\VIS\Images\group-sort-arrow.png" />
-    <Content Include="DLL\Area\VIS\Images\group-tab-mob.png" />
-    <Content Include="DLL\Area\VIS\Images\group-tick.png" />
-    <Content Include="DLL\Area\VIS\Images\group-tittle-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\heroAccent.png" />
-    <Content Include="DLL\Area\VIS\Images\history-appointment.png" />
-    <Content Include="DLL\Area\VIS\Images\history-call.png" />
-    <Content Include="DLL\Area\VIS\Images\history-close.png" />
-    <Content Include="DLL\Area\VIS\Images\history-download.png" />
-    <Content Include="DLL\Area\VIS\Images\history-email.png" />
-    <Content Include="DLL\Area\VIS\Images\history-letter.png" />
-    <Content Include="DLL\Area\VIS\Images\history-print.png" />
-    <Content Include="DLL\Area\VIS\Images\history-search.png" />
-    <Content Include="DLL\Area\VIS\Images\history-sms.png" />
-    <Content Include="DLL\Area\VIS\Images\history-zoom.png" />
-    <Content Include="DLL\Area\VIS\Images\History24.png" />
-    <Content Include="DLL\Area\VIS\Images\home.png" />
-    <Content Include="DLL\Area\VIS\Images\homePage.PNG" />
-    <Content Include="DLL\Area\VIS\Images\home\1.jpg" />
-    <Content Include="DLL\Area\VIS\Images\home\2.jpg" />
-    <Content Include="DLL\Area\VIS\Images\home\3.jpg" />
-    <Content Include="DLL\Area\VIS\Images\home\4.jpg" />
-    <Content Include="DLL\Area\VIS\Images\home\Ballon.jpg" />
-    <Content Include="DLL\Area\VIS\Images\home\comments.jpg" />
-    <Content Include="DLL\Area\VIS\Images\home\comments.png" />
-    <Content Include="DLL\Area\VIS\Images\home\defaultUser.png" />
-    <Content Include="DLL\Area\VIS\Images\home\defaultUser46X46.png" />
-    <Content Include="DLL\Area\VIS\Images\home\done-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\home\icons-favourites.png" />
-    <Content Include="DLL\Area\VIS\Images\home\icons-feeds.png" />
-    <Content Include="DLL\Area\VIS\Images\home\icons-links.png" />
-    <Content Include="DLL\Area\VIS\Images\home\icons-MenuBar.png" />
-    <Content Include="DLL\Area\VIS\Images\home\icons-welcomeScreenTabs.png" />
-    <Content Include="DLL\Area\VIS\Images\home\icons-workflowActivity.png" />
-    <Content Include="DLL\Area\VIS\Images\home\mainMenu-BG.png" />
-    <Content Include="DLL\Area\VIS\Images\home\mainMenu.png" />
-    <Content Include="DLL\Area\VIS\Images\home\top-iconswelcomeScreenTab.png" />
-    <Content Include="DLL\Area\VIS\Images\home\upload-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\home\User.png" />
-    <Content Include="DLL\Area\VIS\Images\home\userAvatar-Feeds-Caroline.png" />
-    <Content Include="DLL\Area\VIS\Images\home\userAvatar-Feeds-Scott.png" />
-    <Content Include="DLL\Area\VIS\Images\home\userAvatar-Feeds-Sophia.png" />
-    <Content Include="DLL\Area\VIS\Images\home\userAvatar-Large.png" />
-    <Content Include="DLL\Area\VIS\Images\home\userAvatar.png" />
-    <Content Include="DLL\Area\VIS\Images\home\verticalScroll-End.png" />
-    <Content Include="DLL\Area\VIS\Images\home\welcomeScreen-AlertBubbles.png" />
-    <Content Include="DLL\Area\VIS\Images\home\workflowActivity-history.png" />
-    <Content Include="DLL\Area\VIS\Images\home\zoom-ico2.png" />
-    <Content Include="DLL\Area\VIS\Images\html.png" />
-    <Content Include="DLL\Area\VIS\Images\i.png" />
-    <Content Include="DLL\Area\VIS\Images\icons.png" />
-    <Content Include="DLL\Area\VIS\Images\Ignore22.png" />
-    <Content Include="DLL\Area\VIS\Images\image.png" />
-    <Content Include="DLL\Area\VIS\Images\imaport-contacts.png" />
-    <Content Include="DLL\Area\VIS\Images\info-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\infoOnHome.png" />
-    <Content Include="DLL\Area\VIS\Images\invalid.png" />
-    <Content Include="DLL\Area\VIS\Images\kpi-greenarrow.png" />
-    <Content Include="DLL\Area\VIS\Images\kpi-redarrow.png" />
-    <Content Include="DLL\Area\VIS\Images\left-shift.png" />
-    <Content Include="DLL\Area\VIS\Images\link-del.png" />
-    <Content Include="DLL\Area\VIS\Images\LoadingCircle.gif" />
-    <Content Include="DLL\Area\VIS\Images\Location.png" />
-    <Content Include="DLL\Area\VIS\Images\login\bg2.jpg" />
-    <Content Include="DLL\Area\VIS\Images\login\calender.png" />
-    <Content Include="DLL\Area\VIS\Images\login\client.png" />
-    <Content Include="DLL\Area\VIS\Images\login\combo-arrow.png" />
-    <Content Include="DLL\Area\VIS\Images\login\folder-open.png" />
-    <Content Include="DLL\Area\VIS\Images\login\folder.png" />
-    <Content Include="DLL\Area\VIS\Images\login\form-bg.png" />
-    <Content Include="DLL\Area\VIS\Images\login\html5_login.JPG" />
-    <Content Include="DLL\Area\VIS\Images\login\html5_login.PNG" />
-    <Content Include="DLL\Area\VIS\Images\login\lang-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\login\lock.png" />
-    <Content Include="DLL\Area\VIS\Images\login\LoginLogo.png" />
-    <Content Include="DLL\Area\VIS\Images\login\logo.png" />
-    <Content Include="DLL\Area\VIS\Images\login\mDocAction.png" />
-    <Content Include="DLL\Area\VIS\Images\login\mProcess.png" />
-    <Content Include="DLL\Area\VIS\Images\login\mReport.png" />
-    <Content Include="DLL\Area\VIS\Images\login\mWindow.png" />
-    <Content Include="DLL\Area\VIS\Images\login\mWorkbench.png" />
-    <Content Include="DLL\Area\VIS\Images\login\mWorkFlow.png" />
-    <Content Include="DLL\Area\VIS\Images\login\off-btn.png" />
-    <Content Include="DLL\Area\VIS\Images\login\org.png" />
-    <Content Include="DLL\Area\VIS\Images\login\pass-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\login\role.png" />
-    <Content Include="DLL\Area\VIS\Images\login\user-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\login\warehouse.png" />
-    <Content Include="DLL\Area\VIS\Images\logo.jpg" />
-    <Content Include="DLL\Area\VIS\Images\logo.png" />
-    <Content Include="DLL\Area\VIS\Images\main_screen.png" />
-    <Content Include="DLL\Area\VIS\Images\mDocAction.png" />
-    <Content Include="DLL\Area\VIS\Images\menuTree.PNG" />
-    <Content Include="DLL\Area\VIS\Images\mProcess.png" />
-    <Content Include="DLL\Area\VIS\Images\mReport.png" />
-    <Content Include="DLL\Area\VIS\Images\multiplepdf.png" />
-    <Content Include="DLL\Area\VIS\Images\mWindow.png" />
-    <Content Include="DLL\Area\VIS\Images\mWorkbench.png" />
-    <Content Include="DLL\Area\VIS\Images\mWorkFlow.png" />
-    <Content Include="DLL\Area\VIS\Images\nonfavItem.png" />
-    <Content Include="DLL\Area\VIS\Images\nonSummary.png" />
-    <Content Include="DLL\Area\VIS\Images\orderedList0.png" />
-    <Content Include="DLL\Area\VIS\Images\orderedList1.png" />
-    <Content Include="DLL\Area\VIS\Images\orderedList2.png" />
-    <Content Include="DLL\Area\VIS\Images\pallet-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\pdf.png" />
-    <Content Include="DLL\Area\VIS\Images\ppt-ico.png" />
-    <Content Include="DLL\Area\VIS\Images\ppt.png" />
-    <Content Include="DLL\Area\VIS\Images\Preference16.png" />
-    <Content Include="DLL\Area\VIS\Images\preview.png" />
-    <Content Include="DLL\Area\VIS\Images\print.png" />
-    <Content Include="DLL\Area\VIS\Images\printpos.png" />
-    <Content Include="DLL\Area\VIS\Images\Refresh16.png" />
-    <Content Include="DLL\Area\VIS\Images\Refresh22.png" />
-    <Content Include="DLL\Area\VIS\Images\Refresh24.png" />
-    <Content Include="DLL\Area\VIS\Images\removefav.png" />
-    <Content Include="DLL\Area\VIS\Images\repformat.png" />
-    <Content Include="DLL\Area\VIS\Images\repformatpos.png" />
-    <Content Include="DLL\Area\VIS\Images\reply.png" />
-    <Content Include="DLL\Area\VIS\Images\requery.png" />
-    <Content Include="DLL\Area\VIS\Images\requerypos.png" />
-    <Content Include="DLL\Area\VIS\Images\right-shift.png" />
-    <Content Include="DLL\Area\VIS\Images\save-icon.jpg" />
-    <Content Include="DLL\Area\VIS\Images\Save22.png" />
-    <Content Include="DLL\Area\VIS\Images\savecsv.png" />
-    <Content Include="DLL\Area\VIS\Images\savecsvpos.png" />
-    <Content Include="DLL\Area\VIS\Images\savepdf.png" />
-    <Content Include="DLL\Area\VIS\Images\savepdfpos.png" />
-    <Content Include="DLL\Area\VIS\Images\search-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\search.png" />
-    <Content Include="DLL\Area\VIS\Images\search32.png" />
-    <Content Include="DLL\Area\VIS\Images\select.png" />
-    <Content Include="DLL\Area\VIS\Images\send.png" />
-    <Content Include="DLL\Area\VIS\Images\sendSms.png" />
-    <Content Include="DLL\Area\VIS\Images\smiley-awake.gif" />
-    <Content Include="DLL\Area\VIS\Images\smiley-sleep.gif" />
-    <Content Include="DLL\Area\VIS\Images\summary.png" />
-    <Content Include="DLL\Area\VIS\Images\text.png" />
-    <Content Include="DLL\Area\VIS\Images\tm-expand.png" />
-    <Content Include="DLL\Area\VIS\Images\tm-minus.png" />
-    <Content Include="DLL\Area\VIS\Images\ToLink.png" />
-    <Content Include="DLL\Area\VIS\Images\up-arrow.png" />
-    <Content Include="DLL\Area\VIS\Images\up-cardview.png" />
-    <Content Include="DLL\Area\VIS\Images\UpdateBP16.png" />
-    <Content Include="DLL\Area\VIS\Images\upload.png" />
-    <Content Include="DLL\Area\VIS\Images\upload22x22.png" />
-    <Content Include="DLL\Area\VIS\Images\user.png" />
-    <Content Include="DLL\Area\VIS\Images\V-logo.png" />
-    <Content Include="DLL\Area\VIS\Images\valid.png" />
-    <Content Include="DLL\Area\VIS\Images\vis_home_fav1.png" />
-    <Content Include="DLL\Area\VIS\Images\vis_home_myLink1.png" />
-    <Content Include="DLL\Area\VIS\Images\WF-Search-show-icon.png" />
-    <Content Include="DLL\Area\VIS\Images\wfSearch-icon-minus.png" />
-    <Content Include="DLL\Area\VIS\Images\word.png" />
-    <Content Include="DLL\Area\VIS\Images\xml.png" />
-    <Content Include="DLL\Area\VIS\Images\zoom.png" />
-    <Content Include="DLL\Area\VIS\Images\Zoom16.png" />
-    <Content Include="DLL\Area\VIS\Images\zoomfav.png" />
-    <Content Include="DLL\Area\VIS\Scripts\app\ajaxlogin.js" />
-    <Content Include="DLL\Area\VIS\Scripts\VIS.all.min.js" />
-    <Content Include="DLL\Area\VIS\Scripts\VIS1_0.min.js" />
-    <Content Include="DLL\Area\VIS\Scripts\VIS2_0.min.js" />
-    <Content Include="DLL\Area\VIS\WebPages\CreateUser.aspx" />
-    <Content Include="DLL\Area\VIS\WebPages\CrystalReprotViewer.aspx" />
-    <Content Include="DLL\ICSharpCode.SharpZipLib.dll" />
-    <Content Include="DLL\ModelLibrary.dll" />
-    <Content Include="DLL\Mono.Security.dll" />
-    <Content Include="DLL\Npgsql.dll" />
-    <Content Include="DLL\PdfSharp.dll" />
-    <Content Include="DLL\SecureEngineUtility.dll" />
-    <Content Include="DLL\ViennaBase.dll" />
-    <Content Include="DLL\VIS.dll" />
     <Content Include="fonts\glyphicons-halflings-regular.svg" />
     <Content Include="Global.asax" />
     <Content Include="Web.config">
@@ -1791,6 +318,7 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Startup.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\web.config" />
@@ -1805,73 +333,6 @@
     <Content Include="Views\Shared\_Layout.cshtml" />
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="UploadPaymnetsampleFile.csv" />
-    <Content Include="DLL\Area\ViennaBase\Content\bootstrap-theme.css.map" />
-    <Content Include="DLL\Area\ViennaBase\Content\bootstrap.css.map" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\fontawesome-webfont.eot" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\fontawesome-webfont.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\fontawesome-webfont.woff" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\fontawesome-webfont.woff2" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\FontAwesome.otf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-Bold.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-Italic.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-Light.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-Medium.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-MediumItalic.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-Regular.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-SemiBold.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\NoirPro-SemiBoldItalic.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\vis-fonts.eot" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\vis-fonts.ttf" />
-    <Content Include="DLL\Area\ViennaBase\Content\fonts\vis-fonts.woff" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-grid.css.map" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-grid.min.css.map" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-reboot.css.map" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap-reboot.min.css.map" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap.css.map" />
-    <Content Include="DLL\Area\ViennaBase\Content\migration\bootstrap.min.css.map" />
-    <Content Include="DLL\Area\ViennaBase\fonts\glyphicons-halflings-regular.eot" />
-    <Content Include="DLL\Area\ViennaBase\fonts\glyphicons-halflings-regular.ttf" />
-    <Content Include="DLL\Area\ViennaBase\fonts\glyphicons-halflings-regular.woff" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\crsmarttag.jsp" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\crystalreportviewers13\preview.jsp" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\jquery-2.1.0.min.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\bootstrap.js.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\bootstrap.min.js.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-3.4.1.min.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\jquery-3.4.1.slim.min.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper-utils.js.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper-utils.min.js.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper.js.map" />
-    <Content Include="DLL\Area\ViennaBase\Scripts\migration\popper.min.js.map" />
-    <Content Include="DLL\Area\VIS\Views\AccountForm\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\ASearch\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Chat\LoadChat.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Email\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Email\Init.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Home\Home.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Home\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Home\IndexOld.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Home\TimeoutRedirect.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Home\_Login.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Home\_Login2.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Location\Locations.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Locator\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\PaymentAllocation\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Shared\View.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Shared\_Layout.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Shared\_Menu.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Shared\_Template.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Shared\_UserSettings.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Shared\_UserSettingsOld.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\UserPreference\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\ValuePreference\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\VImageForm\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\VSetup\Index.cshtml" />
-    <Content Include="DLL\Area\VIS\Views\Web.config" />
-    <Content Include="DLL\Area\VIS\Views\_ViewStart.cshtml" />
     <None Include="Oracle.DataAccess.Common.Configuration.Section.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -1888,22 +349,6 @@
   <ItemGroup>
     <Folder Include="App_Data\" />
     <Folder Include="Areas\" />
-    <Folder Include="DLL\Area\VIS\Views\AmountDivision\" />
-    <Folder Include="DLL\Area\VIS\Views\GenerateXModel\" />
-    <Folder Include="DLL\Area\VIS\Views\GmailContacts\" />
-    <Folder Include="DLL\Area\VIS\Views\Group\" />
-    <Folder Include="DLL\Area\VIS\Views\MarkModule\" />
-    <Folder Include="DLL\Area\VIS\Views\ModulePrefix\" />
-    <Folder Include="DLL\Area\VIS\Views\OrgStructure\" />
-    <Folder Include="DLL\Area\VIS\Views\Payment\" />
-    <Folder Include="DLL\Area\VIS\Views\RecordAccess\" />
-    <Folder Include="DLL\Area\VIS\Views\TelerikReport\" />
-    <Folder Include="DLL\Area\VIS\Views\TreeOnDemand\" />
-    <Folder Include="DLL\Area\VIS\Views\VBOMDrop\" />
-    <Folder Include="DLL\Area\VIS\Views\VCharge\" />
-    <Folder Include="DLL\Area\VIS\Views\VCreateFrom\" />
-    <Folder Include="DLL\Area\VIS\Views\VPayPrint\" />
-    <Folder Include="DLL\Area\VIS\Views\VTrxMaterial\" />
     <Folder Include="Images\" />
     <Folder Include="Properties\DataSources\" />
   </ItemGroup>
@@ -1924,13 +369,11 @@
     <VisualStudio>
       <FlavorProperties GUID="{349c5851-65df-11da-9384-00065b846f21}">
         <WebProjectProperties>
-          <UseIIS>false</UseIIS>
+          <UseIIS>True</UseIIS>
           <AutoAssignPort>False</AutoAssignPort>
           <DevelopmentServerPort>39742</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost/VA009</IISUrl>
-          <OverrideIISAppRootUrl>True</OverrideIISAppRootUrl>
-          <IISAppRootUrl>http://localhost/VA009</IISAppRootUrl>
+          <IISUrl>http://localhost/VA009_</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>
@@ -1940,13 +383,6 @@
       </FlavorProperties>
     </VisualStudio>
   </ProjectExtensions>
-  <Import Project="..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets" Condition="Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\System.Text.Json.6.0.0\build\System.Text.Json.targets'))" />
-  </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">
