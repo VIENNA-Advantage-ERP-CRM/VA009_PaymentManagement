@@ -7373,7 +7373,7 @@ Batch_Dialog: function () {
     /* VIS_427 DevOps id:2268 Zoom functionality added to zoom batch window*/
     $ViewBatch.on("click", function () {
         if (batchid > 0) {
-            zoomToWindow(batchid, "VA009_PaymentBatch", "VA009_Batch_ID");
+            zoomToWindow(batchid, "VA009_BatchPayment,VA009_PaymentBatch", "VA009_Batch_ID");
         }
         Batchsuccesspay.close();
     });
