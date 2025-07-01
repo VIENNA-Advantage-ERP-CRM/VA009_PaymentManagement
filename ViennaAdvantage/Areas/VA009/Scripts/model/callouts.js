@@ -827,12 +827,12 @@
         //if (ds.tables[0].rows[0].cells["va009_paymentbasetype"] != "W") {
         var C_Currency_ID = mTab.getValue("C_Currency_ID");
         if (dr != null) {
-
-            if (Util.getValueOfInt(dr["C_Currency_ID"]) > 0) {
+            /*VIS_427 if the currency id column is their in tab then execute below code else not*/
+            if (Util.getValueOfInt(dr["C_Currency_ID"]) > 0 && mTab.findColumn("C_Currency_ID") >=0) {
                 if (C_Currency_ID != Util.getValueOfInt(dr["C_Currency_ID"])) {
                     mTab.setValue("VA009_PaymentMethod_ID", null);
                     this.setCalloutActive(false);
-                    VIS.ADialog.info("Desired payment method does not match with price list currency");
+                    VIS.ADialog.info("VA009_CurrencyWithPaymentMethod");
                     return "";
                 }
             }
@@ -888,7 +888,7 @@
                 if (C_Currency_ID != Util.getValueOfInt(dr["C_Currency_ID"])) {
                     mTab.setValue("VA009_PaymentMethod_ID", null);
                     this.setCalloutActive(false);
-                    VIS.ADialog.info("Desired payment method does not match with price list currency");
+                    VIS.ADialog.info("VA009_CurrencyWithPaymentMethod");
                     return "";
                 }
             }
