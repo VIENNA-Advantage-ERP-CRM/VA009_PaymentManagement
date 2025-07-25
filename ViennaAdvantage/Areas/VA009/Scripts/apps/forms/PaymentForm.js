@@ -3381,11 +3381,27 @@
                  */
                 function IsAPCgreaterAPI(Data) {
                     var amount = 0;
-                    $.each(Data, function (index, item) {
-                        if (item.DocBaseType === "API") {
-                            amount += parseFloat(item.VA009_RecivedAmt);
-                        } else if (item.DocBaseType === "APC") {
-                            amount += (parseFloat(-item.VA009_RecivedAmt));
+                    let grouped = {};
+
+                    /* Group record based on Business partner, check no 
+                       and Sum the API and APC amount*/
+                    $.each(Data, function (_, item) {
+                        let key = item.C_BPartner_ID + '_' + item.CheckNumber;
+                        if (!grouped[key]) {
+                            grouped[key] = { API: 0, APC: 0 };
+                        }
+                        if (item.DocBaseType === 'API') {
+                            grouped[key].API += parseFloat(item.VA009_RecivedAmt);
+                        } else if (item.DocBaseType === 'APC') {
+                            grouped[key].APC += parseFloat(item.VA009_RecivedAmt);
+                        }
+                    });
+
+                    /* check APC Amount is greter than API for any of the grouped Item, if yes then system will not create payment*/
+                    $.each(grouped, function (key, value) {
+                        if (value.APC > value.API) {
+                            amount = value.API - value.APC;
+                            return amount;
                         }
                     });
                     return amount;
