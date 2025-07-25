@@ -3219,7 +3219,8 @@ namespace VA009.Models
                                 convertedAmt = PaymentData[n].convertedAmt,
                                 VA009_PaymentMethod_ID = PaymentData[n].VA009_PaymentMethod_ID,
                                 DateAcct = PaymentData[n].DateAcct,
-                                DocBaseType = PaymentData[n].DocBaseType
+                                DocBaseType = PaymentData[n].DocBaseType,
+                                C_BPartner_Location_ID = PaymentData[n].C_BPartner_Location_ID
                             });
                         }
                     }
@@ -3277,6 +3278,11 @@ namespace VA009.Models
                         _PaySelCheck.SetPaymentRule("S");
                         _PaySelCheck.SetDocumentNo((recordSequence[i].C_Invoice_ID).ToString());
                         _PaySelCheck.SetC_BPartner_ID(recordSequence[i].C_BPartner_ID);
+                        /*VIS_045: 25-July-2025, Set Business Partner Location for Payment creation*/
+                        if (_PaySelCheck.Get_ColumnIndex("C_BPartner_Location_ID") >= 0 && recordSequence[i].C_BPartner_Location_ID > 0)
+                        {
+                            _PaySelCheck.Set_ValueNoCheck("C_BPartner_Location_ID", recordSequence[i].C_BPartner_Location_ID);
+                        }
 
                         _PaySelCheck.Set_Value("VA009_PaymentMethod_ID", recordSequence[i].VA009_PaymentMethod_ID);
 
