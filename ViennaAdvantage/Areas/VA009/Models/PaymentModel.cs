@@ -3383,8 +3383,7 @@ namespace VA009.Models
                     _SelectionLine.SetOpenAmt(DueAmtt);
 
                     decimal discount = recordSequence[i].Discount;
-                    if ((discount < 0 && !recordSequence[i].DocBaseType.Equals("APC")) ||
-                        (discount > 0 && recordSequence[i].DocBaseType.Equals("APC")))
+                    if (recordSequence[i].DocBaseType.Equals("APC"))
                     {
                         discount = decimal.Negate(recordSequence[i].Discount);
                     }
@@ -3397,6 +3396,21 @@ namespace VA009.Models
                     else if (recordSequence[i].Writeoff < 0)
                     {
                         _SelectionLine.SetDifferenceAmt(decimal.Negate(recordSequence[i].Writeoff));
+                    }
+
+                    /*VIS_045: 28-July-2025, Set Write-Off and Over-under Amount*/
+                    if (_SelectionLine.Get_ColumnIndex("OverUnderAmt") >= 0 && _SelectionLine.Get_ColumnIndex("WriteOffAmt") >= 0)
+                    {
+                        if (recordSequence[i].DocBaseType.Equals("APC"))
+                        {
+                            _SelectionLine.Set_Value("WriteOffAmt", decimal.Negate(recordSequence[i].Writeoff));
+                            _SelectionLine.Set_Value("OverUnderAmt", decimal.Negate(recordSequence[i].OverUnder));
+                        }
+                        else
+                        {
+                            _SelectionLine.Set_Value("WriteOffAmt", recordSequence[i].Writeoff);
+                            _SelectionLine.Set_Value("OverUnderAmt", recordSequence[i].OverUnder);
+                        }
                     }
 
                     _SelectionLine.SetProcessed(true);
