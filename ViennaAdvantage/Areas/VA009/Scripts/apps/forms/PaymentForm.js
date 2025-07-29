@@ -7889,7 +7889,7 @@
                 if (dr != null) {
                     var tableid = dr["AD_Table_ID"];
                     var chatid = dr["CM_Chat_ID"];
-                    var chat = new VIS.Chat(record_ID, chatid, tableid, "", this.windowNo);
+                    var chat = new VIS.Chat(record_ID, chatid, tableid, "", $self.windowNo);
                     chat.show();
                     chat.onClose = function () {
                         $.ajax({
