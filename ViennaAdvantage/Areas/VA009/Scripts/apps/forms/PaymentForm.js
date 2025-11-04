@@ -103,6 +103,7 @@
         //varriable to show the message if cheques are not available 
         var _ChequesNotAvailable = false;
         var $btnChequePrint = null, chequePrintParams = [];
+        var $batch = null; BatchDialog = null;
         //var elements = [
         //    "VA009_Cancel",
         //];
@@ -6556,7 +6557,7 @@
                 );
 
                 $batch.append(_batch);
-                var BatchDialog = new VIS.ChildDialog();
+                BatchDialog = new VIS.ChildDialog();
                 BatchDialog.setContent($batch);
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
                 BatchDialog.setWidth("60%");
@@ -10024,6 +10025,14 @@
                     }
                     return chkDtl;
                 };
+            }
+        };
+
+        /* Resize Batch Dialog Height on Zoom Out / In */
+        this.sizeChanged = function () {
+            if (BatchDialog && $batch) {
+                contentHeight = $(window)[0].innerHeight - 210;
+                BatchDialog.changeHeight(contentHeight);
             }
         };
 
