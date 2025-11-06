@@ -6560,9 +6560,11 @@
                 BatchDialog = new VIS.ChildDialog();
                 BatchDialog.setContent($batch);
                 BatchDialog.setTitle(VIS.Msg.getMsg("VA009_LoadBatchPayment"));
-                BatchDialog.setWidth("60%");
+                BatchDialog.setWidth("63%");
                 //VA230:Remove outer scroll bar
-                //BatchDialog.setHeight(window.innerHeight - 80);
+                if ($(window).height() <= 620) {
+                    BatchDialog.setHeight(window.innerHeight - 80);
+                }
                 BatchDialog.setEnableResize(true);
                 BatchDialog.setModal(true);
                 BatchDialog.show();
@@ -10031,7 +10033,7 @@
         /* Resize Batch Dialog Height on Zoom Out / In */
         this.sizeChanged = function () {
             if (BatchDialog && $batch) {
-                contentHeight = $(window)[0].innerHeight - 210;
+                contentHeight = $(window)[0].innerHeight - 181;
                 BatchDialog.changeHeight(contentHeight);
             }
         };
