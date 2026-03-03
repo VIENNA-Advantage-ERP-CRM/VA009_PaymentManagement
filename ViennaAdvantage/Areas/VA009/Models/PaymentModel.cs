@@ -308,13 +308,16 @@ namespace VA009.Models
             //}
             #endregion
 
-            query = DBFuncCollection.GetPaymentDataSql(ctx, whereQry, SearchText, WhrDueDate, TransType, FromDate, ToDate);
+            query = DBFuncCollection.GetPaymentDataSql1(ctx, whereQry, SearchText, WhrDueDate, TransType, FromDate, ToDate);
             DataSet ds = VIS.DBase.DB.ExecuteDatasetPaging(query, pageNo, pageSize);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
                 //for paging 
                 if (pageNo == 1)
+                {
                     countRecords = Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(*) FROM ( " + query + " ) t"));
+                    //countRecords = DBFuncCollection.GetPaymentDataCountRecord(ctx, whereQry, SearchText, WhrDueDate, TransType, FromDate, ToDate);
+                }
 
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
@@ -3147,7 +3150,7 @@ namespace VA009.Models
 
         public string GetLastChat(Ctx ctx, int recordid)
         {
-            int tableid = Util.GetValueOfInt(DB.ExecuteScalar("select ad_table_id from ad_table where tablename like ('%C_InvoicePaySchedule%') and export_id='VIS_551'", null, null));
+            int tableid = Util.GetValueOfInt(DB.ExecuteScalar("select ad_table_id from ad_table where tablename = 'C_InvoicePaySchedule' and export_id='VIS_551'", null, null));
             int chatid = Util.GetValueOfInt(DB.ExecuteScalar("select cm_chat_id from cm_chat  WHERE ad_table_id=" + tableid + " and record_id=" + recordid, null, null));
             string str = @"SELECT CH.characterdata FROM (SELECT * FROM (SELECT CH.cm_chat_id AS ChatID,MAX(CE.cm_chatentry_id)AS EntryID FROM cm_chatentry CE 
                             JOIN cm_chat CH ON (CE.cm_chat_id= CH.cm_chat_id) GROUP BY CH.cm_chat_id ORDER BY entryID)inn1) inn INNER JOIN cm_chatentry CH 

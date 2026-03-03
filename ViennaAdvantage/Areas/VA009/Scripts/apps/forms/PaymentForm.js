@@ -625,7 +625,7 @@
                 if ($FromDate.val() == "") {
                     //(1052)if date is empty or half entered then clear the field
                     $FromDate.val("");
-                    return;
+                    //return;
                 }
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
@@ -646,7 +646,7 @@
                 if ($ToDate.val() == "") {
                     //(1052)if date is empty or half entered then clear the field
                     $ToDate.val("");
-                    return;
+                    //return;
                 }
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
@@ -10761,7 +10761,7 @@
                     dsgn += ' <div class="VA009-left-data VA009-pay-mid-sec"> <span data-UID="' + data.result[i].DocumentNo + '" class="VA009_AddNote" style=" cursor: pointer;"><img class="VA009_AddNoteimg" data-UID="' + data.result[i].DocumentNo + '" alt="' + VIS.Msg.getMsg("VA009_AddNote") + '" title="' + VIS.Msg.getMsg("VA009_AddNote") + '" src="' + VIS.Application.contextUrl + "Areas/VA009/Images/add-note.png" + '"> </img></span> </div> ' +
                         ' <div class="VA009-left-data VA009-pay-mid-sec" id="VA009-LastChat_' + $self.windowNo + '"> <span class="VA009-Chatcolor-gray" id=VA009-Chatcolor-gray_' + data.result[i].DocumentNo + '>' + data.result[i].LastChat + '</span> </div> ' +
                         ' </div> ' + '<div class="col-md-2 col-sm-2 width-sm-20 sm-padd VA009-padd-right-0">'
-                        + '<div class="VA009-transactionType"> <span>' + data.result[i].TransactionType + '</span> '
+                        + '<div class="VA009-transactionType"> <span>' + data.result[i].TransactionType + '</span> ';
                     if (data.result[i].DocBaseType == "APC" || data.result[i].DocBaseType == "ARC") {
                         dsgn += '<br><span style="text-decoration: underline;color: red;font-size: 12px;">Credit Memo</span> </div></div>';
                     }
