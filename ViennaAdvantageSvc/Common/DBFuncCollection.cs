@@ -77,7 +77,6 @@ namespace ViennaAdvantage.Common
                                   THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
                                   FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
                                   WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ('Y','J')"
-                         //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() 
                          + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
@@ -126,7 +125,7 @@ namespace ViennaAdvantage.Common
                         sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
                     }
                 }
-                if (TransTypes.Count() == 0 || TransTypes.Count() >= 2)
+                if (sql.Length > 0 && (TransType.Contains("0") || TransTypes.Count() == 0 || TransTypes.Count() == 3))
                 {
                     sql.Append(" UNION ");
                 }
@@ -137,7 +136,6 @@ namespace ViennaAdvantage.Common
                         t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
                         t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
                         t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
-                    //Log Warnings handled
                     string query = @" SELECT CY.StdPrecision,pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
                         cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
                         pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
@@ -156,7 +154,6 @@ namespace ViennaAdvantage.Common
                         INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
                             whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
                          AND cs.VA009_OrderPaySchedule_ID NOT IN (SELECT COALESCE(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
-                        //AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + 
                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
 
                     query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
@@ -206,7 +203,7 @@ namespace ViennaAdvantage.Common
                 }
 
                 // GET GL Journal Data
-                if (TransTypes.Count() == 0 || TransTypes.Count() > 2)
+                if (sql.Length > 0 && (TransType.Contains("2") || TransTypes.Count() == 0 || TransTypes.Count() == 3))
                 {
                     sql.Append(" UNION ");
                 }
@@ -386,7 +383,7 @@ namespace ViennaAdvantage.Common
                         sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
                     }
                 }
-                if (TransTypes.Count() == 0 || TransTypes.Count() >= 2)
+                if (sql.Length > 0 && (TransTypes.Count() == 0 || TransTypes.Count() >= 2))
                 {
                     sql.Append(" UNION ");
                 }
@@ -466,7 +463,7 @@ namespace ViennaAdvantage.Common
                 }
 
                 // GET GL Journal Data
-                if (TransTypes.Count() == 0 || TransTypes.Count() > 2)
+                if (sql.Length > 0 && (TransTypes.Count() == 0 || TransTypes.Count() > 2))
                 {
                     sql.Append(" UNION ");
                 }
@@ -568,6 +565,1086 @@ namespace ViennaAdvantage.Common
             sql.Replace(sql.ToString(), "SELECT * FROM ( " + sql.ToString() + " ) t ORDER BY t.va009_plannedduedate, t.C_InvoicePaySchedule_ID ");
 
             return sql.ToString();
+        }
+
+        public static string GetPaymentDataSql1(Ctx ctx, string whereQry, string SearchText, string WhrDueDate, string TransType, string FromDate, string ToDate)
+        {
+            StringBuilder sql = new StringBuilder();
+            DateTime? dateFrom = new DateTime();
+            if (FromDate != string.Empty)
+                dateFrom = Convert.ToDateTime(FromDate);
+            DateTime? dateTo = new DateTime();
+            if (ToDate != string.Empty)
+                dateTo = Convert.ToDateTime(ToDate);
+            int[] TransTypes;
+            if (!string.IsNullOrEmpty(TransType))
+            {
+                TransTypes = Array.ConvertAll(TransType.Split(','), int.Parse);
+            }
+            else
+            {
+                TransTypes = new int[0];
+            }
+
+            sql.Clear();
+            sql.Append($@"WITH currency_info AS (
+                                SELECT DISTINCT 
+                                    ac.C_AcctSchema_ID,
+                                    ac.C_Currency_ID as base_currency_id,
+                                    cy.StdPrecision,
+                                    cy.ISO_CODE as basecurrencycode,
+                                    aclnt.AD_Client_ID
+                                FROM AD_ClientInfo aclnt
+                                INNER JOIN C_AcctSchema ac ON (ac.C_AcctSchema_ID = aclnt.C_AcctSchema1_ID)
+                                INNER JOIN C_Currency cy ON (ac.C_Currency_ID = cy.C_Currency_ID)
+                                WHERE aclnt.AD_Client_ID IN ({ctx.GetAD_Client_ID()})
+                            )");
+            sql.AppendLine($@", excluded_payments AS (");
+            if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
+            {
+                sql.AppendLine($@" SELECT COALESCE(cp.C_InvoicePaySchedule_ID,cpa.C_InvoicePaySchedule_ID, 0) as C_InvoicePaySchedule_ID,
+                                         0 as GL_JournalLine_ID, 0 as VA009_OrderPaySchedule_ID
+                                       FROM C_Payment cp
+                                       LEFT JOIN C_PaymentAllocate cpa ON (cpa.C_Payment_ID = cp.C_Payment_ID)
+                                       WHERE cp.DocStatus NOT IN ('CO', 'CL', 'RE', 'VO') AND cp.AD_Client_ID IN ({ctx.GetAD_Client_ID()}) ");
+            }
+            if ((TransType.Contains("0") && TransType.Contains("1")) || TransTypes.Count() == 0 || TransTypes.Count() == 3)
+            {
+                sql.AppendLine(" UNION ALL ");
+            }
+            if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
+            {
+                sql.AppendLine($@" SELECT 0 as C_InvoicePaySchedule_ID, 0 as GL_JournalLine_ID,
+                                              COALESCE(cp.VA009_OrderPaySchedule_ID, 0) as VA009_OrderPaySchedule_ID
+                                        FROM C_Payment cp
+                                        WHERE cp.DocStatus NOT IN ('CO', 'CL', 'RE', 'VO') AND cp.AD_Client_ID IN ({ctx.GetAD_Client_ID()}) ");
+            }
+            if (((TransType.Contains("1") || TransType.Contains("0")) && TransType.Contains("2")) || TransTypes.Count() == 0 || TransTypes.Count() == 3)
+            {
+                sql.AppendLine(" UNION ALL ");
+            }
+            if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
+            {
+                sql.AppendLine($@" SELECT 0 as C_InvoicePaySchedule_ID,
+                                             COALESCE(cp.GL_JournalLine_ID, cpa.GL_JournalLine_ID, 0) as GL_JournalLine_ID,
+                                             0 as VA009_OrderPaySchedule_ID
+                                        FROM C_Payment cp
+                                        LEFT JOIN C_PaymentAllocate cpa ON (cpa.C_Payment_ID = cp.C_Payment_ID)
+                                        WHERE cp.DocStatus NOT IN('CO', 'CL', 'RE', 'VO') AND cp.AD_Client_ID IN ({ctx.GetAD_Client_ID()}) ");
+            }
+
+            sql.Append(")");
+            if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
+            {
+                sql.AppendLine($@" , excluded_allocations AS (
+                                        SELECT al.GL_JournalLine_ID
+                                        FROM C_AllocationHdr ah
+                                        INNER JOIN C_AllocationLine al ON al.C_AllocationHdr_ID = ah.C_AllocationHdr_ID
+                                        WHERE ah.DocStatus NOT IN ('CO', 'CL', 'RE', 'VO') AND ah.AD_Client_ID IN ({ctx.GetAD_Client_ID()}) 
+                                    )");
+            }
+
+            //when load the Schedules should get Converted Amount based on Schedule ConversionType not the default ConversionType
+            //int conversionType_ID = ctx.GetContextAsInt("#C_ConversionType_ID");
+            /*VIS_427 28/11/2023 3082 When user is creating the Payment with the reference of either invoice,gl journal and order and Payment is drafted
+            then handled Query to restrict those refrences to not visible on payment form*/
+            if (DB.IsOracle())
+            {
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
+                {
+                    //Table Name is case sensitive must follow Camel format
+
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
+                         t.C_InvoicePaySchedule_ID,  t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,  t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,
+                         t.va009_plannedduedate, t.VA009_FollowupDate,  t.VA009_RecivedAmt,  t.DueAmt, t.VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  
+                         t.ISO_CODE, t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
+                    //Log Warnings handled
+                    string query = @"SELECT ci.StdPrecision,pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
+                         pm.VA009_PaymentMethod_ID, pm.VA009_name as VA009_PaymentMethod,pm.va009_paymentbasetype,pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger,
+                         cs.duedate as va009_plannedduedate,
+                         cs.VA009_PlannedDueDate as VA009_FollowupDate,inv.VA009_PaidAmount AS VA009_RecivedAmt,
+                         CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('API','ARC'))     
+                         THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) * 1  END AS DueAmt,
+                         cs.VA009_OpenAmnt, rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id ,
+                         inv.C_Currency_ID,  cc.ISO_CODE, ci.base_currency_id as basecurrency,  
+                         CURRENCYRATE(cc.C_CURRENCY_ID,ci.base_currency_id, cs.DueDate, inv.C_ConversionType_ID,
+                         inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, ci.basecurrencycode as basecurrencycode,inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy')
+                        -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
+                         C_InvoicePaySchedule cs 
+                        INNER JOIN currency_info ci ON (ci.AD_Client_ID = cs.AD_Client_ID) 
+                        INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID) 
+                        INNER JOIN C_DocType cd ON (cs.C_DocType_ID=cd.C_DocType_ID) 
+                        INNER JOIN AD_Ref_List rsf ON (rsf.value= cs.VA009_ExecutionStatus) 
+                        INNER JOIN AD_Reference re ON (rsf.AD_Reference_ID=re.AD_Reference_ID) 
+                        LEFT JOIN C_Invoice inv ON (inv.c_invoice_id=cs.c_invoice_id)
+                        LEFT JOIN C_BPartner cb ON (cb.C_BPartner_ID=inv.C_BPartner_ID) 
+                        INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) 
+                        INNER JOIN C_Currency cc ON (inv.C_Currency_ID=cc.C_Currency_ID) " +
+                             whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                          AND cs.C_InvoicePaySchedule_ID NOT IN (SELECT C_InvoicePaySchedule_ID FROM excluded_payments WHERE C_InvoicePaySchedule_ID > 0)
+                          AND rsf.value NOT IN ('Y','J') AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+
+                    if (SearchText != string.Empty)
+                    {
+                        //JID_1793 -- when search text contain "=" then serach with documnet no only
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + @"%')
+                            OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + @"%'))  
+                            OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                }
+                if ((TransType.Contains("0") && TransType.Contains("1")) || TransTypes.Count() == 0 || TransTypes.Count() == 3)
+                {
+                    sql.Append(" UNION ");
+                }
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
+                {
+                    //Table Name is case sensitive must follow Camel format
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
+                        t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
+                        t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
+                        t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
+                    string query = @" SELECT ci.StdPrecision,pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
+                        cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
+                        pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
+                        0 AS VA009_RecivedAmt, 
+                        CASE  WHEN (cd.DOCBASETYPE IN ('SOO','APC')) THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('POO','ARC')) 
+                        THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) * 1 END AS DueAmt,
+                        cs.VA009_OpenAmnt, rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id, inv.C_Currency_ID, cc.ISO_CODE, ci.base_currency_id   AS basecurrency,
+                        CURRENCYRATE(cc.C_CURRENCY_ID,ci.base_currency_id,cs.DueDate, inv.C_ConversionType_ID,inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  ci.basecurrencycode AS basecurrencycode,
+                        inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) AS Due_Date_Diff,
+                        cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
+                        FROM VA009_OrderPaySchedule cs 
+                        INNER JOIN currency_info ci ON ci.AD_Client_ID = cs.AD_Client_ID 
+                        INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID)
+                        INNER JOIN AD_Ref_List rsf  ON (rsf.value= cs.VA009_ExecutionStatus) 
+                        INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID AND re.name = 'VA009_ExecutionStatus')
+                        INNER JOIN C_Order inv ON (inv.C_Order_ID=cs.C_Order_ID)  
+                        INNER JOIN C_DocType cd ON (inv.C_DocType_ID=cd.C_DocType_ID)  
+                        INNER JOIN C_BPartner cb ON (cb.C_Bpartner_ID=inv.C_Bpartner_ID)  
+                        INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                        INNER JOIN C_Currency cc ON (inv.C_Currency_ID=cc.C_Currency_ID) " +
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                          AND cs.VA009_OrderPaySchedule_ID NOT IN (SELECT VA009_OrderPaySchedule_ID FROM excluded_payments WHERE VA009_OrderPaySchedule_ID > 0)
+                          AND rsf.value NOT IN ( 'Y','J') AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        // JID_1793 -- when search text contain "=" then serach with documnet no 
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + @"%') 
+                            OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + @"%'))  
+                            OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + @"%')) 
+                            OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                }
+
+                // GET GL Journal Data
+                if (((TransType.Contains("1") || TransType.Contains("0")) && TransType.Contains("2")) || TransTypes.Count() == 0 || TransTypes.Count() == 3)
+                {
+                    sql.Append(" UNION ");
+                }
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
+                {
+                    //Table Name is case sensitive must follow Camel format
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  
+                        t.c_bp_group,  t.C_InvoicePaySchedule_ID, t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,
+                        t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
+                        t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.DueAmt AS VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,
+                        t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,
+                        t.DueAmt AS GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
+                    //Log Warnings handled
+                    string query = $@" SELECT ci.StdPrecision,'' AS VA009_PaymentMode, gl.C_BPartner_ID, g.GL_Journal_ID AS c_invoice_id, g.DocumentNo, 
+                                        cb.name AS C_Bpartner, cb.c_bp_group_id, cbg.name AS c_bp_group, gl.GL_JournalLine_ID AS C_InvoicePaySchedule_ID,
+                                        0 AS VA009_PaymentMethod_ID, null AS VA009_PaymentMethod, '' AS va009_paymentbasetype, 
+                                       '' AS VA009_PaymentRule, '' AS VA009_PaymentType, '' AS VA009_PaymentTrigger, g.DateAcct AS va009_plannedduedate,
+                                        g.DateAcct AS VA009_FollowupDate, 0 AS VA009_RecivedAmt, 
+                                       CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
+                                            WHEN (ev.AccountType = 'A' AND AmtSourceDr <= 0) THEN  -1 * AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr > 0) THEN AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr <= 0) THEN  -1 * AmtSourceDr
+                                        END AS DueAmt, 
+                                        0 AS VA009_OpenAmnt, null AS VA009_ExecutionStatus, gl.ad_org_id, gl.ad_client_id, gl.C_Currency_ID, cc.ISO_CODE, 
+                                        ci.base_currency_id AS basecurrency,
+                                         NVL(CURRENCYRATE(gl.C_Currency_ID,ci.base_currency_id,g.DateAcct, {ctx.GetContextAsInt("#C_ConversionType_ID")}, gl.AD_Client_ID,gl.AD_ORG_ID), 0) AS multiplyrate,  
+                                        ci.basecurrencycode AS basecurrencycode, 0 AS GrandTotal, 
+                                        (to_date(TO_CHAR(TRUNC(g.DateAcct)),'dd/mm/yyyy') - to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) AS Due_Date_Diff,
+                                        g.DateAcct, 'GL Journal' AS VA009_TransactionType, 'N' AS IsHoldPayment
+                                  FROM GL_JournalLine gl
+                                  INNER JOIN currency_info ci ON (ci.AD_Client_ID = gl.AD_Client_ID)
+                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
+                                  INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
+                                  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=gl.C_Bpartner_ID)  
+                                  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                                  INNER JOIN C_Currency cc  ON (gl.C_Currency_ID=cc.C_Currency_ID) 
+                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND gl.VA009_IsAssignedtoBatch = 'N'
+                                  AND gl.GL_JournalLine_ID NOT IN (SELECT GL_JournalLine_ID FROM excluded_allocations WHERE GL_JournalLine_ID > 0)
+                                  AND gl.GL_JournalLine_ID NOT IN (SELECT GL_JournalLine_ID FROM excluded_payments WHERE GL_JournalLine_ID > 0)
+                                        AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} )
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                }
+
+            }
+            else if (DB.IsPostgreSQL())
+            {
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
+                {
+                    //Table Name is case sensitive must follow Camel format
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
+                         t.C_InvoicePaySchedule_ID,  t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,  t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,
+                         t.va009_plannedduedate, t.VA009_FollowupDate,  t.VA009_RecivedAmt,  t.DueAmt, t.VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  
+                         t.ISO_CODE, t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
+                    //Log Warnings handled
+                    string query = @"SELECT ci.StdPrecision,pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.c_invoice_id,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
+                         pm.VA009_PaymentMethod_ID, pm.VA009_name as VA009_PaymentMethod,pm.va009_paymentbasetype,pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger,
+                         cs.duedate as va009_plannedduedate,
+                         cs.VA009_PlannedDueDate as VA009_FollowupDate,inv.VA009_PaidAmount AS VA009_RecivedAmt,
+                         CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('API','ARC'))     
+                         THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) * 1  END AS DueAmt,
+                         cs.VA009_OpenAmnt, rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id ,
+                         inv.C_Currency_ID,  cc.ISO_CODE, ci.base_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,ci.base_currency_id, cs.DueDate, inv.C_ConversionType_ID,
+                         inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, ci.basecurrencycode as basecurrencycode,inv.GrandTotal, 
+                         DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy')-to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) 
+                         as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
+                         C_InvoicePaySchedule cs 
+                         INNER JOIN currency_info ci ON (ci.AD_Client_ID = cs.AD_Client_ID) 
+                         INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID) INNER JOIN C_DocType cd 
+                         ON (cs.C_DocType_ID=cd.C_DocType_ID) INNER JOIN AD_Ref_List rsf ON (rsf.value= cs.VA009_ExecutionStatus) INNER JOIN AD_Reference re ON 
+                         (rsf.AD_Reference_ID=re.AD_Reference_ID) LEFT JOIN C_Invoice inv ON (inv.c_invoice_id=cs.c_invoice_id) LEFT JOIN C_BPartner cb ON 
+                         (cb.C_Bpartner_ID=inv.C_Bpartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
+                         (inv.C_Currency_ID=cc.C_Currency_ID) " +
+                          whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279'
+                           AND cs.C_InvoicePaySchedule_ID NOT IN (SELECT C_InvoicePaySchedule_ID FROM excluded_payments WHERE C_InvoicePaySchedule_ID > 0)
+                           AND rsf.value NOT IN ( 'Y','J') "
+                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+
+                    if (SearchText != string.Empty)
+                    {
+                        //JID_1793 -- when search text contain "=" then serach with documnet no only
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%'))OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.DueAmt AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.VA009_FollowupDate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.va009_plannedduedate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                }
+                if ((TransType.Contains("0") && TransType.Contains("1")) || TransTypes.Count() == 0 || TransTypes.Count() == 3)
+                {
+                    sql.Append(" UNION ");
+                }
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
+                {
+                    //Table Name is case sensitive must follow Camel format
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
+                        t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
+                        t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
+                        t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
+                    //Log Warnings handled
+                    string query = @" SELECT ci.StdPrecision,pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS c_invoice_id, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
+                        cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
+                        pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
+                        0 AS VA009_RecivedAmt, 
+                        CASE  WHEN (cd.DOCBASETYPE IN ('SOO','APC')) THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('POO','ARC')) 
+                        THEN ROUND(cs.DUEAMT,NVL(ci.StdPrecision,2)) * 1 END AS DueAmt,
+                        cs.VA009_OpenAmnt, rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id, inv.C_Currency_ID, cc.ISO_CODE, ci.base_currency_id  AS basecurrency,
+                        CURRENCYRATE(cc.C_CURRENCY_ID,ci.base_currency_id, cs.DueDate, inv.C_ConversionType_ID,inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  ci.basecurrencycode AS basecurrencycode,
+                        inv.GrandTotal, DATE_PART('day', (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate),'dd/mm/yyyy'),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) AS Due_Date_Diff,
+                        cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
+                        FROM VA009_OrderPaySchedule cs 
+                        INNER JOIN currency_info ci ON (ci.AD_Client_ID = cs.AD_Client_ID) 
+                        INNER JOIN VA009_PaymentMethod pm   ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID)
+                        INNER JOIN AD_Ref_List rsf  ON (rsf.value= cs.VA009_ExecutionStatus)  INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID
+                        AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON (inv.C_Order_ID=cs.C_Order_ID)  INNER JOIN C_DocType cd
+                        ON (inv.C_DocType_ID=cd.C_DocType_ID)  INNER JOIN C_BPartner cb  ON (cb.C_BPartner_ID=inv.C_BPartner_ID)  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                        INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID) " +
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                        AND cs.VA009_OrderPaySchedule_ID NOT IN (SELECT VA009_OrderPaySchedule_ID FROM excluded_payments WHERE VA009_OrderPaySchedule_ID > 0)
+                        AND rsf.value NOT IN ( 'Y','J')"
+                        + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        // JID_1793 -- when search text contain "=" then serach with documnet no 
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%'))OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.DueAmt AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.VA009_FollowupDate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.va009_plannedduedate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                }
+
+                // GET GL Journal Data
+                if (((TransType.Contains("1") || TransType.Contains("0")) && TransType.Contains("2")) || TransTypes.Count() == 0 || TransTypes.Count() == 3)
+                {
+                    sql.Append(" UNION ");
+                }
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
+                {
+                    //Table Name is case sensitive must follow Camel format
+                    sql.Append(@"SELECT t.StdPrecision,t.VA009_PaymentMode,  t.c_Bpartner_id,  t.c_invoice_id,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  
+                        t.c_bp_group,  t.C_InvoicePaySchedule_ID, t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,
+                        t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
+                        t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.DueAmt AS VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,
+                        t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,
+                        t.DueAmt AS GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
+                    //Log Warnings handled
+                    string query = $@" SELECT ci.StdPrecision,'' AS VA009_PaymentMode, gl.C_BPartner_ID, g.GL_Journal_ID AS c_invoice_id, g.DocumentNo, 
+                                        cb.name AS C_Bpartner, cb.c_bp_group_id, cbg.name AS c_bp_group, gl.GL_JournalLine_ID AS C_InvoicePaySchedule_ID,
+                                        0 AS VA009_PaymentMethod_ID, null AS VA009_PaymentMethod, '' AS va009_paymentbasetype, 
+                                       '' AS VA009_PaymentRule, '' AS VA009_PaymentType, '' AS VA009_PaymentTrigger, g.DateAcct AS va009_plannedduedate,
+                                        g.DateAcct AS VA009_FollowupDate, 0 AS VA009_RecivedAmt, 
+                                       CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
+                                            WHEN (ev.AccountType = 'A' AND AmtSourceDr <= 0) THEN  -1 * AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr > 0) THEN AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr <= 0) THEN  -1 * AmtSourceDr
+                                        END AS DueAmt, 
+                                        0 AS VA009_OpenAmnt, null AS VA009_ExecutionStatus, gl.ad_org_id, gl.ad_client_id, gl.C_Currency_ID, cc.ISO_CODE, 
+                                        ci.base_currency_id AS basecurrency,
+                                         NVL(CURRENCYRATE(gl.C_Currency_ID,ci.base_currency_id,g.DateAcct, {ctx.GetContextAsInt("#C_ConversionType_ID")}, gl.AD_Client_ID,gl.AD_ORG_ID), 0) AS multiplyrate,  
+                                        ci.basecurrencycode AS basecurrencycode, 0 AS GrandTotal,
+                                        DATE_PART('day', (to_date(TO_CHAR(TRUNC(g.DateAcct),'dd/mm/yyyy'),'dd/mm/yyyy') - 
+                                                          to_date(TO_CHAR(TRUNC(sysdate),'dd/mm/yyyy'),'dd/mm/yyyy'))) AS Due_Date_Diff,
+                                        g.DateAcct, 'GL Journal' AS VA009_TransactionType, 'N' AS IsHoldPayment
+                                  FROM GL_JournalLine gl
+                                  INNER JOIN currency_info ci ON (ci.AD_Client_ID = gl.AD_Client_ID)
+                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
+                                  INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
+                                  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=gl.C_Bpartner_ID)  
+                                  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                                  INNER JOIN C_Currency cc  ON (gl.C_Currency_ID=cc.C_Currency_ID) 
+                                  WHERE gl.IsAllocated='N'  AND ev.IsAllocationRelated = 'Y'  AND gl.VA009_IsAssignedtoBatch = 'N'
+                                        AND gl.GL_JournalLine_ID NOT IN (SELECT GL_JournalLine_ID FROM excluded_allocations WHERE GL_JournalLine_ID > 0) 
+                                        AND gl.GL_JournalLine_ID NOT IN (SELECT GL_JournalLine_ID FROM excluded_payments WHERE GL_JournalLine_ID > 0) 
+                                        AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.DueAmt AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(CAST(t.VA009_FollowupDate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.va009_plannedduedate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                }
+            }
+            //Get Payment Data Order By DueDate
+            sql.Replace(sql.ToString(), "SELECT * FROM ( " + sql.ToString() + " ) t ORDER BY t.va009_plannedduedate, t.C_InvoicePaySchedule_ID ");
+
+            return sql.ToString();
+        }
+
+        public static int GetPaymentDataCountRecord(Ctx ctx, string whereQry, string SearchText, string WhrDueDate, string TransType, string FromDate, string ToDate)
+        {
+            int totalCount = 0;
+            StringBuilder sql = new StringBuilder();
+            DateTime? dateFrom = new DateTime();
+            if (FromDate != string.Empty)
+                dateFrom = Convert.ToDateTime(FromDate);
+            DateTime? dateTo = new DateTime();
+            if (ToDate != string.Empty)
+                dateTo = Convert.ToDateTime(ToDate);
+            int[] TransTypes;
+            if (!string.IsNullOrEmpty(TransType))
+            {
+                TransTypes = Array.ConvertAll(TransType.Split(','), int.Parse);
+            }
+            else
+            {
+                TransTypes = new int[0];
+            }
+
+            if (DB.IsOracle())
+            {
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
+                {
+                    sql.Clear();
+                    sql.Append(@"SELECT COUNT(t.C_InvoicePaySchedule_ID)  FROM (");
+                    string query = @"SELECT inv.DocumentNo, cb.name as C_Bpartner,  cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
+                         pm.VA009_name as VA009_PaymentMethod,
+                         cs.duedate as va009_plannedduedate,
+                         cs.VA009_PlannedDueDate as VA009_FollowupDate,
+                         CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('API','ARC'))     
+                         THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt,
+                         rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id
+                         FROM 
+                         C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID) INNER JOIN C_DocType cd
+                         ON (cs.C_DocType_ID=cd.C_DocType_ID) INNER JOIN AD_Ref_List rsf ON (rsf.value= cs.VA009_ExecutionStatus) INNER JOIN AD_Reference re ON 
+                         (rsf.AD_Reference_ID=re.AD_Reference_ID) LEFT JOIN C_Invoice inv ON (inv.c_invoice_id=cs.c_invoice_id) LEFT JOIN C_BPartner cb ON 
+                         (cb.C_BPartner_ID=inv.C_BPartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
+                         (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
+                         (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
+                             whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                          AND cs.C_InvoicePaySchedule_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ('Y','J')"
+                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    totalCount += Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null));
+                }
+
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
+                {
+                    sql.Clear();
+                    sql.Append(@"SELECT COUNT(t.C_InvoicePaySchedule_ID) FROM ( ");
+                    string query = @" SELECT  inv.DocumentNo, cb.name AS C_Bpartner,
+                        cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID,  pm.VA009_name AS VA009_PaymentMethod, 
+                        cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,     
+                        CASE  WHEN (cd.DOCBASETYPE IN ('SOO','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('POO','ARC')) 
+                        THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1 END AS DueAmt,
+                         rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id 
+                        FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID)
+                        INNER JOIN AD_Ref_List rsf  ON (rsf.value= cs.VA009_ExecutionStatus)  INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID
+                        AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON (inv.C_Order_ID=cs.C_Order_ID)  INNER JOIN C_DocType cd
+                        ON (inv.C_DocType_ID=cd.C_DocType_ID)  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=inv.C_Bpartner_ID)  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                        INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
+                        INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                         AND cs.VA009_OrderPaySchedule_ID NOT IN (SELECT COALESCE(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
+                        + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+
+                    totalCount += Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null));
+                }
+
+                // GET GL Journal Data
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
+                {
+                    sql.Clear();
+                    sql.Append(@"SELECT COUNT(t.C_InvoicePaySchedule_ID) FROM (");
+                    string query = $@" SELECT  g.DocumentNo, 
+                                        cb.name AS C_Bpartner,  cbg.name AS c_bp_group, gl.GL_JournalLine_ID AS C_InvoicePaySchedule_ID,
+                                         null AS VA009_PaymentMethod,  g.DateAcct AS va009_plannedduedate,
+                                        g.DateAcct AS VA009_FollowupDate, 
+                                       CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
+                                            WHEN (ev.AccountType = 'A' AND AmtSourceDr <= 0) THEN  -1 * AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr > 0) THEN AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr <= 0) THEN  -1 * AmtSourceDr
+                                        END AS DueAmt, 
+                                        null AS VA009_ExecutionStatus, gl.ad_org_id, gl.ad_client_id 
+                                  FROM GL_JournalLine gl
+                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
+                                  INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
+                                  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=gl.C_Bpartner_ID)  
+                                  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                                  INNER JOIN C_Currency cc  ON (gl.C_Currency_ID=cc.C_Currency_ID)
+                                  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =gl.AD_Client_ID)
+                                  INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  
+                                  INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
+                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND gl.VA009_IsAssignedtoBatch = 'N'
+                                  AND gl.GL_JournalLine_ID NOT IN (SELECT NVL(al.GL_JournalLine_ID,0) FROM C_AllocationHdr ah 
+                                        INNER JOIN C_AllocationLine al ON (al.C_AllocationHdr_ID=ah.C_AllocationHdr_ID)
+                                        WHERE ah.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
+                                  AND  gl.GL_JournalLine_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.GL_JournalLine_ID,0) ELSE COALESCE(C_PaymentAllocate.GL_JournalLine_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) 
+                                        AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} )
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+
+                    totalCount += Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null));
+                }
+
+            }
+            else if (DB.IsPostgreSQL())
+            {
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("1"))
+                {
+                    sql.Clear();
+                    sql.Append(@"SELECT COUNT(t.C_InvoicePaySchedule_ID) FROM (");
+                    string query = @"SELECT inv.DocumentNo, cb.name as C_Bpartner,  cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
+                         pm.VA009_name as VA009_PaymentMethod,
+                         cs.duedate as va009_plannedduedate,
+                         cs.VA009_PlannedDueDate as VA009_FollowupDate,
+                         CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('API','ARC'))     
+                         THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt,
+                         rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id FROM 
+                         C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID) INNER JOIN C_DocType cd 
+                         ON (cs.C_DocType_ID=cd.C_DocType_ID) INNER JOIN AD_Ref_List rsf ON (rsf.value= cs.VA009_ExecutionStatus) INNER JOIN AD_Reference re ON 
+                         (rsf.AD_Reference_ID=re.AD_Reference_ID) LEFT JOIN C_Invoice inv ON (inv.c_invoice_id=cs.c_invoice_id) LEFT JOIN C_BPartner cb ON 
+                         (cb.C_Bpartner_ID=inv.C_Bpartner_ID) INNER JOIN C_BP_Group cbg ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID) INNER JOIN C_Currency cc ON 
+                         (inv.C_Currency_ID=cc.C_Currency_ID) INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =cs.AD_Client_ID) INNER JOIN C_AcctSchema ac ON 
+                         (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) INNER JOIN C_Currency CY ON (AC.C_Currency_ID=CY.C_Currency_ID)  " +
+                          whereQry + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279'
+                          AND cs.C_InvoicePaySchedule_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0)  ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J') "
+                         + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+
+                    if (SearchText != string.Empty)
+                    {
+                        //JID_1793 -- when search text contain "=" then serach with documnet no only
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%'))OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.DueAmt AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.VA009_FollowupDate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.va009_plannedduedate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+
+                    totalCount += Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null));
+                }
+
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("0"))
+                {
+                    sql.Clear();
+                    sql.Append(@"SELECT COUNT(t.C_InvoicePaySchedule_ID) FROM ( ");
+                    string query = @" SELECT inv.DocumentNo, cb.name AS C_Bpartner,
+                        cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID,  pm.VA009_name AS VA009_PaymentMethod, 
+                        cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,     
+                        CASE  WHEN (cd.DOCBASETYPE IN ('SOO','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('POO','ARC')) 
+                        THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1 END AS DueAmt,
+                         rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id 
+                        FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON (pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID)
+                        INNER JOIN AD_Ref_List rsf  ON (rsf.value= cs.VA009_ExecutionStatus)  INNER JOIN AD_Reference re  ON (rsf.AD_Reference_ID=re.AD_Reference_ID
+                        AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON (inv.C_Order_ID=cs.C_Order_ID)  INNER JOIN C_DocType cd
+                        ON (inv.C_DocType_ID=cd.C_DocType_ID)  INNER JOIN C_BPartner cb  ON (cb.C_BPartner_ID=inv.C_BPartner_ID)  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                        INNER JOIN C_Currency cc  ON (inv.C_Currency_ID=cc.C_Currency_ID)  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =cs.AD_Client_ID)
+                        INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  INNER JOIN C_Currency CY  ON (AC.C_Currency_ID=CY.C_Currency_ID) " +
+                            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' 
+                        AND cs.VA009_OrderPaySchedule_ID NOT IN (SELECT COALESCE(VA009_OrderPaySchedule_ID,0) FROM C_Payment WHERE DocStatus NOT IN ('CO', 'CL' ,'RE','VO')) AND rsf.value NOT IN ( 'Y','J')"
+                        + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%'))OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.DueAmt AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.VA009_FollowupDate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.va009_plannedduedate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+
+                    totalCount += Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null));
+                }
+
+                // GET GL Journal Data
+                if (TransTypes.Count() == 0 || TransTypes.Count() == 3 || TransType.Contains("2"))
+                {
+                    sql.Clear();
+                    sql.Append(@"SELECT COUNT(t.C_InvoicePaySchedule_ID) FROM (");
+                    string query = $@" SELECT g.DocumentNo, 
+                                        cb.name AS C_Bpartner,  cbg.name AS c_bp_group, gl.GL_JournalLine_ID AS C_InvoicePaySchedule_ID,
+                                         null AS VA009_PaymentMethod,  g.DateAcct AS va009_plannedduedate,
+                                        g.DateAcct AS VA009_FollowupDate, 
+                                       CASE WHEN (ev.AccountType = 'A' AND AmtSourceDr > 0) THEN AmtSourceDr
+                                            WHEN (ev.AccountType = 'A' AND AmtSourceDr <= 0) THEN  -1 * AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr > 0) THEN AmtSourceCr
+                                            WHEN (ev.AccountType = 'L' AND AmtSourceCr <= 0) THEN  -1 * AmtSourceDr
+                                        END AS DueAmt, 
+                                        null AS VA009_ExecutionStatus, gl.ad_org_id, gl.ad_client_id 
+                                  FROM GL_JournalLine gl
+                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
+                                  INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
+                                  INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=gl.C_Bpartner_ID)  
+                                  INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
+                                  INNER JOIN C_Currency cc  ON (gl.C_Currency_ID=cc.C_Currency_ID)
+                                  INNER JOIN AD_ClientInfo aclnt  ON (aclnt.AD_Client_ID =gl.AD_Client_ID)
+                                  INNER JOIN C_AcctSchema ac  ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID)  
+                                  INNER JOIN C_Currency cy  ON (ac.C_Currency_ID=cy.C_Currency_ID) 
+                                  WHERE gl.IsAllocated='N'  AND ev.IsAllocationRelated = 'Y'  AND gl.VA009_IsAssignedtoBatch = 'N'
+                                  AND gl.GL_JournalLine_ID NOT IN (SELECT NVL(al.GL_JournalLine_ID,0) FROM C_AllocationHdr ah 
+                                        INNER JOIN C_AllocationLine al ON (al.C_AllocationHdr_ID=ah.C_AllocationHdr_ID)
+                                        WHERE ah.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
+                                  AND  gl.GL_JournalLine_ID NOT IN (
+                                  SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID,0) 
+                                  THEN COALESCE(C_Payment.GL_JournalLine_ID,0)  ELSE COALESCE(C_PaymentAllocate.GL_JournalLine_ID,0) END 
+                                  FROM C_Payment LEFT JOIN C_PaymentAllocate ON (C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID) 
+                                  WHERE C_Payment.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))
+                                        AND ev.AccountType IN ({(whereQry.Contains("'ARI'") ? "'A'" : "'L'")} ) 
+                                        AND g.docstatus in ('CO','CL')  {(whereQry.IndexOf("cb.") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cb.")).Replace("cs", "gl"))
+                                        : (whereQry.IndexOf("cs.AD_Org") >= 0 ? (" AND " + whereQry.Substring(whereQry.IndexOf("cs.AD_Org")).Replace("cs", "gl")) : ""))} ";
+
+                    query = MRole.GetDefault(ctx).AddAccessSQL(query, "gl", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+                    sql.Append(query);
+
+                    sql.Append(") t WHERE t.DueAmt !=0 ");
+                    string whrduedte = DueDateSearch(WhrDueDate);
+                    sql.Append(whrduedte);
+                    if (SearchText != string.Empty)
+                    {
+                        if (SearchText.Contains("="))
+                        {
+                            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
+                            if (myStringArray.Length > 0)
+                            {
+                                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
+                                for (int z = 0; z < myStringArray.Length; z++)
+                                {
+                                    if (z != 0)
+                                    { sql.Append(","); }
+                                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
+                                }
+                                sql.Append(")");
+                            }
+                        }
+                        else
+                        {
+                            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.DueAmt AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(CAST(t.VA009_FollowupDate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(CAST(t.va009_plannedduedate AS VARCHAR(100))) LIKE UPPER('%" + SearchText + "%')) ) ");
+                        }
+                    }
+
+                    if (FromDate != string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
+                        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
+                        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
+                    }
+                    else if (FromDate != string.Empty && ToDate == string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
+                    }
+                    else if (FromDate == string.Empty && ToDate != string.Empty)
+                    {
+                        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
+                    }
+
+                    totalCount += Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, null));
+                }
+            }
+            return totalCount;
         }
 
         public static string DueDateSearch(String WhrDueDate)
