@@ -4587,17 +4587,49 @@ namespace VA009.Models
         //Added by Bharat on 05/June/2017
         public int GetWindowID(string WindowName, Ctx ct)
         {
+            int window_Id = 0;
             /* VIS_427 Split the window name element 0 will have new screen name and 
-            element 1 will contain old screen name*/
+           element 1 will contain old screen name*/
             string[] windowArr = WindowName.Split(',');
-            string sql = @"SELECT AD_Window_ID FROM AD_Window WHERE Name ='" + windowArr[0] + "'";
-            int windowid = Util.GetValueOfInt(DB.ExecuteScalar(sql));
-            if (windowid == 0)
+            string sql = "";
+            foreach (string win in windowArr)
             {
-                sql = "SELECT AD_Window_ID FROM AD_Window WHERE Name ='" + windowArr[1] + "'";
-                windowid = Util.GetValueOfInt(DB.ExecuteScalar(sql));
+                if (string.IsNullOrWhiteSpace(win))
+                    continue;
+
+                // Step 1: Check in VAS_ZoomScreenConfig
+                sql = $@"SELECT Value 
+                           FROM VAS_ZoomScreenConfig 
+                           WHERE Name ={GlobalVariable.TO_STRING(win)} AND IsActive='Y'";
+
+                string zoomName = Util.GetValueOfString(DB.ExecuteScalar(sql));
+
+                // Step 2: If found → get AD_Window_ID using Name
+                if (!string.IsNullOrEmpty(zoomName))
+                {
+                    sql = $@"SELECT AD_Window_ID 
+                           FROM AD_Window 
+                           WHERE Name ={GlobalVariable.TO_STRING(zoomName)} AND IsActive='Y'";
+
+                    window_Id = Util.GetValueOfInt(DB.ExecuteScalar(sql));
+
+                    if (window_Id > 0)
+                        break;
+                }
+
+                // Step 3: fallback → direct match from AD_Window
+                sql = $@"SELECT AD_Window_ID 
+                        FROM AD_Window 
+                        WHERE Name = {GlobalVariable.TO_STRING(win)} AND IsActive='Y'";
+
+                window_Id = Util.GetValueOfInt(DB.ExecuteScalar(sql));
+
+
+                // IMPORTANT: break as soon as value found
+                if (window_Id > 0)
+                    break;
             }
-            return windowid;
+            return window_Id;
         }
 
         /// <summary>
