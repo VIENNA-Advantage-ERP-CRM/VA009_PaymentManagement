@@ -232,7 +232,7 @@ namespace ViennaAdvantage.Process
                               INNER JOIN C_BPartner cb ON (cb.C_BPartner_ID =gl.C_BPartner_ID )
                               INNER JOIN C_BPartner_Location loc ON (loc.C_BPartner_ID =gl.C_BPartner_ID )
                               INNER JOIN C_ElementValue ev on (ev.C_ElementValue_ID=gl.Account_ID)
-                              WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated='Y' AND gl.VA009_IsAssignedtoBatch='N' AND g.DocStatus IN ('CO','CL')
+                              WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated='Y' AND ev.VAS_IsPaymentAllow='Y' AND gl.VA009_IsAssignedtoBatch='N' AND g.DocStatus IN ('CO','CL')
                               AND gl.GL_JournalLine_ID NOT IN (SELECT NVL(al.GL_JournalLine_ID,0) FROM C_AllocationHdr ah 
                                         INNER JOIN C_AllocationLine al ON (al.C_AllocationHdr_ID=ah.C_AllocationHdr_ID)
                                         WHERE ah.DocStatus NOT IN ('CO', 'CL' ,'RE','VO'))

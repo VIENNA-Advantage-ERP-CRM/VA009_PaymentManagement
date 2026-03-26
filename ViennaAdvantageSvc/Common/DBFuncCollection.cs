@@ -858,7 +858,7 @@ namespace ViennaAdvantage.Common
                                         g.DateAcct, 'GL Journal' AS VA009_TransactionType, 'N' AS IsHoldPayment
                                   FROM GL_JournalLine gl
                                   INNER JOIN currency_info ci ON (ci.AD_Client_ID = gl.AD_Client_ID)
-                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
+                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y' AND ev.VAS_IsPaymentAllow='Y')
                                   INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
                                   INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=gl.C_Bpartner_ID)  
                                   INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
@@ -1109,7 +1109,7 @@ namespace ViennaAdvantage.Common
                                         g.DateAcct, 'GL Journal' AS VA009_TransactionType, 'N' AS IsHoldPayment
                                   FROM GL_JournalLine gl
                                   INNER JOIN currency_info ci ON (ci.AD_Client_ID = gl.AD_Client_ID)
-                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y')
+                                  INNER JOIN C_ElementValue ev ON (ev.C_ElementValue_ID = gl.Account_ID AND ev.IsAllocationRelated = 'Y' AND ev.VAS_IsPaymentAllow='Y')
                                   INNER JOIN GL_Journal g ON (g.GL_Journal_ID = gl.GL_Journal_ID)
                                   INNER JOIN C_BPartner cb  ON (cb.C_Bpartner_ID=gl.C_Bpartner_ID)  
                                   INNER JOIN C_BP_Group cbg  ON (cb.C_BP_Group_ID=cbg.C_BP_Group_ID)
