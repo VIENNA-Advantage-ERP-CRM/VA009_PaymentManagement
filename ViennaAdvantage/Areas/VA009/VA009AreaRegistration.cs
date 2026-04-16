@@ -35,6 +35,8 @@ namespace ViennaAdvantage //  Please replace namespace with prefix of your modul
             ScriptBundle script = new ScriptBundle("~/Areas/VA009/Scripts/VA009Js");
 
             //style.Include("~/Areas/VA009/Contents/VA009_PaymentFrm.css");
+            //style.Include("~/Areas/VA009/Contents/VA009_ReceivableAssesment.css");
+            //style.Include("~/Areas/VA009/Contents/VA009_MaterialReturnAnalysis.css");
 
             //style.Include("~/Areas/VA009/Contents/VA009_rtl.css");
 
@@ -42,7 +44,13 @@ namespace ViennaAdvantage //  Please replace namespace with prefix of your modul
             //script.Include("~/Areas/VA009/Scripts/apps/forms/PaymentForm.js",
             //    "~/Areas/VA009/Scripts/model/callouts.js",
             //"~/Areas/VA009/Scripts/apps/forms/DownloadXML.js",
-            //"~/Areas/VA009/Scripts/apps/forms/DownloadDATFile.js");
+            //"~/Areas/VA009/Scripts/apps/forms/DownloadDATFile.js",
+            // "~/Areas/VA009/Scripts/apps/TabPanel/VA009_ReceivableAssesment.js",
+            // "~/Areas/VA009/Scripts/apps/TabPanel/VA009_MaterialReturnAnalysis.js",
+            // "~/Areas/VA009/Scripts/apps/TabPanel/VA009_DispatchAnalysis.js",
+            // "~/Areas/VA009/Scripts/apps/TabPanel/VA009_VendorAnalysis.js",
+            // "~/Areas/VA009/Scripts/apps/TabPanel/SaleInsightWidget.js",
+            // "~/Areas/VA009/Scripts/apps/TabPanel/VA009_CustomerInvoices.js");
 
             script.Include("~/Areas/VA009/Scripts/VA009.all.min.js");
             style.Include("~/Areas/VA009/Contents/VA009.all.min.css");
