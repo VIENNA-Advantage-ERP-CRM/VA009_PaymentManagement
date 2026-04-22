@@ -72,8 +72,7 @@ namespace VA009.Models
                 {
                     BPDetails _bpData = new BPDetails();
                     _bpData.C_BPartner_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_BPartner_ID"]);
-                    _bpData.Name = Util.GetValueOfString(ds.Tables[0].Rows[i]["Value"]) + "_" 
-                                 + Util.GetValueOfString(ds.Tables[0].Rows[i]["Name"]);
+                    _bpData.Name = Util.GetValueOfString(ds.Tables[0].Rows[i]["Name"]);
                     Bp.Add(_bpData);
                 }
             }
