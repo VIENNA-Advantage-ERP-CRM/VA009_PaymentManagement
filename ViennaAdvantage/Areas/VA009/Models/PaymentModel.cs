@@ -54,7 +54,7 @@ namespace VA009.Models
         {
             List<BPDetails> Bp = new List<BPDetails>();
             StringBuilder sql = new StringBuilder();
-            SqlParameter[] param = new SqlParameter[0];
+            SqlParameter[] param = new SqlParameter[1];
             param[0] = new SqlParameter("@param1", "%" + searchText + "%");
             sql.Append(@"SELECT C_BPartner.C_BPartner_ID,C_BPartner.Name FROM C_BPartner C_BPartner 
                             WHERE C_BPartner.ISACTIVE='Y' AND UPPER(C_BPartner.Name) like UPPER(@param1)");
