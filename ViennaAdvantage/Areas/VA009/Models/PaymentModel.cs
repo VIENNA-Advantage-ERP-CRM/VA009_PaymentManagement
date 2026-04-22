@@ -49,13 +49,17 @@ namespace VA009.Models
             string sql = "SELECT C_Currency_ID FROM C_BankAccount WHERE C_BankACcount_ID=" + BankAccount_ID;
             return Util.GetValueOfInt(DB.ExecuteScalar(sql));
         }
+
         public List<BPDetails> GetBPnames(string searchText, Ctx ct)
         {
             List<BPDetails> Bp = new List<BPDetails>();
             StringBuilder sql = new StringBuilder();
-            sql.Append("SELECT C_BPartner.C_BPartner_ID,C_BPartner.Name FROM C_BPartner C_BPartner WHERE C_BPartner.ISACTIVE='Y' AND UPPER(C_BPartner.Name) like UPPER('%" + searchText + "%')");
+            SqlParameter[] param = new SqlParameter[0];
+            param[0] = new SqlParameter("@param1", "%" + searchText + "%");
+            sql.Append(@"SELECT C_BPartner.C_BPartner_ID,C_BPartner.Name FROM C_BPartner C_BPartner 
+                            WHERE C_BPartner.ISACTIVE='Y' AND UPPER(C_BPartner.Name) like UPPER(@param1)");
             string finalQuery = MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_BPartner", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
-            DataSet ds = DB.ExecuteDataset(finalQuery);
+            DataSet ds = DB.ExecuteDataset(finalQuery, param, null);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
@@ -158,156 +162,6 @@ namespace VA009.Models
             List<PaymentData> _payList = new List<PaymentData>();
             int countRecords = 0;
 
-            #region Commented Query
-            //if (TransTypes.Count() == 0 || TransTypes.Count() == 2 || TransTypes[0] == 1)
-            //{
-            //    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.C_invoice_ID,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  
-            //             t.C_InvoicePaySchedule_ID,  t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype,  t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,
-            //             t.va009_plannedduedate, t.VA009_FollowupDate,  t.VA009_RecivedAmt,  t.DueAmt, t.VA009_OpenAmnt, t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  
-            //             t.ISO_CODE, t.basecurrency, t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode,t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM (");
-
-            //    string query = @"SELECT pm.VA009_PaymentMode,cb.c_Bpartner_id, cs.C_invoice_ID,inv.DocumentNo, cb.name as C_Bpartner, cb.c_bp_group_id, cbg.name as c_bp_group, cs.C_InvoicePaySchedule_ID,
-            //             pm.VA009_PaymentMethod_ID, pm.VA009_name as VA009_PaymentMethod,pm.va009_paymentbasetype,pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger,
-            //             cs.duedate as va009_plannedduedate,
-            //             cs.VA009_PlannedDueDate as VA009_FollowupDate,inv.VA009_PaidAmount AS VA009_RecivedAmt,
-            //             CASE WHEN (cd.DOCBASETYPE IN ('ARI','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('API','ARC'))     
-            //             THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1  END AS DueAmt,
-            //             cs.VA009_OpenAmnt, rsf.name as VA009_ExecutionStatus,  cs.ad_org_id,  cs.ad_client_id ,
-            //             inv.C_Currency_ID,  cc.ISO_CODE, ac.c_currency_id as basecurrency,  CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID
-            //             + @",inv.AD_Client_ID,inv.AD_ORG_ID) as multiplyrate, cy.ISO_CODE as basecurrencycode,inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy')
-            //            -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) as Due_Date_Diff,cs.duedate, 'Invoice' AS VA009_TransactionType, cs.IsHoldPayment FROM 
-            //             C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID INNER JOIN C_Doctype 
-            //             cd ON cs.C_Doctype_ID=cd.C_Doctype_ID INNER JOIN ad_ref_list rsf ON rsf.value= cs.VA009_ExecutionStatus INNER JOIN ad_reference re ON 
-            //             rsf.ad_reference_id=re.ad_reference_id LEFT JOIN C_invoice inv ON inv.C_Invoice_ID=cs.C_invoice_ID LEFT JOIN C_BPartner cb ON 
-            //             cb.c_bpartner_id=inv.c_bpartner_id INNER JOIN c_bp_group cbg ON cb.c_bp_group_id=cbg.c_bp_group_id INNER JOIN C_Currency cc ON 
-            //             inv.C_Currency_ID=cc.C_Currency_ID INNER JOIN AD_ClientInfo aclnt ON aclnt.AD_Client_ID =cs.AD_Client_ID INNER JOIN C_acctschema ac ON 
-            //             ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID INNER JOIN C_CURRENCY CY ON AC.C_CURRENCY_ID=CY.C_CURRENCY_ID  " +
-            //             whereQry + @"AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')
-            //             AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
-
-            //    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
-            //    sql.Append(query);
-
-            //    sql.Append(") t WHERE t.DueAmt !=0 ");
-            //    string whrduedte = DueDateSearch(WhrDueDate);
-            //    sql.Append(whrduedte);
-
-            //    if (SearchText != string.Empty)
-            //    {
-            //        //JID_1793 -- when search text contain "=" then serach with documnet no only
-            //        if (SearchText.Contains("="))
-            //        {
-            //            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
-            //            if (myStringArray.Length > 0)
-            //            {
-            //                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
-            //                for (int z = 0; z < myStringArray.Length; z++)
-            //                {
-            //                    if (z != 0)
-            //                    { sql.Append(","); }
-            //                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
-            //                }
-            //                sql.Append(")");
-            //            }
-            //        }
-            //        else
-            //        {
-            //            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
-            //        }
-            //    }
-
-            //    if (FromDate != string.Empty && ToDate != string.Empty)
-            //    {
-            //        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
-            //        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
-            //        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
-            //    }
-            //    else if (FromDate != string.Empty && ToDate == string.Empty)
-            //    {
-            //        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
-            //    }
-            //    else if (FromDate == string.Empty && ToDate != string.Empty)
-            //    {
-            //        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
-            //    }
-            //}
-            //if (TransTypes.Count() == 0 || TransTypes.Count() == 2)
-            //{
-            //    sql.Append(" UNION ");
-            //}
-            //if (TransTypes.Count() == 0 || TransTypes.Count() == 2 || TransTypes[0] == 0)
-            //{
-            //    sql.Append(@"SELECT t.VA009_PaymentMode,  t.c_Bpartner_id,  t.C_invoice_ID,  t.DocumentNo,  t.C_Bpartner,  t.c_bp_group_id,  t.c_bp_group,  t.C_InvoicePaySchedule_ID,
-            //            t.VA009_PaymentMethod_ID,  t.VA009_PaymentMethod,  t.va009_paymentbasetype, t.VA009_PaymentRule,  t.VA009_PaymentType,  t.VA009_PaymentTrigger,  t.va009_plannedduedate, 
-            //            t.VA009_FollowupDate,  t.VA009_RecivedAmt, t.DueAmt, t.VA009_OpenAmnt,  t.VA009_ExecutionStatus,  t.ad_org_id,  t.ad_client_id ,  t.C_Currency_ID,  t.ISO_CODE,  t.basecurrency, 
-            //            t.multiplyrate, t.Due_Date_Diff, t.basecurrencycode, t.GrandTotal, t.va009_transactiontype, t.IsHoldPayment FROM ( ");
-
-            //    string query = @" SELECT pm.VA009_PaymentMode, cb.c_Bpartner_id, cs.C_Order_ID AS C_invoice_ID, inv.DocumentNo, cb.name AS C_Bpartner, cb.c_bp_group_id,
-            //            cbg.name AS c_bp_group, cs.VA009_OrderPaySchedule_ID AS C_InvoicePaySchedule_ID, pm.VA009_PaymentMethod_ID, pm.VA009_name AS VA009_PaymentMethod, pm.va009_paymentbasetype,
-            //            pm.VA009_PaymentRule, pm.VA009_PaymentType, pm.VA009_PaymentTrigger, cs.duedate AS va009_plannedduedate, cs.VA009_PlannedDueDate  AS VA009_FollowupDate,    
-            //            0 AS VA009_RecivedAmt, 
-            //            CASE  WHEN (cd.DOCBASETYPE IN ('SOO','APC')) THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) WHEN (cd.DOCBASETYPE IN ('POO','ARC')) 
-            //            THEN ROUND(cs.DUEAMT,NVL(CY.StdPrecision,2)) * 1 END AS DueAmt,
-            //            cs.VA009_OpenAmnt, rsf.name AS VA009_ExecutionStatus, cs.ad_org_id, cs.ad_client_id, inv.C_Currency_ID, cc.ISO_CODE, ac.c_currency_id  AS basecurrency,
-            //            CURRENCYRATE(cc.C_CURRENCY_ID,cy.C_CURRENCY_ID,TRUNC(sysdate)," + conversionType_ID + @",inv.AD_Client_ID,inv.AD_ORG_ID) AS multiplyrate,  cy.ISO_CODE AS basecurrencycode,
-            //            inv.GrandTotal, (to_date(TO_CHAR(TRUNC(cs.VA009_PlannedDueDate)),'dd/mm/yyyy') -to_date(TO_CHAR(TRUNC(sysdate)),'dd/mm/yyyy')) AS Due_Date_Diff,
-            //            cs.duedate, 'Order' AS VA009_TransactionType, 'N' AS IsHoldPayment
-            //            FROM VA009_OrderPaySchedule cs INNER JOIN VA009_PaymentMethod pm   ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID
-            //            INNER JOIN ad_ref_list rsf  ON rsf.value= cs.VA009_ExecutionStatus  INNER JOIN ad_reference re  ON (rsf.ad_reference_id=re.ad_reference_id
-            //            AND re.name = 'VA009_ExecutionStatus')  INNER JOIN C_Order inv  ON inv.C_Order_ID=cs.C_Order_ID  INNER JOIN C_Doctype cd
-            //            ON inv.C_Doctype_ID=cd.C_Doctype_ID  INNER JOIN C_BPartner cb  ON cb.c_bpartner_id=inv.c_bpartner_id  INNER JOIN c_bp_group cbg  ON cb.c_bp_group_id=cbg.c_bp_group_id
-            //            INNER JOIN C_Currency cc  ON inv.C_Currency_ID=cc.C_Currency_ID  INNER JOIN AD_ClientInfo aclnt  ON aclnt.AD_Client_ID =cs.AD_Client_ID
-            //            INNER JOIN C_acctschema ac  ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID  INNER JOIN C_CURRENCY CY  ON AC.C_CURRENCY_ID=CY.C_CURRENCY_ID " +
-            //            whereQry.Replace("c_invoice_id", "C_Order_ID") + @" AND re.name= 'VA009_ExecutionStatus' AND re.Export_ID='VA009_20000279' AND rsf.value NOT IN ( 'Y','J')
-            //            AND cs.AD_Client_ID = " + ctx.GetAD_Client_ID() + " AND NVL(cs.C_Payment_ID , 0) = 0 AND NVL(cs.C_CashLine_ID , 0) = 0 AND cs.VA009_IsPaid = 'N' ";
-
-            //    query = MRole.GetDefault(ctx).AddAccessSQL(query, "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
-            //    sql.Append(query);
-
-            //    sql.Append(") t WHERE t.DueAmt !=0 ");
-            //    string whrduedte = DueDateSearch(WhrDueDate);
-            //    sql.Append(whrduedte);
-            //    if (SearchText != string.Empty)
-            //    {
-            //        // JID_1793 -- when search text contain "=" then serach with documnet no 
-            //        if (SearchText.Contains("="))
-            //        {
-            //            String[] myStringArray = SearchText.TrimStart(new Char[] { ' ', '=' }).Split(',');
-            //            if (myStringArray.Length > 0)
-            //            {
-            //                sql.Append(" AND UPPER(t.DocumentNo) IN ( ");
-            //                for (int z = 0; z < myStringArray.Length; z++)
-            //                {
-            //                    if (z != 0)
-            //                    { sql.Append(","); }
-            //                    sql.Append(" UPPER('" + myStringArray[z].Trim(new Char[] { ' ' }) + "')");
-            //                }
-            //                sql.Append(")");
-            //            }
-            //        }
-            //        else
-            //        {
-            //            sql.Append(" AND ( UPPER(t.C_Bpartner) LIKE UPPER('%" + SearchText + "%') OR (UPPER(t.c_bp_group) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_PaymentMethod) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.VA009_ExecutionStatus) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DocumentNo) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(t.DueAmt) LIKE UPPER('%" + SearchText + "%'))  OR (UPPER(to_date(TO_CHAR(TRUNC(t.VA009_FollowupDate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) OR (UPPER(to_date(TO_CHAR(TRUNC(t.va009_plannedduedate)),'dd/mm/yyyy')) LIKE UPPER('%" + SearchText + "%')) ) ");
-            //        }
-            //    }
-
-            //    if (FromDate != string.Empty && ToDate != string.Empty)
-            //    {
-            //        sql.Append(" and t.VA009_FollowupDate BETWEEN  ");
-            //        sql.Append(GlobalVariable.TO_DATE(dateFrom, true) + " AND ");
-            //        sql.Append(GlobalVariable.TO_DATE(dateTo, true));
-            //    }
-            //    else if (FromDate != string.Empty && ToDate == string.Empty)
-            //    {
-            //        sql.Append(" and t.VA009_FollowupDate >=" + GlobalVariable.TO_DATE(dateFrom, true));
-            //    }
-            //    else if (FromDate == string.Empty && ToDate != string.Empty)
-            //    {
-            //        sql.Append(" and t.VA009_FollowupDate <=" + GlobalVariable.TO_DATE(dateTo, true));
-            //    }
-            //}
-            #endregion
-
             query = DBFuncCollection.GetPaymentDataSql1(ctx, whereQry, SearchText, WhrDueDate, TransType, FromDate, ToDate);
             DataSet ds = VIS.DBase.DB.ExecuteDatasetPaging(query, pageNo, pageSize);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -381,7 +235,8 @@ namespace VA009.Models
         /// <returns>returns Process_ID</returns>
         public int GetProcessId(Ctx ctx, string bankAct_Id)
         {
-            int _process_Id = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Process_ID from C_BankAccountDoc WHERE IsActive='Y' AND C_BankAccount_ID=" + Util.GetValueOfInt(bankAct_Id), null, null));
+            int _process_Id = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT AD_Process_ID from C_BankAccountDoc 
+                              WHERE IsActive='Y' AND C_BankAccount_ID=" + Util.GetValueOfInt(bankAct_Id), null, null));
             return _process_Id;
         }
 
@@ -477,7 +332,9 @@ namespace VA009.Models
                         LEFT JOIN c_conversion_rate ccr ON ccr.C_Currency_ID = ac.C_Currency_ID
                         INNER JOIN C_Currency cy ON ac.C_Currency_ID=cy.C_Currency_ID 
                         INNER JOIN C_Doctype cd ON cs.C_Doctype_ID = cd.C_Doctype_ID 
-                        WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID() + " AND cs.C_InvoicePaySchedule_ID IN (" + InvPayids + ")");
+                        WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID());
+            var ipsIds = InvPayids.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+            sql.Append(@" AND cs.C_InvoicePaySchedule_ID IN (" + string.Join(",", ipsIds) + ")");
 
             sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode,inv.DateInvoiced, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_invoice_ID,
                           cs.DueDate,  cs.C_InvoicePaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
@@ -514,7 +371,9 @@ namespace VA009.Models
                         INNER JOIN C_acctschema ac ON ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID
                         LEFT JOIN c_conversion_rate ccr ON ccr.C_Currency_ID= ac.C_Currency_ID 
                         INNER JOIN C_Currency cy ON ac.C_Currency_ID=cy.C_Currency_ID
-                        WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID() + " AND cs.VA009_OrderPaySchedule_ID IN (" + OrderPayids + ")");
+                        WHERE cs.AD_Client_ID= " + ctx.GetAD_Client_ID());
+            var opsIds = OrderPayids.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+            sql.Append(@" AND cs.VA009_OrderPaySchedule_ID IN (" + string.Join(",", opsIds) + ")");
 
             sql.Append(@" GROUP BY inv.C_DocType_ID, pm.VA009_PaymentMode, pm.VA009_PaymentMethod_ID, cb.c_Bpartner_id,  cb.name, inv.DocumentNo, cs.C_Order_ID,
                           cs.DueDate,  cs.VA009_OrderPaySchedule_ID, CY.StdPrecision,cd.DOCBASETYPE ,  inv.C_Currency_ID,  cs.DueAmt,  cs.ad_org_id,
@@ -551,7 +410,9 @@ namespace VA009.Models
                                   INNER JOIN AD_ClientInfo aclnt ON (aclnt.AD_Client_ID =gl.AD_Client_ID)
                                   INNER JOIN C_AcctSchema ac ON (ac.C_AcctSchema_ID =aclnt.C_AcctSchema1_ID) 
                                   INNER JOIN C_Currency cy ON (ac.C_Currency_ID=cy.C_Currency_ID)
-                                 WHERE gl.AD_Client_ID= { ctx.GetAD_Client_ID() } AND gl.GL_JournalLine_ID IN ({ JournalPayids })");
+                                 WHERE gl.AD_Client_ID= { ctx.GetAD_Client_ID() }");
+                var jlIds = JournalPayids.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+                sql.Append($@"AND gl.GL_JournalLine_ID IN ({ string.Join(",", jlIds) })");
             }
             sql.Append(" ORDER BY C_Bpartner ");
 
@@ -2818,32 +2679,13 @@ namespace VA009.Models
                         schedule.SetC_Currency_ID(invoice.GetC_Currency_ID());
                         schedule.SetC_BPartner_ID(_Oldschedule.GetC_BPartner_ID());
 
-                        //                        _sql.Clear();
-                        //                        _sql.Append(@"SELECT UNIQUE asch.C_Currency_ID FROM c_acctschema asch INNER JOIN ad_clientinfo ci ON ci.c_acctschema1_id = asch.c_acctschema_id
-                        //                         INNER JOIN ad_client c ON c.ad_client_id = ci.ad_client_id INNER JOIN c_invoice i ON c.ad_client_id    = i.ad_client_id
-                        //                         WHERE i.ad_client_id = " + _Oldschedule.GetAD_Client_ID());
-                        //                        int BaseCurrency = Util.GetValueOfInt(DB.ExecuteScalar(_sql.ToString(), null, null));
-
                         // Get default currency from Context
                         BaseCurrency = ct.GetContextAsInt("$C_Currency_ID");
                         if (BaseCurrency != invoice.GetC_Currency_ID())
                         {
-                            //_sql.Clear();
-                            //_sql.Append(@"SELECT multiplyrate FROM c_conversion_rate WHERE c_currency_id  = " + invoice.GetC_Currency_ID() +
-                            //              " AND c_currency_to_id = " + BaseCurrency + " AND " + GlobalVariable.TO_DATE(invoice.GetDateAcct(), true) + " BETWEEN ValidFrom AND ValidTo");
-                            //decimal multiplyRate = Util.GetValueOfDecimal(DB.ExecuteScalar(_sql.ToString(), null, null));
-                            //if (multiplyRate == 0)
-                            //{
-                            //    _sql.Clear();
-                            //    _sql.Append(@"SELECT multiplyrate FROM c_conversion_rate WHERE c_currency_id  = " + BaseCurrency +
-                            //                  " AND c_currency_to_id = " + invoice.GetC_Currency_ID() + " AND " + GlobalVariable.TO_DATE(invoice.GetDateAcct(), true) + " BETWEEN ValidFrom AND ValidTo");
-                            //    multiplyRate = Util.GetValueOfDecimal(DB.ExecuteScalar(_sql.ToString(), null, null));
-                            //}
-                            //schedule.SetVA009_OpenAmnt(Util.GetValueOfDecimal(PaymentData[i].DueAmt) * multiplyRate);
-
                             // Get convered Amount from Standard Conversion Method
-                            convertedAmt = MConversionRate.Convert(ct, PaymentData[i].DueAmt, invoice.GetC_Currency_ID(), BaseCurrency, invoice.GetDateAcct(), invoice.GetC_ConversionType_ID(),
-                                invoice.GetAD_Client_ID(), invoice.GetAD_Org_ID());
+                            convertedAmt = MConversionRate.Convert(ct, PaymentData[i].DueAmt, invoice.GetC_Currency_ID(), BaseCurrency,
+                                invoice.GetDateAcct(), invoice.GetC_ConversionType_ID(), invoice.GetAD_Client_ID(), invoice.GetAD_Org_ID());
                             schedule.SetVA009_OpenAmnt(convertedAmt);
                         }
                         else
@@ -3003,29 +2845,11 @@ namespace VA009.Models
                     schedule.SetVA009_PaymentType(_Oldschedule.GetVA009_PaymentType());
                     schedule.SetVA009_PaymentTrigger(_Oldschedule.GetVA009_PaymentTrigger());
                     schedule.SetVA009_ExecutionStatus(_Oldschedule.GetVA009_ExecutionStatus());
-                    //                    _sql.Clear();
-                    //                    _sql.Append(@"SELECT UNIQUE asch.C_Currency_ID FROM c_acctschema asch INNER JOIN ad_clientinfo ci ON ci.c_acctschema1_id = asch.c_acctschema_id
-                    //                                 INNER JOIN ad_client c ON c.ad_client_id = ci.ad_client_id INNER JOIN c_invoice i ON c.ad_client_id    = i.ad_client_id
-                    //                                 WHERE i.ad_client_id = " + _Oldschedule.GetAD_Client_ID());
-                    //                    int BaseCurrency = Util.GetValueOfInt(DB.ExecuteScalar(_sql.ToString(), null, null));
 
                     // Get default currency from Context
                     BaseCurrency = ct.GetContextAsInt("$C_Currency_ID");
                     if (BaseCurrency != invoice.GetC_Currency_ID())
                     {
-                        //_sql.Clear();
-                        //_sql.Append(@"SELECT multiplyrate FROM c_conversion_rate WHERE c_currency_id  = " + invoice.GetC_Currency_ID() +
-                        //              " AND c_currency_to_id = " + BaseCurrency + " AND " + GlobalVariable.TO_DATE(invoice.GetDateAcct(), true) + " BETWEEN ValidFrom AND ValidTo");
-                        //decimal multiplyRate = Util.GetValueOfDecimal(DB.ExecuteScalar(_sql.ToString(), null, null));
-                        //if (multiplyRate == 0)
-                        //{
-                        //    _sql.Clear();
-                        //    _sql.Append(@"SELECT multiplyrate FROM c_conversion_rate WHERE c_currency_id  = " + BaseCurrency +
-                        //                  " AND c_currency_to_id = " + invoice.GetC_Currency_ID() + " AND " + GlobalVariable.TO_DATE(invoice.GetDateAcct(), true) + " BETWEEN ValidFrom AND ValidTo");
-                        //    multiplyRate = Util.GetValueOfDecimal(DB.ExecuteScalar(_sql.ToString(), null, null));
-                        //}
-                        //schedule.SetVA009_OpenAmnt(Util.GetValueOfDecimal(PaymentData[i].DueAmt) * multiplyRate);
-
                         // Get convered Amount from Standard Conversion Method
                         convertedAmt = MConversionRate.Convert(ct, PaymentData[i].DueAmt, invoice.GetC_Currency_ID(), BaseCurrency, invoice.GetDateAcct(), invoice.GetC_ConversionType_ID(),
                             invoice.GetAD_Client_ID(), invoice.GetAD_Org_ID());
@@ -3039,7 +2863,6 @@ namespace VA009.Models
                     schedule.SetC_Currency_ID(invoice.GetC_Currency_ID());
                     schedule.SetVA009_OpnAmntInvce(Util.GetValueOfDecimal(PaymentData[i].DueAmt));
                     schedule.SetVA009_GrandTotal(_Oldschedule.GetVA009_GrandTotal());
-                    //JID_1932_1 payment schedule read only
                     schedule.SetProcessed(true);
                     if (!schedule.Save())
                     {
@@ -3097,8 +2920,6 @@ namespace VA009.Models
                 }
                 if (PaymentData.Length > 0)
                 {
-                    //MVA009OrderPaySchedule oldschedule = new MVA009OrderPaySchedule(ct, _orderPaySchedule, trx);
-                    //oldschedule.Delete(true);
                     int no = DB.ExecuteQuery("DELETE FROM VA009_OrderPaySchedule  WHERE VA009_OrderPaySchedule_ID =" + _orderPaySchedule, null, trx);
                 }
 
@@ -4089,15 +3910,18 @@ namespace VA009.Models
             {
                 order_Ids = "0";
             }
-            string sql = "SELECT pm.va009_paymentbasetype  FROM C_InvoicePaySchedule cs " +
-                         " INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID " +
-                         " WHERE cs.AD_Client_ID= " + ct.GetAD_Client_ID() + " AND cs.C_InvoicePaySchedule_ID IN (" + payment_Ids +
-                         ") AND pm.va009_paymentbasetype != 'S' GROUP BY pm.va009_paymentbasetype" +
-                         " UNION " +
-                         " SELECT pm.va009_paymentbasetype FROM VA009_OrderPaySchedule cs " +
-                         " INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID =cs.VA009_PaymentMethod_ID " +
-                         " WHERE cs.AD_Client_ID= " + ct.GetAD_Client_ID() + " AND cs.VA009_OrderPaySchedule_ID IN (" + order_Ids +
-                         ") AND pm.va009_paymentbasetype != 'S' GROUP BY pm.va009_paymentbasetype";
+            var pids = payment_Ids.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+            var oids = order_Ids.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+
+            string sql = $@"SELECT pm.va009_paymentbasetype  FROM C_InvoicePaySchedule cs 
+                          INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID=cs.VA009_PaymentMethod_ID 
+                          WHERE cs.AD_Client_ID= { ct.GetAD_Client_ID() } AND cs.C_InvoicePaySchedule_ID IN ({ string.Join(",", pids) }
+                         ) AND pm.va009_paymentbasetype != 'S' GROUP BY pm.va009_paymentbasetype
+                          UNION 
+                         SELECT pm.va009_paymentbasetype FROM VA009_OrderPaySchedule cs 
+                         INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID =cs.VA009_PaymentMethod_ID 
+                         WHERE cs.AD_Client_ID= { ct.GetAD_Client_ID()} AND cs.VA009_OrderPaySchedule_ID IN ({ string.Join(",", oids) }
+                        ) AND pm.va009_paymentbasetype != 'S' GROUP BY pm.va009_paymentbasetype";
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -4116,6 +3940,7 @@ namespace VA009.Models
         {
             List<Dictionary<string, object>> retDic = null;
             StringBuilder qry = new StringBuilder();
+
             //REMOVED ORGNIZATION NAME FROM BANK BECAUSE NOW WE ADDED ORG PARAMETER ON FORM
             string sql = @"SELECT DISTINCT bk.C_Bank_ID, bk.Name AS Bank FROM C_BankAccount bc INNER JOIN C_Bank bk 
             ON (bc.C_Bank_ID = bk.C_Bank_ID) WHERE bc.IsActive='Y' AND bk.IsActive='Y' AND bk.IsOwnBank ='Y' ";
@@ -4123,7 +3948,10 @@ namespace VA009.Models
             // Check Access of Organization on Bank Account not to Bank
             qry.Append(MRole.GetDefault(ct).AddAccessSQL(sql, "bc", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO));
             if (orgs.Length > 0)
-                qry.Append(" AND bc.AD_Org_ID IN (0," + orgs + ")");
+            {
+                var orgiIds = orgs.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+                qry.Append(" AND bc.AD_Org_ID IN (0," + string.Join(",", orgiIds) + ")");
+            }
             qry.Append(" ORDER BY Bank");
             DataSet ds = DB.ExecuteDataset(qry.ToString());
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -4175,9 +4003,10 @@ namespace VA009.Models
         {
             //handled the logs
             //VIS_427 Bug id 2339 handeled query to get check number
-            string sql = @"SELECT bd.CurrentNext,bd.Priority,ba.ChkNoAutoControl,bd.EndChkNumber FROM C_BankAccount ba INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID)
+            string sql = @"SELECT bd.CurrentNext,bd.Priority,ba.ChkNoAutoControl,bd.EndChkNumber FROM C_BankAccount ba 
+             INNER JOIN C_BankAccountDoc bd ON (bd.C_BankAccount_ID = ba.C_BankAccount_ID) 
              WHERE bd.VA009_PaymentMethod_ID = " + payMethod_ID + " AND ba.ChkNoAutoControl='Y' AND bd.CurrentNext <= bd.EndChkNumber AND bd.IsActive = 'Y'" +
-             " AND  bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() + " ORDER BY bd.Priority";
+             " AND bd.C_BankAccount_ID=" + bankAccount_ID + " AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() + " ORDER BY bd.Priority";
 
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "C_BankAccount", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
@@ -4207,7 +4036,8 @@ namespace VA009.Models
         {
             List<Dictionary<string, object>> retDic = null;
             //added IsCostCenter and IsProfitCenter check  suggested by mukesh sir and Ashish
-            string sql = "SELECT AD_Org.AD_Org_ID, AD_Org.Name FROM AD_Org AD_Org WHERE AD_Org.IsActive='Y' AND AD_Org.AD_Org_ID != 0 AND AD_Org.IsSummary='N' AND AD_Org.IsCostCenter='N' AND AD_Org.IsProfitCenter='N' ";
+            string sql = @"SELECT AD_Org.AD_Org_ID, AD_Org.Name FROM AD_Org AD_Org 
+                            WHERE AD_Org.IsActive='Y' AND AD_Org.AD_Org_ID != 0 AND AD_Org.IsSummary='N' AND AD_Org.IsCostCenter='N' AND AD_Org.IsProfitCenter='N' ";
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "AD_Org", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY AD_Org.AD_Org_ID";
             DataSet ds = DB.ExecuteDataset(sql);
@@ -4229,7 +4059,8 @@ namespace VA009.Models
         public List<Dictionary<string, object>> LoadPaymentMethod(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID, VA009_PaymentMethod.VA009_Name, VA009_PaymentMethod.VA009_PaymentBaseType FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' ";
+            string sql = @"SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID, VA009_PaymentMethod.VA009_Name, VA009_PaymentMethod.VA009_PaymentBaseType 
+                           FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' ";
             sql = MRole.GetDefault(ct).AddAccessSQL(sql, "VA009_PaymentMethod", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             sql += " ORDER BY VA009_PaymentMethod.VA009_PaymentMethod_ID";
             DataSet ds = DB.ExecuteDataset(sql);
@@ -4258,7 +4089,9 @@ namespace VA009.Models
         {
             List<Dictionary<string, object>> retDic = null;
 
-            string sql = "SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID,VA009_PaymentMethod.VA009_Name FROM VA009_PaymentMethod VA009_PaymentMethod WHERE VA009_PaymentMethod.IsActive='Y' AND VA009_PaymentMethod.VA009_PaymentBaseType IN  ('S') ";
+            string sql = @"SELECT VA009_PaymentMethod.VA009_PaymentMethod_ID,VA009_PaymentMethod.VA009_Name 
+                            FROM VA009_PaymentMethod VA009_PaymentMethod 
+                            WHERE VA009_PaymentMethod.IsActive='Y' AND VA009_PaymentMethod.VA009_PaymentBaseType IN  ('S') ";
             if (Org_ID > 0)
             {
                 //Payable case -- get Paymenthod of selected Organization
@@ -4306,7 +4139,8 @@ namespace VA009.Models
         public List<Dictionary<string, object>> loadCurrencyType(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
-            string sql = "SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType WHERE ISACTIVE='Y' AND AD_Client_ID IN(0, " + ct.GetAD_Client_ID() + ") ORDER BY AD_Client_ID";
+            string sql = @"SELECT C_ConversionType_ID, Name, IsDefault FROM C_ConversionType 
+                            WHERE ISACTIVE='Y' AND AD_Client_ID IN(0, " + ct.GetAD_Client_ID() + ") ORDER BY AD_Client_ID";
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -4351,10 +4185,18 @@ namespace VA009.Models
 
             if (orgs.Length > 0)
             {
+                var orgiIds = orgs.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+
                 if (c_Bank_ID == 0)
-                    qry.Append(" WHERE b.isActive='Y' AND ba.IsActive='Y' AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() + " AND ba.AD_Org_ID IN (0," + orgs + ")");
+                {
+                    qry.Append(@" WHERE b.isActive='Y' AND ba.IsActive='Y' AND ba.AD_Client_ID =" + ct.GetAD_Client_ID() +
+                        " AND ba.AD_Org_ID IN (0," + string.Join(",", orgiIds) + ")");
+                }
                 else
-                    qry.Append(" WHERE acct.IsActive='Y' AND acct.AD_Client_ID =" + ct.GetAD_Client_ID() + "  AND acct.C_Bank_ID =" + c_Bank_ID + " AND acct.AD_Org_ID IN (0," + orgs + ")");
+                {
+                    qry.Append(" WHERE acct.IsActive='Y' AND acct.AD_Client_ID =" + ct.GetAD_Client_ID() +
+                        "  AND acct.C_Bank_ID =" + c_Bank_ID + " AND acct.AD_Org_ID IN (0," + string.Join(",", orgiIds) + ")");
+                }
             }
             else if (c_Bank_ID == 0)
             {
@@ -4414,9 +4256,11 @@ namespace VA009.Models
         public List<string> GetDocBaseType(string payments, Ctx ct)
         {
             List<string> retDic = null;
-            string sql = @"SELECT pm.VA009_PaymentBaseType FROM C_InvoicePaySchedule cs INNER JOIN VA009_PaymentMethod pm ON pm.VA009_PaymentMethod_ID = cs.VA009_PaymentMethod_ID 
-                        WHERE cs.AD_Client_ID = " + ct.GetAD_Client_ID() + " AND cs.C_InvoicePaySchedule_ID IN (" + payments
-                        + ") AND pm.VA009_PaymentBaseType != 'B' GROUP BY pm.VA009_PaymentBaseType";
+            var pIds = payments.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+            string sql = @"SELECT pm.VA009_PaymentBaseType FROM C_InvoicePaySchedule cs 
+                        INNER JOIN VA009_PaymentMethod pm ON (pm.VA009_PaymentMethod_ID = cs.VA009_PaymentMethod_ID) 
+                        WHERE cs.AD_Client_ID = " + ct.GetAD_Client_ID() +
+                        " AND cs.C_InvoicePaySchedule_ID IN (" + string.Join(",", pIds) + ") AND pm.VA009_PaymentBaseType != 'B' GROUP BY pm.VA009_PaymentBaseType";
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
@@ -4574,7 +4418,6 @@ namespace VA009.Models
             return retPro;
         }
 
-        //Added by Bharat on 05/June/2017
         public int GetWindowID(string WindowName, Ctx ct)
         {
             int window_Id = 0;
@@ -4582,37 +4425,42 @@ namespace VA009.Models
            element 1 will contain old screen name*/
             string[] windowArr = WindowName.Split(',');
             string sql = "";
+            SqlParameter[] param = new SqlParameter[1];
+
             foreach (string win in windowArr)
             {
                 if (string.IsNullOrWhiteSpace(win))
                     continue;
 
                 // Step 1: Check in VAS_ZoomScreenConfig
+                param[0] = new SqlParameter("@param", win);
                 sql = $@"SELECT Value 
                            FROM VAS_ZoomScreenConfig 
-                           WHERE Name ={GlobalVariable.TO_STRING(win)} AND IsActive='Y'";
+                           WHERE Name =@param AND IsActive='Y'";
 
-                string zoomName = Util.GetValueOfString(DB.ExecuteScalar(sql));
+                string zoomName = Util.GetValueOfString(DB.ExecuteScalar(sql, param, null));
 
                 // Step 2: If found → get AD_Window_ID using Name
                 if (!string.IsNullOrEmpty(zoomName))
                 {
+                    param[0] = new SqlParameter("@param", zoomName);
                     sql = $@"SELECT AD_Window_ID 
                            FROM AD_Window 
-                           WHERE Name ={GlobalVariable.TO_STRING(zoomName)} AND IsActive='Y'";
+                           WHERE Name =@param AND IsActive='Y'";
 
-                    window_Id = Util.GetValueOfInt(DB.ExecuteScalar(sql));
+                    window_Id = Util.GetValueOfInt(DB.ExecuteScalar(sql, param, null));
 
                     if (window_Id > 0)
                         break;
                 }
 
                 // Step 3: fallback → direct match from AD_Window
+                param[0] = new SqlParameter("@param", win);
                 sql = $@"SELECT AD_Window_ID 
                         FROM AD_Window 
-                        WHERE Name = {GlobalVariable.TO_STRING(win)} AND IsActive='Y'";
+                        WHERE Name = @param AND IsActive='Y'";
 
-                window_Id = Util.GetValueOfInt(DB.ExecuteScalar(sql));
+                window_Id = Util.GetValueOfInt(DB.ExecuteScalar(sql, param, null));
 
 
                 // IMPORTANT: break as soon as value found
@@ -4681,11 +4529,18 @@ namespace VA009.Models
                 }
 
                 if (InvoiceSchdIDS != string.Empty && InvoiceSchdIDS != null)
+                {
                     invoiceIds = InvoiceSchdIDS.Split(',');
+                }
                 if (OrderSchdIDS != string.Empty && OrderSchdIDS != null)
+                {
                     OrderIds = OrderSchdIDS.Split(',');
+                }
                 if (!string.IsNullOrEmpty(JournalSchdIDS))
+                {
                     journalIDs = JournalSchdIDS.Split(',');
+                }
+
                 //When either invoice or gl is null
                 if (String.IsNullOrEmpty(InvoiceSchdIDS))
                 {
@@ -4695,10 +4550,14 @@ namespace VA009.Models
                 {
                     JournalSchdIDS = "0";
                 }
+                var ipsIds = InvoiceSchdIDS.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+                var jlIds = JournalSchdIDS.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+
+
                 //to find the count and business partner id when select invoice and gl
                 StringBuilder sql = new StringBuilder();
-                sql.Append(@"SELECT t.C_BPartner_ID,COUNT(t.C_BPartner_ID) AS Count FROM (SELECT C_BPartner_ID FROM GL_JournalLine WHERE GL_JournalLine_ID IN (" + (JournalSchdIDS) + ") " +
-                    "UNION ALL SELECT C_BPartner_ID FROM C_InvoicePaySchedule WHERE C_InvoicePaySchedule_ID IN (" + (InvoiceSchdIDS) + "))t GROUP BY t.C_BPartner_ID");
+                sql.Append(@"SELECT t.C_BPartner_ID,COUNT(t.C_BPartner_ID) AS Count FROM (SELECT C_BPartner_ID FROM GL_JournalLine WHERE GL_JournalLine_ID IN (" + (string.Join(",", jlIds)) + ") " +
+                    " UNION ALL SELECT C_BPartner_ID FROM C_InvoicePaySchedule WHERE C_InvoicePaySchedule_ID IN (" + (string.Join(",", ipsIds)) + "))t GROUP BY t.C_BPartner_ID");
                 DataSet dsbusiness = DB.ExecuteDataset(sql.ToString());
 
                 if (journalIDs.Length > 0)
@@ -5590,11 +5449,12 @@ namespace VA009.Models
                 List<MPayment> paymentCreated, StringBuilder ex, StringBuilder docno, StringBuilder _conv)
         {
             StringBuilder sql = new StringBuilder();
+            var jlIds = JournalSchdIDS.Split(',').Select(id => int.Parse(id.Trim())).ToList();
             sql.Append($@"SELECT MAX(bp.C_BP_BankAccount_ID) as C_BP_BankAccount_ID,
                                   bp.a_name, bp.RoutingNo, bp.AccountNo, bp.C_BPartner_ID FROM C_BP_BankAccount bp
                                   INNER JOIN GL_JournalLine gl ON (bp.C_BPartner_ID = gl.C_BPartner_ID)
                                   WHERE  bp.AD_Org_ID = {AD_Org_ID} 
-                                  AND gl.GL_JournalLine_ID IN ({ JournalSchdIDS })
+                                  AND gl.GL_JournalLine_ID IN ({ string.Join(",", jlIds) })
                                  GROUP BY bp.C_BP_BankAccount_ID, bp.a_name, bp.RoutingNo, bp.AccountNo, bp.C_BPartner_ID");
             DataSet dsBankAccount = DB.ExecuteDataset(sql.ToString(), null, trx);
 
@@ -5618,7 +5478,7 @@ namespace VA009.Models
                                   INNER JOIN C_Currency cc ON (gl.C_Currency_ID=cc.C_Currency_ID)
                                   INNER JOIN C_BankAccount ba ON (ba.C_BankAccount_ID={BankAccountID})
                                  WHERE gl.IsAllocated='N' AND ev.IsAllocationRelated = 'Y' AND 
-                                       gl.AD_Client_ID= { ctx.GetAD_Client_ID() } AND gl.GL_JournalLine_ID IN ({ JournalSchdIDS })");
+                                       gl.AD_Client_ID= { ctx.GetAD_Client_ID() } AND gl.GL_JournalLine_ID IN ({  string.Join(",", jlIds) })");
             sql.Append(@" ORDER BY gl.C_Bpartner_ID ASC");
             DataSet ds = DB.ExecuteDataset(sql.ToString(), null, trx);
             if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
@@ -5821,10 +5681,14 @@ namespace VA009.Models
         {
             List<PayBatchDetails> lst = new List<PayBatchDetails>();
             //Table name must Camel format
-            string sql = "SELECT b.DocumentNo,  b.VA009_DocumentDate,  bn.name AS bankName,  bna.ACCOUNTNO AS bankaccount,  b.c_bank_id,  b.c_bankaccount_id,  pm.VA009_NAME AS PaymentMethod,  b.va009_paymentmethod_id,"
-                        + "c.c_currency_id,  c.ISO_CODE,  bd.VA009_ConvertedAmt FROM VA009_Batch b INNER JOIN C_Bank bn ON bn.c_bank_id=b.c_bank_id INNER JOIN C_BankAccount bna ON bna.c_bankaccount_id=b.c_bankaccount_id"
-                        + " INNER JOIN VA009_BatchLines bl ON bl.VA009_batch_id=b.va009_batch_id INNER JOIN VA009_BatchLineDetails bd ON bd.va009_batchlines_id=bl.va009_batchlines_id INNER JOIN C_Currency c "
-                        + "ON c.c_Currency_id=bd.C_Currency_ID INNER JOIN VA009_PaymentMethod pm ON pm.va009_paymentmethod_id= b.va009_paymentmethod_id";
+            string sql = @"SELECT b.DocumentNo,  b.VA009_DocumentDate,  bn.name AS bankName,  bna.ACCOUNTNO AS bankaccount,  b.c_bank_id,  b.c_bankaccount_id,  
+                            pm.VA009_NAME AS PaymentMethod,  b.va009_paymentmethod_id, c.c_currency_id,  c.ISO_CODE,  bd.VA009_ConvertedAmt 
+                            FROM VA009_Batch b INNER JOIN C_Bank bn ON (bn.c_bank_ID=b.c_bank_ID) 
+                            INNER JOIN C_BankAccount bna ON (bna.c_bankaccount_ID=b.c_bankaccount_ID)
+                            INNER JOIN VA009_BatchLines bl ON (bl.VA009_batch_ID=b.va009_batch_ID) 
+                            INNER JOIN VA009_BatchLineDetails bd ON (bd.va009_batchlines_ID=bl.va009_batchlines_ID) 
+                            INNER JOIN C_Currency c ON (c.c_Currency_ID=bd.C_Currency_ID) 
+                            INNER JOIN VA009_PaymentMethod pm ON (pm.va009_paymentmethod_ID= b.va009_paymentmethod_ID)";
 
             sql = MRole.GetDefault(ctx).AddAccessSQL(sql, "b", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
 
@@ -6449,7 +6313,8 @@ namespace VA009.Models
             List<DocTypeDetails> retDic = null;
             //Table name must Camel format because Table name is case sensitive
             //VA230:Get DocBaseType to check document type
-            string sql = @"SELECT Name,C_DocType_ID,DocBaseType FROM C_DocType WHERE C_DocType.DOCBASETYPE IN ('ARR', 'APP') AND C_DocType.AD_ORG_ID IN (0, " + orgs + ")";
+            var orgIds = orgs.Split(',').Select(id => int.Parse(id.Trim())).ToList();
+            string sql = @"SELECT Name,C_DocType_ID,DocBaseType FROM C_DocType WHERE C_DocType.DOCBASETYPE IN ('ARR', 'APP') AND C_DocType.AD_ORG_ID IN (0, " + string.Join(",", orgIds) + ")";
             sql = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "C_DocType", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(sql);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -6476,7 +6341,8 @@ namespace VA009.Models
         {
             List<LocationDetails> Locations = new List<LocationDetails>();
             StringBuilder sql = new StringBuilder();
-            sql.Append("SELECT C_BPartner_Location.C_BPartner_Location_ID , C_BPartner_Location.Name FROM C_BPartner_Location C_BPartner_Location WHERE C_BPartner_Location.C_BPartner_ID =" + BP);
+            sql.Append(@"SELECT C_BPartner_Location.C_BPartner_Location_ID , C_BPartner_Location.Name 
+                        FROM C_BPartner_Location C_BPartner_Location WHERE C_BPartner_Location.C_BPartner_ID =" + Util.GetValueOfInt(BP));
             string finalQuery = MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_BPartner_Location", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(finalQuery);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -6501,7 +6367,7 @@ namespace VA009.Models
         {
             List<ChargeDetails> Charge = new List<ChargeDetails>();
             StringBuilder sql = new StringBuilder();
-            sql.Append("SELECT C_Charge.C_Charge_ID , C_Charge.NAME FROM C_Charge C_Charge WHERE C_Charge.AD_Org_ID=" + orgs);
+            sql.Append("SELECT C_Charge.C_Charge_ID , C_Charge.NAME FROM C_Charge C_Charge WHERE C_Charge.AD_Org_ID=" + Util.GetValueOfInt(orgs));
             string finalQuery = MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Charge", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(finalQuery);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -6521,7 +6387,7 @@ namespace VA009.Models
         {
             List<BPDetails> Bp = new List<BPDetails>();
             StringBuilder sql = new StringBuilder();
-            sql.Append("SELECT C_BPartner.C_BPartner_ID,C_BPartner.Name FROM C_BPartner C_BPartner WHERE C_BPartner.AD_Org_ID=" + orgs);
+            sql.Append("SELECT C_BPartner.C_BPartner_ID,C_BPartner.Name FROM C_BPartner C_BPartner WHERE C_BPartner.AD_Org_ID=" + Util.GetValueOfInt(orgs));
             string finalQuery = MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_BPartner", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
             DataSet ds = DB.ExecuteDataset(finalQuery);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
@@ -6659,14 +6525,17 @@ namespace VA009.Models
             bool ispaymentGenerated = false;
             //add sql access to generate batch file for those who have access
             StringBuilder sql = new StringBuilder();
+            SqlParameter[] param = new SqlParameter[1];
             if (isBatch)
             {
                 //handled logs
                 //add sql access to generate batch file for those who have access
                 sql.Clear();
                 sql.Append(@"SELECT VA009_Batch_ID FROM VA009_Batch
-                            WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno) = UPPER('" + DocNumber + "')");
-                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_Batch", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
+                            WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID));
+                param[0] = new SqlParameter("@param1", DocNumber);
+                sql.Append(@" AND UPPER(documentno) = UPPER(@param1)");
+                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "VA009_Batch", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO), param, null));
                 sql.Clear();
                 sql.Append(@"SELECT Count(bld.C_Payment_ID) FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON (bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID)
                     INNER JOIN VA009_Batch b ON (bl.VA009_Batch_ID = b.VA009_Batch_ID) LEFT JOIN C_Payment p ON (p.C_Payment_ID = bld.C_Payment_ID)
@@ -6679,8 +6548,10 @@ namespace VA009.Models
                 sql.Clear();
                 //removed brackets from this query because it was creating problem in case of document number was having special characters
                 sql.Append(@"SELECT c_payment_id FROM C_Payment 
-                            WHERE AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID) + " AND UPPER(documentno)=UPPER('" + DocNumber + "') AND DocStatus IN ('CO','CL') ");
-                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO)));
+                            WHERE DocStatus IN ('CO','CL') AND AD_Org_ID =" + Util.GetValueOfInt(AD_Org_ID));
+                param[0] = new SqlParameter("@param1", DocNumber);
+                sql.Append(@" AND UPPER(documentno)=UPPER(@param1");
+                payment_ID = Util.GetValueOfInt(DB.ExecuteScalar(MRole.GetDefault(ct).AddAccessSQL(sql.ToString(), "C_Payment", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO), param, null));
             }
             PaymentResponse obj = null;
             sql.Clear();
@@ -6696,8 +6567,10 @@ namespace VA009.Models
                     batchResponse.Add(obj);
                     return batchResponse;
                 }
-                sql.Append(@" WHERE p.c_payment_id IN (SELECT bld.C_Payment_ID FROM VA009_BatchLineDetails bld INNER JOIN VA009_BatchLines bl ON (bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID)
-                    INNER JOIN VA009_Batch b ON (bl.VA009_Batch_ID = b.VA009_Batch_ID) LEFT JOIN C_Payment p ON (p.C_Payment_ID = bld.C_Payment_ID)
+                sql.Append(@" WHERE p.c_payment_id IN (SELECT bld.C_Payment_ID FROM VA009_BatchLineDetails bld 
+                    INNER JOIN VA009_BatchLines bl ON (bld.VA009_BatchLines_ID=bl.VA009_BatchLines_ID)
+                    INNER JOIN VA009_Batch b ON (bl.VA009_Batch_ID = b.VA009_Batch_ID) 
+                    LEFT JOIN C_Payment p ON (p.C_Payment_ID = bld.C_Payment_ID)
                     WHERE b.VA009_Batch_ID = " + payment_ID + ")");
             }
             else
@@ -6789,7 +6662,8 @@ namespace VA009.Models
         private string[] CompleteOrReverse(Ctx ctx, int Record_ID, int Table_ID, string TableName, string DocAction, Trx trx)
         {
             int AD_Process_ID = 0;
-            AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("select ad_process_ID from ad_column where ad_table_id = " + Table_ID + " and lower(columnname)= 'docaction'", null, null));
+            AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("select ad_process_ID from ad_column where ad_table_id = " + Table_ID +
+                            " AND lower(columnname)= 'docaction'", null, null));
             string[] result = new string[2];
             MRole role = MRole.Get(ctx, ctx.GetAD_Role_ID());
             int ad_window_id = 0;

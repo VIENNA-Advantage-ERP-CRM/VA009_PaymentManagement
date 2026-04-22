@@ -1653,7 +1653,7 @@ namespace ViennaAdvantage.Common
             if (Util.GetValueOfInt(WhrDueDate) == 99)
                 WhrDueDate = string.Empty;
             else if (WhrDueDate != string.Empty)
-                WhrDueDate = " AND T.Due_Date_Diff <= " + WhrDueDate;
+                WhrDueDate = " AND T.Due_Date_Diff <= " + Util.GetValueOfInt(WhrDueDate);
             else
                 WhrDueDate = string.Empty;
             return WhrDueDate;

@@ -2554,8 +2554,11 @@
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
                         data: ({
-                            InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID,
-                            chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString(),
+                            InvPayids: SlctdPaymentIds.toString(),
+                            bank_id: _C_Bank_ID,
+                            acctno: _C_BankAccount_ID,
+                            chkno: VIS.Utility.encodeText(_Cheque_no),
+                            OrderPayids: SlctdOrderPaymentIds.toString(),
                             JournalPayids: SlctdJournalPaymentIds.toString()
                         }),
                         success: function (result) {
@@ -2813,7 +2816,13 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        data: ({
+                            PaymentData: JSON.stringify(reloaddata),
+                            BankAccount: $POP_cmbBankAccount.val(),
+                            CurrencyType: $pop_cmbCurrencyType.val(),
+                            dateAcct: $POP_DateAcct.val(),
+                            _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val()
+                        }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -2831,7 +2840,13 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        data: ({
+                            PaymentData: JSON.stringify(reloaddata),
+                            BankAccount: $POP_cmbBankAccount.val(),
+                            CurrencyType: $pop_cmbCurrencyType.val(),
+                            dateAcct: $POP_DateAcct.val(),
+                            _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val()
+                        }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -3082,7 +3097,13 @@
                         datatype: "json",
                         // contentType: "application/json; charset=utf-8",
                         async: true,
-                        data: ({ PaymentData: JSON.stringify(reloaddata), BankAccount: $POP_cmbBankAccount.val(), CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                        data: ({
+                            PaymentData: JSON.stringify(reloaddata),
+                            BankAccount: $POP_cmbBankAccount.val(),
+                            CurrencyType: $pop_cmbCurrencyType.val(),
+                            dateAcct: $POP_DateAcct.val(),
+                            _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val()
+                        }),
                         success: function (result) {
                             callbackchqReload(result);
                         },
@@ -5491,7 +5512,13 @@
                                 datatype: "json",
                                 async: true,
                                 //added Org and AccDate parameters to get the result with respect to the input values
-                                data: ({ PaymentData: JSON.stringify(reloaddata), CurrencyCashBook: currency, CurrencyType: $pop_cmbCurrencyType.val(), dateAcct: $POP_DateAcct.val(), _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val() }),
+                                data: ({
+                                    PaymentData: JSON.stringify(reloaddata),
+                                    CurrencyCashBook: currency,
+                                    CurrencyType: $pop_cmbCurrencyType.val(),
+                                    dateAcct: $POP_DateAcct.val(),
+                                    _org_Id: $POP_cmbOrg.val() <= 0 ? 0 : $POP_cmbOrg.val()
+                                }),
                                 success: function (result) {
                                     callbackCASHPay(result);
                                 },
@@ -5605,7 +5632,13 @@
                         datatype: "json",
                         //contentType: "application/json; charset=utf-8",
                         //async: false,
-                        data: ({ InvPayids: SlctdPaymentIds.toString(), bank_id: _C_Bank_ID, acctno: _C_BankAccount_ID, chkno: VIS.Utility.encodeText(_Cheque_no), OrderPayids: SlctdOrderPaymentIds.toString() }),
+                        data: ({
+                            InvPayids: SlctdPaymentIds.toString(),
+                            bank_id: _C_Bank_ID,
+                            acctno: _C_BankAccount_ID,
+                            chkno: VIS.Utility.encodeText(_Cheque_no),
+                            OrderPayids: SlctdOrderPaymentIds.toString()
+                        }),
                         success: function (result) {
                             callback(result);
                         },
@@ -6296,7 +6329,11 @@
                                             datatype: "json",
                                             // contentType: "application/json; charset=utf-8",
                                             async: true,
-                                            data: ({ PaymentData: JSON.stringify(_CollaborateData), C_CashBook_ID: parseInt($Cash_cmbcashbk.val()), BeginningBalance: cashAmount.getValue() }),
+                                            data: ({
+                                                PaymentData: JSON.stringify(_CollaborateData),
+                                                C_CashBook_ID: parseInt($Cash_cmbcashbk.val()),
+                                                BeginningBalance: cashAmount.getValue()
+                                            }),
                                             success: function (result) {
                                                 callbackCashPaymnt(result);
                                             },
@@ -10259,7 +10296,17 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
-                data: ({ pageNo: pgNo, pageSize: pgSize, whereQry: _WhereQuery, OrgWhr: _orgwhr, SearchText: txtSearchText, WhrDueDate: DueDateSelected, TransType: _TransTypewhr, FromDate: Frmdate, ToDate: Todate }),
+                data: ({
+                    pageNo: pgNo,
+                    pageSize: pgSize,
+                    whereQry: VIS.secureEngine.encrypt(_WhereQuery),
+                    OrgWhr: VIS.secureEngine.encrypt(_orgwhr),
+                    SearchText: VIS.secureEngine.encrypt(txtSearchText),
+                    WhrDueDate: DueDateSelected,
+                    TransType: _TransTypewhr,
+                    FromDate: Frmdate,
+                    ToDate: Todate
+                }),
                 success: function (result) {
                     callback(result);
                 },

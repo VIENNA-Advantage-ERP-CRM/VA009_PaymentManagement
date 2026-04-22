@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Data.SqlClient;
 using System.Dynamic;
 using System.Linq;
 using System.Web;
@@ -635,6 +636,8 @@ namespace VA009.Models
         /// <author>VIS_427</author>
         public List<dynamic> GetCustScheduleData(Ctx ctx, int CustId, int pageNo, int pageSize, string isPaid)
         {
+            SqlParameter[] param = new SqlParameter[1];
+
             List<dynamic> InvocieTaxTabPanel = new List<dynamic>();
             String sql = @"SELECT
                                cs.DueDate,
@@ -655,11 +658,12 @@ namespace VA009.Models
                                cb.C_BPartner_ID  = " + CustId;
             if (!string.IsNullOrEmpty(isPaid))
             {
-                sql += " AND cs.VA009_IsPaid = '" + isPaid + "'";
+                param[0] = new SqlParameter("@param1", isPaid);
+                sql += " AND cs.VA009_IsPaid = @param1";
             }
             sql += " ORDER BY cs.DueDate ";
 
-            DataSet ds = DB.ExecuteDataset(sql.ToString(), null, null, pageSize, pageNo);
+            DataSet ds = DB.ExecuteDataset(sql.ToString(), param, null, pageSize, pageNo);
             if (ds != null && ds.Tables[0].Rows.Count > 0)
             {
                 int RecordCount = Util.GetValueOfInt(DB.ExecuteScalar("SELECT COUNT(*) FROM (" + sql + ")t", null, null));

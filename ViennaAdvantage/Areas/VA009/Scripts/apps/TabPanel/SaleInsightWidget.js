@@ -45,7 +45,14 @@
             var _AD_Window_ID = VIS.Env.getCtx().getWindowTabContext($self.windowNo, 0, "AD_Window_ID");
 
             VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/VA009_ReceivableAssesment/GetFinInsightsData",
-                { IsReturnTrx: isReturnTrx, IsSOTrx: isSOTrx, AD_Table_ID: _AD_Table_ID, TabName: tabName, WinDisplayName: winDisplayName, AD_Window_ID: _AD_Window_ID },
+                {
+                    IsReturnTrx: isReturnTrx,
+                    IsSOTrx: isSOTrx,
+                    AD_Table_ID: _AD_Table_ID,
+                    TabName: VIS.secureEngine.encrypt(tabName),
+                    WinDisplayName: VIS.secureEngine.encrypt(winDisplayName),
+                    AD_Window_ID: _AD_Window_ID
+                },
                 function (dr) {
                 InsightData = dr;
                 if (InsightData.length > 0) {

@@ -333,7 +333,7 @@
             $.ajax({
                 url: VIS.Application.contextUrl + "VA009_ReceivableAssesment/CustomerReturnAnalysis",
                 type: "POST",
-                data: { rec_ID: $self.record_ID, Depot: depot, CustName: customerName },
+                data: { rec_ID: $self.record_ID, Depot: VIS.secureEngine.encrypt(depot), CustName: VIS.secureEngine.encrypt(customerName) },
                 success: function (data) {
                     if (data) {
                         data = JSON.parse(data);

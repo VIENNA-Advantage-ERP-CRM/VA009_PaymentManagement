@@ -106,11 +106,11 @@ namespace VA009.Models
                 int AD_Org_ID = Util.GetValueOfInt(paramValue[5].ToString());
                 int C_ConversionType_ID = Util.GetValueOfInt(paramValue[6].ToString());
 
-                string _sql= @"SELECT GL.AmtSourceDr,GL.AmtSourceCr,GL.C_Currency_ID AS C_Currency_ID,El.AccountType," +
-                            "(SELECT DocBaseType FROM c_doctype WHERE C_doctype_Id=" + C_DocType_ID+ ") AS docbaseType FROM " +
+                string _sql = @"SELECT GL.AmtSourceDr,GL.AmtSourceCr,GL.C_Currency_ID AS C_Currency_ID,El.AccountType," +
+                            "(SELECT DocBaseType FROM c_doctype WHERE C_doctype_Id=" + C_DocType_ID + ") AS docbaseType FROM " +
                             "GL_Journalline GL INNER JOIN C_ELEMENTVALUE El ON GL.Account_ID=El.C_ELEMENTVALUE_ID WHERE" +
                             " GL.GL_JournalLine_ID=" + GL_JournalLine_ID;
-                DataSet ds = DB.ExecuteDataset(_sql,null,null);
+                DataSet ds = DB.ExecuteDataset(_sql, null, null);
                 if (ds != null && ds.Tables[0].Rows.Count > 0)
                 {
                     retDic = new Dictionary<string, object>();
@@ -262,7 +262,7 @@ namespace VA009.Models
             //End Assign parameter
             result = new Dictionary<string, object>();
             //VIS_427 BugId 3082 Handled query to restrict records to not visible if they are drafted against payment and cash journal
-            string _sql = @"SELECT C_InvoicePaySchedule_ID FROM C_InvoicePaySchedule WHERE C_INVOICE_ID = " + C_INVOICE_ID+
+            string _sql = @"SELECT C_InvoicePaySchedule_ID FROM C_InvoicePaySchedule WHERE C_INVOICE_ID = " + C_INVOICE_ID +
                            @" AND C_InvoicePaySchedule_ID NOT IN (SELECT CASE WHEN C_Payment.C_Payment_ID != COALESCE(C_PaymentAllocate.C_Payment_ID, 0)
                            THEN COALESCE(C_Payment.C_InvoicePaySchedule_ID,0) ELSE COALESCE(C_PaymentAllocate.C_InvoicePaySchedule_ID,0) END
                            FROM C_Payment LEFT JOIN C_PaymentAllocate ON(C_PaymentAllocate.C_Payment_ID = C_Payment.C_Payment_ID)
@@ -280,7 +280,12 @@ namespace VA009.Models
         /// <returns> bool true or false </returns>
         public bool GetIsAdvanceOrder(Ctx ctx, string c_Order_ID)
         {
-            int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(VA009_OrderPaySchedule_ID) FROM VA009_OrderPaySchedule pay INNER JOIN C_Order o ON pay.C_Order_ID=o.C_Order_ID WHERE o.IsActive='Y' AND  o.C_Order_ID=" + c_Order_ID, null, null));
+            SqlParameter[] param = new SqlParameter[1];
+            param[0] = new SqlParameter("@param1", Util.GetValueOfInt(c_Order_ID));
+            int count = Util.GetValueOfInt(DB.ExecuteScalar(@"SELECT COUNT(VA009_OrderPaySchedule_ID) 
+                        FROM VA009_OrderPaySchedule pay 
+                        INNER JOIN C_Order o ON (pay.C_Order_ID=o.C_Order_ID) 
+                        WHERE o.IsActive='Y' AND  o.C_Order_ID=@param1", param, null));
             return count > 0 ? true : false;
         }
 
@@ -368,11 +373,11 @@ namespace VA009.Models
         {
             Dictionary<string, object> result = null;
             string[] paramValue = fields.Split(',');
-            //Assign parameter value
             int C_Invoice_ID = Util.GetValueOfInt(paramValue[0].ToString());
-            //End Assign parameter
             result = new Dictionary<string, object>();
-            string _sql = "SELECT pm.va009_paymentbasetype,cb.va009_paymentmethod_id FROM c_invoice cb INNER JOIN va009_paymentmethod pm ON cb.va009_paymentmethod_id=pm.va009_paymentmethod_id WHERE cb.c_invoice_id=" + C_Invoice_ID;
+            string _sql = @"SELECT pm.va009_paymentbasetype,cb.va009_paymentmethod_id FROM c_invoice cb 
+                            INNER JOIN va009_paymentmethod pm ON (cb.va009_paymentmethod_id=pm.va009_paymentmethod_id) 
+                            WHERE cb.c_invoice_id=" + C_Invoice_ID;
             DataSet ds = DB.ExecuteDataset(_sql);
 
             if (ds != null && ds.Tables[0].Rows.Count > 0)
