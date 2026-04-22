@@ -6,6 +6,7 @@ using System.Web;
 using System.Web.Mvc;
 using VA009.Models;
 using VAdvantage.Utility;
+using VIS.Classes;
 
 namespace VA009.Controllers
 {
@@ -28,6 +29,23 @@ namespace VA009.Controllers
         public JsonResult CustomerReturnAnalysis(int rec_ID, string Depot, string CustName)
         {
             Ctx ct = Session["ctx"] as Ctx;
+            if (!string.IsNullOrEmpty(Depot))
+            {
+                Depot = SecureEngineBridge.DecryptByClientKey(Depot, ct.GetSecureKey());
+                if (!QueryValidator.IsValid(Depot))
+                {
+                    Depot = string.Empty;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(CustName))
+            {
+                CustName = SecureEngineBridge.DecryptByClientKey(CustName, ct.GetSecureKey());
+                if (!QueryValidator.IsValid(CustName))
+                {
+                    CustName = string.Empty;
+                }
+            }
             VA009_ReceivableAssesmentModel obhRecModel = new VA009_ReceivableAssesmentModel();
             return Json(obhRecModel.CustomerReturnAnalysis(rec_ID, Depot, CustName), JsonRequestBehavior.AllowGet);
         }
@@ -42,6 +60,23 @@ namespace VA009.Controllers
         public JsonResult GetFinInsightsData(string IsReturnTrx, string IsSOTrx, int AD_Table_ID, string TabName, string WinDisplayName, int AD_Window_ID)
         {
             Ctx ctx = Session["ctx"] as Ctx;
+            if (!string.IsNullOrEmpty(TabName))
+            {
+                TabName = SecureEngineBridge.DecryptByClientKey(TabName, ctx.GetSecureKey());
+                if (!QueryValidator.IsValid(TabName))
+                {
+                    TabName = string.Empty;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(WinDisplayName))
+            {
+                WinDisplayName = SecureEngineBridge.DecryptByClientKey(WinDisplayName, ctx.GetSecureKey());
+                if (!QueryValidator.IsValid(WinDisplayName))
+                {
+                    WinDisplayName = string.Empty;
+                }
+            }
             VA009_ReceivableAssesmentModel yearBasedExpenseData = new VA009_ReceivableAssesmentModel();
             List<dynamic> ExpenseData = yearBasedExpenseData.GetFinInsightsData(ctx, IsReturnTrx, IsSOTrx, AD_Table_ID, TabName, WinDisplayName, AD_Window_ID);
             return Json(JsonConvert.SerializeObject(ExpenseData), JsonRequestBehavior.AllowGet);
