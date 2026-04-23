@@ -4546,7 +4546,7 @@ namespace VA009.Models
                 {
                     InvoiceSchdIDS = "0";
                 }
-                else if (String.IsNullOrEmpty(JournalSchdIDS))
+                if (String.IsNullOrEmpty(JournalSchdIDS))
                 {
                     JournalSchdIDS = "0";
                 }
