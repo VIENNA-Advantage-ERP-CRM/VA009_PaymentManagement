@@ -5307,11 +5307,11 @@ namespace VA009.Models
                             {
                                 if (!string.IsNullOrEmpty(_conv.ToString()))
                                 {
-                                    _conv.Append(", " + _invoice.GetDocumentNo() + "_" + _payschedule.GetDueAmt());
+                                    _conv.Append(", " + _ord.GetDocumentNo() + "_" + orderPaySchedule.GetDueAmt());
                                 }
                                 else
                                 {
-                                    _conv.Append(Msg.GetMsg(ct, "NoCurrencyConversion") + ": " + _invoice.GetDocumentNo() + "_" + _payschedule.GetDueAmt());
+                                    _conv.Append(Msg.GetMsg(ct, "NoCurrencyConversion") + ": " + _ord.GetDocumentNo() + "_" + orderPaySchedule.GetDueAmt());
                                 }
                                 _log.Info(_conv.ToString());
                             }
