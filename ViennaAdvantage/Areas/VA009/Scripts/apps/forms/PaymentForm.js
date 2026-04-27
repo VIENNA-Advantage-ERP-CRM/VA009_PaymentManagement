@@ -10121,7 +10121,8 @@
                             _WhrOrg = "";
                         }
                         else {
-                            _WhrOrg = "AND cs.AD_Org_ID IN (" + VIS.context.getAD_Org_ID() + ")";
+                            /*VIS_045: 27-Apr-2026, Don't filter data based on login organization */
+                           /* _WhrOrg = "AND cs.AD_Org_ID IN (" + VIS.context.getAD_Org_ID() + ")";*/
                         }
                     }
                     //loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
@@ -10436,6 +10437,9 @@
 
             //if banks and accounts found
             if (data.bankdetails.length > 0) {
+                $tabCashbook.removeClass("VA009-active-tab");
+                $tabFunds.removeClass("VA009-active-tab");
+                $tabFunds.addClass("VA009-active-tab");
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
                 var _prvbankid = 0; var _prvCurrencyCode = ""; var bnkdiv;
