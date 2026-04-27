@@ -86,20 +86,21 @@ namespace VA009.Models
             StringBuilder sql = new StringBuilder();
             //Table name must Camel format
             //Log Issue handled
-            sql.Append(@"SELECT cs.Name,  bc.C_Bank_ID,  bc.C_BankAccount_ID,  bc.AccountNo,  cc.Iso_Code, bc.CurrentBalance, bc.UnMatchedBalance, cs.AD_Org_ID, cs.AD_Client_ID,
-                         SUM(p.PayAmt) AS TotalAmt FROM C_BankAccount bc INNER JOIN C_Bank cs ON (cs.C_Bank_ID =bc.C_Bank_ID) LEFT JOIN C_Payment p ON 
-                         (p.C_BankAccount_ID=bc.C_BankAccount_ID) INNER JOIN C_Currency cc ON (cc.C_Currency_ID =bc.C_Currency_ID) WHERE cs.ISACTIVE='Y' AND bc.ISACTIVE='Y' AND cs.IsOwnBank ='Y' ");
+            sql.Append(@"SELECT bc.Name,  cs.C_Bank_ID,  cs.C_BankAccount_ID,  cs.AccountNo,  cc.Iso_Code, cs.CurrentBalance, cs.UnMatchedBalance, bc.AD_Org_ID, bc.AD_Client_ID,
+                         SUM(p.PayAmt) AS TotalAmt FROM C_BankAccount cs INNER JOIN C_Bank bc ON (bc.C_Bank_ID =cs.C_Bank_ID) LEFT JOIN C_Payment p ON 
+                         (p.C_BankAccount_ID=cs.C_BankAccount_ID) INNER JOIN C_Currency cc ON (cc.C_Currency_ID =cs.C_Currency_ID)
+                            WHERE bc.ISACTIVE='Y' AND cs.ISACTIVE='Y' AND bc.IsOwnBank ='Y' ");
 
             // check access of Organization on Bank Account not on Bank
-            string finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "bc", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
+            string finalQuery = MRole.GetDefault(ctx).AddAccessSQL(sql.ToString(), "cs", MRole.SQL_FULLYQUALIFIED, MRole.SQL_RO);
 
             // sorting curency code wise
             if (OrgWhr != string.Empty)
-                finalQuery += (OrgWhr + @" GROUP BY cs.Name, bc.C_Bank_ID, bc.C_BankAccount_ID, bc.CurrentBalance, bc.UnMatchedBalance, bc.AccountNo, cc.Iso_Code, cs.AD_Org_ID,
-                                       cs.AD_Client_ID ORDER BY cc.Iso_Code");
+                finalQuery += (OrgWhr + @" GROUP BY bc.Name, cs.C_Bank_ID, cs.C_BankAccount_ID, cs.CurrentBalance, cs.UnMatchedBalance, cs.AccountNo, cc.Iso_Code, bc.AD_Org_ID,
+                                       bc.AD_Client_ID ORDER BY cc.Iso_Code");
             else
-                finalQuery += (@" GROUP BY cs.name, bc.C_Bank_ID, bc.C_BankAccount_ID, bc.CurrentBalance, bc.UnMatchedBalance, bc.AccountNo, cc.Iso_Code, cs.AD_Org_ID, 
-                              cs.AD_Client_ID ORDER BY cc.Iso_Code ");
+                finalQuery += (@" GROUP BY bc.name, cs.C_Bank_ID, cs.C_BankAccount_ID, cs.CurrentBalance, cs.UnMatchedBalance, cs.AccountNo, cc.Iso_Code, bc.AD_Org_ID, 
+                              bc.AD_Client_ID ORDER BY cc.Iso_Code ");
 
 
             DataSet ds = DB.ExecuteDataset(finalQuery);
