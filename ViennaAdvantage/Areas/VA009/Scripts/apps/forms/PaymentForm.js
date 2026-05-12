@@ -25,6 +25,10 @@
         var $togglebtn, lbdata, $lbmain, $divPayment, $BP, $BPSelected, $divBank;
         var pgNo = 1, pgSize = 20, PAGESIZE = 20, $CR_Tab, $CP_Tab, $XML_Tab, Pay_ID = 0; //changed page size
         var isloaded = false, _WhereQuery = "", $divcashbk;
+        // VIS_045 12-May-2026: tracks in-flight GetData request so a fresh search/tab/filter
+        // aborts a previously-dispatched scroll-page load instead of letting both callbacks
+        // append rows (which caused duplicate entries in the list).
+        var _currentLoadXhr = null;
         var orgids = [], bpids = [], SlctdPaymentIds = []; SlctdJournalPaymentIds = [];
         var SelectallOrdIds = [], SelectallInvIds = [], SelectallJournalIds = [];
         var paymntIds = [], statusIds = [];
@@ -10112,6 +10116,12 @@
         };
 
         function paymentScroll() {
+            // VIS_045 12-May-2026: don't dispatch another scroll-page fetch while one is
+            // already pending — would otherwise increment pgNo twice and append both
+            // responses, producing duplicates.
+            if (_currentLoadXhr) {
+                return;
+            }
             //VA230:Added 5 into scrolltop and innerHeight to solve somtimes condition not matched issue
             if ($(this).scrollTop() + $(this).innerHeight() + 5 >= this.scrollHeight) {
                 if (pgNo < noPages) {
@@ -10291,7 +10301,12 @@
             $bsyDiv[0].style.visibility = "visible";
             _whereQry = _PaymWhr + _statuswhr + _BPWhr + _orgwhr;
             FinalWhereQry(_isInv, _DocBaseTyp, _whereQry);
-            $.ajax({
+            // VIS_045 12-May-2026: abort any prior in-flight GetData so its callback
+            // can't append rows on top of the new result set.
+            if (_currentLoadXhr) {
+                try { _currentLoadXhr.abort(); } catch (e) { }
+            }
+            _currentLoadXhr = $.ajax({
                 url: VIS.Application.contextUrl + "VA009/Payment/GetData",
                 type: "GET",
                 datatype: "json",
@@ -10309,9 +10324,16 @@
                     ToDate: Todate
                 }),
                 success: function (result) {
+                    _currentLoadXhr = null;
                     callback(result);
                 },
-                error: function () {
+                error: function (jqXHR, textStatus) {
+                    // VIS_045 12-May-2026: a programmatic abort is expected when a newer
+                    // request supersedes this one — don't surface it as an error.
+                    if (textStatus === 'abort') {
+                        return;
+                    }
+                    _currentLoadXhr = null;
                     VIS.ADialog.error("VA009_ErrorLoadingPayments");
                     $bsyDiv[0].style.visibility = "hidden";
                 }
