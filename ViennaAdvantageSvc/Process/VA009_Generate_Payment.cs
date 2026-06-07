@@ -899,6 +899,28 @@ namespace ViennaAdvantage.Process
                                     {
                                         docNos.Append(completePayment.GetDocumentNo());
                                     }
+                                    //VIS323 Set AllocationID on BatchLineDetails
+                                    sql.Clear();
+                                    sql.Append(@"SELECT AL.C_AllocationHdr_ID FROM C_AllocationLine AL  
+                                                    INNER JOIN C_AllocationHdr AH ON
+                                                    AH.C_AllocationHdr_ID=AL.C_AllocationHdr_ID
+                                                    WHERE AH.Processed='Y'
+                                                    AND AH.DocStatus   IN ('CO','CL')
+                                                    AND AL.C_Payment_ID =" + _pay.GetC_Payment_ID());
+                                    try
+                                    {
+                                        allocationId = Util.GetValueOfInt(DB.ExecuteScalar(sql.ToString(), null, Get_TrxName()));
+                                        batchLineDetails.SetC_AllocationHdr_ID(allocationId);
+                                        if (!batchLineDetails.Save(Get_TrxName()))
+                                        {
+                                            return ErrorMessage();
+                                        }
+                                    }
+                                    catch (Exception ex)
+                                    {
+                                        Get_TrxName().Rollback();
+                                        return ex.Message;
+                                    }
 
                                     //VIS323 DevOpsId- 1719 Set Allocation on Batch Line Details
                                     //Handled multiple allocation to multiple invoice against Different Vendor/Customer.
