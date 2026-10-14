@@ -33,8 +33,17 @@ namespace VA009.Models
         {
             LoadData obj = new LoadData();
             obj.paymentdata = GetPaymentData(pageNo, pageSize, ctx, whereQry, SearchText, WhrDueDate, TransType, FromDate, ToDate);
-            obj.bankdetails = GetBankDetails(ctx, OrgWhr);
-            obj.Cbk = Getcashbooks(ctx, OrgWhr);
+            // bank and cashbook balances don't depend on the page: only the first page renders them
+            if (pageNo <= 1)
+            {
+                obj.bankdetails = GetBankDetails(ctx, OrgWhr);
+                obj.Cbk = Getcashbooks(ctx, OrgWhr);
+            }
+            else
+            {
+                obj.bankdetails = new List<BankDetails>();
+                obj.Cbk = new List<CashBook>();
+            }
             return obj;
         }
 
@@ -86,9 +95,10 @@ namespace VA009.Models
             StringBuilder sql = new StringBuilder();
             //Table name must Camel format
             //Log Issue handled
+            // TotalAmt is not shown on the form: summing every C_Payment of the account made each load slow
             sql.Append(@"SELECT bc.Name,  cs.C_Bank_ID,  cs.C_BankAccount_ID,  cs.AccountNo,  cc.Iso_Code, cs.CurrentBalance, cs.UnMatchedBalance, bc.AD_Org_ID, bc.AD_Client_ID,
-                         SUM(p.PayAmt) AS TotalAmt FROM C_BankAccount cs INNER JOIN C_Bank bc ON (bc.C_Bank_ID =cs.C_Bank_ID) LEFT JOIN C_Payment p ON 
-                         (p.C_BankAccount_ID=cs.C_BankAccount_ID) INNER JOIN C_Currency cc ON (cc.C_Currency_ID =cs.C_Currency_ID)
+                         0 AS TotalAmt FROM C_BankAccount cs INNER JOIN C_Bank bc ON (bc.C_Bank_ID =cs.C_Bank_ID)
+                         INNER JOIN C_Currency cc ON (cc.C_Currency_ID =cs.C_Currency_ID)
                             WHERE bc.ISACTIVE='Y' AND cs.ISACTIVE='Y' AND bc.IsOwnBank ='Y' ");
 
             // check access of Organization on Bank Account not on Bank
@@ -174,6 +184,21 @@ namespace VA009.Models
                     //countRecords = DBFuncCollection.GetPaymentDataCountRecord(ctx, whereQry, SearchText, WhrDueDate, TransType, FromDate, ToDate);
                 }
 
+                // fetch last chat and invoice doc base type for the whole page at once instead of per row
+                List<int> scheduleIds = new List<int>();
+                List<int> invoiceIds = new List<int>();
+                for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
+                {
+                    scheduleIds.Add(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]));
+                    if (Util.GetValueOfString(ds.Tables[0].Rows[i]["va009_transactiontype"]) == "Invoice")
+                    {
+                        invoiceIds.Add(Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"]));
+                    }
+                }
+                Dictionary<int, string> lastChats = GetLastChats(ctx, scheduleIds);
+                Dictionary<int, string> invDocBaseTypes = GetInvoiceDocBaseTypes(invoiceIds);
+                string value;
+
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     PaymentData _payData = new PaymentData();
@@ -194,7 +219,7 @@ namespace VA009.Models
                     _payData.AD_Client_ID = Util.GetValueOfInt(ds.Tables[0].Rows[i]["AD_Client_ID"]);
                     _payData.C_Bpartner = Util.GetValueOfString(ds.Tables[0].Rows[i]["C_Bpartner"]);
                     _payData.C_BP_Group = Util.GetValueOfString(ds.Tables[0].Rows[i]["C_BP_Group"]);
-                    _payData.LastChat = GetLastChat(ctx, Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]));
+                    _payData.LastChat = lastChats.TryGetValue(_payData.C_InvoicePaySchedule_ID, out value) ? value : string.Empty;
                     _payData.VA009_PaymentMethod = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentMethod"]);
                     _payData.PaymwentBaseType = Util.GetValueOfString(ds.Tables[0].Rows[i]["va009_paymentbasetype"]);
                     _payData.CurrencyCode = Util.GetValueOfString(ds.Tables[0].Rows[i]["ISO_CODE"]);
@@ -207,8 +232,8 @@ namespace VA009.Models
                     _payData.PaymentRule = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentRule"]);
                     _payData.PaymentType = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentType"]);
                     _payData.PaymentTriggerBy = Util.GetValueOfString(ds.Tables[0].Rows[i]["VA009_PaymentTrigger"]);
-                    _payData.DocBaseType = Util.GetValueOfString(DB.ExecuteScalar(@"SELECT dt.DocBaseType FROM C_Invoice inv INNER JOIN C_DocType dt ON inv.C_DocTypeTarget_ID=dt.C_DocType_ID 
-                            WHERE inv.C_Invoice_ID=" + Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_Invoice_ID"])));
+                    // only invoices: for orders C_Invoice_ID holds the C_Order_ID
+                    _payData.DocBaseType = _payData.TransactionType == "Invoice" && invDocBaseTypes.TryGetValue(_payData.C_Invoice_ID, out value) ? value : string.Empty;
                     _payData.Systemdate = string.Empty;
                     if (Util.GetValueOfString(ds.Tables[0].Rows[i]["basecurrencycode"]) != Util.GetValueOfString(ds.Tables[0].Rows[i]["ISO_CODE"]))
                     {
@@ -2983,6 +3008,71 @@ namespace VA009.Models
         }
 
         /// <summary>
+        /// Last chat entry of each schedule, when the current user wrote it (same rule as GetLastChat)
+        /// </summary>
+        /// <param name="ctx">Context</param>
+        /// <param name="recordIds">Schedule IDs</param>
+        /// <returns>Chat text by schedule ID</returns>
+        public Dictionary<int, string> GetLastChats(Ctx ctx, List<int> recordIds)
+        {
+            Dictionary<int, string> chats = new Dictionary<int, string>();
+            if (recordIds == null || recordIds.Count == 0)
+            {
+                return chats;
+            }
+            int tableid = Util.GetValueOfInt(DB.ExecuteScalar("select ad_table_id from ad_table where tablename = 'C_InvoicePaySchedule' and export_id='VIS_551'", null, null));
+            // chunks keep the IN list under Oracle's 1000 item limit
+            for (int start = 0; start < recordIds.Count; start += 500)
+            {
+                string ids = string.Join(",", recordIds.Skip(start).Take(500));
+                string sql = @"SELECT ch.Record_ID, ce.CharacterData FROM CM_Chat ch
+                            INNER JOIN CM_ChatEntry ce ON (ce.CM_Chat_ID = ch.CM_Chat_ID)
+                            INNER JOIN AD_User au ON (au.AD_User_ID = ce.CreatedBy)
+                            WHERE ch.AD_Table_ID = " + tableid + " AND ch.Record_ID IN (" + ids + @")
+                            AND ce.CreatedBy = " + ctx.GetAD_User_ID() + @"
+                            AND ce.CM_ChatEntry_ID = (SELECT MAX(e.CM_ChatEntry_ID) FROM CM_ChatEntry e WHERE e.CM_Chat_ID = ch.CM_Chat_ID)";
+                DataSet ds = DB.ExecuteDataset(sql, null, null);
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        int recordId = Util.GetValueOfInt(dr["Record_ID"]);
+                        if (!chats.ContainsKey(recordId))
+                        {
+                            chats[recordId] = Util.GetValueOfString(dr["CharacterData"]);
+                        }
+                    }
+                }
+            }
+            return chats;
+        }
+
+        /// <summary>
+        /// Doc Base Type of the Target Document Type of each invoice
+        /// </summary>
+        /// <param name="invoiceIds">Invoice IDs</param>
+        /// <returns>DocBaseType by C_Invoice_ID</returns>
+        public Dictionary<int, string> GetInvoiceDocBaseTypes(List<int> invoiceIds)
+        {
+            Dictionary<int, string> docBaseTypes = new Dictionary<int, string>();
+            List<int> ids = invoiceIds == null ? new List<int>() : invoiceIds.Where(id => id > 0).Distinct().ToList();
+            for (int start = 0; start < ids.Count; start += 500)
+            {
+                string sql = @"SELECT inv.C_Invoice_ID, dt.DocBaseType FROM C_Invoice inv INNER JOIN C_DocType dt ON (inv.C_DocTypeTarget_ID = dt.C_DocType_ID)
+                            WHERE inv.C_Invoice_ID IN (" + string.Join(",", ids.Skip(start).Take(500)) + ")";
+                DataSet ds = DB.ExecuteDataset(sql, null, null);
+                if (ds != null && ds.Tables.Count > 0)
+                {
+                    foreach (DataRow dr in ds.Tables[0].Rows)
+                    {
+                        docBaseTypes[Util.GetValueOfInt(dr["C_Invoice_ID"])] = Util.GetValueOfString(dr["DocBaseType"]);
+                    }
+                }
+            }
+            return docBaseTypes;
+        }
+
+        /// <summary>
         /// Generate Lines on Payment Selection
         /// </summary>
         /// <param name="ctx">Context</param>
@@ -4176,11 +4266,11 @@ namespace VA009.Models
             // Show currency Code with Bank Account
             //handled logs
             //VIS_427 Handled query to get precision
-            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision FROM C_BankAccount acct INNER JOIN C_Currency cu ON (acct.C_Currency_ID = cu.C_Currency_ID)");
+            qry.Append("SELECT acct.C_BankAccount_ID, acct.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision, acct.C_Currency_ID FROM C_BankAccount acct INNER JOIN C_Currency cu ON (acct.C_Currency_ID = cu.C_Currency_ID)");
             if (c_Bank_ID == 0)
             {
                 qry.Clear();
-                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision FROM C_BankAccount ba INNER JOIN C_Bank B ON (b.C_Bank_ID=ba.C_Bank_ID)
+                qry.Append(@"SELECT ba.C_BankAccount_ID, b.name  || '_'  || ba.AccountNo || '_' || cu.Iso_Code AS AccountNo, cu.StdPrecision, ba.C_Currency_ID FROM C_BankAccount ba INNER JOIN C_Bank B ON (b.C_Bank_ID=ba.C_Bank_ID)
                             INNER JOIN C_Currency cu ON (ba.C_Currency_ID = cu.C_Currency_ID)");
             }
 
@@ -4231,6 +4321,7 @@ namespace VA009.Models
                     obj["C_BankAccount_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][0]);
                     obj["AccountNo"] = Util.GetValueOfString(ds.Tables[0].Rows[i][1]);
                     obj["Precision"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][2]);
+                    obj["C_Currency_ID"] = Util.GetValueOfInt(ds.Tables[0].Rows[i][3]);
                     retDic.Add(obj);
                 }
             }

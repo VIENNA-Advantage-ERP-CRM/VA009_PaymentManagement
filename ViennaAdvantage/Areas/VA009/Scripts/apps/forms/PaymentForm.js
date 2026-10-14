@@ -108,6 +108,10 @@
         var _ChequesNotAvailable = false;
         var $btnChequePrint = null, chequePrintParams = [];
         var $batch = null; BatchDialog = null;
+        //time of the last toolbar-icon click, used to ignore double clicks that would open a dialog twice
+        var _lastDialogOpenTime = 0;
+        //last From/To Date values sent to the server, so the date filters don't reload when nothing changed
+        var _appliedFromDate = "", _appliedToDate = "";
         //var elements = [
         //    "VA009_Cancel",
         //];
@@ -619,46 +623,15 @@
             });
             //end
 
-            //used blur incase of change to avoid cal the event immediatly when press change the single character
-            $FromDate.on("blur", function () {
-                if (Date.parse($FromDate.val()) < 0) {
-                    //if user not entered proper Date format 
+            // Date filters apply only when focus leaves the field (tab out / click away),
+            // not while day/month/year are being changed
+            $FromDate.add($ToDate).on("blur", function () {
+                if (this.validity && this.validity.badInput) {
+                    //if user not entered proper Date format
                     VIS.ADialog.info("VA009_PlzSelectProperDate");
                     return;
                 }
-                if ($FromDate.val() == "") {
-                    //(1052)if date is empty or half entered then clear the field
-                    $FromDate.val("");
-                    //return;
-                }
-                $divPayment.find('.VA009-payment-wrap').remove();
-                $divBank.find('.VA009-right-data-main').remove();
-                $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
-                resetPaging();
-                loadPaymetsAll();
-                clearamtid(); //calling function to clear the total amt
-            });
-
-            //used blur incase of change to avoid cal the event immediatly when press change the single character
-            $ToDate.on("blur", function () {
-                if (Date.parse($ToDate.val()) < 0) {
-                    //if user not entered proper Date format 
-                    VIS.ADialog.info("VA009_PlzSelectProperDate");
-                    return;
-                }
-                if ($ToDate.val() == "") {
-                    //(1052)if date is empty or half entered then clear the field
-                    $ToDate.val("");
-                    //return;
-                }
-                $divPayment.find('.VA009-payment-wrap').remove();
-                $divBank.find('.VA009-right-data-main').remove();
-                $divBank.find('.VA009-accordion').remove();
-                pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
-                resetPaging();
-                loadPaymetsAll();
-                clearamtid(); //calling function to clear the total amt
+                applyDateFilter();
             });
 
             $divPayment.on("scroll", paymentScroll);
@@ -684,6 +657,7 @@
             });
 
             $chkicon.on("click", function (e) {
+                if (isRepeatedIconClick()) { return; }
                 if ($CP_Tab.hasClass('VA009-active-tab')) {
                     if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                         //Rakesh(VA228):Set target base type
@@ -708,6 +682,7 @@
             });
 
             $cashicon.on("click", function (e) {
+                if (isRepeatedIconClick()) { return; }
                 //VA230:Select either Invoice or Order schedule only
                 if (SlctdPaymentIds.length > 0 && SlctdOrderPaymentIds.length > 0) {
                     VIS.ADialog.info("VA009_SelectEitherInvoiceOrOrderSchedule");
@@ -725,12 +700,14 @@
             });
 
             $batchicon.on("click", function (e) {
+                if (isRepeatedIconClick()) { return; }
                 //Batch Payment(BAP)
                 _TargetBaseType = 4;
                 _loadFunctions.Batch_OpenDialog();
             });
 
             $Spliticon.on("click", function (e) {
+                if (isRepeatedIconClick()) { return; }
                 if (SlctdJournalPaymentIds.length > 0) {
                     VIS.ADialog.info("VA009_JournalRecordCantSplitted");
                 }
@@ -751,6 +728,7 @@
             });
 
             $PayMannualicon.on("click", function (e) {
+                if (isRepeatedIconClick()) { return; }
                 if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                     if ($CR_Tab.hasClass('VA009-active-tab')) {
                         _TargetBaseType = 1;
@@ -767,6 +745,7 @@
 
             //Bank TO Bank
             $PayBankToBank.on("click", function (e) {
+                if (isRepeatedIconClick()) { return; }
                 //bug176:for bank to bank transfer if any schedule is selected then donot let open the dialog 
                 if (SlctdPaymentIds.length > 0 || SlctdOrderPaymentIds.length > 0 || SlctdJournalPaymentIds.length > 0) {
                     VIS.ADialog.info("VA009_PlzNotSelctSch");
@@ -777,22 +756,20 @@
             });
 
             $Duedateul.on("change", function (e) {
-
-                if ($DueDateSelected.find("li").length > 0) // For Continues Selection
-                {
-                    if (Duedateval.indexOf($Duedateul.val()) == -1) {
-                        $DueDateSelected.find("ul").append('<li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelDueimg_" + $Duedateul.val() + '></i> <span>' + VIS.Utility.encodeText($Duedateul.children()[$Duedateul[0].selectedIndex].text) + '</span></li>');
-                        Duedateval.push($Duedateul.val());
-                        whereClause("DueDate", Duedateval);
-                    }
-                    else
-                        VIS.ADialog.info("VA009_AlrdySlctd");
+                if ($Duedateul.val() == "") {
+                    return;
                 }
-                else {
-                    $DueDateSelected.append('<ul id=' + "VA009_PayMthUL_" + $Duedateul.val() + ' ><li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelDueimg_" + $Duedateul.val() + '></i> <span>' + VIS.Utility.encodeText($Duedateul.children()[$Duedateul[0].selectedIndex].text) + '</span></li> </ul>');
-                    Duedateval.push($Duedateul.val());
-                    whereClause("DueDate", Duedateval);
+                if (Duedateval.length == 1 && Duedateval[0] == $Duedateul.val()) {
+                    VIS.ADialog.info("VA009_AlrdySlctd");
+                    $Duedateul.prop('selectedIndex', 0);
+                    return;
                 }
+                // Due Date options are nested ranges (due within N days), so only one can apply:
+                // a new selection replaces the previous one instead of being added next to it
+                $DueDateSelected.find("ul").remove();
+                $DueDateSelected.append('<ul id=' + "VA009_PayMthUL_" + $Duedateul.val() + ' ><li ><i title="' + VIS.Msg.getMsg("VA009_Cancel") + '" class="VA009-cross-btn vis vis-mark" id=' + "VA009_DelDueimg_" + $Duedateul.val() + '></i> <span>' + VIS.Utility.encodeText($Duedateul.children()[$Duedateul[0].selectedIndex].text) + '</span></li> </ul>');
+                Duedateval = [$Duedateul.val()];
+                whereClause("DueDate", Duedateval);
                 $Duedateul.prop('selectedIndex', 0);
                 $divPayment.find('.VA009-payment-wrap').remove();
                 $divBank.find('.VA009-right-data-main').remove();
@@ -1001,6 +978,10 @@
 
             var chk;
             var target = $(e.target);
+            //the "no records" message is not a schedule row
+            if (target.closest('.VA009-no-records').length > 0) {
+                return;
+            }
             if (target.hasClass('vis vis-edit')) {
                 Pay_ID = target.data("uid");
                 var InvID = target.data("invoiceid");
@@ -1337,6 +1318,23 @@
             //$totalAmt.data('ttlamt', parseFloat(0));
         };
 
+        /* true when an icon was clicked again within a second: the dialogs share
+           control variables, so a second dialog would receive the first one's data too */
+        function isRepeatedIconClick() {
+            var now = new Date().getTime();
+            if (now - _lastDialogOpenTime < 1000) {
+                return true;
+            }
+            _lastDialogOpenTime = now;
+            return false;
+        };
+
+        /* Translated message, or the fallback text when the AD_Message is not deployed yet. */
+        function getMsgOrDefault(key, defaultText) {
+            var msg = VIS.Msg.getMsg(key);
+            return (!msg || msg == key) ? defaultText : msg;
+        };
+
         function getFormattednumber(value, precision) {
             if (value && typeof value == 'number') {
                 value = parseFloat(value).toLocaleString(undefined, { minimumFractionDigits: precision });
@@ -1353,6 +1351,8 @@
                 var _org_Id = $POP_cmbOrg != null ? $POP_cmbOrg.val() : 0;
                 VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id, "baseType": basetype }, callbacktargettype);
                 function callbacktargettype(dr) {
+                    // clear inside the callback so overlapping loads can't append twice
+                    $control.empty();
                     $control.append(" <option value = 0></option>");
                     if (dr != null && dr.length > 0) {
                         for (var i in dr) {
@@ -1376,6 +1376,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankTargetType", { "BankAcct_ID": bankAcct_ID, "BaseType": basetype }, callbacktargettype);
                 }
                 function callbacktargettype(dr) {
+                    $control.empty();
                     $control.append(" <option value = 0></option>");
                     if (dr != null && dr.length > 0) {
                         for (var i in dr) {
@@ -2527,6 +2528,7 @@
                     $POP_PayMthd.empty();
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadChequePaymentMethod", { "Org_ID": $POP_cmbOrg.val() }, callbackloadpaymthds);
                     function callbackloadpaymthds(dr) {
+                        $POP_PayMthd.empty();
                         if (dr.length > 0) {
                             for (var i in dr) {
                                 $POP_PayMthd.append("<option value=" + VIS.Utility.Util.getValueOfInt(dr[i].VA009_PaymentMethod_ID) + ">" + VIS.Utility.encodeText(dr[i].VA009_Name) + "</option>");
@@ -2540,6 +2542,7 @@
                 function loadOrg() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                     function callbackloadorg(dr) {
+                        $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -2685,6 +2688,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $pop_cmbCurrencyType.empty();
                         $pop_cmbCurrencyType.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -2748,6 +2752,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
+                        $POP_cmbBankAccount.empty();
 
                         $POP_cmbBankAccount.append("<option value='0'></option>");
                         if (dr != null) {
@@ -3622,6 +3627,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $pop_cmbCurrencyType.empty();
 
                         $pop_cmbCurrencyType.append("<option value='0'></option>");
                         if (dr.length > 0) {
@@ -3640,6 +3646,7 @@
                 function loadPayMthd() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadChequePaymentMethod", { "Org_ID": null }, callbackloadpaymthds);
                     function callbackloadpaymthds(dr) {
+                        $POP_PayMthd.empty();
                         if (dr.length > 1)
                             $POP_PayMthd.append(" <option value = 0></option>");
 
@@ -3656,6 +3663,7 @@
                 function loadOrg() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                     function callbackloadorg(dr) {
+                        $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -3714,6 +3722,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $RPOP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
+                        $RPOP_cmbBankAccount.empty();
 
                         $RPOP_cmbBankAccount.append("<option value='0'></option>");
                         if (dr != null) {
@@ -5326,6 +5335,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $pop_cmbCurrencyType.empty();
                         $pop_cmbCurrencyType.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -5344,6 +5354,7 @@
                 function loadOrg() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                     function callbackloadorg(dr) {
+                        $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -6822,6 +6833,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $pop_cmbCurrencyType.empty();
                         $pop_cmbCurrencyType.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -6840,6 +6852,7 @@
                 function loadOrg() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                     function callbackloadorg(dr) {
+                        $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -6856,6 +6869,7 @@
                     var _org_Id = $POP_cmbOrg != null ? $POP_cmbOrg.val() : 0;
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadTargetType", { "ad_org_Id": _org_Id, "basetype": 3 }, callbacktargettype);
                     function callbacktargettype(dr) {
+                        $POP_targetDocType.empty();
                         $POP_targetDocType.append(" <option value = 0></option>");
                         if (dr != null && dr.length > 0) {
                             for (var i in dr) {
@@ -6879,6 +6893,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencies", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $POP_cmbCurrency.empty();
                         $POP_cmbCurrency.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -6938,6 +6953,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
+                        $POP_cmbBankAccount.empty();
                         $POP_cmbBankAccount.append("<option value='0'></option>");
                         if (dr != null) {
                             if (dr.length > 0) {
@@ -7211,6 +7227,7 @@
                 function loadPayMthd() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBatchPaymentMethod", null, callbackloadpaymthds);
                     function callbackloadpaymthds(dr) {
+                        $POP_PayMthd.empty();
                         $POP_PayMthd.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -8459,6 +8476,7 @@
                 function loadOrg() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                     function callbackloadorg(dr) {
+                        $OrgCmb.empty();
                         $OrgCmb.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -8472,6 +8490,7 @@
                 function loadPaymentMthd() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
                     function callbackloadpaymthds(dr) {
+                        $paymentMthd.empty();
                         $paymentMthd.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -8491,6 +8510,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $cmbCurrencyType.empty();
                         $cmbCurrencyType.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -8509,6 +8529,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencies", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $cmbCurrencies.empty();
                         $cmbCurrencies.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -8815,6 +8836,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadBankAccount", { "Bank_ID": $POP_cmbBank.val(), "Orgs": $POP_cmbOrg.val() }, callbackloadbankAcct);
 
                     function callbackloadbankAcct(dr) {
+                        $POP_cmbBankAccount.empty();
                         $POP_cmbBankAccount.append("<option value='0'></option>");
                         if (dr != null) {
                             if (dr.length > 0) {
@@ -8880,6 +8902,7 @@
                 function loadOrg() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
                     function callbackloadorg(dr) {
+                        $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -8893,6 +8916,7 @@
                 function loadPayMthd() {
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadPaymentMethod", null, callbackloadpaymthds);
                     function callbackloadpaymthds(dr) {
+                        $POP_PayMthd.empty();
                         if (dr.length > 1)
                             $POP_PayMthd.append(" <option value = 0></option>");
 
@@ -8912,6 +8936,7 @@
                     VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/loadCurrencyType", null, callbackCurrencyType);
 
                     function callbackCurrencyType(dr) {
+                        $POP_CurrencyType.empty();
                         $POP_CurrencyType.append("<option value='0'></option>");
                         if (dr.length > 0) {
                             for (var i in dr) {
@@ -8919,6 +8944,10 @@
                                 if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
                                     defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
                                 }
+                            }
+                            if (defaultCurrenyType > 0) {
+                                $POP_CurrencyType.val(defaultCurrenyType);
+                                $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
                             }
                         }
                     }
@@ -9150,6 +9179,11 @@
                 _payManual.append(_addOrg).append(divAmount).append(_addAmt);//append the child tags to parent div
                 $payManual.append(_payManual);
                 payManualGetControls();
+                // default Transaction and Account dates to today, same as the Cheque and Bank Transfer dialogs
+                var now = new Date();
+                var _today = now.getFullYear() + "-" + (("0" + (now.getMonth() + 1)).slice(-2)) + "-" + (("0" + now.getDate()).slice(-2));
+                $POP_DateTrx.val(_today).removeClass('vis-ev-col-mandatory');
+                $POP_DateAcct.val(_today).removeClass('vis-ev-col-mandatory');
                 var manualDialog = new VIS.ChildDialog();
                 manualDialog.setContent($payManual);
                 manualDialog.setTitle(VIS.Msg.getMsg("VA009_PayMannual"));
@@ -9262,7 +9296,7 @@
                             if (dr != null) {
                                 if (dr.length > 0) {
                                     for (var i in dr) {
-                                        $POP_cmbBankAccount.append("<option precision=" + VIS.Utility.Util.getValueOfInt(dr[i].Precision) + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
+                                        $POP_cmbBankAccount.append("<option precision=" + VIS.Utility.Util.getValueOfInt(dr[i].Precision) + " currency=" + VIS.Utility.Util.getValueOfInt(dr[i].C_Currency_ID) + " value=" + VIS.Utility.Util.getValueOfInt(dr[i].C_BankAccount_ID) + ">" + VIS.Utility.encodeText(dr[i].AccountNo) + "</option>");
                                     }
                                 }
                             }
@@ -9280,6 +9314,12 @@
                         stdPrecision = $('#VA009_POP_cmbBankAccount_' + $self.windowNo).find(':selected').attr('precision')
                         if (stdPrecision == null || stdPrecision == 0) {
                             stdPrecision = 2;
+                        }
+                        //set Currency from the selected Bank Account (loaded with the account list)
+                        var currency = VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.find(':selected').attr('currency'));
+                        if (currency > 0 && $POP_Currency.find("option[value='" + currency + "']").length > 0) {
+                            $POP_Currency.val(currency);
+                            $POP_Currency.removeClass('vis-ev-col-mandatory');
                         }
                         getCheckNo();
                     });
@@ -9562,6 +9602,11 @@
                                 if (VIS.Utility.encodeText(dr[i].IsDefault) == "Y") {
                                     defaultCurrenyType = VIS.Utility.Util.getValueOfInt(dr[i].C_ConversionType_ID);
                                 }
+                            }
+                            //preselect the default Currency Type, same as the other payment dialogs
+                            if (defaultCurrenyType > 0) {
+                                $POP_CurrencyType.val(defaultCurrenyType);
+                                $POP_CurrencyType.removeClass('vis-ev-col-mandatory');
                             }
                         }
                     }
@@ -10298,6 +10343,7 @@
         function loadPaymets(_isInv, _DocBaseTyp, pgNo, pgSize, _orgwhr, _PaymWhr, _statuswhr, _BPWhr, _SearchText, DueDateSelected, _TransTypewhr, Frmdate, Todate, callback) {
             //VA230:Handle amount search according to culture in searchtext field
             var txtSearchText = convertSearchAmountToDotFormat();
+            $divPayment.find('.VA009-no-records').remove();
             $bsyDiv[0].style.visibility = "visible";
             _whereQry = _PaymWhr + _statuswhr + _BPWhr + _orgwhr;
             FinalWhereQry(_isInv, _DocBaseTyp, _whereQry);
@@ -10312,6 +10358,8 @@
                 datatype: "json",
                 contentType: "application/json; charset=utf-8",
                 async: true,
+                // a filter change must always reach the server, never be answered from the browser cache
+                cache: false,
                 data: ({
                     pageNo: pgNo,
                     pageSize: pgSize,
@@ -10348,6 +10396,10 @@
                 if ($selectall.is(":checked")) {
                     $selectall.trigger("click");
                 }
+                //nothing on the first page means nothing matches the filters: say so instead of a blank list
+                if (pgNo == 1 && $divPayment.find('.VA009-payment-wrap').length == 0) {
+                    showPaymentListMessage(getMsgOrDefault("VA009_NoRecordsFound", "No payment schedules match the selected filters."), false);
+                }
             }
 
             //If payment schedule found
@@ -10356,6 +10408,7 @@
                     paymentCount = data.paymentdata[0].paymentCount;
                     noPages = Math.ceil(paymentCount / PAGESIZE);
                 }
+                var rowsHtml = [];
                 for (var i in data.paymentdata) {
                     id = id + 1;
                     if (data.paymentdata[i].TransactionType == "Invoice") {
@@ -10439,17 +10492,16 @@
                         dsgn += ' </div></div>';
                     }
                     dsgn += ' <div class="col-md-3 col-sm-3"> ' + ' <div class="VA009-right-part"><span class="vis vis-edit" data-UID="' + data.paymentdata[i].C_InvoicePaySchedule_ID + '" data-InvoiceID="' + data.paymentdata[i].C_Invoice_ID + '" data-TransactionType ="' + data.paymentdata[i].TransactionType
-                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + '<span class="va009-middle-amt">' + data.paymentdata[i].CurrencyCode + '</span>' + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span><br> </div> </div> ' +
+                        + '" data-IsHoldPayment ="' + data.paymentdata[i].IsHoldPayment + '"  alt="' + VIS.Msg.getMsg("VA009_Edit") + '" title="' + VIS.Msg.getMsg("VA009_Edit") + '"></span> <span class="VA009-info-icon vis vis-info" data-UID="' + data.paymentdata[i].C_BPartner_ID + '" alt="' + VIS.Msg.getMsg("VA009_Info") + '" title="' + VIS.Msg.getMsg("VA009_Info") + '"></span><div class="VA009-pay-amount" id=' + "VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID + '> <span title="Amount Due">' + '<span class="va009-middle-amt">' + data.paymentdata[i].CurrencyCode + '</span>' + ' ' + parseFloat(data.paymentdata[i].DueAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span><br> '
+                        // amount in base currency, when the schedule is in another currency
+                        + (_SameCurrency == 'N' ? '<span class="VA009-color-gray" title="Amount Due">' + '<span class="va009-middle-amt">' + data.paymentdata[i].BaseCurrencyCode + '</span>' + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span> ' : '')
+                        + '</div> </div> ' +
                         '</div></div></div>';
 
-
-                    $divPayment.append(dsgn);
-                    //$ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
-                    if (_SameCurrency == 'N') {
-                        $ConvertedAmt = $root.find("#VA009_ConvertedAmt_" + $self.windowNo + '_' + data.paymentdata[i].C_InvoicePaySchedule_ID);
-                        $ConvertedAmt.append('<span class="VA009-color-gray" title="Amount Due">' + '<span class="va009-middle-amt">' + data.paymentdata[i].BaseCurrencyCode + '</span>' + ' ' + parseFloat(data.paymentdata[i].convertedAmt).toLocaleString(window.navigator.language, { minimumFractionDigits: data.paymentdata[i].precision }) + '</span> ');
-                    }
+                    rowsHtml.push(dsgn);
                 }
+                // one DOM insert for the whole page instead of one per row
+                $divPayment.append(rowsHtml.join(''));
 
                 if ($selectall.is(":checked")) {
                     $selectall.prop('checked', false);
@@ -10457,8 +10509,10 @@
                 }
             }
 
+            // bank and cashbook balances come only with the first page; scroll pages keep the panel as it is
+            var isFirstPage = pgNo <= 1;
             //if banks and accounts found
-            if (data.bankdetails.length > 0) {
+            if (isFirstPage && data.bankdetails.length > 0) {
                 $tabCashbook.removeClass("VA009-active-tab");
                 $tabFunds.removeClass("VA009-active-tab");
                 $tabFunds.addClass("VA009-active-tab");
@@ -10545,12 +10599,12 @@
                 $divBank.append('</div></div>');
 
             }
-            else {
+            else if (isFirstPage) {
                 $divBank.find('.VA009-right-data-main').remove();
                 $divBank.find('.VA009-accordion').remove();
             }
             //if cashbooks found
-            if (data.Cbk.length > 0) {
+            if (isFirstPage && data.Cbk.length > 0) {
                 $divBank.append(' <div class="VA009-right-data-main" style="display: none;" id=' + "VA009_cashbkdiv_" + $self.windowNo + '> </div>');
                 $divcashbk = $root.find("#VA009_cashbkdiv_" + $self.windowNo);
                 $divcashbk.append(' <h5>' + VIS.Msg.getMsg("VA009_Cashbook") + '</h5> ');
@@ -10903,6 +10957,49 @@
             loadPaymets(_isinvoice, _DocType, pgNo, pgSize, _WhrOrg, _WhrPayMtd, _WhrStatus, _Whr_BPrtnr, $SrchTxtBox.val(), DueDateSelected, _WhrTransType, $FromDate.val(), $ToDate.val(), loadcallback);
         };
         //end
+
+        /* empty, or a full date with a 4-digit year (not a year still being typed, e.g. 0202) */
+        function isCompleteDate(value) {
+            return value == "" || VIS.Utility.Util.getValueOfInt(value.substring(0, 4)) >= 1900;
+        };
+
+        /* Reload the schedules for the From/To Date filters, only when their values changed */
+        function applyDateFilter() {
+            var fromDate = $FromDate.val(), toDate = $ToDate.val();
+            if (!isCompleteDate(fromDate) || !isCompleteDate(toDate)) {
+                return;
+            }
+            if (fromDate == _appliedFromDate && toDate == _appliedToDate) {
+                return;
+            }
+            _appliedFromDate = fromDate;
+            _appliedToDate = toDate;
+
+            $divPayment.find('.VA009-payment-wrap').remove();
+            pgNo = 1; SlctdPaymentIds = []; SlctdOrderPaymentIds = []; batchObjInv = []; batchObjOrd = []; SlctdJournalPaymentIds = []; batchObjJournal = [];
+            resetPaging();
+            clearamtid(); //calling function to clear the total amt
+
+            // a reversed range can't match anything: say so instead of showing an empty list
+            if (fromDate != "" && toDate != "" && fromDate > toDate) {
+                if (_currentLoadXhr) {
+                    try { _currentLoadXhr.abort(); } catch (e) { }
+                    _currentLoadXhr = null;
+                    $bsyDiv[0].style.visibility = "hidden";
+                }
+                showPaymentListMessage(getMsgOrDefault("VA009_FromDateAfterToDate", "From Date is after To Date. Correct the date range to see records."), true);
+                return;
+            }
+            $divBank.find('.VA009-right-data-main').remove();
+            $divBank.find('.VA009-accordion').remove();
+            loadPaymetsAll();
+        };
+
+        /* Show a message in place of the schedule list (no records, invalid filter) */
+        function showPaymentListMessage(text, isWarning) {
+            $divPayment.find('.VA009-no-records').remove();
+            $divPayment.append('<div class="VA009-no-records' + (isWarning ? ' VA009-no-records-warning' : '') + '">' + VIS.Utility.encodeText(text) + '</div>');
+        };
         function checkcommaordot(event, val, amt) {
             var foundComma = false;
             if (event == undefined) {

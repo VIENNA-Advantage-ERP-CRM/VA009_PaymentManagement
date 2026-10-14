@@ -24,8 +24,6 @@ namespace ViennaAdvantage.Process
         int _payschedule = 0;
         DateTime? _DateDoc_From = null;
         DateTime? _DateDoc_To = null;
-        DateTime? _duedate = null;
-        DateTime? _sysdate = null;
        
         protected override string DoIt()
         {
@@ -33,6 +31,10 @@ namespace ViennaAdvantage.Process
             _sql.Clear();
             _sql.Append("SELECT cs.C_InvoicePaySchedule_ID,  cs.DueDate FROM C_InvoicePaySchedule cs INNER JOIN c_doctype cd ON cs.c_doctype_id=cd.c_doctype_id");
             _sql.Append(" Where cs.IsActive = 'Y' and cs.ad_client_id=" + GetAD_Client_ID());
+            // only unpaid schedules still Awaited and due before today; paid or already
+            // processed schedules (Received, In-Progress, Batch...) must keep their status
+            _sql.Append(" AND cs.VA009_IsPaid = 'N' AND cs.VA009_ExecutionStatus = 'A'"); // A = Awaited
+            _sql.Append(" AND cs.DueDate < " + GlobalVariable.TO_DATE(DateTime.Now.Date, true));
             if (_docType > 0)
             {
                 _sql.Append(" and cs.c_doctype_id=" + _docType);
@@ -56,23 +58,27 @@ namespace ViennaAdvantage.Process
 
             DataSet ds = new DataSet();
             ds = DB.ExecuteDataset(_sql.ToString());
-            if (ds.Tables != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
+            if (ds != null && ds.Tables.Count > 0 && ds.Tables[0].Rows.Count > 0)
             {
+                int updated = 0, failed = 0;
                 for (int i = 0; i < ds.Tables[0].Rows.Count; i++)
                 {
                     _payschedule = Util.GetValueOfInt(ds.Tables[0].Rows[i]["C_InvoicePaySchedule_ID"]);
-                    _duedate= Util.GetValueOfDateTime(ds.Tables[0].Rows[i]["DueDate"]);
-                    _sysdate=System.DateTime.Now;
-                    if (_duedate < _sysdate)
+                    MInvoicePaySchedule PaySchedule = new MInvoicePaySchedule(GetCtx(), _payschedule, Get_TrxName());
+                    PaySchedule.SetVA009_ExecutionStatus("O"); // O = Overdue
+                    if (PaySchedule.Save())
                     {
-                        MInvoicePaySchedule PaySchedule = new MInvoicePaySchedule(GetCtx(), _payschedule, null);
-                        PaySchedule.SetVA009_ExecutionStatus("O");
-                        if (!PaySchedule.Save())
-                        {
-                        }
+                        updated++;
+                    }
+                    else
+                    {
+                        failed++;
+                        ValueNamePair pp = VLogger.RetrieveError();
+                        log.Warning("Could not set Overdue on C_InvoicePaySchedule_ID=" + _payschedule
+                            + (pp != null ? " - " + pp.GetName() : ""));
                     }
                 }
-                return Msg.GetMsg(GetCtx(), "VA009_ShduleCrted");
+                return Msg.GetMsg(GetCtx(), "VA009_ShduleCrted") + " (" + updated + (failed > 0 ? ", " + failed + " failed" : "") + ")";
             }
             return Msg.GetMsg(GetCtx(), "VA009_ShduleNtFound");
         }

@@ -90,6 +90,18 @@ overflow-x: hidden;
 height: 650px;
 }
 
+/* message shown in place of the schedule list (no records / invalid filter) */
+.VA009-no-records {
+    padding: 40px 16px;
+    text-align: center;
+    color: #6b6b6b;
+    font-size: 14px;
+}
+
+.VA009-no-records-warning {
+    color: #b45309;
+}
+
 .VA009-assign-content{
   position: relative;
   height: 100%;
