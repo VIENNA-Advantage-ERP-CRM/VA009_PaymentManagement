@@ -30,6 +30,18 @@ namespace VA009.Models
     {
         private static VLogger _log = VLogger.GetVLogger(typeof(PaymentModel).FullName);
 
+        /// <summary>
+        /// Unique transaction name. A timestamp alone (hundredths of a second) repeats when two users save in the same
+        /// instant, and Trx.GetTrx hands back the same transaction for the same name, so both users would share one
+        /// transaction and a commit or rollback of one would hit the other's payments.
+        /// </summary>
+        /// <param name="prefix">Flow name</param>
+        /// <returns>Transaction name</returns>
+        private static string NewTrxName(string prefix)
+        {
+            return prefix + DateTime.Now.ToString("yyMMddHHmmssff") + "_" + Guid.NewGuid().ToString("N").Substring(0, 8);
+        }
+
         public LoadData GetloadData(int pageNo, int pageSize, Ctx ctx, string whereQry, string OrgWhr, string SearchText, string WhrDueDate, string TransType, string FromDate, string ToDate)
         {
             LoadData obj = new LoadData();
@@ -627,7 +639,7 @@ namespace VA009.Models
         /// <returns>String, Message</returns>
         public string CreatePayments(Ctx ct, GeneratePaymt[] PaymentData)
         {
-            Trx trx = Trx.GetTrx("Payment_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("Payment_"));
             StringBuilder ex = new StringBuilder();
             string msg = Msg.GetMsg(ct, "VA009_PaymentCompletedWith");
             StringBuilder docno = new StringBuilder();
@@ -1923,7 +1935,7 @@ namespace VA009.Models
         /// <returns>String, Message</returns>
         public string CreatePaymentsCash(Ctx ct, GeneratePaymt[] PaymentData, int C_CashBook_ID, decimal BeginningBalance)
         {
-            Trx trx = Trx.GetTrx("Cash_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("Cash_"));
             string status = "I";
             string msg = string.Empty;
             string docno = "";
@@ -2134,7 +2146,7 @@ namespace VA009.Models
 
         public string CrateBatchPayment(Ctx ct, GeneratePaymt[] PaymentData)
         {
-            Trx trx = Trx.GetTrx("Batch_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("Batch_"));
             List<int> abc = new List<int>();
             List<int> BtachId = new List<int>();
             StringBuilder docno = new StringBuilder();
@@ -2712,7 +2724,7 @@ namespace VA009.Models
             String Msg = "VA009_SavedSuccessfullySplit";
             if (PaymentData[0].TransactionType == "Invoice")
             {
-                Trx trx = Trx.GetTrx("Split_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+                Trx trx = Trx.GetTrx(NewTrxName("Split_"));
                 try
                 {
                     int BaseCurrency = 0;
@@ -2866,7 +2878,7 @@ namespace VA009.Models
         /// <returns>String, Message</returns>
         public string CreateOrderSplitSchedule(Ctx ct, GeneratePaymt[] PaymentData, string SplitAmmount)
         {
-            Trx trx = Trx.GetTrx("SplitSchedule_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("SplitSchedule_"));
             string msg = "VA009_SavedSuccessfully";
             try
             {
@@ -3139,7 +3151,7 @@ namespace VA009.Models
             MPaySelectionCheck _PaySelCheck = null;
             decimal PayAmt = 0, DueAmtt = 0;
             string msg = string.Empty;
-            Trx trx = Trx.GetTrx("PaymentSelection_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("PaymentSelection_"));
             try
             {
                 #region get unique check no
@@ -4682,7 +4694,7 @@ namespace VA009.Models
         public string CreatePaymentsMannualy(Ctx ct, string InvoiceSchdIDS, string OrderSchdIDS, int BankID, int BankAccountID,
                 int PaymentMethodID, string DateAcct1, string CurrencyType, string DateTrx1, int AD_Org_ID, int docTypeId, string JournalSchdIDS)
         {
-            Trx trx = Trx.GetTrx("Manually_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("Manually_"));
             string[] invoiceIds = { };
             string[] OrderIds = { };
             string[] journalIDs = { };
@@ -5943,7 +5955,7 @@ namespace VA009.Models
         /// <returns>String, Message</returns>
         public Dictionary<string, object> CreatePaymentsBtoB(Ctx ct, dynamic PaymentData)
         {
-            Trx trx = Trx.GetTrx("PaymentB2B_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("PaymentB2B_"));
             //1052 - to store custom success and error message  
             Dictionary<string, object> retDic = new Dictionary<string, object>();
             StringBuilder ex = new StringBuilder();
@@ -6607,7 +6619,7 @@ namespace VA009.Models
         /// <returns></returns>
         public string GeneratePayMannual(Ctx ct, List<Dictionary<string, string>> paymentData)
         {
-            Trx trx = Trx.GetTrx("GeneratePayMannual_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("GeneratePayMannual_"));
             StringBuilder ex = new StringBuilder();
             string msg = Msg.GetMsg(ct, "VA009_PaymentCompletedWith");
             StringBuilder docno = new StringBuilder();
@@ -6844,6 +6856,35 @@ namespace VA009.Models
             return batchResponse;
         }
 
+        // the document-action process of a table and the payment window never change at runtime, no need to query them for every document
+        private static readonly ConcurrentDictionary<int, int> _docActionProcessCache = new ConcurrentDictionary<int, int>();
+        private static int _paymentWindowID;
+
+        private static int GetDocActionProcessID(int Table_ID)
+        {
+            int processID;
+            if (_docActionProcessCache.TryGetValue(Table_ID, out processID))
+            {
+                return processID;
+            }
+            processID = Util.GetValueOfInt(DB.ExecuteScalar("select ad_process_ID from ad_column where ad_table_id = " + Table_ID +
+                            " AND lower(columnname)= 'docaction'", null, null));
+            if (processID > 0)
+            {
+                _docActionProcessCache[Table_ID] = processID;
+            }
+            return processID;
+        }
+
+        private static int GetPaymentWindowID()
+        {
+            if (_paymentWindowID <= 0)
+            {
+                _paymentWindowID = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Window_ID FROM AD_Window WHERE Export_ID = 'VIS_195'"));
+            }
+            return _paymentWindowID;
+        }
+
         /// <summary>
         /// To Call the Workflow Against Selected Record
         /// </summary>
@@ -6856,9 +6897,8 @@ namespace VA009.Models
         /// <returns>Msg From Workflow</returns>
         private string[] CompleteOrReverse(Ctx ctx, int Record_ID, int Table_ID, string TableName, string DocAction, Trx trx)
         {
-            int AD_Process_ID = 0;
-            AD_Process_ID = Util.GetValueOfInt(DB.ExecuteScalar("select ad_process_ID from ad_column where ad_table_id = " + Table_ID +
-                            " AND lower(columnname)= 'docaction'", null, null));
+            System.Diagnostics.Stopwatch sw = System.Diagnostics.Stopwatch.StartNew();
+            int AD_Process_ID = GetDocActionProcessID(Table_ID);
             string[] result = new string[2];
             MRole role = MRole.Get(ctx, ctx.GetAD_Role_ID());
             int ad_window_id = 0;
@@ -6872,7 +6912,7 @@ namespace VA009.Models
                 else if (TableName == "c_payment")
                 { //Payment
                     Sql = "UPDATE C_Payment SET DocAction = '" + DocAction + "' WHERE C_Payment_ID = " + Record_ID;
-                    ad_window_id = Util.GetValueOfInt(DB.ExecuteScalar("SELECT AD_Window_ID FROM AD_Window WHERE Export_ID = 'VIS_195'"));
+                    ad_window_id = GetPaymentWindowID();
                 }
                 else if (TableName == "c_allocationhdr")
                 {
@@ -6897,6 +6937,7 @@ namespace VA009.Models
                 }
 
                 trx.Commit();
+                long prepareMs = sw.ElapsedMilliseconds;
                 MProcess proc = new MProcess(ctx, AD_Process_ID, null);
                 MPInstance pin = new MPInstance(proc, Record_ID);
                 if (!pin.Save())
@@ -6933,8 +6974,12 @@ namespace VA009.Models
                 {
                     pi.SetAD_Window_ID(ad_window_id);
                 }
+                long pinMs = sw.ElapsedMilliseconds - prepareMs;
                 ProcessCtl worker = new ProcessCtl(ctx, null, pi, null);
                 worker.Run();
+                // where the time of one completion goes: own update + commit / process instance save / document action process (platform)
+                _log.Info("VA009 CompleteOrReverse " + TableName + " ID=" + Record_ID + " action=" + DocAction + ": prepare+commit=" + prepareMs
+                    + "ms, instanceSave=" + pinMs + "ms, process=" + (sw.ElapsedMilliseconds - prepareMs - pinMs) + "ms");
 
                 if (pi.IsError())
                 {
@@ -6978,7 +7023,7 @@ namespace VA009.Models
         /// <returns>Batch Document Number</returns>
         public string CrateBatchPayments(Ctx ct, GeneratePaymt[] PaymentData)
         {
-            Trx trx = Trx.GetTrx("Batch_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("Batch_"));
             List<int> BpList = new List<int>();
             List<int> BtachId = new List<int>();
             StringBuilder docno = new StringBuilder();
@@ -7550,7 +7595,7 @@ namespace VA009.Models
         public string CratePaymentsForBatchWithMaxCount(Ctx ct, GeneratePaymt[] PaymentData)
         {
             #region varriables 
-            Trx trx = Trx.GetTrx("Batch_" + DateTime.Now.ToString("yyMMddHHmmssff"));
+            Trx trx = Trx.GetTrx(NewTrxName("Batch_"));
             List<int> BpList = new List<int>();
             List<int> BtachId = new List<int>();
             BPLocDetails loc = null;
