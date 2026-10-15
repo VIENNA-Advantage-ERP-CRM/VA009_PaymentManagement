@@ -18,7 +18,7 @@
         msg = "Regenerate Data based on Credit Risk Analysis";
 
         this.init = function () {
-            $root = $('<div class="VA009-workflows-flyout" style="position: relative; right: 0; top: 0; width:100%; height: 100%;">' +
+            $root = $('<div class="VA009-workflows-flyout VA009-tabpanel" style="position: relative; right: 0; top: 0; width:100%; height: 100%;">' +
                 '<div class="VA009-flyout-header">' +
                 '<h1>Credit Risk Analysis</h1>' +
                 '</div>' +

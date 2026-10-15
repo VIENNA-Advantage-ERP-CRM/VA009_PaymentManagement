@@ -1,0 +1,8 @@
+/* VA009 style bundle (Contents/VA009.all.min.css); order matters, keep it in load order */
+/* style.css is an old, unprefixed copy of the payment form styles (global body, .header, ul.tabs ...) - not bundled */
+@import "../VA009_PaymentFrm.css";
+/* tab panel styles: every rule is scoped under .VA009-tabpanel (class on each tab panel's root element)
+   so their generic class names (.container, .card, .tabs ...) do not leak into other windows */
+@import "../VA009_ReceivableAssesment.css";
+@import "../VA009_MaterialReturnAnalysis.css";
+@import "../VA009_rtl.css";

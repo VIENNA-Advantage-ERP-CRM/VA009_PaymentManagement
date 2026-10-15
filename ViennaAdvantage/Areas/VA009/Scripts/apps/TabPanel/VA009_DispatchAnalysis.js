@@ -35,7 +35,7 @@
         }));
 
         this.init = function () {
-            $root = $('<div class="container">' +
+            $root = $('<div class="container VA009-tabpanel">' +
                 '<div class="content">' +
                 '<div class="card metrics-header">' +
                 '<p class="metrics-header-text">Key Metrics</p>' +
