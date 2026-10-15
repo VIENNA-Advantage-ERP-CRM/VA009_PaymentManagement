@@ -9,6 +9,8 @@ using VAdvantage.Utility;
 using VIS.Classes;
 using System.Dynamic;
 using ViennaAdvantage.Common;
+using System.Web.Helpers;
+using VAdvantage.Classes;
 
 namespace VA009.Controllers
 {
@@ -26,6 +28,33 @@ namespace VA009.Controllers
         {
             Ctx ct = Session["ctx"] as Ctx;
             PaymentModel _payMdl = new PaymentModel();
+            if (!string.IsNullOrEmpty(whereQry))
+            {
+                whereQry = SecureEngineBridge.DecryptByClientKey(whereQry, ct.GetSecureKey());
+                if (!QueryValidator.IsValid(whereQry))
+                {
+                    whereQry = string.Empty;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(OrgWhr))
+            {
+                OrgWhr = SecureEngineBridge.DecryptByClientKey(OrgWhr, ct.GetSecureKey());
+                if (!QueryValidator.IsValid(OrgWhr))
+                {
+                    OrgWhr = string.Empty;
+                }
+            }
+
+            if (!string.IsNullOrEmpty(SearchText))
+            {
+                SearchText = SecureEngineBridge.DecryptByClientKey(SearchText, ct.GetSecureKey());
+                if (!QueryValidator.IsValid(SearchText))
+                {
+                    SearchText = string.Empty;
+                }
+            }
+
             LoadData _Paydata = _payMdl.GetloadData(pageNo, pageSize, ct, whereQry, OrgWhr, SearchText, WhrDueDate, TransType, FromDate, ToDate);
             return Json(JsonConvert.SerializeObject(_Paydata), JsonRequestBehavior.AllowGet);
         }
@@ -42,6 +71,7 @@ namespace VA009.Controllers
             PaymentModel _payMdl = new PaymentModel();
             return Json(JsonConvert.SerializeObject(_payMdl.GetBankAccountCurrency(ctx, BankAccount_ID)), JsonRequestBehavior.AllowGet);
         }
+
         public ActionResult GetBPName(string searchText)
         {
             Ctx ct = Session["ctx"] as Ctx;
@@ -133,10 +163,6 @@ namespace VA009.Controllers
         /// <returns>returns Payment Data to bind on grid</returns>
         public JsonResult GetConvertedAmt(string PaymentData, int BankAccount, int CurrencyType, DateTime? dateAcct, int _org_Id)
         {
-            //GeneratePaymt[] arr = JsonConvert.DeserializeObject<GeneratePaymt[]>(PaymentData);
-            //Ctx ctx = Session["ctx"] as Ctx;
-            //PaymentModel _payMdl = new PaymentModel();
-            //List<PaymentData> _Paydata = _payMdl.ConvertedAmt(ctx, arr, BankAccount, CurrencyType, dateAcct, _org_Id);
             return GetConvertedAmtBatch(PaymentData, BankAccount, CurrencyType, 0, dateAcct, _org_Id);
         }
 
