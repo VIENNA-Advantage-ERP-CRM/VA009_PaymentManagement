@@ -39,7 +39,7 @@
         const pct = (v) => (v === null || v === undefined) ? '-' : (Number(v).toFixed(0) + '%');
 
         this.init = function () {
-            $root = $('<div class="container">' +
+            $root = $('<div class="container VA009-tabpanel">' +
                 '<div class="content">' +
                 '<div class="card chart-section">' +
                 '<div class="chart-header">' +

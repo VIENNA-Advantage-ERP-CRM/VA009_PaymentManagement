@@ -1,0 +1,10 @@
+{
+  // module scripts are classic (non-module) files that rely on sloppy mode, e.g. "VA009 = window.VA009 || {}"
+  "sourceType": "unambiguous",
+  // keep code readable for development builds (production is minified by terser anyway);
+  // also avoids babel's "deoptimised styling" note for PaymentForm.js, which is over the 500 KB auto limit
+  "compact": false,
+  "plugins": [
+    [ "transform-remove-strict-mode" ]
+  ]
+}

@@ -213,7 +213,9 @@
     <Content Include="Areas\VA009\Scripts\apps\TabPanel\VA009_ReceivableAssesment.js" />
     <Content Include="Areas\VA009\Scripts\apps\TabPanel\VA009_VendorAnalysis.js" />
     <Content Include="Areas\VA009\Scripts\model\callouts.js" />
-    <Content Include="Areas\VA009\Scripts\VA009.all.min.js" />
+    <Content Include="Areas\VA009\Scripts\src\VA009js.js" />
+    <Content Include="Areas\VA009\Scripts\dist\VA009.all.min.js" />
+    <Content Include="Areas\VA009\Contents\src\VA009css.css" />
     <Content Include="Content\bootstrap.css" />
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\Site.css" />
@@ -254,6 +256,10 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="packages.config" />
+    <None Include="package.json" />
+    <None Include="package-lock.json" />
+    <None Include="webpack.config.js" />
+    <None Include="babel.config.json" />
     <Content Include="Areas\VA009\Views\web.config" />
     <Content Include="Scripts\jquery-1.10.2.min.map" />
     <None Include="Web.Debug.config">
@@ -299,6 +305,11 @@
     </VisualStudio>
   </ProjectExtensions>
   <PropertyGroup>
+    <!-- build the VA009 script/style bundles with webpack (webpack.config.js); installs packages on first build -->
+    <PreBuildEvent>cd /d "$(ProjectDir)"
+if not exist "node_modules" call npm ci
+if errorlevel 1 exit /b 1
+call npm run build</PreBuildEvent>
     <PostBuildEvent>xcopy /E /Y /I  "$(ProjectDir)Areas\*" "$(SolutionDir)\ViennaAdvantageWeb\Areas"</PostBuildEvent>
   </PropertyGroup>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

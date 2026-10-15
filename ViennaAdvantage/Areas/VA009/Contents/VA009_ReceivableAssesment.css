@@ -1,4 +1,4 @@
-﻿.VA009-workflows-flyout {
+﻿.VA009-tabpanel.VA009-workflows-flyout, .VA009-tabpanel .VA009-workflows-flyout {
     padding: 1rem;
     height: calc(100vh - 0px);
     background-color: rgba(var(--v-c-on-primary), 1);
@@ -7,45 +7,45 @@
     box-shadow: -4px 0px 11px 0px rgba(var(--v-c-secondary), 1);
 }
 
-.VA009-flyout-header {
+.VA009-tabpanel.VA009-flyout-header, .VA009-tabpanel .VA009-flyout-header {
     display: flex;
     align-items: center;
     justify-content: space-between;
     margin-bottom: 0.5rem;
 }
 
-    .VA009-flyout-header h1 {
+    .VA009-tabpanel.VA009-flyout-header h1, .VA009-tabpanel .VA009-flyout-header h1 {
         margin: 0;
         font-size: 1rem;
         color: rgba(var(--v-c-on-common), 1);
     }
 
-    .VA009-flyout-header a {
+    .VA009-tabpanel.VA009-flyout-header a, .VA009-tabpanel .VA009-flyout-header a {
         font-size: 1rem;
         text-decoration: none;
     }
 
-.VA009-payment-average {
+.VA009-tabpanel.VA009-payment-average, .VA009-tabpanel .VA009-payment-average {
     display: grid;
     grid-template-columns: 32% 66%;
     gap: 1rem;
     margin-top: 1.4rem;
 }
 
-.VA009-AgingAndCLV {
+.VA009-tabpanel.VA009-AgingAndCLV, .VA009-tabpanel .VA009-AgingAndCLV {
     display: grid;
     grid-template-columns: 48% 48%;
     gap: 1rem;
     margin-top: 1.4rem;
 }
 
-.VA009-average-graph {
+.VA009-tabpanel.VA009-average-graph, .VA009-tabpanel .VA009-average-graph {
     /*height:306px;*/
     /* width: 100%;
     padding: 0, 5px;*/
 }
 
-.VA009-cutomer-msg {
+.VA009-tabpanel.VA009-cutomer-msg, .VA009-tabpanel .VA009-cutomer-msg {
     display: flex;
     align-items: center;
     gap: 0.4rem;
@@ -55,36 +55,36 @@
     font-size: 0.75rem;
 }
 
-    .VA009-cutomer-msg .fa {
+    .VA009-tabpanel.VA009-cutomer-msg .fa, .VA009-tabpanel .VA009-cutomer-msg .fa {
         font-size: 1.1rem;
         color: #52B529;
     }
 
-.VA009-content-group p {
+.VA009-tabpanel.VA009-content-group p, .VA009-tabpanel .VA009-content-group p {
     font-size: 0.875rem;
     margin-top: 0.75rem;
 }
 
-.VA009-sec-heading {
+.VA009-tabpanel.VA009-sec-heading, .VA009-tabpanel .VA009-sec-heading {
     font-size: 0.75rem;
     font-weight: 600;
     margin-top: 1.4rem;
 }
 
-.VA009-vendor-analysis-heading {
+.VA009-tabpanel.VA009-vendor-analysis-heading, .VA009-tabpanel .VA009-vendor-analysis-heading {
     font-size: 1.5rem;
     font-weight: 800;
     text-align: center;
     margin-bottom: 1.4rem;
 }
 
-.VA009-keyfeature-items {
+.VA009-tabpanel.VA009-keyfeature-items, .VA009-tabpanel .VA009-keyfeature-items {
     display: grid;
     grid-template-columns: repeat(4, 1fr);
     gap: 0.75rem;
 }
 
-.VA009-feature-box {
+.VA009-tabpanel.VA009-feature-box, .VA009-tabpanel .VA009-feature-box {
     height: 100%;
     border-radius: 6px;
     display: flex;
@@ -94,35 +94,35 @@
     height: 96px;
 }
 
-    .VA009-feature-box .VA009-feaature-label {
+    .VA009-tabpanel.VA009-feature-box .VA009-feaature-label, .VA009-tabpanel .VA009-feature-box .VA009-feaature-label {
         font-size: 0.75rem;
         text-transform: uppercase;
     }
 
-    .VA009-feature-box .VA009-feature-value {
+    .VA009-tabpanel.VA009-feature-box .VA009-feature-value, .VA009-tabpanel .VA009-feature-box .VA009-feature-value {
         font-size: 1.6rem;
         font-weight: 600;
     }
 
-.VA009-status-yellow {
+.VA009-tabpanel.VA009-status-yellow, .VA009-tabpanel .VA009-status-yellow {
     background-color: #FCF9DE;
 }
 
-.VA009-status-green {
+.VA009-tabpanel.VA009-status-green, .VA009-tabpanel .VA009-status-green {
     background-color: #DCF0D4;
 }
 
-.VA009-status-red {
+.VA009-tabpanel.VA009-status-red, .VA009-tabpanel .VA009-status-red {
     background-color: #FCDCD7;
 }
 
-.VA009-action-items {
+.VA009-tabpanel.VA009-action-items, .VA009-tabpanel .VA009-action-items {
     display: grid;
     grid-template-columns: repeat(3, 1fr);
     gap: 0.75rem;
 }
 
-.VA009-action-box {
+.VA009-tabpanel.VA009-action-box, .VA009-tabpanel .VA009-action-box {
     border-radius: 6px;
     height: 96px;
     display: flex;
@@ -133,26 +133,26 @@
     padding: 0 1rem;
 }
 
-    .VA009-action-box .VA009-action-value {
+    .VA009-tabpanel.VA009-action-box .VA009-action-value, .VA009-tabpanel .VA009-action-box .VA009-action-value {
         font-size: 0.875rem;
         font-weight: 600;
         color: #3E8CF2;
     }
 
-    .VA009-action-box.VA009-red-box {
+    .VA009-tabpanel.VA009-action-box.VA009-red-box, .VA009-tabpanel .VA009-action-box.VA009-red-box {
         border-color: #D72D13;
     }
 
-.VA009-red-box .VA009-action-value {
+.VA009-tabpanel.VA009-red-box .VA009-action-value, .VA009-tabpanel .VA009-red-box .VA009-action-value {
     color: #D72D13;
 }
 
-.VA009-resize-window .VA009-payment-average, .VA009-resize-window .VA009-keyfeature-items, .VA009-resize-window .VA009-action-items {
+.VA009-tabpanel.VA009-resize-window .VA009-payment-average, .VA009-tabpanel .VA009-resize-window .VA009-payment-average, .VA009-tabpanel.VA009-resize-window .VA009-keyfeature-items, .VA009-tabpanel .VA009-resize-window .VA009-keyfeature-items, .VA009-tabpanel.VA009-resize-window .VA009-action-items, .VA009-tabpanel .VA009-resize-window .VA009-action-items {
     grid-template-columns: repeat(1, 1fr);
 }
 
 /***************************Vendor Analysis CSS *************************/
-.VA009-vendor-analysis-container {
+.VA009-tabpanel.VA009-vendor-analysis-container, .VA009-tabpanel .VA009-vendor-analysis-container {
     display: grid;
     grid-template-columns: 46% 42%;
     gap: 3rem;
@@ -160,59 +160,59 @@
 
 /***************************Vendor Analysis CSS *************************/
 
-.invoice-row {
+.VA009-tabpanel.invoice-row, .VA009-tabpanel .invoice-row {
     padding: 10px;
     border-bottom: 1px solid #eee;
 }
 
-.invoice-main {
+.VA009-tabpanel.invoice-main, .VA009-tabpanel .invoice-main {
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
 }
 
-.invoice-left {
+.VA009-tabpanel.invoice-left, .VA009-tabpanel .invoice-left {
     display: flex;
     flex-direction: column;
 }
 
-.invoice-amount {
+.VA009-tabpanel.invoice-amount, .VA009-tabpanel .invoice-amount {
     font-weight: bold;
 }
 
-.invoice-footer {
+.VA009-tabpanel.invoice-footer, .VA009-tabpanel .invoice-footer {
     display: flex;
     justify-content: space-between;
     align-items: center;
     margin-top: 6px;
 }
 
-.status-dot.overdue {
+.VA009-tabpanel.status-dot.overdue, .VA009-tabpanel .status-dot.overdue {
     background: #E53935;
 }
 
-.status-dot.pending {
+.VA009-tabpanel.status-dot.pending, .VA009-tabpanel .status-dot.pending {
     background: #FB8C00;
 }
 
-.status-dot.paid {
+.VA009-tabpanel.status-dot.paid, .VA009-tabpanel .status-dot.paid {
     background: #43A047;
 }
 
 @media (min-width: 768px) {
-    .invoice-row {
+    .VA009-tabpanel.invoice-row, .VA009-tabpanel .invoice-row {
         display: grid;
         grid-template-columns: 2fr 1fr 1fr 1fr auto;
         align-items: center;
         padding: 12px;
     }
 
-    .invoice-main, .invoice-footer {
+    .VA009-tabpanel.invoice-main, .VA009-tabpanel .invoice-main, .VA009-tabpanel.invoice-footer, .VA009-tabpanel .invoice-footer {
         display: contents;
     }
 }
 
-.VA009-container {
+.VA009-tabpanel.VA009-container, .VA009-tabpanel .VA009-container {
     font-family: Arial, sans-serif;
     padding: 10px;
     height: 100%;
@@ -221,7 +221,7 @@
     border-radius: 5px;*/
 }
 
-.VA009-invoice-card {
+.VA009-tabpanel.VA009-invoice-card, .VA009-tabpanel .VA009-invoice-card {
     border-radius: 5px;
     height: calc(100% - 21px);
     display: flex;
@@ -230,11 +230,11 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);*/
 }
 
-.VA009-invoice-list-wrapper {
+.VA009-tabpanel.VA009-invoice-list-wrapper, .VA009-tabpanel .VA009-invoice-list-wrapper {
     overflow-y: auto;
 }
 
-.VA009-table-header {
+.VA009-tabpanel.VA009-table-header, .VA009-tabpanel .VA009-table-header {
     display: flex;
     font-weight: bold;
     padding: 12px 0;
@@ -242,75 +242,79 @@
     background-color: #f7f7f7;*/
 }
 
-.VA009-col-invoice-lbl {
+.VA009-tabpanel.VA009-col-invoice-lbl, .VA009-tabpanel .VA009-col-invoice-lbl {
     width: 20%;
     text-align: left;
 }
 
-.VA009-col-amount-lbl,
-.VA009-col-due-lbl,
-.VA009-col-status-lbl,
-.VA009-col-action-lbl {
+.VA009-tabpanel.VA009-col-amount-lbl,
+.VA009-tabpanel .VA009-col-amount-lbl,
+.VA009-tabpanel.VA009-col-due-lbl,
+.VA009-tabpanel .VA009-col-due-lbl,
+.VA009-tabpanel.VA009-col-status-lbl,
+.VA009-tabpanel .VA009-col-status-lbl,
+.VA009-tabpanel.VA009-col-action-lbl,
+.VA009-tabpanel .VA009-col-action-lbl {
     width: 20%;
     text-align: center;
 }
 
-.VA009-invoice-row {
+.VA009-tabpanel.VA009-invoice-row, .VA009-tabpanel .VA009-invoice-row {
     display: flex;
     padding: 12px;
     border-bottom: 1px solid #ddd;
     transition: background-color 0.3s ease;
 }
 
-    .VA009-invoice-row:hover {
+    .VA009-tabpanel.VA009-invoice-row:hover, .VA009-tabpanel .VA009-invoice-row:hover {
         background-color: #f9f9f9;
     }
 
-.VA009-invoice-main {
+.VA009-tabpanel.VA009-invoice-main, .VA009-tabpanel .VA009-invoice-main {
     display: flex;
     width: 80%;
 }
 
-.VA009-invoice-left {
+.VA009-tabpanel.VA009-invoice-left, .VA009-tabpanel .VA009-invoice-left {
     flex: 0.45;
 }
 
-.VA009-invoice-amount {
+.VA009-tabpanel.VA009-invoice-amount, .VA009-tabpanel .VA009-invoice-amount {
     width: 20%;
     text-align: center;
 }
 
-.VA009-invoice-footer {
+.VA009-tabpanel.VA009-invoice-footer, .VA009-tabpanel .VA009-invoice-footer {
     display: flex;
     justify-content: space-between;
     /*  align-items: center;*/
 }
 
-.VA009-status-badge {
+.VA009-tabpanel.VA009-status-badge, .VA009-tabpanel .VA009-status-badge {
     display: flex;
     align-items: center;
 }
 
-.VA009-status-dot {
+.VA009-tabpanel.VA009-status-dot, .VA009-tabpanel .VA009-status-dot {
     width: 12px;
     height: 12px;
     border-radius: 50%;
     margin-right: 8px;
 }
 
-.VA009-overdue {
+.VA009-tabpanel.VA009-overdue, .VA009-tabpanel .VA009-overdue {
     background-color: #ff4d4d;
 }
 
-.VA009-pending {
+.VA009-tabpanel.VA009-pending, .VA009-tabpanel .VA009-pending {
     background-color: #ffa500;
 }
 
-.VA009-paid {
+.VA009-tabpanel.VA009-paid, .VA009-tabpanel .VA009-paid {
     background-color: #28a745;
 }
 
-.VA009-vas-igwidg-notfounddiv {
+.VA009-tabpanel.VA009-vas-igwidg-notfounddiv, .VA009-tabpanel .VA009-vas-igwidg-notfounddiv {
     text-align: center;
     padding: 20px;
     color: #999;
@@ -319,16 +323,16 @@
 }
 
 /* Tabs are hidden but logic is still active */
-.VA009-tabs {
+.VA009-tabpanel.VA009-tabs, .VA009-tabpanel .VA009-tabs {
     /*display: none;*/
 }
 
-.tabs {
+.VA009-tabpanel.tabs, .VA009-tabpanel .tabs {
     display: flex;
     border-bottom: 1px solid #cdcdcd;
 }
 
-.tab {
+.VA009-tabpanel.tab, .VA009-tabpanel .tab {
     padding: 0.75rem 1.5rem;
     font-size: 0.875rem;
     background: none;
@@ -339,18 +343,18 @@
     transition: all 0.2s;
 }
 
-    .tab.active {
+    .VA009-tabpanel.tab.active, .VA009-tabpanel .tab.active {
         color: #19332d;
         border-bottom-color: black;
     }
 
-.VA009-table {
+.VA009-tabpanel.VA009-table, .VA009-tabpanel .VA009-table {
     width: 100%;
     display: flex;
     flex-direction: column;
 }
 
-.VA009-table-header {
+.VA009-tabpanel.VA009-table-header, .VA009-tabpanel .VA009-table-header {
     display: flex;
     justify-content: space-between;
     padding: 10px;
@@ -358,56 +362,56 @@
     /* background-color: #f4f4f4;*/
 }
 
-.VA009-invoice-row {
+.VA009-tabpanel.VA009-invoice-row, .VA009-tabpanel .VA009-invoice-row {
     display: flex;
     justify-content: space-between;
     padding: 10px;
     border-bottom: 1px solid #ddd;
 }
 
-    .VA009-invoice-row > div:not(.VA009-col-invoice-doc) {
+    .VA009-tabpanel.VA009-invoice-row > div:not(.VA009-col-invoice-doc), .VA009-tabpanel .VA009-invoice-row > div:not(.VA009-col-invoice-doc) {
         flex: 1; /* Each child div will take equal space */
         text-align: center;
     }
 
-.VA009-status-badge {
+.VA009-tabpanel.VA009-status-badge, .VA009-tabpanel .VA009-status-badge {
     display: flex;
     align-items: center;
     justify-content: center;
 }
 
-.VA009-status-dot {
+.VA009-tabpanel.VA009-status-dot, .VA009-tabpanel .VA009-status-dot {
     width: 10px;
     height: 10px;
     border-radius: 50%;
     margin-right: 5px;
 }
 
-    .VA009-status-dot.overdue {
+    .VA009-tabpanel.VA009-status-dot.overdue, .VA009-tabpanel .VA009-status-dot.overdue {
         background-color: red;
     }
 
-    .VA009-status-dot.paid {
+    .VA009-tabpanel.VA009-status-dot.paid, .VA009-tabpanel .VA009-status-dot.paid {
         background-color: green;
     }
 
-.VA009-icon-btn {
+.VA009-tabpanel.VA009-icon-btn, .VA009-tabpanel .VA009-icon-btn {
     background: none;
     border: none;
     cursor: pointer;
 }
 
-.VA009-col-invoice-doc {
+.VA009-tabpanel.VA009-col-invoice-doc, .VA009-tabpanel .VA009-col-invoice-doc {
     flex: 1;
     text-align: left;
 }
 
-.VA009-col-amount, .VA009-col-due, .VA009-col-status, .VA009-col-action {
+.VA009-tabpanel.VA009-col-amount, .VA009-tabpanel .VA009-col-amount, .VA009-tabpanel.VA009-col-due, .VA009-tabpanel .VA009-col-due, .VA009-tabpanel.VA009-col-status, .VA009-tabpanel .VA009-col-status, .VA009-tabpanel.VA009-col-action, .VA009-tabpanel .VA009-col-action {
     /*padding: 5px;*/
     text-align: center;
 }
 
-.VA009-scheduledata-Paging {
+.VA009-tabpanel.VA009-scheduledata-Paging, .VA009-tabpanel .VA009-scheduledata-Paging {
     align-items: center;
     background: #fff;
     bottom: 0;
@@ -417,7 +421,7 @@
     position: sticky;
 }
 
-.VA009-invoice-date {
+.VA009-tabpanel.VA009-invoice-date, .VA009-tabpanel .VA009-invoice-date {
     font-size: 12px;
     color: #666; /* Light grey or any other color you prefer */
     margin-top: 4px; /* Space between the invoice number and the date */

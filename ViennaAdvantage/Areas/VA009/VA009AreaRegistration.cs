@@ -52,8 +52,14 @@ namespace ViennaAdvantage //  Please replace namespace with prefix of your modul
             // "~/Areas/VA009/Scripts/apps/TabPanel/SaleInsightWidget.js",
             // "~/Areas/VA009/Scripts/apps/TabPanel/VA009_CustomerInvoices.js");
 
-            script.Include("~/Areas/VA009/Scripts/VA009.all.min.js");
+            // bundles are built by webpack (npm run build, runs before each build): sources are listed in
+            // Scripts/src/VA009js.js and Contents/src/VA009css.css
+            script.Include("~/Areas/VA009/Scripts/dist/VA009.all.min.js");
             style.Include("~/Areas/VA009/Contents/VA009.all.min.css");
+
+            // already minified by webpack, do not minify again
+            script.Transforms.Clear();
+            script.Transforms.Add(new NoTransform());
 
 
 
@@ -81,6 +87,14 @@ namespace ViennaAdvantage //  Please replace namespace with prefix of your modul
 
             VAdvantage.ModuleBundles.RegisterScriptBundle(script, "VA009", 10);
             VAdvantage.ModuleBundles.RegisterStyleBundle(style, "VA009", 10);
+        }
+    }
+
+    public sealed class NoTransform : IBundleTransform
+    {
+        public void Process(BundleContext context, BundleResponse response)
+        {
+            // Do nothing: keep content as-is (no minify, no parse)
         }
     }
 }

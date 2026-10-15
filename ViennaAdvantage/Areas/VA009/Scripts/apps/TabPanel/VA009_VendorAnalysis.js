@@ -20,7 +20,7 @@
         const data = [];
 
         this.init = function () {
-            $root = $('<div class="VA009-workflows-flyout" style="position: relative; right: 0; top: 0; width:100%; height: 100%;">' +
+            $root = $('<div class="VA009-workflows-flyout VA009-tabpanel" style="position: relative; right: 0; top: 0; width:100%; height: 100%;">' +
                 //'<h1 class="VA009-vendor-analysis-heading">Vendor Analysis Details</h1>' +
                 //'<p class="VA009_DetailedMsg"></p>' +
                 '<div class="VA009-vendor-analysis-container">' +

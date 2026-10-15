@@ -33,7 +33,7 @@
         var divPaging = $('<div class="VA009-scheduledata-Paging mr-3">');
 
         this.init = function () {
-            $root = $('<div class="VA009-container">' +
+            $root = $('<div class="VA009-container VA009-tabpanel">' +
                 '<div class="VA009-invoice-card">' +
                 '<div class="tabs">' +
                 '<button class="tab active">Outstanding</button>' +
