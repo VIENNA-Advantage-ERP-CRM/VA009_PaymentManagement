@@ -31,6 +31,22 @@
         var _currentLoadXhr = null;
         var orgids = [], bpids = [], SlctdPaymentIds = []; SlctdJournalPaymentIds = [];
         var SelectallOrdIds = [], SelectallInvIds = [], SelectallJournalIds = [];
+        // true while select-all replays the row clicks, so each click skips the whole-list "all selected?" check
+        var isSelectAllRunning = false;
+        // currency precision by bank account / cash book; the grids ask on every cell edit with a blocking request
+        var currencyPrecisionCache = {};
+        function getCurrencyPrecision(accountId, currencyFrom) {
+            var key = currencyFrom + "_" + accountId;
+            if (!currencyPrecisionCache.hasOwnProperty(key)) {
+                var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": accountId, "CurrencyFrom": currencyFrom }, null);
+                if (stdPrecision == null || stdPrecision == 0) {
+                    // not cached, so a failed request is retried on the next edit
+                    return stdPrecision;
+                }
+                currencyPrecisionCache[key] = stdPrecision;
+            }
+            return currencyPrecisionCache[key];
+        }
         var paymntIds = [], statusIds = [];
         var _WhrOrg = "", _WhrPayMtd = "", _Whr_BPrtnr = "", _WhrStatus = "";
         // By Amit - 16-11-2016
@@ -886,23 +902,34 @@
                         batchObjInv = [];
                         batchObjOrd = [];
                         batchObjJournal = [];
-                        for (var i = 0; i < SelectallInvIds.length; i++) {
-                            v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallInvIds[i] + ']'))[0];
-                            if (!v.target == false) {
-                                if (!$(v.target).prop("disabled")) {
+                        // index the row checkboxes in one pass instead of searching the whole list once per id;
+                        // keyed by type as well, because invoice, order and journal schedule ids can collide
+                        var invBoxes = {}, ordBoxes = {}, journalBoxes = {};
+                        $divPayment.find('.VA009-payment-wrap .VA009-clckd-checkbx').each(function () {
+                            var uid = $(this).data("uid");
+                            var name = $(this).data("name");
+                            var boxes = name == "Invoice" ? invBoxes : (name == "Order" ? ordBoxes : journalBoxes);
+                            if (!boxes.hasOwnProperty(uid)) {
+                                boxes[uid] = this;
+                            }
+                        });
+                        var replayClicks = function (ids, boxes) {
+                            for (var i = 0; i < ids.length; i++) {
+                                v.target = boxes[ids[i]];
+                                // hold payments stay unselected
+                                if (v.target && !v.target.disabled) {
                                     paymentContainerClick(v);
                                 }
                             }
+                        };
+                        isSelectAllRunning = true;
+                        try {
+                            replayClicks(SelectallInvIds, invBoxes);
+                            replayClicks(SelectallOrdIds, ordBoxes);
+                            replayClicks(SelectallJournalIds, journalBoxes);
                         }
-                        for (var j = 0; j < SelectallOrdIds.length; j++) {
-                            v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallOrdIds[j] + ']'))[0];
-                            if (!v.target == false)
-                                paymentContainerClick(v);
-                        }
-                        for (var j = 0; j < SelectallJournalIds.length; j++) {
-                            v.target = $($divPayment.find('.VA009-payment-wrap').find('.VA009-clckd-checkbx[data-uid^=' + SelectallJournalIds[j] + ']'))[0];
-                            if (!v.target == false)
-                                paymentContainerClick(v);
+                        finally {
+                            isSelectAllRunning = false;
                         }
                     }
                     else {
@@ -1029,13 +1056,16 @@
                         batchObjJournal.push({ "ID": target.data("uid"), "PM": target.data() });
                     }
                     //when max payment records selected at that time need to checkall checkbox true.
-                    var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
-                    var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
-                    //VIS_427 Handeled issue for select all check box
-                    var checkedrecords = $(".VA009-payment-list").find("input[type=checkbox]:checked").length;
-                    var uncheckedrecords = $(".VA009-payment-list").find("input[type=checkbox]:not(:checked)").length;
-                    if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
-                        $selectall.prop('checked', true);
+                    //(select-all is already checked while it replays the clicks)
+                    if (!isSelectAllRunning) {
+                        var selRecords = SlctdPaymentIds.length + SlctdOrderPaymentIds.length + SlctdJournalPaymentIds.length;
+                        var countRecords = $($divPayment.find(".VA009-payment-wrap")).length;
+                        //VIS_427 Handeled issue for select all check box
+                        var checkedrecords = $(".VA009-payment-list").find("input[type=checkbox]:checked").length;
+                        var uncheckedrecords = $(".VA009-payment-list").find("input[type=checkbox]:not(:checked)").length;
+                        if ((countRecords == selRecords && uncheckedrecords == 0) || (countRecords == checkedrecords)) {
+                            $selectall.prop('checked', true);
+                        }
                     }
                     record_ID = target.data("uid");
                     /* VIS_427 DevOps id:2289 getting value according to precision */
@@ -1725,7 +1755,7 @@
                         onChange: function (event) {
                             window.setTimeout(function () {
                                 if (chqpaygrd.getChanges(event.recid) != undefined) {
-                                    var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), "CurrencyFrom": "B" }, null);
+                                    var stdPrecision = getCurrencyPrecision(VIS.Utility.Util.getValueOfInt($POP_cmbBankAccount.val()), "B");
                                     if (stdPrecision == null || stdPrecision == 0) {
                                         stdPrecision = 2;
                                     }
@@ -4041,7 +4071,7 @@
                             //change by amit
                             window.setTimeout(function () {
                                 if (chqrecgrd.getChanges(event.recid) != undefined) {
-                                    var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $RPOP_cmbBankAccount.val(), "CurrencyFrom": "B" }, null);
+                                    var stdPrecision = getCurrencyPrecision($RPOP_cmbBankAccount.val(), "B");
                                     if (stdPrecision == null || stdPrecision == 0) {
                                         stdPrecision = 2;
                                     }
@@ -5747,7 +5777,7 @@
                         if (w2ui.CashGrid.getChanges(event.recid) != undefined) {
                             //var sql = "SELECT stdprecision FROM c_currency WHERE c_currency_id =   (SELECT c_currency_id FROM c_cashbook WHERE C_Cashbook_ID=" + $Cash_cmbcashbk.val() + " ) ";
                             //var stdPrecision = VIS.DB.executeScalar(sql, null, null);
-                            var stdPrecision = VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/GetCurrencyPrecision", { "BankAccount_ID": $Cash_cmbcashbk.val(), "CurrencyFrom": "C" }, null);
+                            var stdPrecision = getCurrencyPrecision($Cash_cmbcashbk.val(), "C");
                             if (stdPrecision == null || stdPrecision == 0) {
                                 stdPrecision = 2;
                             }
