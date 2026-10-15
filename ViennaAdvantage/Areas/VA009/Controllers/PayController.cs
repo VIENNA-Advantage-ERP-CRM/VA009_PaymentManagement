@@ -3,12 +3,15 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.SessionState;
 using Newtonsoft.Json;
 using VA009.Models;
 using VAdvantage.Utility;
 
 namespace VA009.Controllers
 {
+    // callout lookups only read Session["ctx"]; read-only session state avoids the exclusive per-session lock
+    [SessionState(SessionStateBehavior.ReadOnly)]
     public class PayController : Controller
     {
         public JsonResult GetInvPaymentMethod(String fields)

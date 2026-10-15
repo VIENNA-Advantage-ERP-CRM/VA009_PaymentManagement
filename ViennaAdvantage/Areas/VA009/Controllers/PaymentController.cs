@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using System.Web.SessionState;
 using Newtonsoft.Json;
 using VA009.Models;
 using VAdvantage.Utility;
@@ -14,6 +15,9 @@ using VAdvantage.Classes;
 
 namespace VA009.Controllers
 {
+    // Actions here only read Session["ctx"] and never write session state. Read-only session state takes a shared
+    // lock, so the many requests a dialog fires at once (and a long GeneratePayments) no longer queue one behind the other
+    [SessionState(SessionStateBehavior.ReadOnly)]
     public class PaymentController : Controller
     {
         // GET: /VA009/Payment/
