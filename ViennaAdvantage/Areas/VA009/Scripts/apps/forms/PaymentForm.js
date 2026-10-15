@@ -47,6 +47,21 @@
             }
             return currencyPrecisionCache[key];
         }
+        // organization list for the main filter and every popup, fetched once per form
+        var orgListCache = null;
+        function loadOrganizations(callback) {
+            if (orgListCache) {
+                // stay asynchronous like the request, so code after the call still runs before the combo is filled
+                window.setTimeout(function () { callback(orgListCache); }, 0);
+                return;
+            }
+            VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, function (dr) {
+                if (dr != null && dr.length > 0) {
+                    orgListCache = dr;
+                }
+                callback(dr);
+            });
+        }
         var paymntIds = [], statusIds = [];
         var _WhrOrg = "", _WhrPayMtd = "", _Whr_BPrtnr = "", _WhrStatus = "";
         // By Amit - 16-11-2016
@@ -1419,7 +1434,7 @@
             },
 
             loadOrg: function () {
-                VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                loadOrganizations(callbackloadorg);
                 function callbackloadorg(dr) {
                     var orgindex = 0;
                     $Org.append(" <option value = 0></option>");
@@ -2570,7 +2585,7 @@
 
                 //to load all organization 
                 function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    loadOrganizations(callbackloadorg);
                     function callbackloadorg(dr) {
                         $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
@@ -3691,7 +3706,7 @@
 
                 //to load all organization 
                 function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    loadOrganizations(callbackloadorg);
                     function callbackloadorg(dr) {
                         $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
@@ -5382,7 +5397,7 @@
 
                 //to load all organization 
                 function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    loadOrganizations(callbackloadorg);
                     function callbackloadorg(dr) {
                         $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
@@ -6880,7 +6895,7 @@
 
                 //to load all organization 
                 function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    loadOrganizations(callbackloadorg);
                     function callbackloadorg(dr) {
                         $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
@@ -8504,7 +8519,7 @@
                     }
                 });
                 function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    loadOrganizations(callbackloadorg);
                     function callbackloadorg(dr) {
                         $OrgCmb.empty();
                         $OrgCmb.append(" <option value = 0></option>");
@@ -8930,7 +8945,7 @@
 
                 //to load all organization 
                 function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    loadOrganizations(callbackloadorg);
                     function callbackloadorg(dr) {
                         $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");
@@ -9509,7 +9524,7 @@
                     loadOrg();
                 };
                 function loadOrg() {
-                    VIS.dataContext.getJSONData(VIS.Application.contextUrl + "VA009/Payment/LoadOrganization", null, callbackloadorg);
+                    loadOrganizations(callbackloadorg);
                     function callbackloadorg(dr) {
                         $POP_cmbOrg.empty();
                         $POP_cmbOrg.append(" <option value = 0></option>");

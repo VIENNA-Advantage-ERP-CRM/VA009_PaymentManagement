@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -4185,8 +4186,41 @@ namespace VA009.Models
         }
 
 
+        // lookup lists (organizations, execution statuses) barely change but every form and popup open asks for them
+        private static readonly TimeSpan LookupCacheDuration = TimeSpan.FromMinutes(10);
+        private static readonly ConcurrentDictionary<string, KeyValuePair<DateTime, List<Dictionary<string, object>>>> _lookupCache =
+            new ConcurrentDictionary<string, KeyValuePair<DateTime, List<Dictionary<string, object>>>>();
+
+        /// <summary>
+        /// Cached lookup list; empty results are not cached so a failed or empty load is retried next time.
+        /// Callers only serialize the list, they must not change it.
+        /// </summary>
+        /// <param name="key">Cache key, including everything the list depends on (client, role, user ...)</param>
+        /// <param name="load">Loads the list from the database</param>
+        /// <returns>List of lookup rows</returns>
+        private static List<Dictionary<string, object>> GetCachedLookup(string key, Func<List<Dictionary<string, object>>> load)
+        {
+            KeyValuePair<DateTime, List<Dictionary<string, object>>> entry;
+            if (_lookupCache.TryGetValue(key, out entry) && entry.Key > DateTime.UtcNow)
+            {
+                return entry.Value;
+            }
+            List<Dictionary<string, object>> list = load();
+            if (list != null && list.Count > 0)
+            {
+                _lookupCache[key] = new KeyValuePair<DateTime, List<Dictionary<string, object>>>(DateTime.UtcNow.Add(LookupCacheDuration), list);
+            }
+            return list;
+        }
+
         //Added by Bharat on 01/June/2017
         public List<Dictionary<string, object>> LoadOrganization(Ctx ct)
+        {
+            // the role access filter depends on client, role and user
+            return GetCachedLookup("Org_" + ct.GetAD_Client_ID() + "_" + ct.GetAD_Role_ID() + "_" + ct.GetAD_User_ID(), () => LoadOrganizationFromDB(ct));
+        }
+
+        private List<Dictionary<string, object>> LoadOrganizationFromDB(Ctx ct)
         {
             List<Dictionary<string, object>> retDic = null;
             //added IsCostCenter and IsProfitCenter check  suggested by mukesh sir and Ashish
@@ -4270,6 +4304,12 @@ namespace VA009.Models
 
         //Added by Bharat on 01/June/2017
         public List<Dictionary<string, object>> LoadStatus(Ctx ct)
+        {
+            // reference list is system metadata, the same for every client and user
+            return GetCachedLookup("ExecutionStatus", LoadStatusFromDB);
+        }
+
+        private static List<Dictionary<string, object>> LoadStatusFromDB()
         {
             List<Dictionary<string, object>> retDic = null;
             string sql = @"SELECT rl.Value,rl.Name FROM AD_Reference re INNER JOIN AD_Ref_List rl ON rl.AD_Reference_ID = re.AD_Reference_ID
